@@ -42,13 +42,15 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      # setup-uv@v6, no @v3: la v3 NO acepta `python-version` y lo ignoraba con
-      # un `##[warning] Unexpected input(s)` en cada corrida. El pin no estaba
-      # donde el fichero decia: el runner caia en el Python del sistema por
-      # casualidad. Verificado en la corrida 32531009942.
+      # setup-uv@v6, no @v3: la v3 NO acepta `python-version` y lo ignoraba con un
+      # `##[warning] Unexpected input(s)` en cada corrida, o sea que el pin no
+      # estaba donde el fichero decia (corrida 32531009942).
+      # Y aqui NO se repite la version a proposito: la fuente unica es
+      # `.python-version`, que `uv` respeta al crear el entorno. Duplicarla en el
+      # `with:` seria un segundo sitio del que se puede separar en silencio. Quien
+      # convierte el pin en promesa cumplida es el paso de abajo.
       - uses: astral-sh/setup-uv@v6
         with:
-          python-version-file: .python-version
           enable-cache: true
       # Aqui SI hacen falta los extras, o el contrato de extractor no prueba nada.
       # OJO: esto instala SEIS de los ocho de §8, no los ocho. `extract-local` son
