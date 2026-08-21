@@ -1,0 +1,81 @@
+[project]
+name = "docbench-es"
+version = "0.0.1"
+description = "Banco de extracción documental en español, adaptable a cualquier entidad"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = ["benchcore==0.1.*", "pydantic>=2", "typer>=0.12", "pyyaml>=6"]
+
+[project.optional-dependencies]
+extract-local = ["pymupdf4llm", "pdfplumber", "camelot-py", "docling", "marker-pdf", "unstructured"]
+ocr = ["pytesseract", "paddleocr", "surya-ocr"]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-cov", "hypothesis>=6", "ruff>=0.6", "mypy>=1.11", "import-linter>=2"]
+
+# benchcore es una dependencia PROPIA. Existe un paquete AJENO llamado igual en
+# PyPI: sin esta seccion, `uv sync` instala el de otra persona en silencio.
+# Apunta esto a tu repo antes del primer `uv sync`.
+[tool.uv.sources]
+benchcore = { git = "https://github.com/marcosmatalab/benchcore", branch = "main" }
+
+[project.scripts]
+docbench = "docbench_es.cli.main:app"
+
+# Los adaptadores propios entran por el MISMO mecanismo que los de un cliente.
+[project.entry-points."docbench.entity"]
+boe = "docbench_es.entity.boe:BoeAdapter"
+generico-pdf = "docbench_es.entity.generico_pdf:GenericoPdfAdapter"
+
+[project.entry-points."docbench.extractor"]
+oracle = "docbench_es.extract.oracle:Oracle"
+pymupdf4llm = "docbench_es.extract.pymupdf4llm:PyMuPdf4LlmExtractor"
+docling = "docbench_es.extract.docling:DoclingExtractor"
+
+[tool.ruff]
+line-length = 100
+# Ruff 0.16 formatea el codigo Python dentro de los .md. Los manuales llevan
+# snippets elididos a proposito, asi que sin esto la puerta se pone roja por
+# culpa de la documentacion y `make fix` reescribiria MANUAL.md.
+extend-exclude = ["*.md"]
+target-version = "py312"
+[tool.ruff.lint]
+select = ["E","F","I","N","UP","B","SIM","RUF","ANN","PTH","RET","ARG","C4"]
+# N818 exige sufijo `Error`. El manual declara literalmente PolicyViolation,
+# ContractViolation y BudgetExceeded, y CLAUDE.md dice que manda el manual.
+ignore = ["N818"]
+
+[tool.ruff.lint.per-file-ignores]
+# Los dobles de test implementan un Protocol: sus argumentos existen para
+# cumplir la firma, no para usarse.
+"tests/**" = ["ARG002", "ARG001"]
+
+[tool.mypy]
+python_version = "3.12"
+# Layout src/. Sin estas tres lineas, mypy sube el arbol buscando la raiz del
+# paquete hasta salirse del repo y llegar al directorio actual. Si por el camino
+# encuentra un `__init__.py` suelto, revienta con
+#   " contains __init__.py but is not a valid Python package name"
+# (nombre vacio, de ahi el espacio inicial), o con "Source file found twice under
+# different module names". Con `explicit_package_bases`, el crawl PARA en src/.
+# Reproducido y verificado con mypy 2.3.1.
+mypy_path = "src"
+explicit_package_bases = true
+namespace_packages = true
+strict = true
+warn_unreachable = true
+disallow_any_explicit = true
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers --strict-config"
+# `pytest` a secas NO debe recoger tests/e2e, que necesita red.
+# La puerta rapida nombra sus directorios explicitamente; ver el Makefile.
+testpaths = ["tests/unit"]
+markers = ["slow: necesita red o Docker"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/docbench_es"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

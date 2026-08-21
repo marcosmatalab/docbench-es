@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+# Datos y corridas: pesan y no se versionan. Lo que SÍ se versiona son los
+# ficheros congelados de tests/fixtures y el plan de muestreo de cada campaña.
+data/
+runs/
+.claude/.ultima-puerta
+.env
+
+.import_linter_cache/

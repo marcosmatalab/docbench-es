@@ -1,0 +1,24 @@
+name: fast
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: fast-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      # SOLO el grupo dev. `--all-extras` arrastraba torch, CUDA y OCR: varios GB
+      # y muy por encima del presupuesto de 90 s de la puerta rapida.
+      - run: uv sync --only-group dev
+      # La puerta es UNA sola definicion, la del Makefile. Repetir aqui sus pasos
+      # garantiza que local y CI se separen con el tiempo.
+      - name: la puerta
+        run: make fast

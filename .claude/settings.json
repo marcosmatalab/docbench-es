@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make *)",
+      "Bash(uv run *)",
+      "Bash(uv sync*)",
+      "Bash(uv lock*)",
+      "Bash(uv add*)",
+      "Bash(uv build*)",
+      "Bash(docbench *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Read(**)",
+      "Edit(src/**)",
+      "Edit(tests/**)",
+      "Edit(docs/**)",
+      "Edit(profiles/**)",
+      "Edit(.github/**)",
+      "Write(src/**)",
+      "Write(tests/**)",
+      "Write(docs/**)",
+      "Write(profiles/**)",
+      "Write(.github/**)",
+      "Edit(README.md)",
+      "Write(README.md)",
+      "Edit(RESULTS.md)",
+      "Write(RESULTS.md)",
+      "Edit(LIMITS.md)",
+      "Write(LIMITS.md)",
+      "Edit(CHANGELOG.md)",
+      "Write(CHANGELOG.md)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(gh *)",
+      "Write(ESTADO.md)",
+      "Edit(ESTADO.md)",
+      "Write(HITOS.md)",
+      "Edit(HITOS.md)",
+      "Write(CLAUDE.md)",
+      "Edit(CLAUDE.md)",
+      "Write(tests/fixtures/pubtabnet/**)",
+      "Edit(tests/fixtures/pubtabnet/**)",
+      "Write(tests/fixtures/tablas/**)",
+      "Edit(tests/fixtures/tablas/**)",
+      "Write(tests/fixtures/quickstart/**)",
+      "Edit(tests/fixtures/quickstart/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(uv pip install*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(~/.aws/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.config/gcloud/**)"
+    ]
+  },
+  "env": {
+    "PYTHONHASHSEED": "0",
+    "TZ": "UTC"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-frozen.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify-edit.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-gate.sh",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}

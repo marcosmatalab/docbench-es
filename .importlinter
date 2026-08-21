@@ -1,0 +1,65 @@
+# import-linter SOLO lee setup.cfg, .importlinter o pyproject.toml.
+# Un fichero llamado importlinter.ini NO lo lee: "Could not read any configuration".
+# Los módulos de una lista van UNO POR LÍNEA. Separarlos por comas produce un
+# único nombre de módulo inexistente y el contrato pasa siempre en verde.
+[importlinter]
+root_package = docbench_es
+include_external_packages = True
+
+[importlinter:contract:capas]
+name = Las capas van hacia abajo, nunca hacia arriba
+type = layers
+exhaustive = true
+containers =
+    docbench_es
+layers =
+    cli
+    route
+    publish : drift
+    report
+    reference
+    ask : truth : extract : corpus : entity : sources : glossary : sample
+    core
+    types : errors
+
+[importlinter:contract:nucleo-sin-mundo]
+name = El nucleo es puro: no toca red, disco ni proveedores
+type = forbidden
+source_modules =
+    docbench_es.core
+forbidden_modules =
+    docbench_es.extract
+    docbench_es.entity
+    docbench_es.corpus
+    docbench_es.sources
+    docbench_es.truth
+    requests
+    httpx
+    urllib
+    urllib3
+    http
+    socket
+    aiohttp
+    httpcore
+    subprocess
+    boto3
+    azure
+    openai
+
+[importlinter:contract:drift-sin-verdad]
+name = La deriva funciona SIN verdad de referencia nueva, o no es ejecutable en produccion
+type = forbidden
+source_modules =
+    docbench_es.drift
+forbidden_modules =
+    docbench_es.truth
+
+[importlinter:contract:route-solo-report]
+name = La recomendacion se deriva de mediciones publicadas, no de una heuristica escondida
+type = forbidden
+source_modules =
+    docbench_es.route
+forbidden_modules =
+    docbench_es.extract
+    docbench_es.ask
+    docbench_es.truth
