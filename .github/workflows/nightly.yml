@@ -1,0 +1,71 @@
+name: nightly
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NACE DORMIDO. Solo `workflow_dispatch`. SE ENCIENDE EN L7, con `full`.
+#
+# Mismo motivo y misma evidencia que `full.yml`: una campana completa necesita
+# CLI (L5+), extractores (L5) y corpus congelado (L7). Y ademas necesita algo
+# con lo que comparar: `nightly` compara cada corrida con la anterior, asi que
+# antes de L7 no hay corrida anterior que valga y el trabajo no puede fallar
+# de forma informativa.
+#
+# El `cron` va ya escrito y comentado a proposito, para que encenderlo en L7
+# sea descomentar dos lineas y no redisenar el trabajo.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+  # A partir de L7, descomentar:
+  # schedule:
+  #   - cron: "17 3 * * *"   # 03:17 UTC. Minuto primo para no coincidir con
+  #                          # el pico de en punto de los runners compartidos.
+
+permissions:
+  contents: read
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      # setup-uv@v6, no @v3: la v3 NO acepta `python-version` y lo ignoraba con
+      # un `##[warning] Unexpected input(s)` en cada corrida. El pin no estaba
+      # donde el fichero decia: el runner caia en el Python del sistema por
+      # casualidad. Verificado en la corrida 32531009942.
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version-file: .python-version
+          enable-cache: true
+      - run: uv sync --group dev --extra extract-local
+      # El pin es una PROMESA: que CI y local analizan el mismo Python. Aqui se
+      # comprueba en vez de suponerse, porque `requires-python = ">=3.12"` deja
+      # pasar un 3.13 el dia que `ubuntu-latest` cambie su Python por defecto, y
+      # mypy analizaria otra cosa que en local sin que nadie se entere.
+      - name: CI corre el Python de .python-version
+        run: |
+          esperado=$(tr -d '[:space:]' < .python-version)
+          real=$(uv run python -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+          echo "esperado=$esperado real=$real"
+          [ "$esperado" = "$real" ] || { echo "::error::CI corre $real, .python-version dice $esperado"; exit 1; }
+      # `--offline` no es una optimizacion: un trabajo programado que gasta
+      # dinero por su cuenta cada noche es como se llega a una factura que
+      # nadie ha autorizado. Los extractores por API entran cuando alguien
+      # lanza la campana a mano, con su presupuesto declarado.
+      - name: campana completa sobre el corpus congelado
+        run: |
+          uv run docbench run --plan tests/fixtures/quickstart/plan.yaml \
+            --level 1 --extractors all --offline --seed 20260821
+      - name: comparar con la corrida anterior
+        run: uv run docbench report --campaign runs/nightly --format md,json
+      - uses: actions/upload-artifact@v4
+        # Si la campana falla, el artefacto es MAS util, no menos: dentro va la
+        # causa de cada documento caido, del enum cerrado de §6.9.
+        if: always()
+        with:
+          name: campana-nightly
+          path: runs/nightly
+          retention-days: 30

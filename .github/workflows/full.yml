@@ -1,0 +1,75 @@
+name: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NACE DORMIDO. Solo `workflow_dispatch`. SE ENCIENDE EN L7.
+#
+# Motivo, reproducido ejecutandolo el 21 ago 2026, no deducido leyendo:
+#
+#   $ make full
+#   ...
+#   uv run docbench run --plan tests/fixtures/quickstart/plan.yaml ...
+#   ModuleNotFoundError: No module named 'docbench_es.cli.main'
+#
+# `full` es `fast` + `quickstart`, y `quickstart` necesita tres cosas que aun
+# no existen: la CLI (L5 en adelante), los ocho extractores locales (L5) y los
+# 20 documentos congelados de `tests/fixtures/quickstart/` (L7). O sea que
+# hasta L7 este trabajo no puede pasar, y encenderlo ahora seria un badge rojo
+# permanente durante ~90 horas de desarrollo.
+#
+# Un rojo que siempre esta rojo no informa de nada: ensena al equipo a ignorar
+# el color, que es exactamente lo que §11 dice que hay que evitar al separar
+# los codigos de salida. Dormido dice la verdad; rojo permanente, no.
+#
+# Que hay que hacer en L7 para encenderlo: sustituir el bloque `on:` por
+#     on: [push, pull_request]
+# y borrar este comentario hasta la linea de guiones.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: full-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    # §15 fija el objetivo en < 12 min. El timeout va holgado para que un
+    # rebase lento no se confunda con una regresion de tiempo.
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      # setup-uv@v6, no @v3: la v3 NO acepta `python-version` y lo ignoraba con
+      # un `##[warning] Unexpected input(s)` en cada corrida. El pin no estaba
+      # donde el fichero decia: el runner caia en el Python del sistema por
+      # casualidad. Verificado en la corrida 32531009942.
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version-file: .python-version
+          enable-cache: true
+      # Aqui SI hacen falta los extras, o el contrato de extractor no prueba nada.
+      # OJO: esto instala SEIS de los ocho de §8, no los ocho. `extract-local` son
+      # pymupdf4llm, pdfplumber, camelot, docling, marker y unstructured. Faltan
+      # `grobid` (es un servicio Java, necesita su contenedor) y `tesseract` (es un
+      # binario del sistema, y su cliente vive en el extra `ocr`). Los dos se
+      # cablean en L5, que es quien escribe esos extractores; hasta entonces este
+      # job no puede correr los ocho y decir lo contrario seria mentir en el
+      # fichero que lo ejecuta. Ver LIMITS.md 28.
+      - run: uv sync --group dev --extra extract-local
+      # El pin es una PROMESA: que CI y local analizan el mismo Python. Aqui se
+      # comprueba en vez de suponerse, porque `requires-python = ">=3.12"` deja
+      # pasar un 3.13 el dia que `ubuntu-latest` cambie su Python por defecto, y
+      # mypy analizaria otra cosa que en local sin que nadie se entere.
+      - name: CI corre el Python de .python-version
+        run: |
+          esperado=$(tr -d '[:space:]' < .python-version)
+          real=$(uv run python -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+          echo "esperado=$esperado real=$real"
+          [ "$esperado" = "$real" ] || { echo "::error::CI corre $real, .python-version dice $esperado"; exit 1; }
+      # La definicion vive en el Makefile, una sola vez. Repetir aqui sus pasos
+      # garantiza que local y CI se separen con el tiempo.
+      - name: contratos, hostiles, secretos, degradacion, deriva y e2e
+        run: make full

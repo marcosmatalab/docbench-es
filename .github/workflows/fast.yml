@@ -11,24 +11,27 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v3
+      # setup-uv@v6, no @v3: la v3 NO acepta `python-version` y lo ignoraba con
+      # un `##[warning] Unexpected input(s)` en cada corrida. El pin no estaba
+      # donde el fichero decia: el runner caia en el Python del sistema por
+      # casualidad. Verificado en la corrida 32531009942.
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.12"
+          python-version-file: .python-version
           enable-cache: true
       # SOLO el grupo dev. `--all-extras` arrastraba torch, CUDA y OCR: varios GB
       # y muy por encima del presupuesto de 90 s de la puerta rapida.
       - run: uv sync --only-group dev
-      # TEMPORAL (rama de verificacion): comprobar si `python-version` en
-      # setup-uv@v3 hace algo o se ignora en silencio. Si se ignora, el pin real
-      # lo pone .python-version y hay que asegurarse de que CI y local analizan
-      # el mismo Python. Este paso se quita en cuanto se lea la salida.
-      - name: que Python corre de verdad
+      # El pin es una PROMESA: que CI y local analizan el mismo Python. Aqui se
+      # comprueba en vez de suponerse, porque `requires-python = ">=3.12"` deja
+      # pasar un 3.13 el dia que `ubuntu-latest` cambie su Python por defecto, y
+      # mypy analizaria otra cosa que en local sin que nadie se entere.
+      - name: CI corre el Python de .python-version
         run: |
-          echo "--- .python-version en el repo ---"; cat .python-version
-          echo "--- uv run python --version ---";    uv run python --version
-          echo "--- uv python list --only-installed ---"; uv python list --only-installed || true
-          echo "--- python del PATH ---"; which -a python python3 || true; python3 --version || true
-          echo "--- mypy python_version efectivo ---"; uv run mypy --version
+          esperado=$(tr -d '[:space:]' < .python-version)
+          real=$(uv run python -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+          echo "esperado=$esperado real=$real"
+          [ "$esperado" = "$real" ] || { echo "::error::CI corre $real, .python-version dice $esperado"; exit 1; }
       # La puerta es UNA sola definicion, la del Makefile. Repetir aqui sus pasos
       # garantiza que local y CI se separen con el tiempo.
       - name: la puerta
