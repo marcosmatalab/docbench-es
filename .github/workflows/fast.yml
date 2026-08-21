@@ -18,6 +18,17 @@ jobs:
       # SOLO el grupo dev. `--all-extras` arrastraba torch, CUDA y OCR: varios GB
       # y muy por encima del presupuesto de 90 s de la puerta rapida.
       - run: uv sync --only-group dev
+      # TEMPORAL (rama de verificacion): comprobar si `python-version` en
+      # setup-uv@v3 hace algo o se ignora en silencio. Si se ignora, el pin real
+      # lo pone .python-version y hay que asegurarse de que CI y local analizan
+      # el mismo Python. Este paso se quita en cuanto se lea la salida.
+      - name: que Python corre de verdad
+        run: |
+          echo "--- .python-version en el repo ---"; cat .python-version
+          echo "--- uv run python --version ---";    uv run python --version
+          echo "--- uv python list --only-installed ---"; uv python list --only-installed || true
+          echo "--- python del PATH ---"; which -a python python3 || true; python3 --version || true
+          echo "--- mypy python_version efectivo ---"; uv run mypy --version
       # La puerta es UNA sola definicion, la del Makefile. Repetir aqui sus pasos
       # garantiza que local y CI se separen con el tiempo.
       - name: la puerta
