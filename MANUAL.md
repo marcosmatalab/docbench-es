@@ -596,6 +596,18 @@ class CanonicalTable:
 
 **Invariantes que un test comprueba:** ninguna celda solapa con otra; la unión de celdas con sus spans cubre exactamente `n_rows × n_cols` o declara los huecos; ningún span sale del rango.
 
+> **Transcrito de [ADR-0018](docs/adr/0018-hueco-de-cola-y-hueco-interior.md) y [ADR-0019](docs/adr/0019-los-invariantes-se-detectan-no-se-impiden.md), en L1.** El «o declara los huecos» de arriba **no era traducible tal como estaba escrito**: «declarar» no tenía referente, porque `CanonicalTable` no tiene campo de huecos ni §9.1 nombraba función que los enumerase. Se resuelve así:
+>
+> - **Hueco de cola** —ninguna celda ORIGINA en esa fila a la derecha del hueco— es **legítimo**: es la `<tr>` con menos `<td>`, HTML legal y cotidiana en el BOE. Se reporta como hallazgo informativo y `holes()` lo enumera.
+> - **Hueco interior** —hay una celda originada en esa misma fila a su derecha— es **fatal**: ningún formato de origen puede producirlo, porque los cinco rellenan de izquierda a derecha.
+> - Por la misma regla, **`COLUMNA_VACIA` es fatal** y **`FILA_VACIA` es informativo**: `<tr></tr>` es HTML legal, una columna entera sin cubrir no la produce ningún formato.
+> - Los huecos se **derivan** con `core.canonical.holes()`, no se almacenan: un campo podría desacordar con `cells` y dejar dos fuentes de verdad.
+> - Un hueco **no es una celda vacía**. Son árboles distintos y TEDS los puntúa distinto (L2).
+>
+> Y sobre `span < 1`: **se detecta, no se impide**. `is_wellformed()` lo reporta como `SPAN_MENOR_QUE_UNO` y la celda sigue siendo invisible para `cell_at`. Ningún `__post_init__` lo rechaza, porque si no se puede construir una tabla rota no se puede demostrar que se detecta, y ése es el criterio de aceptación de L1.
+>
+> **Dónde vive el algoritmo.** En `types/_invariantes.py`, junto a los datos que inspecciona, y `core.canonical.validate()` delega en el método público `is_wellformed()`. No es una preferencia: el contrato de capas pone `core` por encima de `types`, así que `types` no puede importar `core` ni con un import diferido —`lint-imports` lee el AST—. La alternativa era escribir la comprobación dos veces.
+
 ### 6.3 Extracción
 
 ```python
@@ -984,8 +996,12 @@ docbench-es/
 │   ├── errors.py              la jerarquía de §6.9
 │   │
 │   ├── core/                  PURO: sin red, sin disco, sin proveedor, sin reloj
-│   │   ├── canonical.py         CanonicalTable, invariantes, conversores desde
-│   │   │                        html/markdown/dataframe/tei/texto
+│   │   ├── canonical/           invariantes y los cinco conversores desde
+│   │   │                        html/markdown/dataframe/tei/texto. PAQUETE, no
+│   │   │                        fichero, por el limite de 300 lineas (ADR-0013);
+│   │   │                        `core.canonical` sigue siendo la unica superficie
+│   │   │                        de import. Las dataclasses NO viven aqui: viven en
+│   │   │                        `types/`, y no por preferencia (ver abajo)
 │   │   ├── teds.py              TEDS y TEDS-S sobre la forma canónica
 │   │   ├── cellmatch.py         emparejado de celdas, exactitud celda a celda
 │   │   ├── answer.py            los seis verificadores de respuesta
@@ -1104,6 +1120,8 @@ docbench-es/
 └── runs/                        .gitignore  ← campañas y artefactos
 ```
 
+> **Por qué `CanonicalCell` y `CanonicalTable` viven en `types/` y no en `core/canonical`, aunque esta sección las dibujara ahí.** No es que §6 sea normativo y §8 descriptivo: es que **§8 no es implementable bajo el contrato que el propio CI hace cumplir**. `Extraction` (§6.3) y `Truth` (§6.4) llevan las dos un campo `tables: tuple[CanonicalTable, ...]` —`types/_documento.py:89` y `types/_verdad.py:46`—, y el contrato de capas pone `core` **por encima** de `types : errors`. Si `CanonicalTable` viviera en `core/canonical`, `types` tendría que importar `core`: `lint-imports` en rojo y CI en rojo. Escrito en L1 para que no haya que volver a decidirlo.
+
 ### El contrato de capas
 
 El fichero se llama **`.importlinter`**, no `importlinter.ini`: import-linter solo busca
@@ -1195,20 +1213,39 @@ Para cada uno: qué responsabilidad tiene, qué entra, qué sale, qué funciones
 **Responsabilidad.** Convertir cualquier salida de extractor a `CanonicalTable` y validar sus invariantes. Es puro.
 
 ```python
-def from_html(html: str) -> list[CanonicalTable]: ...
-def from_markdown(md: str) -> list[CanonicalTable]:
+# Los cinco conversores llevan `page_span` como parámetro de palabra clave:
+# NINGUNO de los cinco formatos lleva número de página, así que lo pone quien
+# llama. Un `page_span` inventado envenenaría el estrato `multipagina` (LIMITS 32).
+def from_html(html: str, *, page_span: tuple[int, int] = (1, 1)) -> list[CanonicalTable]: ...
+def from_markdown(md: str, *, page_span=(1, 1)) -> list[CanonicalTable]:
     """expresses_spans = False siempre. Markdown no tiene rowspan."""
-def from_dataframe(dfs: list) -> list[CanonicalTable]: ...
-def from_tei(tei: str) -> list[CanonicalTable]: ...
-def from_text_heuristic(text: str) -> list[CanonicalTable]:
+def from_dataframe(dfs: Iterable[object], *, page_span=(1, 1)) -> list[CanonicalTable]:
+    """expresses_spans = False: un DataFrame es una rejilla rectangular y no
+    distingue «combinada» de «repetida». ADR-0006 ya lo dice al listar a Camelot
+    entre los que pierden las celdas combinadas. Precio en LIMITS 35."""
+def from_tei(tei: str, *, page_span=(1, 1)) -> list[CanonicalTable]:
+    """expresses_spans = True: <cell cols= rows=> es rowspan/colspan."""
+def from_text_heuristic(text: str, *, page_span=(1, 1)) -> list[CanonicalTable]:
     """Último recurso para OCR plano. expresses_spans = False.
     Marca confidence baja: es una heurística y se declara como tal."""
 def validate(t: CanonicalTable) -> tuple[bool, list[str]]: ...
+def holes(t: CanonicalTable) -> tuple[tuple[int, int], ...]:
+    """Las posiciones sin cubrir. Es la mitad ejecutable del «o declara los
+    huecos» de §6.2 (ADR-0018), y lo que L2 usa para emitir celda AUSENTE, que
+    no es lo mismo que celda vacía."""
 def normalize_cell_text(s: str) -> str:
-    """Espacios, guiones suaves, comas decimales, separadores de millares.
-    CADA normalización va documentada: una normalización agresiva es una
-    forma silenciosa de hacer trampas a favor de un extractor."""
+    """Espacios, guiones suaves y caracteres invisibles. **NO toca los números**
+    ni los acentos ni ningún glifo visible: ver ADR-0017, que corrige la
+    redacción anterior de este docstring."""
 ```
+
+> **Transcrito de [ADR-0017](docs/adr/0017-normalizacion-no-toca-los-numeros.md), en L1.** Este docstring decía *«Espacios, guiones suaves, **comas decimales, separadores de millares**»*, y eso se contradecía con la frase que venía justo detrás. Normalizar el separador decimal repararía en silencio al extractor que devuelve `1,234.56` donde la página dice `1.234,56`, que es **el fallo más específicamente español que existe en una tabla de números** y lo que distingue a este banco de una traducción. La equivalencia numérica no desaparece: vive en el verificador `numeric` de §9.3 y en `truth.derived` de L4, **con su tolerancia declarada**, que es una comparación explícita en vez de una reescritura silenciosa.
+>
+> La regla que sustituye a la redacción vieja: **sólo se toca lo invisible o la forma de composición Unicode; ningún glifo visible se altera ni se borra**, con una excepción enumerada y con test propio, la expansión de las siete ligaduras latinas. Son **seis normalizaciones aplicadas y seis rechazadas**, cada una con **a quién beneficia si me paso**, en `docs/metrics.md`. Un test de la puerta se pone rojo si una decisión del código no está documentada allí.
+>
+> **La consecuencia, para que no se lea como incoherencia:** el extractor que se equivoca de convención numérica queda penalizado **en dos niveles** —en TEDS con contenido (L2), porque la cadena difiere, y en el verificador `numeric` (L9), donde con tolerancia puede darse por bueno—. No es doble contabilidad: son dos preguntas distintas, *«¿transcribiste la celda?»* y *«¿el número es correcto?»*, y responderlas por separado es informativo.
+
+> **`core.canonical` es un PAQUETE, no un fichero** (§8), por el límite de 300 líneas de `CLAUDE.md` y con el precedente de ADR-0013. La superficie de import no cambia. Y **`validate()` delega en `CanonicalTable.is_wellformed()`**, donde vive el algoritmo, porque el contrato de capas prohíbe que `types` importe `core`: ver la nota de §6.2.
 
 **Invariante clave:** el `expresses_spans` de `CanonicalTable` lo fija el conversor según el formato de origen. El `expresses_spans` que declara un `Extractor` es solo una declaración: la suite de conformidad la contrasta contra lo que produce el conversor y **falla si el extractor miente**. Así ningún extractor puede declararse capaz de algo que su formato no permite.
 

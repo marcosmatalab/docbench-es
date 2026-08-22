@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from docbench_es.types._invariantes import comprobar
+
 
 @dataclass(frozen=True)
 class CanonicalCell:
@@ -69,9 +71,14 @@ class CanonicalTable:
     def is_wellformed(self) -> tuple[bool, list[str]]:
         """Solapes, huecos y spans fuera de rango. Devuelve los problemas.
 
-        Lo implementa **L1**, con sus tests de propiedad de `hypothesis`. En L0
-        levanta `NotImplementedError` a propósito: devolver `(True, [])` haría
-        pasar en verde a cualquier tabla, y el criterio de L1 es justo que las
-        tablas rotas se detecten al 100%.
+        `ok` es False sólo si hay algún hallazgo **fatal**. Los informativos
+        —`HUECO_COLA`, `FILA_VACIA`— salen en la lista con `ok=True`: una fila
+        corta es HTML legal y cotidiana en el BOE, pero se declara siempre.
+
+        El algoritmo vive en `_invariantes` y no en `core.canonical`, que es donde
+        §9.1 pone `validate()`, porque el contrato de capas prohíbe que `types`
+        importe `core`. `core.canonical.validate()` delega aquí, y un test afirma
+        que las dos respuestas son la misma para que nadie reimplemente ninguna de
+        las dos por su cuenta. Ver ADR-0019.
         """
-        raise NotImplementedError("core.canonical, hito L1")
+        return comprobar(self)

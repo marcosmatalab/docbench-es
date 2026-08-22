@@ -160,3 +160,86 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     de §6.8 del manual**, su ADR con la alternativa descartada, igual que el
     0013 hizo con `types` como paquete. Estimado: 2-3 horas dentro de L5, más el
     ADR.
+
+### L1 · 22 de agosto de 2026
+
+30. **`from_html` SÍ produce solapes, y el 100% de detección se mide sobre el
+    censo mutado igualmente.** *(Corregido en el escrutinio de L1: este límite
+    afirmaba lo contrario, y era falso.)* El colocador sigue el estándar —la celda
+    va al primer hueco libre de su PRIMERA columna, y si alguna de las siguientes
+    está ocupada es *table model error* y se pisan—, así que un HTML con ese error
+    produce una `CanonicalTable` con `SOLAPE`, que es **fatal**. Dos consecuencias:
+    **(a)** el censo sigue siendo el instrumento del número publicado, porque el
+    solape que sale de HTML real es una sola forma y el censo cubre trece;
+    **(b) en L4, `truth.derived` puede emitir una tabla FATAL desde el XML del
+    BOE** y ese documento se quedaría sin verdad de referencia. Cuántos documentos
+    del corpus tienen ese error **no está medido**, y hay que medirlo en L3 o L4
+    antes de que decida por su cuenta qué entra en la verdad.
+31. **La partición de línea no se deshace, y eso penaliza al extractor que
+    conserva el salto.** `presu-\npuesto` es indistinguible de
+    `económico-financiero`, así que R4 de `docs/metrics.md` deja el guion. Como
+    N3 mapea el salto a espacio, la celda queda `presu- puesto`: el que **une** la
+    palabra sale premiado frente al que **conserva** el salto de línea del PDF. La
+    asimetría es real, va en una sola dirección y no está cuantificada. Medirla
+    exige verdad de referencia con palabras partidas: L4.
+32. **El `page_span` de los cinco conversores no está medido: lo pone quien
+    llama.** Ninguno de los cinco formatos —HTML, Markdown, DataFrame, TEI,
+    texto— lleva número de página, así que `page_span` es un parámetro con
+    `(1,1)` por defecto. Hasta que L5 lo cablee desde el extractor, **cualquier
+    número que dependa de `page_span` es el que le pasaron, no uno medido**, y el
+    estrato `multipagina` —que el sondeo ya declaró no medido— sigue sin poderse
+    calcular desde la forma canónica.
+33. **La celda que sólo contiene `<img>` castiga al extractor que acierta, y hoy
+    no se puede marcar.** El sondeo contó 489 `<img>`, pero **sobre el documento
+    completo y no dentro de `<table>`**: sólo 21 están en documentos que tienen
+    alguna tabla, y cuántos caen dentro de una celda **no está medido**. La
+    decisión de L1 es que una imagen no aporta texto —ni su `alt`—, coherente con
+    ADR-0016. Consecuencia: si la verdad dice `""` para esa celda, un extractor
+    que **OCR-ee correctamente** su contenido produce texto donde la verdad dice
+    vacío y **se le penaliza por acertar**. Es la misma forma que la regla de oro
+    4: no es un fallo del extractor, es una **celda que no se puede evaluar contra
+    esta verdad**, y debería salir marcada en vez de quedarse silenciosamente
+    vacía. **Se cierra en L4**, que es donde vive la verdad derivada; `CanonicalTable`
+    no tiene hoy dónde marcarlo, y el marcador correcto es de la verdad, no de la
+    forma canónica.
+34. **`from_markdown` no implementa el escapado de `\|` de GFM.** Una celda cuyo
+    texto contenga una barra vertical escapada se parte en dos. En el corpus del
+    BOE el Markdown no es formato de origen sino salida de extractor
+    (pymupdf4llm, marker), así que el riesgo es que un extractor emita una barra
+    dentro de una celda y salga penalizado por una limitación del conversor. No
+    medido. Se cierra cuando L5 tenga salida real de esos dos extractores contra
+    la que comprobarlo.
+35. **REQUISITO DE L5, no recordatorio: la nota de un extractor sin spans no se
+    puede publicar sin su cobertura evaluable al lado.** `from_dataframe` fija
+    `expresses_spans=False`, así que camelot sale `NO_APLICABLE` en toda tabla
+    con celdas combinadas, y lo mismo los extractores de Markdown (pymupdf4llm,
+    marker) y de texto (tesseract). La regla de oro 4 dice que *«su nota va
+    siempre con su cobertura evaluable»*. Una nota calculada sobre un subconjunto
+    del corpus, presentada como si fuera del total, es exactamente el titular
+    falso que este proyecto existe para no publicar. **El informe de L5 no puede
+    poder enseñar una sin la otra**: no es una convención de redacción, es una
+    condición sobre el objeto que emite el informe, y su test va en L5.
+36. **Qué fracción de las TABLAS trae celdas combinadas no está medido, y por eso
+    la cobertura evaluable de camelot no lleva número.** El sondeo midió
+    documentos, no tablas: *«de los documentos con `<table>`, el 63% [50–74]
+    traen span > 1»*, con **n=57 documentos**. En 200 documentos hay 283 tablas,
+    así que el denominador de tablas existe pero nunca se contó. Una versión
+    anterior de este fichero derivaba de ahí que *«la cobertura evaluable de
+    camelot ronda el 37%»*: eso era una resta sobre otra población y encima
+    publicada sin intervalo. **Retirado.** Se mide en L5, que es quien tiene las
+    tablas una a una, o antes con un sondeo que cuente por tabla.
+37. **`from_dataframe` no puede distinguir un `RangeIndex` de camelot de unas
+    cabeceras numéricas de verdad más allá del tipo.** Si `columns` son los
+    enteros `0, 1, 2…` se declara que **no hay cabecera**, porque emitirlos
+    inventaría una fila de contenido en cada tabla de camelot —uno de los cuatro
+    extractores de `make quickstart`—. Si fueran las cadenas `"0"`, `"1"`, sí se
+    conservan. La regla es de tipo y no de texto, y un extractor que convirtiera
+    sus cabeceras a entero perdería la fila de cabecera sin avisar. No medido: en
+    L5, con salida real de camelot.
+38. **El coste de `validate` y `holes` es proporcional al ÁREA de la rejilla, no
+    al tamaño de la entrada.** Un HTML de 30 KB con mil `<td colspan="1000">`
+    declara un millón de columnas y cuesta el millón. El caso desproporcionado
+    —60 bytes que costaban 28 s y 7,5 GB, con `rowspan="65534" colspan="1000"`—
+    está cerrado recortando a la tabla, pero la proporcionalidad con el área se
+    mantiene y **no hay tope declarado**. Los adaptadores hostiles de L8 son el
+    sitio donde esto se prueba a propósito.

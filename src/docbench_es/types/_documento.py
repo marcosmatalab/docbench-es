@@ -6,7 +6,6 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Literal
-from urllib.parse import quote
 
 from benchcore.types import Cost
 
@@ -29,6 +28,24 @@ ExtractionFailure = Literal[
 ]
 
 
+def _escapar(campo: str) -> str:
+    """Escapa `%` y `/` para que la clave de `DocRef` sea inyectiva.
+
+    Escrito a mano y no con `urllib.parse.quote` **por el contrato de capas**:
+    `.importlinter` prohíbe que `core` importe `urllib`, y `core` importa
+    `types`, así que un `urllib` aquí rompe la promesa «el núcleo es puro» por
+    una cadena indirecta —aunque `urllib.parse` no toque la red—. La regla del
+    repo es que el contrato no se toca para que quepa el código; se toca el
+    código. Descubierto en L1, al ser `core.canonical` el primer módulo de `core`
+    que importa el modelo de datos.
+
+    Inyectiva porque `%` se escapa ANTES que `/`: la vuelta es inequívoca. Los
+    identificadores reales del BOE —`BOE-A-2026-1234`— no llevan ninguno de los
+    dos, así que la clave sigue siendo legible.
+    """
+    return campo.replace("%", "%25").replace("/", "%2F")
+
+
 @dataclass(frozen=True)
 class DocRef:
     """La referencia a un documento en el sistema de origen."""
@@ -46,15 +63,14 @@ class DocRef:
         documento están correlacionadas, así que lo que se remuestrea son
         documentos. Sin una clave estable eso no se puede hacer.
 
-        Los dos campos van percent-encoded con `safe=""`, así que la `/` que
-        separa es la única `/` de la clave. Sin escapar, `("boe", "A/B")` y
-        `("boe/A", "B")` daban ambos `boe/A/B`: **dos documentos distintos
-        colapsados en una sola unidad de remuestreo**, que estrecha el intervalo
-        de confianza y publica más precisión de la que hay. `external_id` es
-        campo libre de cualquier adaptador, así que no basta con confiar en que
-        nadie meta una barra.
+        Los dos campos van escapados, así que la `/` que separa es la única `/`
+        de la clave. Sin escapar, `("boe", "A/B")` y `("boe/A", "B")` daban ambos
+        `boe/A/B`: **dos documentos distintos colapsados en una sola unidad de
+        remuestreo**, que estrecha el intervalo de confianza y publica más
+        precisión de la que hay. `external_id` es campo libre de cualquier
+        adaptador, así que no basta con confiar en que nadie meta una barra.
         """
-        return f"{quote(self.entity, safe='')}/{quote(self.external_id, safe='')}"
+        return f"{_escapar(self.entity)}/{_escapar(self.external_id)}"
 
 
 @dataclass(frozen=True)

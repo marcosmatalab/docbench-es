@@ -235,6 +235,204 @@ Queda como regla de método, no como anécdota.
 
 ---
 
+## L1 · Las normalizaciones de `normalize_cell_text`, una a una
+
+> §9.1 del manual: *«CADA normalización va documentada: una normalización agresiva
+> es una forma silenciosa de hacer trampas a favor de un extractor.»* Esta sección
+> es esa documentación, y **un test de la puerta la hace cumplir**:
+> `test_las_doce_decisiones_estan_documentadas` compara esta tabla contra la tupla
+> `NORMALIZACIONES` del código y se pone rojo si una decisión no está aquí.
+
+La regla de la que sale todo lo demás:
+
+> **Sólo se toca lo invisible o la forma de composición Unicode. Ningún glifo
+> visible se altera ni se borra.** Una excepción, enumerada y con test propio: N6.
+
+**No normalizar también tiene víctima**, así que las seis rechazadas van
+declaradas igual que las seis aplicadas. Comando que lo reproduce:
+
+```bash
+uv run python -c "from docbench_es.core.canonical import NORMALIZACIONES as N; [print(n.codigo, n.nombre, '|', n.victima) for n in N]"
+```
+
+### Las seis que SÍ se aplican, en orden N1 → N6 → N2 → N3 → N4 → N5
+
+| | Nombre | Qué hace | A quién beneficia si me paso |
+|---|---|---|---|
+| **N1** | composicion NFC | Compone los acentos que **ya están**. No añade ni quita ninguno | Al extractor cuyo PDF devuelve `e`+U+0301 en vez de `é` por el CMap de la fuente. Es una diferencia de codificación, no de extracción |
+| **N6** | expansion de ligaduras | Expande las siete ligaduras latinas U+FB00–U+FB06 por **tabla explícita** | A los parsers cuyo `ToUnicode` filtra el glifo de ligadura. **Es la única que toca un carácter visible.** La página dice «oficina» y el XML del BOE —la verdad de L4— también |
+| **N2** | borrado de invisibles | Borra la categoría `Cf`: guion blando U+00AD, ZWSP, ZWNJ, ZWJ, U+2060, BOM | A quien filtra BOM o ZWSP. **Víctima:** un ZWSP dentro de una cifra (`1<ZWSP>234`) se une a `1234` y le regala el separador de millares |
+| **N3** | espacios a U+0020 | Mapea `Cc`, `Zs`, `Zl` y `Zp` a espacio normal: tabulador, salto, NBSP, U+202F, U+2009, y los separadores de línea y de párrafo U+2028/U+2029. **Se mapean, nunca se borran** | **Víctima:** el NBSP como separador de millares español pierde su identidad, y el salto de línea dentro de celda deja de ser marca semántica. Borrarlos en vez de mapearlos uniría tokens que no estaban unidos, o sea inventar contenido |
+| **N4** | colapso de espacios | Una carrera de espacios pasa a uno solo | A quien conserva el interlineado del PDF. **Orden crítico:** `from_text_heuristic` parte columnas *antes* de normalizar, porque allí la anchura del hueco **es** la columna |
+| **N5** | recorte de extremos | Quita el espacio inicial y final | A todos por igual |
+
+Categorías comprobadas ejecutando `unicodedata`, no de memoria: U+00AD, U+200B–D,
+U+2060 y U+FEFF son `Cf`; NBSP, U+202F y U+2009 son `Zs`; TAB, NEL y U+000C son
+`Cc`; **U+2028 y U+2029 son `Zl` y `Zp`**, que no son `Zs`; **U+2212 MINUS es
+`Sm`**, o sea glifo visible, y por eso cae del lado de R3.
+
+**Las cuatro categorías de N3 son exactamente las de `str.isspace()`, y hay un
+test que lo hace cumplir.** No es un detalle: la última línea de
+`normalize_cell_text` usa `str.split()`, así que un carácter que Python considere
+espacio y N3 no haya mapeado se **borraría** en vez de mapearse, y borrar une dos
+tokens que no estaban unidos. `Zl` y `Zp` faltaban en la primera versión: las
+encontró el test de propiedad, no la revisión.
+
+### Las seis que NO se aplican, y quién ganaría si se aplicaran
+
+| | Nombre | Por qué no |
+|---|---|---|
+| **R1** | quitar acentos | Regalo directo a la familia OCR sobre escaneado. Perder diacríticos es **el** fallo específico del español que este banco existe para medir. §9.3 ya dice «acentos no» para el verificador `exact` |
+| **R2** | plegar mayusculas | Escondería el destrozo *all-caps* del OCR y borraría una señal de cabecera. Se hace en `core.answer` (§9.3), a nivel de respuesta, no de celda |
+| **R3** | comillas tipograficas y guiones a ASCII | Son glifos visibles. Beneficiaría al extractor con `ToUnicode` roto, y el destrozo de comillas y guiones correlaciona con el manejo de fuentes, que es justo lo que separa una extracción buena de una mala |
+| **R4** | coma decimal y separador de millares | **La decisión más cara del hito** ([ADR-0017](adr/0017-normalizacion-no-toca-los-numeros.md)). Repararía en silencio al extractor que devolvió `1,234.56` donde la página dice `1.234,56` |
+| **R5** | deshacer la particion de linea | `presu-\npuesto` es indistinguible de `económico-financiero`: heurística con tasa de falso positivo que L1 no puede medir. Ver límite 31 |
+| **R6** | NFKC | Comprobado ejecutándolo: convierte `m²` en `m2`, parte `½` en dos caracteres y el NBSP en espacio. En una tabla de superficies eso es cambiar el dato |
+
+### La consecuencia de R4 que hay que leer entera
+
+Un extractor que devuelve `1,234.56` donde la página dice `1.234,56` **queda
+penalizado en dos niveles**: en TEDS con contenido (L2), porque la cadena de la
+celda es distinta, y en el verificador `numeric` (L9), donde con su tolerancia
+declarada el número **puede darse por bueno**.
+
+No es doble contabilidad. Son dos preguntas distintas —*«¿transcribiste la
+celda?»* y *«¿el número es correcto?»*— y responderlas por separado es
+informativo, porque un extractor puede acertar la segunda fallando la primera.
+Lo que sería una sola pregunta mal hecha es repararlo en la normalización y
+publicar las dos como si estuvieran bien.
+
+---
+
+## L1 · Cuándo un hueco es legítimo, y cómo se mide la detección
+
+**El criterio**, que resuelve el «o declara los huecos» de §6.2
+([ADR-0018](adr/0018-hueco-de-cola-y-hueco-interior.md)): un hueco en `(f,c)` es
+**interior** —y por tanto fatal— si alguna celda **origina en la fila `f`** a la
+derecha de `c`. Si no, es un **hueco de cola**: legítimo, informativo, y
+enumerado por `holes()`.
+
+**La lectura descartada, y por qué**, que es lo que distingue un criterio medido
+de una opinión: la alternativa era mirar si la *posición* de la derecha está
+ocupada, viniera de donde viniera la celda que la ocupa. Rechaza HTML legal —el
+caso de un `rowspan` que baja de una fila de arriba sobre una fila corta— y está
+medido: sobre el censo de esa familia, **la lectura de la rejilla rellena rechaza
+el 100% de las tablas legales que la lectura del origen acepta**. El número y su
+comando están en [`RESULTS.md`](../RESULTS.md).
+
+**Cómo se mide el 100% de detección.** No con `hypothesis`, que sortea: con un
+**censo determinista y exhaustivo** de tablas mutadas, `scripts/censo_invariantes.py`.
+Es una tasa sobre el censo completo, no una estimación, así que **no lleva
+intervalo**: lleva n, método, versión y comando (ADR-0015). El censo mide las dos
+direcciones, y la segunda es la que no se puede omitir:
+
+1. **Detección**: de N tablas rotas por mutación, cuántas se detectan.
+2. **Falsos positivos**: de M tablas legales, cuántas se rechazan. Un validador
+   que rechazara todo sacaría un 100% en la primera.
+
+`hypothesis` corre además en la puerta, con otro papel: encontrar la forma que no
+se me ocurrió. Los dos números publicados salen del censo.
+
+---
+
+## El tiempo de la puerta es una SERIE, no un dato por hito
+
+Dos puntos ya son una serie. Se sigue de hito en hito en la misma tabla, con el
+mismo método y la misma máquina, porque lo que interesa no es el valor de hoy
+sino **la pendiente**.
+
+| Hito | Mediana | Rango (n=10) | Tests | Qué añadió |
+|---|---|---|---|---|
+| L0 | 1742 ms | 1715 – 1872 | 15 | Modelo de datos y errores |
+| L1 | 3829 ms | 3713 – 3875 | 82 | Invariantes, cinco conversores, 17 propiedades de `hypothesis` y `mypy --strict` sobre `tests/` |
+
+**+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
+`mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de
+n=3 en frío— y los **~806 ms** restantes son los tests y sus 17 propiedades de
+`hypothesis`. Sobra margen: el presupuesto son 90 s y es del runner, no del local.
+
+Que el mayor trozo del crecimiento sea el tipado y no los tests importa para la
+decisión de mañana: si algún día aprieta, lo primero que hay que mirar es la
+caché de `mypy` en CI, no los ejemplos de `hypothesis`.
+
+**Cuando se acerque al presupuesto, el arreglo es `--max-examples` por suite,
+NUNCA borrar tests.** Se escribe ahora, con 24× de margen, y no el día que
+apriete: ese día la tentación será quitar el test lento, que es el que más
+encuentra. `hypothesis` corre hoy a 100 ejemplos por defecto y las 17 propiedades
+de la suite son lo que más cuesta; bajarlas a 50 en las baratas y dejarlas
+altas en las que de verdad buscan —la de ida y vuelta de `from_html` y la de «no
+toca ningún glifo visible»— recorta tiempo sin recortar cobertura. Y si aun así
+no cupiera, lo que se mueve de sitio es la suite lenta a `full`, con su límite
+declarado en `LIMITS.md`. **Un test borrado no aparece en ningún número.**
+
+### La puerta en caliente busca MENOS que en frío, y eso hace más fuerte el verde de CI
+
+`hypothesis` guarda en `.hypothesis/` lo que ya ha explorado. Eso acelera las
+corridas repetidas —vuelve a probar primero los contraejemplos que ya encontró—
+pero tiene una consecuencia que conviene tener escrita: **una puerta en caliente
+explora menos espacio nuevo que una en frío**. Dos corridas verdes seguidas en
+local no son dos búsquedas: la segunda parte de lo que la primera dejó hecho.
+
+No es teórico. **El fallo de U+2028 de L1 lo encontró la propiedad
+`test_no_toca_ningun_glifo_visible_salvo_las_ligaduras` después de que `make
+clean` borrara la base**, no en ninguna de las corridas anteriores, que habían
+pasado en verde con la misma implementación. `Zl` y `Zp` llevaban ahí desde que se
+escribió N3.
+
+**La buena noticia, y es la que hay que sacar de aquí:** el runner de CI **nace
+limpio siempre**, sin `.hypothesis`, sin `.mypy_cache` y sin `.ruff_cache`. O sea
+que **CI explora más que un local en caliente, y su verde es el más fuerte de los
+dos**. Cuando local y CI discrepen, la sospecha por defecto va contra el local.
+
+De ahí salen dos reglas de método que ya estaban a medias en este fichero y aquí
+quedan juntas:
+
+- **Medir en frío no es sólo por el tiempo**: es lo único que garantiza que la
+  búsqueda empieza de cero. La misma orden que hace comparable el cronómetro
+  —`make clean`— es la que hace válida la exploración.
+- **Un verde en caliente no cuenta como búsqueda.** Antes de dar por bueno un test
+  de propiedad sobre código recién tocado, se corre en frío al menos una vez.
+
+---
+
+## Por qué la regla del código de salida existe: los 60 ms de L1
+
+El mejor ejemplo que va a dar este proyecto, y salió midiendo, no razonando.
+
+Al remedir la puerta en L1, la primera tanda de n=10 dio esto:
+
+```
+61 ms  rc=2      69 ms  rc=2      62 ms  rc=2
+63 ms  rc=2      85 ms  rc=2      73 ms  rc=2
+76 ms  rc=2      56 ms  rc=2
+49 ms  rc=2      66 ms  rc=2
+```
+
+**Mediana 64,5 ms contra los 2742 ms reales: 43 veces más rápida.** Sin mirar el
+código de salida, la línea publicada habría sido *«L1 baja la puerta de 1742 ms a
+64 ms»*, y **el fallo habría parecido la mejor noticia del hito**. Es la forma
+exacta que tiene un error de medición de mentir en la dirección tranquilizadora:
+`make` para en el primer paso que falla, así que **una puerta rota siempre da un
+tiempo MENOR, nunca mayor**.
+
+**La causa, para que no quede como anécdota.** `ruff` clasifica
+`docbench_es.core.canonical` como primera parte o como tercera según **si el
+módulo existe en disco**. Mientras L1 no lo había creado, el import iba al bloque
+de terceros y `ruff` lo daba por bueno; al crearlo, el orden correcto cambió, pero
+**la caché de `ruff` seguía sirviendo el veredicto viejo**. El primer `make clean`
+del bucle de medición la borró, y desde ahí `ruff check` empezó a fallar. O sea
+que el fallo no lo introdujo la medición: **lo destapó**, porque medir en frío es
+lo único que borra la caché.
+
+Las diez corridas se descartaron, se arregló el orden del import, y la tanda buena
+es la publicada en [`RESULTS.md`](../RESULTS.md). Regla que queda:
+
+> Toda medición comprueba el código de salida **y** se toma en frío. Lo que falló
+> no entra en la muestra, y una caché que sobrevive entre corridas puede estar
+> tapando justo lo que se está midiendo.
+
+---
+
 ## Historial de correcciones del método
 
 Cada vez que una cifra publicada estuvo mal. `RESULTS.md` se lee como la verdad de

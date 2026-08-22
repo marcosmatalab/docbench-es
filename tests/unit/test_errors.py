@@ -55,9 +55,9 @@ def test_un_except_del_motor_caza_lo_que_lance_el_plugin_de_un_cliente() -> None
         assert issubclass(clase, BenchcoreError)
 
     # Las dos que NO tienen equivalente en el contrato no lo fingen.
-    for clase in (AdapterError, TruthUnavailable):
-        assert issubclass(clase, DocbenchError)
-        assert not issubclass(clase, BenchcoreError)
+    for propia in (AdapterError, TruthUnavailable):
+        assert issubclass(propia, DocbenchError)
+        assert not issubclass(propia, BenchcoreError)
 
 
 def test_la_tabla_de_codigos_de_salida_es_codigo_y_no_prosa() -> None:

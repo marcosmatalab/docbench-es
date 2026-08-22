@@ -11,7 +11,7 @@
 | Hito | Horas | Estado | Criterio de aceptación | Número medido |
 |---|---|---|---|---|
 | L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1742 ms en frío, rango 1715–1872, n=10, máquina en reposo (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | PENDIENTE | Solapes, huecos y spans fuera de rango detectados al 100% | — |
+| L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | **CERRADO 2026-08-22** | Solapes, huecos y spans fuera de rango detectados al 100% | **8.525/8.525 detectadas y 0/45 falsos positivos**, censo determinista y exhaustivo, `uv run python scripts/censo_invariantes.py`. No es una estimación: es una tasa sobre el censo completo, así que no lleva intervalo (ADR-0015). Puerta: **3829 ms** en frío, rango 3713–3875, n=10, todas con `rc=0`, `load average` 0,93 — **24× de margen**. Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L2 `core.teds` + validación contra PubTabNet | 10-14 | PENDIENTE | Coincide a cuatro decimales con la referencia | — |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | PENDIENTE | La verdad derivada reproduce las tablas a mano | — |
@@ -31,6 +31,20 @@
 **Total: 286 a 366 horas.** Cada release es publicable por sí solo.
 
 ## Deuda abierta
+
+0. **Lo que L1 deja atado a hitos posteriores, y no es opcional.** Sale del
+   escrutinio adversarial del cierre, y cada uno tiene su número en `LIMITS.md`:
+   - **L3 o L4 · cuántos documentos del BOE traen el *table model error* del
+     estándar** (límite 30). `from_html` los convierte en tablas con `SOLAPE`,
+     que es fatal, así que en L4 `truth.derived` dejaría esos documentos **sin
+     verdad de referencia**. No está medido.
+   - **L4 · la celda que sólo contiene `<img>`** (límite 33): hoy sale vacía, y
+     un extractor que la OCR-ee bien queda penalizado **por acertar**.
+   - **L5 · la nota de un extractor sin spans no se puede publicar sin su
+     cobertura evaluable** (límite 35). Es una condición sobre el objeto que
+     emite el informe, con su test.
+   - **L5 · qué fracción de las TABLAS trae celdas combinadas** (límite 36). El
+     sondeo midió documentos; el 63% y el 42% son de documentos con tabla, n=57.
 
 1. **`benchcore` v0.1.0 es una SEMILLA, no el benchcore del plan.** Estan `types`,
    los cuatro `Protocol`, `registry` y `conform`. **NO estan** `core.policy`,

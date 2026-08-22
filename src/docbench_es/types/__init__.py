@@ -42,6 +42,11 @@ from docbench_es.types._documento import (
     RawDoc,
 )
 from docbench_es.types._glosario import ConfusablePair, Glossary, Term
+from docbench_es.types._invariantes import (
+    FORMATOS_CANONICOS,
+    FORMATOS_SIN_SPANS,
+    HallazgoTabla,
+)
 from docbench_es.types._tabla import CanonicalCell, CanonicalTable
 from docbench_es.types._verdad import (
     AnswerResult,
@@ -53,6 +58,8 @@ from docbench_es.types._verdad import (
 )
 
 __all__ = [
+    "FORMATOS_CANONICOS",
+    "FORMATOS_SIN_SPANS",
     "AnswerMetrics",
     "AnswerResult",
     "CampaignResult",
@@ -68,6 +75,7 @@ __all__ = [
     "Glossary",
     "GlossaryContribution",
     "GlossaryMetrics",
+    "HallazgoTabla",
     "LicenseDecl",
     "PrivacyDecl",
     "ProbeResult",

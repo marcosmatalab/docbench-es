@@ -47,6 +47,18 @@ def _mismos_trozos_partidos_distinto(draw: st.DrawFn) -> tuple[tuple[str, str], 
 
     El alfabeto lleva `/` porque es el separador y `%` porque es el carácter de
     escape: si el escapado no fuera inyectivo, `%2F` y `/` colisionarían.
+
+    **Lo que esta estrategia NO puede cazar, y hay que saberlo.** Los dos pares
+    salen de partir **la misma cadena**, así que un campo es siempre prefijo del
+    otro. Un fallo de inyectividad del ESCAPADO —`esc(a) == esc(c)` con `a ≠ c`—
+    exige dos cadenas que no sean prefijo una de otra, y ésas no las genera
+    nunca: esto prueba que el SEPARADOR no es ambiguo, no que el escapado sea
+    inyectivo. Con `urllib.parse.quote` daba igual, porque el escapado era de
+    biblioteca; desde que L1 lo escribió a mano —el contrato de capas prohíbe
+    `urllib` en `core`—, es código del proyecto y necesita su propia prueba.
+    Comprobado ejecutándolo: contra un escapado que sustituye `/` por `%2F` sin
+    escapar antes el `%`, este fichero pasa 7 de 7. Lo cubre el censo exhaustivo
+    de `test_types_clave.py`.
     """
     todo = draw(st.text(alphabet="ab/%", min_size=1, max_size=6))
     i = draw(st.integers(min_value=0, max_value=len(todo)))
@@ -142,17 +154,37 @@ def test_cell_at_respeta_los_spans_y_declara_sus_casos_degenerados() -> None:
 
 
 def test_lo_que_no_esta_medido_todavia_no_pasa_en_verde() -> None:
-    """Demuestra que L0 no deja pasar una validación vacía.
+    """Demuestra que el candado de L0 se ha cobrado su deuda, no que se ha quitado.
 
-    Si `is_wellformed()` devolviera `(True, [])`, toda tabla rota pasaría la
-    puerta y el criterio de L1 —detectar solapes, huecos y spans fuera de rango
-    al 100%— se cumpliría trivialmente sin haber escrito una línea. Igual con
-    `to_prompt_block()`: un `""` mediría una capa semántica vacía y publicaría
-    una ganancia de cero puntos que no es un resultado, es un bug.
+    L0 dejó `is_wellformed()` levantando `NotImplementedError` **a propósito**:
+    devolver `(True, [])` habría hecho pasar en verde a cualquier tabla y el
+    criterio de L1 —detectar solapes, huecos y spans fuera de rango al 100%— se
+    habría cumplido trivialmente sin escribir una línea.
+
+    En L1 el candado no se borra: **se sustituye por su forma fuerte**, que es la
+    misma afirmación pero comprobable. Una tabla rota se rechaza de verdad, y la
+    tabla vacía sigue siendo válida porque §12 define TEDS de dos tablas vacías
+    como 1 y ese caso degenerado tiene que ser representable.
+
+    `to_prompt_block()` sigue levantando: su hito es L11 y su candado sigue
+    puesto. Que las dos mitades convivan aquí es lo que hace visible cuál está
+    pagada y cuál no.
     """
-    tabla = CanonicalTable((), 0, 0, (1, 1), None, False, "text")
-    with pytest.raises(NotImplementedError):
-        tabla.is_wellformed()
+    vacia = CanonicalTable((), 0, 0, (1, 1), None, False, "text")
+    assert vacia.is_wellformed() == (True, [])
+
+    rota = CanonicalTable(
+        cells=(CanonicalCell(0, 0, rowspan=9),),
+        n_rows=1,
+        n_cols=1,
+        page_span=(1, 1),
+        caption=None,
+        expresses_spans=True,
+        source_format="html",
+    )
+    ok, problemas = rota.is_wellformed()
+    assert ok is False
+    assert problemas and problemas[0].startswith("SPAN_FUERA_DE_RANGO")
 
     glosario = Glossary("boe", 1, date(2026, 8, 21), terms=(), confusables=())
     with pytest.raises(NotImplementedError):
@@ -181,8 +213,16 @@ def test_el_dinero_entra_al_modelo_en_decimal_y_el_cero_medido_existe() -> None:
         warnings=(),
     )
 
-    assert isinstance(extraccion.cost.eur, Decimal)
-    assert not isinstance(extraccion.cost.eur, float)
+    # Se borra el tipo estático a propósito: lo que se comprueba es el tipo en
+    # EJECUCIÓN. Python no hace cumplir las anotaciones, así que `Cost(eur=0.1)`
+    # con un `float` corre sin protestar aunque mypy lo rechace, y es justo el
+    # caso que la regla «nada de float para dinero» tiene que cazar.
+    # El orden importa: comprobado `Decimal` primero, mypy estrecha el tipo y
+    # declara inalcanzable la comprobación de `float`, que es justo la que hay
+    # que hacer. Al revés, las dos se comprueban de verdad.
+    importe: object = extraccion.cost.eur
+    assert not isinstance(importe, float)
+    assert isinstance(importe, Decimal)
     assert extraccion.cost.measured is True
     assert Cost.unknown().measured is False
     assert extraccion.failed is False

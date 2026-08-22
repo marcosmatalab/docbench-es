@@ -11,7 +11,7 @@ quickstart:  ## de clone a una tabla: 20 documentos versionados, 4 extractores l
 fast:  ## LA PUERTA: lint + tipos + arquitectura + nucleo puro. < 90 s, sin red, sin Docker
 	uv run ruff check .
 	uv run ruff format --check .
-	uv run mypy --strict src
+	uv run mypy --strict src tests
 	uv run lint-imports
 	uv run pytest tests/unit -q --no-header
 
@@ -31,8 +31,8 @@ report:  ## el informe de una campana en md, html y json:  make report CAMPANA=r
 arch:  ## solo el contrato de capas
 	uv run lint-imports
 
-types:  ## solo el tipado
-	uv run mypy --strict src
+types:  ## solo el tipado, del codigo Y de los tests
+	uv run mypy --strict src tests
 
 lint:  ## solo el linter
 	uv run ruff check .

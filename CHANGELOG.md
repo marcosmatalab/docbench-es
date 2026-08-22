@@ -11,6 +11,139 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### L1 · La forma canónica: invariantes y los cinco conversores · cerrado el 2026-08-22
+
+#### Añadido
+
+- **`core.canonical`**, paquete y no fichero (§8, precedente de ADR-0013): los
+  cinco conversores de §9.1 —`from_html`, `from_markdown`, `from_dataframe`,
+  `from_tei`, `from_text_heuristic`—, `validate()`, `holes()` y
+  `normalize_cell_text()`. Uno por fichero, ninguno por encima de las 300 líneas
+  de `CLAUDE.md`; el mayor es `_normalizar.py` con 226.
+- **El enum cerrado `HallazgoTabla`** en `types/_invariantes.py`: 9 hallazgos
+  fatales y 3 informativos. `CanonicalTable.is_wellformed()` deja de levantar
+  `NotImplementedError` y devuelve `(ok, problemas)`; `core.canonical.validate()`
+  delega en el método público.
+- **Tests nuevos** (15 → 82), 17 de ellos property-based, y
+  `scripts/censo_invariantes.py`, el censo determinista que produce el número
+  publicado.
+- **`src/docbench_es/py.typed`**: el paquete declara que va tipado, que es lo que
+  necesita el extractor de un cliente (§13.1) para analizarlo con `mypy --strict`.
+
+#### Cambiado
+
+- **`mypy --strict` tipa ahora también `tests/`**, no sólo `src`. Cuesta
+  **+1284 ms** de puerta, medidos, y se paga solo: ver más abajo.
+- **`DocRef.key()` escapa a mano** en vez de con `urllib.parse.quote`. No es una
+  preferencia: `.importlinter` prohíbe `urllib` en `core`, `core` importa `types`
+  y el contrato se rompía por esa cadena indirecta en cuanto **cualquier** módulo
+  de `core` tocara el modelo de datos. Era una mina latente de L0 que L1 hizo
+  saltar; el contrato no se toca para que quepa el código.
+- **`normalize_cell_text` mapea también `Zl` y `Zp`** —U+2028 y U+2029—, que no
+  son `Zs` y se estaban borrando en vez de mapearse.
+- **`/cerrar` estrena tres pasos**: los dos mutantes, el alcance de las
+  estrategias tras cambiar la implementación, y la verificación de que los
+  mutantes de un censo están de verdad rotos.
+- **Los nueve mutantes se versionan** en `scripts/mutantes/`, con
+  `matar.py` para correrlos todos: `RESULTS.md` publica sus recuentos y la regla
+  de oro 2 no distingue entre tipos de número.
+
+#### Corregido
+
+- **Un `assert` estáticamente muerto que decía proteger «dinero en `Decimal`,
+  nunca `float`» y no protegía nada.** En `test_types_invariantes.py`:
+
+  ```python
+  assert isinstance(extraccion.cost.eur, Decimal)
+  assert not isinstance(extraccion.cost.eur, float)   # ← siempre verdadero
+  ```
+
+  Con `eur: Decimal`, la segunda línea es **siempre** cierta: `Decimal` no hereda
+  de `float`, son bases disjuntas. La comprobación no podía fallar nunca, así que
+  el test afirmaba proteger una de las reglas de «Qué NO hacer nunca» de
+  `CLAUDE.md` sin protegerla. La delata `mypy --strict` con `warn_unreachable`, y
+  **sólo la caza tipando los tests**: ninguna corrida de `pytest`, ningún linter y
+  ninguna revisión a ojo la habrían visto, porque el test pasaba en verde.
+
+  Arreglado borrando el tipo estático a propósito —`importe: object = ...`— para
+  que la comprobación sea del tipo en **ejecución**, que es donde el riesgo existe
+  de verdad: Python no hace cumplir las anotaciones, así que `Cost(eur=0.1)` con
+  un `float` corre sin protestar.
+
+  **Es lo que justifica los 1284 ms.** Un test que miente en verde cuesta más que
+  un segundo de puerta.
+
+- **La estrategia de `DocRef.key()` no alcanzaba la familia de fallo nueva.**
+  Genera los dos pares partiendo la misma cadena, así que un campo es siempre
+  prefijo del otro y una colisión del **escapado** le queda fuera por
+  construcción. Medido: contra un escapado en mal orden, ese fichero pasa 7 de 7.
+  Lo cubre ahora el censo exhaustivo de `tests/unit/test_types_clave.py`.
+
+- **El censo de mutación exigía falsos positivos.** Crecer un span sobre una tabla
+  con hueco de cola **rellena el hueco** y produce una tabla legal; el censo la
+  contaba como «tendría que detectarse». Apareció al meter las formas reales del
+  BOE, y ahora esas mutaciones son un control negativo aparte.
+
+#### Corregido en el escrutinio adversarial del cierre
+
+Once hallazgos, todos tratados. Los que cambiaron el código:
+
+- **`from_html` SÍ producía solapes, y el límite 30 afirmaba lo contrario.** El
+  colocador sigue el estándar —la celda va al primer hueco libre de su primera
+  columna y, si las siguientes están ocupadas, se pisan—, así que un *table model
+  error* del HTML da una tabla con `SOLAPE`. El código era correcto; **la
+  afirmación publicada era falsa**. Reescrito el límite, y el caso entra ahora en
+  el censo y en el golden. Consecuencia nueva y anotada: en L4, `truth.derived`
+  puede emitir una tabla fatal desde el XML del BOE.
+- **`int(texto) if texto.isdigit()` reventaba con `²`.** `"²".isdigit()` es `True`
+  y `int("²")` lanza. Un conversor del núcleo que lanza sobre entrada de terceros
+  contamina la tasa de fallo por extractor, y el BOE usa `<sup>2</sup>` a montones.
+- **60 bytes de HTML costaban 28 s y 7,5 GB.** `holes()` materializaba el
+  rectángulo de cada celda **sin recortarlo a la tabla**: un `rowspan="65534"
+  colspan="1000"` daba 65 millones de tuplas. Recortado: 0,001 s y 42 MB.
+- **`from_dataframe` desplazaba una columna con pandas de verdad.**
+  `DataFrame.itertuples()` lleva `index=True` por defecto y mete el índice como
+  primer elemento. **No lo cazaba ningún test porque el doble simplificaba la
+  interfaz real**: se ha hecho fiel. Y un `RangeIndex` de camelot ya no se
+  convierte en una fila de cabecera inventada.
+- **Un defecto emitía hasta cuatro códigos fatales.** Ahora `comprobar` **deja de
+  analizar la cobertura si alguna celda no se pudo colocar**: con una celda
+  descartada no se sabe qué área ocupaba, así que todo hueco que saliera sería
+  consecuencia de ese defecto. La tasa por código de L5 habría salido inflada.
+- **El censo exigía falsos positivos y no ejercitaba dos códigos.** `DIMENSION_
+  INCOHERENTE` y `SOURCE_FORMAT_DESCONOCIDO` no aparecían en ninguna mutación, y
+  para cinco familias se exige ahora el conjunto **exacto** de códigos fatales.
+- **Seis casos degenerados declarados en docstring no tenían test**, y uno de los
+  que sí lo tenía **pasaba por otro motivo del que decía**: la entrada de
+  «columnas inconsistentes» del heurístico de texto no llegaba a esa rama.
+
+Los que cambiaron los números publicados, y son los que más duelen:
+
+- **El 63% y el 42% del sondeo son de DOCUMENTOS CON TABLA, no de tablas.** El
+  sondeo midió `n=57` documentos, con IC `[50–74]` y `[30–55]`. Estaba mal en seis
+  sitios, y de ahí salía un **«cobertura evaluable del 37%»** que era una resta
+  sobre otra población y encima publicada sin intervalo: **retirado** (límite 36).
+- **Los conteos de etiquetas no se midieron «dentro de las tablas»**, sino sobre
+  el documento completo. De los **489 `<img>`, 468 están en documentos sin ni una
+  tabla**: el número que aplicaba era 21. Reetiquetados los doce recuentos.
+- **«Siete propiedades de `hypothesis`» eran 17**, y dos líneas más abajo decía
+  «seis». Y el margen de la puerta decía 33× donde `RESULTS.md` decía 22×.
+
+#### Decisiones
+
+- [ADR-0017](docs/adr/0017-normalizacion-no-toca-los-numeros.md) · la
+  normalización no toca los números, ni los acentos, ni ningún glifo visible.
+  **Contradecía el docstring de §9.1**, transcrito al manual en el mismo commit.
+- [ADR-0018](docs/adr/0018-hueco-de-cola-y-hueco-interior.md) · hueco de cola
+  legítimo, hueco interior fatal, y los huecos se derivan.
+- [ADR-0019](docs/adr/0019-los-invariantes-se-detectan-no-se-impiden.md) · los
+  invariantes se detectan a posteriori, no se impiden en construcción.
+
+#### Cifras retiradas
+
+- Ninguna. Las de L0 siguen vigentes; la del tiempo de puerta continúa como
+  **serie** en `docs/metrics.md`: 1742 ms en L0, 4060 ms en L1.
+
 ### L0 · Esqueleto, canon y contrato de capas · 2026-08-21, cerrado el 2026-08-22
 
 #### Añadido
