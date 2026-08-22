@@ -8,10 +8,11 @@
 
 ## Lo que todavía NO hay aquí, dicho antes que lo que sí
 
-**No hay ni un solo número de exactitud, de TEDS ni de coste.** A 21 de agosto de
-2026 el repo está en L0: esqueleto, modelo de datos y puerta de CI. No hay corpus,
-no hay verdad de referencia y no hay extractores, así que cualquier número de
-calidad que apareciera aquí estaría inventado.
+**No hay ni un solo número de exactitud, de TEDS ni de coste.** A 22 de agosto de
+2026, con L0 cerrado, el repo tiene esqueleto, modelo de datos y puerta de CI. No
+hay corpus, no hay verdad de referencia y no hay extractores, así que cualquier
+número de calidad que apareciera aquí estaría inventado. **El único número
+publicado hoy es un tiempo**, el de la puerta, y está abajo.
 
 Cuándo llega cada uno:
 
@@ -104,10 +105,9 @@ no se ha medido el reparto. El número que vale es el del runner.
   ver más abajo por qué eso importa y cuánto costaba.
 - **"En frío"** aquí significa **sin cachés de herramienta**: `make clean` más
   borrar `.import_linter_cache` antes de cada corrida. **No** incluye `uv sync`,
-  que el runner sí paga. La diferencia con el runner **no se atribuye aquí a
-  ninguna causa concreta**: los 12 s del runner incluyen encolado, `checkout`,
-  `setup-uv` y pasos `Post`, y sin el log por pasos no se puede repartir. Se
-  publica el del runner porque es el que cualquiera puede reejecutar.
+  que en CI queda fuera del paso medido igualmente. O sea que las dos cifras —los
+  1095 ms de aquí y los 3,41 s del runner— miden lo mismo, `make fast` a secas, en
+  máquinas distintas. Se publica la del runner porque es la reejecutable.
 - **Reproducción** (desde una shell dentro de WSL, no desde Windows):
   ```bash
   for i in $(seq 10); do
@@ -124,16 +124,21 @@ como `wsl.exe -- make fast` desde Windows, pagando el arranque del contenedor en
 cada llamada. **Se midió y no era el caso:** los números de la tabla coinciden
 con la medición nativa, no con la de `wsl.exe`.
 
+Medido el 21 ago 2026, sobre el árbol de L0 **a medio cerrar**, cuando la puerta
+en caliente estaba en 0,56 s. Por eso estas tres cifras no cuadran con los 720 ms
+de la tabla de arriba: no son la misma versión del código. Lo que se comparaba
+aquí es la **diferencia entre vías**, y esa sigue valiendo.
+
 | Vía | En caliente (mediana, n=3) |
 |---|---|
 | Shell nativa dentro de WSL | 0,56 s |
 | `wsl.exe -d Ubuntu -- bash -lc 'make fast'` | 0,68 s |
 | `wsl.exe -d Ubuntu -- true` (sólo el arranque) | 0,16 s |
 
-O sea que `wsl.exe` cuesta **~0,15 s por llamada**. Si la cifra vieja lo hubiera
-incluido, habría salido ~0,70 s en caliente, no 0,56 s. Queda escrito para no
-volver a medirlo: **la puerta se mide dentro de WSL**, y el sobrecoste conocido de
-no hacerlo son esos 0,15 s.
+O sea que `wsl.exe` cuesta **~0,15 s por llamada**. Si la cifra de entonces lo
+hubiera incluido, habría salido ~0,70 s en caliente, no 0,56 s. Queda escrito para
+no volver a medirlo: **la puerta se mide dentro de WSL**, y el sobrecoste conocido
+de no hacerlo son esos 0,15 s.
 
 ### Qué cubre exactamente ese tiempo
 
