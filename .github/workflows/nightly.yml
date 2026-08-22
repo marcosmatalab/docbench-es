@@ -42,6 +42,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          # Sin esto la clave usa el glob por defecto, `**/*requirements*.txt`,
+          # que en este repo no casa con NADA: la cache no dependeria de las
+          # dependencias reales y sobreviviria a un cambio de `uv.lock`.
+          cache-dependency-glob: uv.lock
       - run: uv sync --group dev --extra extract-local
       # El pin es una PROMESA: que CI y local analizan el mismo Python. Aqui se
       # comprueba en vez de suponerse, porque `requires-python = ">=3.12"` deja

@@ -21,6 +21,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          # Sin esto la clave usa el glob por defecto, `**/*requirements*.txt`,
+          # que en este repo no casa con NADA: la cache no dependeria de las
+          # dependencias reales y sobreviviria a un cambio de `uv.lock`.
+          cache-dependency-glob: uv.lock
       # SOLO el grupo dev. `--all-extras` arrastraba torch, CUDA y OCR: varios GB
       # y muy por encima del presupuesto de 90 s de la puerta rapida.
       - run: uv sync --only-group dev

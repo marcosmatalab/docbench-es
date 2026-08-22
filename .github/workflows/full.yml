@@ -52,6 +52,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          # Sin esto la clave usa el glob por defecto, `**/*requirements*.txt`,
+          # que en este repo no casa con NADA: la cache no dependeria de las
+          # dependencias reales y sobreviviria a un cambio de `uv.lock`.
+          cache-dependency-glob: uv.lock
       # Aqui SI hacen falta los extras, o el contrato de extractor no prueba nada.
       # OJO: esto instala SEIS de los ocho de §8, no los ocho. `extract-local` son
       # pymupdf4llm, pdfplumber, camelot, docling, marker y unstructured. Faltan
