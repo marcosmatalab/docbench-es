@@ -1,6 +1,7 @@
 # ADR-0016 · `anexo-png` se disuelve: la frontera es la capa de texto, no las imágenes
 
-**Fecha:** 2026-08-22  ·  **Estado:** aceptada, **pendiente de implementar en L3**
+**Fecha:** 2026-08-22  ·  **Estado:** aceptada y **transcrita al manual** (§2, §6.9,
+§9.4, §10.1, §10.2). Falta el **test** que la haga cumplir: L3.
 
 ## Contexto
 
@@ -132,10 +133,11 @@ de §12 hereda una cifra interpretable. Y se le da definición operativa a
   `nacido-digital` y `escaneado` son mutuamente excluyentes y exhaustivos.
 - **El reparto se publica** —qué proporción cae en cada lado y con qué umbral—, como
   cualquier otra decisión de diseño con consecuencias numéricas.
-- **No hay test hoy.** Este ADR se escribe **antes** que su implementación, así que
-  hasta L3 es una decisión declarada y nada más. Decirlo importa: un ADR aceptado no
-  es código, y en este repo la diferencia entre lo declarado y lo verificado es la
-  que se paga cara.
+- **No hay test hoy, y eso es lo único que queda abierto.** El manual ya dice lo
+  mismo que este ADR —se transcribió en el mismo commit—, así que no hay dos fuentes
+  de verdad en desacuerdo. Lo que falta es la comprobación automática, y llega con
+  `entity.boe` en L3. Un ADR transcrito sigue sin ser código: la diferencia entre lo
+  declarado y lo verificado es la que se paga cara aquí.
 
 ## Consecuencias
 
@@ -144,5 +146,10 @@ de §12 hereda una cifra interpretable. Y se le da definición operativa a
 - **`SamplingPlan` pierde una casilla y gana otra.** Los `weight` se siguen
   midiendo sobre el corpus real (`found/total`), nunca heredados de un sondeo.
 - **`LIMITS.md` no crece.** Esto se arregla, no se declara.
-- **§9.4, §2 y §10.1 del manual quedan desalineados con el repo** hasta que se transcriba
-  el cambio. Es deuda de documentación, y va a la deuda abierta de `ESTADO.md`.
+- **El manual está transcrito, en este mismo commit.** §2 (glosario, los dos ejes),
+  §6.9 (`no_text_layer` comparte umbral), §9.4 (la definición operativa), §10.1
+  (`umbral_capa_texto` en el perfil) y §10.2 (el plan de ejemplo). No queda ninguna
+  sección diciendo lo contrario, que era el riesgo real: el bucle `/hito` empieza
+  leyendo el manual, así que un manual desactualizado se implementa solo.
+- **De aquí sale una regla nueva en `CLAUDE.md`:** un ADR que contradiga el manual se
+  transcribe **en el mismo commit**.

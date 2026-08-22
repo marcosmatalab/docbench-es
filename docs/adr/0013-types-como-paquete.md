@@ -1,6 +1,7 @@
 # ADR-0013 · `types` es un paquete, no un fichero
 
-**Fecha:** 2026-08-21  ·  **Estado:** aceptada
+**Fecha:** 2026-08-21  ·  **Estado:** aceptada, implementada y **transcrita al
+manual** (§6, §8) el 22 ago 2026, al escribirse la regla de oro 8
 
 > Los números 0001 a 0012 están **reservados** para los doce ADR de §4 del
 > manual, que ya están decididos y escritos allí. Se transcriben a

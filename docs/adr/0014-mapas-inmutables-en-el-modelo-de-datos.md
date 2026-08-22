@@ -1,6 +1,7 @@
 # ADR-0014 · Los mapas del modelo de datos son `Mapping` de solo lectura
 
-**Fecha:** 2026-08-22  ·  **Estado:** aceptada
+**Fecha:** 2026-08-22  ·  **Estado:** aceptada, implementada y **transcrita al
+manual** (§6, §6.8) el 22 ago 2026, al escribirse la regla de oro 8
 
 ## Contexto
 

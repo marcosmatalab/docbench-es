@@ -35,6 +35,15 @@ De ahí salen las demás reglas.
    cerrado y **se cuenta en el informe**. La tasa de fallo por extractor es un resultado.
 7. **Toda normalización se documenta.** Una normalización agresiva es una forma
    silenciosa de hacer trampas a favor de un extractor.
+8. **Un ADR que contradiga el manual se transcribe al manual EN EL MISMO COMMIT.**
+   No en el hito que lo implemente: en el mismo commit que acepta el ADR. El bucle
+   `/hito` empieza por *"lee `MANUAL.md`"* y la regla dice que **manda el manual**,
+   así que un ADR sin transcribir deja dos fuentes de verdad en desacuerdo y **gana
+   por defecto la que el bucle lee primero**, que es la vieja. Con tres ADR
+   aplazados, "manda el manual" deja de significar nada. Aplazar la transcripción y
+   apuntarla como deuda **no vale**: la deuda hay que acordarse de mirarla, y el
+   manual se lee solo. Lo que sí puede quedar pendiente es el **test** que haga
+   cumplir el ADR — eso va con su hito y su precio en `ESTADO.md`.
 
 ## Cómo se trabaja aquí
 

@@ -136,8 +136,8 @@ Términos con significado exacto dentro de este proyecto. Si dudas de uno, es qu
 | **Extractor** | Una herramienta que convierte un documento en texto y tablas. PyMuPDF4LLM, Docling, un VLM, el pipeline propio de un cliente |
 | **Verdad de referencia** | La representación correcta de un documento, contra la que se mide un extractor. Tiene cuatro modos de obtención |
 | **Forma canónica** | La representación única de una tabla a la que todo extractor debe mapearse: celdas con fila, columna, `rowspan`, `colspan`, texto y si es cabecera |
-| **Estrato de corpus** | De DÓNDE viene el documento y qué verdad admite: nacido digital, escaneado, empresarial sintético, adversarial. Son los cuatro de §3 bis y determinan el modo de verdad |
-| **Estrato de dificultad** | QUÉ tiene de difícil el documento: tabla simple, celdas combinadas, multipágina, anexo en imagen, con notas al pie, sin tabla. Son las seis etiquetas de `strata` en el plan y determinan el muestreo y la exactitud ponderada |
+| **Estrato de corpus** | De DÓNDE viene el documento y qué verdad admite: nacido digital, escaneado, empresarial sintético, adversarial. Son los cuatro de §3 bis y determinan el modo de verdad. `nacido-digital` y `escaneado` se separan por una medida, no por procedencia declarada: la capa de texto del PDF, definida en §9.4 |
+| **Estrato de dificultad** | QUÉ tiene de difícil el documento: tabla simple, celdas combinadas, multipágina, **escaneado**, con notas al pie, sin tabla. Son las seis etiquetas de `strata` en el plan y determinan el muestreo y la exactitud ponderada. `escaneado` es la única que vive **en los dos ejes**, y a propósito: la capa de texto decide a la vez el modo de verdad y qué familia de extractor puede competir. Ver [ADR-0016](docs/adr/0016-anexo-png-se-disuelve-en-capa-de-texto.md) |
 | **Estrato**, a secas | No se usa en este documento. Cuando leas "estrato" en una tabla o en una salida, va siempre calificado |
 | **Campaña** | Una ejecución completa: un plan, un conjunto de extractores y sus resultados |
 | **Plan** | El fichero congelado que declara qué documentos, qué estratos, qué semilla y qué presupuesto, escrito **antes** de medir |
@@ -538,7 +538,11 @@ Viven en `profiles/` de este repo, no en `benchcore`.
 
 ## 6. Modelo de datos completo
 
-Todo en `src/docbench_es/types.py`, que **no importa nada del proyecto**. Todo congelado (`frozen=True`) salvo donde se diga.
+Todo en **`src/docbench_es/types/`**, que **no importa nada del proyecto**. Todo congelado (`frozen=True`) salvo donde se diga.
+
+> **Corregido respecto a la redacción original**, que decía `types.py`, un fichero. Las ~30 estructuras de esta sección salen unas 340 líneas con sus docstrings, y `CLAUDE.md` prohíbe pasar de 300: las dos reglas no se podían cumplir a la vez. `docbench_es.types` **sigue siendo la única superficie de import** —los submódulos son privados y un test lo hace cumplir—, así que nada de lo que dice esta sección cambia para quien la use. Ver [ADR-0013](docs/adr/0013-types-como-paquete.md).
+
+> **Los campos de mapa se anotan `Mapping[K, V]`, no `dict[K, V]`.** `frozen=True` congela el *binding*, no el diccionario: con `dict` el modelo de datos era mutable por dentro y un test afirmaba que no. Cada dataclass con mapas llama a `congelar_mapas` en su `__post_init__`. Los `dict[...]` que aparecen abajo se leen como `Mapping[...]`. Ver [ADR-0014](docs/adr/0014-mapas-inmutables-en-el-modelo-de-datos.md).
 
 ### 6.1 Referencias y documentos
 
@@ -778,7 +782,7 @@ class StructureMetrics:            # nivel 1, por extractor
     teds_s: float | None
     cell_f1: float
     evaluable_coverage: float      # sobre cuántas tablas se pudo calcular
-    failures: dict[str, int]       # ExtractionFailure -> recuento
+    failures: Mapping[ExtractionFailure, int]   # enum cerrado como CLAVE, no str
     ci: tuple[float, float]
     n_documents: int
 
@@ -849,6 +853,8 @@ ExtractionFailure = Literal[
     "encrypted_pdf", "no_text_layer", "provider_error", "policy_blocked",
 ]
 ```
+
+**`no_text_layer` usa el mismo umbral que el estrato `escaneado`** (§9.4): caracteres no blancos por página por debajo de `umbral_capa_texto`. Una sola definición para las dos cosas, porque son el mismo hecho medido: si no hay capa de texto, el documento va al estrato `escaneado` **y** un parser de texto falla con esa causa.
 
 **Regla:** ningún error se traga. Un documento que falla se registra con su causa del enum y **se cuenta en el informe**. La tasa de fallo por extractor es un resultado, no un detalle de implementación.
 
@@ -972,7 +978,9 @@ docbench-es/
 │
 ├── src/docbench_es/
 │   ├── __init__.py
-│   ├── types.py               TODO el modelo de datos. No importa nada del proyecto
+│   ├── types/                 TODO el modelo de datos. No importa nada del proyecto
+│   │                          (paquete, no fichero: ADR-0013. `types` es la unica
+│   │                           superficie de import; los submodulos son privados)
 │   ├── errors.py              la jerarquía de §6.9
 │   │
 │   ├── core/                  PURO: sin red, sin disco, sin proveedor, sin reloj
@@ -1241,7 +1249,19 @@ def verify(q: Question, given: str) -> tuple[bool, str | None]:
 
 **`truth`** parsea el XML a `CanonicalTable` y genera los `Fact` con plantillas sobre la matriz.
 
-**`strata`** etiqueta: `tabla-simple`, `celdas-combinadas`, `multipagina`, `anexo-png`, `con-notas-al-pie`, `sin-tabla`.
+**`strata`** etiqueta: `tabla-simple`, `celdas-combinadas`, `multipagina`, `escaneado`, `con-notas-al-pie`, `sin-tabla`.
+
+**`escaneado` frente a `nacido-digital`, y por qué no hay etiqueta `anexo-png`.** La frontera es **la capa de texto**, medida, no el número de imágenes. Se calcula sobre `RawDoc.primary`, que es lo que `strata` ya recibe:
+
+```
+caracteres_extraibles_por_pagina = caracteres_no_blancos(capa_de_texto) / n_pages
+escaneado  ⇐ caracteres_extraibles_por_pagina < umbral_capa_texto   (por defecto 100)
+nacido-digital ⇐ en caso contrario
+```
+
+El umbral vive en el perfil de la entidad (§10.1), no en el código, y **su reparto se publica**: qué proporción cae a cada lado y con qué valor. Es el mismo umbral que decide la causa de fallo `no_text_layer` de §6.9, para que un documento no pueda ser `nacido-digital` y hacer fallar a un extractor por falta de capa de texto a la vez.
+
+**Por qué no se parte por número de imágenes**, que era la regla anterior (`anexo-png ⇐ sin <table> y con <img>`): el número de imágenes no determina nada. Un informe nativo con 40 gráficos tiene capa de texto perfecta y un escaneado de 3 páginas no tiene ninguna. Esa regla metía en el mismo estrato un documento de 8 páginas con una figura y un anexo de 136 páginas con 134 imágenes —medido en el sondeo del BOE de 22 ago 2026—, y en ellos **compiten familias de extractor distintas**: sin capa de texto un parser de texto no compite, y su cero no mide su calidad; con capa, un OCR se desperdicia. Un estrato que mezcla las dos poblaciones tiene una exactitud media que no describe a ninguna, y §12 la propaga a la ponderada.
 
 **`privacy`** declara `contains_personal_data=True`, `redaction_required=False`, con la justificación escrita: publicidad legal previa. **La distinción se documenta en vez de darse por supuesta.**
 
@@ -1334,8 +1354,13 @@ privacy:
 
 glossary: ./glosarios/cliente.semantic.yaml
 
+# `umbral_capa_texto` son caracteres no blancos por pagina (§9.4). Decide a la vez
+# el estrato `escaneado` y la causa de fallo `no_text_layer` de §6.9: un solo numero
+# para el mismo hecho medido. Por defecto 100.
+umbral_capa_texto: 100
+
 strata_rules:
-  - { name: escaneado, when: "no_text_layer" }
+  - { name: escaneado, when: "caracteres_extraibles_por_pagina < umbral_capa_texto" }
   - { name: celdas-combinadas, when: "tables_with_spans > 0" }
   - { name: multipagina, when: "max_table_page_span > 1" }
   - { name: sello-superpuesto, when: "images_overlapping_text > 0" }
@@ -1359,7 +1384,7 @@ strata:
   tabla-simple:      { target: 120, found: 4210, weight: 0.733 }
   celdas-combinadas: { target: 120, found: 890,  weight: 0.155 }
   multipagina:       { target: 100, found: 340,  weight: 0.059 }
-  anexo-png:         { target: 60,  found: 95,   weight: 0.017 }
+  escaneado:         { target: 60,  found: 95,   weight: 0.017 }
   con-notas-al-pie:  { target: 60,  found: 210,  weight: 0.036 }
   # `sin-tabla` se etiqueta pero NO se muestrea en nivel 1: sin tabla, TEDS no está
   # definido. Entra en nivel 2, donde sí hay pregunta y respuesta. Por eso `found`

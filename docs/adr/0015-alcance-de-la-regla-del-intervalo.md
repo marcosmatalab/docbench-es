@@ -1,6 +1,8 @@
 # ADR-0015 · La regla del intervalo se acota a las estimaciones
 
-**Fecha:** 2026-08-22  ·  **Estado:** aceptada
+**Fecha:** 2026-08-22  ·  **Estado:** aceptada. **No toca el manual**: la regla del
+intervalo es de `CLAUDE.md`, y `MANUAL.md` no la enuncia. Comprobado con
+`grep -n 'sin intervalo' MANUAL.md`, que no devuelve nada
 
 ## Contexto
 

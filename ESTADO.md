@@ -35,8 +35,9 @@
 1. **`benchcore` v0.1.0 es una SEMILLA, no el benchcore del plan.** Estan `types`,
    los cuatro `Protocol`, `registry` y `conform`. **NO estan** `core.policy`,
    `runner`, `core.bootstrap` ni `core.power`. Se anaden cuando su primer
-   consumidor los pida, subiendo el MENOR de `API_VERSION`. Ver `DECISIONES.md`
-   de ese repo, D-003.
+   consumidor los pida, subiendo el MENOR de `API_VERSION`. Ver **D-003 en
+   [`DECISIONES.md` de `benchcore`](https://github.com/marcosmatalab/benchcore/blob/main/DECISIONES.md)**
+   — ese fichero vive en el repo de `benchcore`, **no en éste**.
 2. **El pack de arranque venia con siete fallos que impedian que `make fast`
    arrancara.** Estan arreglados y documentados uno a uno en `PARCHES.md`, con su
    sintoma exacto y su causa. Leelo antes de tocar `pyproject.toml`.
@@ -44,7 +45,9 @@
    `benchcore.types.Cost` y no aparece en ninguna seccion. Definido en la semilla
    de `benchcore` derivandolo del `AttemptRecord` de gonogo §6.4, con un campo
    anadido, `measured`, para que cero medido y "no se ha podido medir" no sean el
-   mismo valor. Ver `DECISIONES.md`, D-001.
+   mismo valor. Ver **D-001 en
+   [`DECISIONES.md` de `benchcore`](https://github.com/marcosmatalab/benchcore/blob/main/DECISIONES.md)**,
+   el mismo fichero de otro repo que la deuda 1.
 4. **`full.yml` y `nightly.yml` nacen DORMIDOS, con `on: workflow_dispatch:`
    unicamente.** Reproducido ejecutandolo el 21 ago 2026: `make full` muere en
    `quickstart` con `ModuleNotFoundError: No module named 'docbench_es.cli.main'`,
@@ -79,16 +82,20 @@
    hacerlo antes sería infraestructura para tres cifras que caben en una lectura.
    Mientras tanto el riesgo está declarado aquí y no en ningún sitio más.
 
-6. **`ADR-0016` desalinea tres secciones del manual, y el manual manda.** Al
-   disolver `anexo-png` quedan desactualizadas §9.4 (que lo lista entre los seis
-   estratos de dificultad), §2 (el glosario, que lo pone en el eje de dificultad
-   cuando la capa de texto vive en los dos) y §10.1 (`strata_rules`, donde
-   `no_text_layer` sigue sin definicion operativa). **`CLAUDE.md` dice que si el
-   repo y el manual no coinciden manda el manual**, asi que mientras no se
-   transcriba, el ADR es una decision declarada contra un manual que dice otra cosa.
-   **Se transcribe en L3**, que es quien implementa `strata()`. Precio: media hora
-   de edicion del manual. Hasta entonces el ADR lleva escrito que esta pendiente de
-   implementar.
+6. **`ADR-0016` esta transcrito al manual pero NO tiene test.** La deuda anterior
+   —el manual diciendo lo contrario que el ADR— **se cerro el 22 ago 2026**
+   transcribiendo a §2, §6.9, §9.4, §10.1 y §10.2 en el mismo commit. Se cerro
+   entonces y no en L3 por una razon operativa, no de higiene: el bucle `/hito`
+   empieza leyendo `MANUAL.md`, asi que una sesion de L3 habria leido §9.4, visto
+   `anexo-png` entre los estratos y lo habria implementado. Dos fuentes de verdad en
+   desacuerdo durante ~40 horas, y la que gana por defecto es la que el bucle lee
+   primero. De ahi sale la regla 8 de `CLAUDE.md`.
+   **Lo que queda abierto es lo otro:** no hay ningun test que impida volver a
+   emitir la etiqueta `anexo-png` ni que compruebe que `nacido-digital` y
+   `escaneado` son excluyentes y exhaustivos. Hoy lo sostiene el manual y nada mas.
+   **Se cierra en L3**, con la suite de conformidad de `entity.boe`. Precio: un test
+   de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
+   que nadie ha medido contra un corpus real.
 
 ## Decisiones tomadas fuera del manual
 
@@ -98,6 +105,11 @@
 | Los mapas del modelo de datos se congelan | [`0014`](docs/adr/0014-mapas-inmutables-en-el-modelo-de-datos.md) | `frozen=True` no congelaba los mapas y un test afirmaba que si. `congelar_mapas` en `__post_init__` |
 | `anexo-png` se disuelve en capa de texto | [`0016`](docs/adr/0016-anexo-png-se-disuelve-en-capa-de-texto.md) | Mezclaba un documento con una figura y un anexo escaneado de 136 paginas. La frontera que decide que extractor compite no son las imagenes, es si hay capa de texto |
 | La regla del intervalo se acota a las **estimaciones** | [`0015`](docs/adr/0015-alcance-de-la-regla-del-intervalo.md) | Un tiempo no tiene poblacion de la que muestrear: lleva rango, n y resolucion, no IC. Se acota **y se endurece**: los numeros que no son estimaciones dejan de poder publicarse desnudos |
+
+**Los cuatro estan transcritos al manual**, por la regla de oro 8: 0013 a §6 y §8,
+0014 a §6 y §6.8, 0016 a §2, §6.9, §9.4, §10.1 y §10.2. 0015 no lo toca porque la
+regla del intervalo vive en `CLAUDE.md` y el manual no la enuncia —comprobado con
+`grep -n 'sin intervalo' MANUAL.md`, que no devuelve nada—.
 
 Los numeros 0001 a 0012 estan **reservados** para los doce ADR de §4 del manual.
 Se transcriben conforme llega el hito que implementa cada uno.
