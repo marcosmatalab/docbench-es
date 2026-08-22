@@ -10,7 +10,7 @@
 
 | Hito | Horas | Estado | Criterio de aceptación | Número medido |
 |---|---|---|---|---|
-| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | PENDIENTE | `make fast` verde en < 90 s con el repo vacío de lógica | — |
+| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **1089 ms** en frío, rango 1052–1107, n=10. 82× de margen |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | PENDIENTE | Solapes, huecos y spans fuera de rango detectados al 100% | — |
 | L2 `core.teds` + validación contra PubTabNet | 10-14 | PENDIENTE | Coincide a cuatro decimales con la referencia | — |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
@@ -45,10 +45,26 @@
    de `benchcore` derivandolo del `AttemptRecord` de gonogo §6.4, con un campo
    anadido, `measured`, para que cero medido y "no se ha podido medir" no sean el
    mismo valor. Ver `DECISIONES.md`, D-001.
+4. **`full.yml` y `nightly.yml` nacen DORMIDOS, con `on: workflow_dispatch:`
+   unicamente.** Reproducido ejecutandolo el 21 ago 2026: `make full` muere en
+   `quickstart` con `ModuleNotFoundError: No module named 'docbench_es.cli.main'`,
+   porque `full = fast + quickstart` y `quickstart` necesita CLI (L5+),
+   extractores (L5) y los 20 documentos congelados (L7). **Se encienden en L7**,
+   sustituyendo su bloque `on:` por `on: [push, pull_request]`. Un badge rojo
+   permanente durante ~90 horas es peor que no tener el workflow: ensena al
+   equipo a ignorar el color. Consecuencia real mientras tanto: hasta L7 **no hay
+   cobertura de CI** del contrato de entidad, del de extractor, de los tres
+   adaptadores hostiles, de la fuga de credenciales ni de la degradacion. Ver el
+   limite 25 de `LIMITS.md`.
 
 ## Decisiones tomadas fuera del manual
 
-_(vacío. Cuando haya una, va aquí y como ADR en `docs/adr/`)_
+| Decision | ADR | En una linea |
+|---|---|---|
+| `types` es un paquete, no un fichero | [`0013`](docs/adr/0013-types-como-paquete.md) | Las ~30 estructuras de §6 salen 340 lineas y `CLAUDE.md` prohibe pasar de 300. `docbench_es.types` sigue siendo la unica superficie de import, y un test lo hace cumplir |
+
+Los numeros 0001 a 0012 estan **reservados** para los doce ADR de §4 del manual.
+Se transcriben conforme llega el hito que implementa cada uno.
 
 ## Requisito previo, antes del primer `uv sync`
 
@@ -57,4 +73,19 @@ _(vacío. Cuando haya una, va aquí y como ADR en `docs/adr/`)_
 
 ## Siguiente paso
 
-`/hito L0`
+`/hito L1` — `core.canonical`, sus invariantes y los conversores de los cinco
+formatos. Criterio: solapes, huecos y spans fuera de rango detectados al 100%.
+
+Lo que L1 hereda de L0 y no puede ignorar:
+
+- **`CanonicalTable.is_wellformed()` levanta `NotImplementedError` a propósito**,
+  y hay un test que lo exige. L1 lo implementa y ese test cambia de forma. Si
+  devolviera `(True, [])`, el criterio de L1 se cumpliría trivialmente.
+- **`cell_at` declara tres casos degenerados** —fuera de rango, hueco y `span < 1`—
+  y el tercero deja la celda invisible a propósito. Quien tiene que reportarlo es
+  `is_wellformed()`, no `cell_at`.
+- **Los tests de invariantes van con `hypothesis`**, no con casos a mano: lo pide
+  `.claude/rules/tests.md`, y L0 comprobó por qué. El primer test de propiedad
+  escrito en L0 pasaba en verde contra el código roto porque la estrategia era
+  demasiado ancha; hubo que dirigirla para que encontrara la colisión. Un test de
+  propiedad mal dirigido da cobertura aparente y no avisa.

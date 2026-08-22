@@ -74,9 +74,30 @@ proyecto que se acaba de romper.** Se arregla el import, nunca el contrato.
 
 ## Ficheros congelados
 
-Un hook bloquea la edición de `tests/fixtures/pubtabnet/**`, `tests/fixtures/tablas/**`,
+Están congelados `tests/fixtures/pubtabnet/**`, `tests/fixtures/tablas/**`,
 `tests/fixtures/quickstart/**` y cualquier `plan.yaml` **que ya exista**. Crearlos la
 primera vez sí se puede: si no, L2, L6 y L7 serían imposibles.
+
+Lo hacen cumplir **dos hooks, y ninguno de los dos basta solo**:
+
+| Hook | Cuándo | Qué cubre | Qué NO cubre |
+|---|---|---|---|
+| `guard-frozen.sh` | `PreToolUse` | **Previene**: deniega la escritura por `Write`, `Edit` y `NotebookEdit` | Cualquier otra vía. Su `matcher` son esas tres herramientas y nada más |
+| `stop-gate.sh` | `Stop` | **Detecta**, por dos vías: `git diff --diff-filter=MDRT HEAD` para lo que ya está en `HEAD`, y un manifiesto de huellas SHA-256 (`.claude/.congelados.sha256`) para el fixture recién creado que todavía no lo está | El cambio hecho **en el mismo turno en que el hook ve el fichero por primera vez**: esa primera huella es la que se toma como buena |
+
+La prevención cubre las tres herramientas de edición; la detección al cerrar el
+turno cubre el resto. Un `cat >`, un `sed -i`, un `mv`, un `rm` o un
+`uv run python -c` **esquivan `guard-frozen.sh` por completo** —su `matcher` no los
+ve— y los caza el `Stop`. No se pueden enumerar todas las formas de escribir un
+fichero; sí se puede mirar el resultado.
+
+Las dos vías del `Stop` hacen falta: `git diff` contra `HEAD` no ve un fixture
+recién creado, y ése es su estado durante **todo** el hito que lo crea (L2, L6,
+L7). El manifiesto cubre esa ventana: la primera vez que ve un congelado anota su
+huella y lo deja pasar —eso es crearlo—; a partir de ahí cualquier cambio se caza,
+commiteado o no. Si el usuario aprueba cambiar una referencia, se borra su línea
+del manifiesto para refijar la huella. El límite que queda está en `LIMITS.md` 27.
+
 **Si un test falla contra un fichero congelado, el fallo está en el código.** No se
 toca la verdad de referencia para que salgan los números.
 

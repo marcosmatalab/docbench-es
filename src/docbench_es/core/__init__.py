@@ -1,1 +1,1 @@
-"""core: lo rellena /hito L0."""
+"""core: vacio en L0. Lo rellena L1, con core.canonical; core.teds llega en L2."""

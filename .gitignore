@@ -17,3 +17,4 @@ runs/
 .env
 
 .import_linter_cache/
+.claude/.congelados.sha256

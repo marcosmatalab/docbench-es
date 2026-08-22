@@ -1,0 +1,140 @@
+# CHANGELOG
+
+Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
+Versionado: [SemVer](https://semver.org/lang/es/).
+
+Cada entrada corresponde a un hito de `HITOS.md` y se escribe al cerrarlo con
+`/cerrar`. Los números van en [`RESULTS.md`](RESULTS.md), no aquí.
+
+## [No publicado]
+
+### L0 · Esqueleto, canon y contrato de capas · 2026-08-21
+
+#### Añadido
+
+- **El modelo de datos completo de §6**, en `src/docbench_es/types/`: 32 nombres
+  exportados, todos `frozen`. Incluye la forma canónica de tabla, extracción,
+  verdad, preguntas, glosario, plan de muestreo, campaña y los agregados de los
+  tres niveles.
+- **La jerarquía de errores de §6.9**, en `src/docbench_es/errors.py`, con **el
+  código de salida de §11 como atributo de clase**: política 2, presupuesto 3,
+  infraestructura 4, contrato 5, `TruthUnavailable` 6. Las tres cuyo significado
+  coincide con el contrato heredan **también** de la excepción de `benchcore`,
+  para que un `except BenchcoreError` del motor cace lo que lance el plugin de un
+  cliente.
+- **15 tests unitarios** en `tests/unit/`, dos de ellos **property-based** con
+  `hypothesis`, que convierten en contrato afirmaciones que hasta ahora solo
+  estaban escritas en el manual: que el modelo es inmutable —atributos **y**
+  mapas—, que `types` no importa nada del proyecto, que nadie de fuera importa sus
+  submódulos privados, que la tabla de códigos de salida es código y no prosa, que
+  el enum de fallo de extracción está cerrado y se exige en el agregado, que un
+  fallo sin causa no se puede construir, y que **`DocRef.key()` es inyectiva**.
+- `docs/adr/0014-mapas-inmutables-en-el-modelo-de-datos.md`.
+- `README.md`, `RESULTS.md`, `LIMITS.md`, `CHANGELOG.md` y `LICENSE` (Apache-2.0).
+- `docs/reading-order.md` con las rutas de 5 min, 30 min y 2 h.
+- `docs/adr/0013-types-como-paquete.md`.
+- Los trabajos de CI `full.yml` y `nightly.yml`.
+
+#### Cambiado
+
+- `src/docbench_es/types.py` pasa de fichero a **paquete** `types/` con cinco
+  submódulos privados. `docbench_es.types` sigue siendo la única superficie de
+  import. Motivo y alternativa descartada en el ADR-0013.
+- `full.yml` y `nightly.yml` **nacen dormidos**, con `on: workflow_dispatch:`
+  únicamente. Se encienden en L7. Ver el límite 25 de `LIMITS.md`.
+
+#### Eliminado
+
+- `tests/unit/test_humo_unit.py`, el marcador que traía el pack de arranque. Ese
+  directorio ya tiene tests de verdad. Los de los otros ocho directorios siguen
+  en pie hasta que su hito los sustituya.
+
+#### Corregido en el escrutinio de cierre
+
+El escrutinio adversarial de `/cerrar` sacó 12 hallazgos. Diez se arreglaron, uno
+se declaró como límite y uno resultó no reproducirse. Los que cambiaban una
+afirmación del repo:
+
+- **`DocRef.key()` colisionaba.** `("an", "boe/A/B")` y `("an/boe", "A/B")` daban
+  la misma clave siendo documentos distintos. `key()` es **la unidad de
+  remuestreo del bootstrap agrupado**: dos documentos colapsados en una clave
+  estrechan el intervalo y publican más precisión de la que hay. Ahora va
+  percent-encoded, con test de propiedad.
+- **`frozen=True` no congelaba los mapas**, y un test afirmaba que sí. Ver
+  ADR-0014.
+- **Un fallo sin causa era construible** (`failed=True, failure_reason=None`), y
+  `failures` estaba tipado `dict[str, int]`, eludiendo el enum cerrado justo en el
+  agregado que se publica. Las dos cosas rompían la regla de oro 6.
+- **`cell_at` no declaraba el caso `span < 1`**, en el que la celda desaparece.
+- **El README afirmaba en presente cinco mecanismos que no existen** (política,
+  motor, CLI, adaptador de entidad). Reescritos en futuro y con su hito.
+- **Quince `__init__.py` decían «lo rellena /hito L0»** y L0 los deja vacíos.
+  Ahora cada uno nombra el hito real que lo rellena.
+- **`LIMITS.md` 19 presentaba L8b como medido**, y está pendiente.
+- **`stop-gate.sh` dejaba colar la puerta en rojo**: la marca de caché hasheaba el
+  listado de `git status`, no el contenido, así que romper más un fichero que ya
+  figuraba como `M` daba la misma huella. Y su detección de congelados no veía un
+  fixture aún sin commitear, que es su estado durante todo el hito que lo crea.
+
+#### Verificado, ejecutándolo
+
+**1 · La puerta, en verde y dentro de presupuesto.** Ver `RESULTS.md`, que separa
+el tiempo del *run* completo del job y da el local con su n y su rango. El número
+de la corrida de CI de L0 se toma en el push de este commit.
+
+**2 · Que `python-version` no hacía nada.** Los tres workflows se lo pasaban a
+`astral-sh/setup-uv@v3`, que **no acepta ese input**. Comprobado empujando una
+rama con un paso de diagnóstico (corrida `32531009942`):
+
+```console
+##[warning]Unexpected input(s) 'python-version', valid inputs are ['version',
+  'checksum','github-token','enable-cache',...]
+##[warning]Failed to restore: Cache service responded with 400
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+```
+
+El pin no estaba donde el fichero decía: el runner caía en el Python del sistema
+por casualidad. Arreglado migrando a `setup-uv@v6`, dejando `.python-version` como
+fuente única y **añadiendo un paso que lo comprueba** en vez de suponerlo. Tras el
+arreglo (corrida `32537436252`): `esperado=3.12 real=3.12`, `Cache hit`, y cero
+avisos de configuración.
+
+**2 · El control negativo.** Con `import httpx` metido a mano en `core/`,
+`make arch` sale en rojo. Salida literal:
+
+```console
+$ make arch
+El nucleo es puro: no toca red, disco ni proveedores BROKEN
+La deriva funciona SIN verdad de referencia nueva, ... KEPT
+La recomendacion se deriva de mediciones publicadas, ... KEPT
+
+Contracts: 3 kept, 1 broken.
+
+----------------
+Broken contracts
+----------------
+
+El nucleo es puro: no toca red, disco ni proveedores
+----------------------------------------------------
+
+docbench_es.core is not allowed to import httpx:
+
+-   docbench_es.core._control_negativo -> httpx (l.3)
+
+make: *** [Makefile:32: arch] Error 1
+```
+
+Detalle que merece la pena: **`httpx` ni siquiera está instalado en el entorno**.
+El contrato es análisis estático sobre el AST, no una comprobación en tiempo de
+ejecución, así que detecta el import prohibido aunque el paquete no exista. Al
+borrar el fichero, `Contracts: 4 kept, 0 broken`.
+
+**3 · El contrato se encuentra.** `uv run lint-imports` lee `.importlinter` y
+analiza 28 ficheros y 34 dependencias. Con el nombre `importlinter.ini`
+respondería *"Could not read any configuration"* y el CI se pondría rojo por el
+motivo equivocado.
+
+**4 · Los tests nuevos pueden ponerse rojos.** Comprobado con un mutante: un
+fichero en `core/` que importa `docbench_es.types._tabla` hace fallar a
+`test_nadie_de_fuera_importa_los_submodulos_privados_de_types`, y el fallo nombra
+al culpable. Un test que solo se ha visto en verde no demuestra nada.

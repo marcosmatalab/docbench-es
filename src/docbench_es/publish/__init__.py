@@ -1,1 +1,1 @@
-"""publish: lo rellena /hito L0."""
+"""publish: vacio en L0. Lo rellena L20, con publish con licencias."""
