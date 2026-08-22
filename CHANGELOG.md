@@ -185,10 +185,12 @@ el número a la frase histórica sin comprobarla. Verificable con
 - **`make clean` no borraba `.hypothesis`**, así que el «en frío» local nunca lo
   era: la base de ejemplos de los dos tests property-based sobrevivía a todas las
   corridas mientras el runner nacía sin ella. Arreglado en el `Makefile` y añadido
-  a `.gitignore`. Remedido: la mediana en frío pasa de **1095 ms a 1697,5 ms**, o
-  sea que **la caché valía ~600 ms** y el número anterior estaba inflado a favor
-  del local en más de un tercio. Era una salvedad que se podía eliminar, y
-  documentarla en vez de arreglarla habría sido deuda disfrazada de rigor.
+  a `.gitignore`. Remedido en reposo: la mediana en frío pasa de **1095 a
+  1742 ms**. Cronometrado directamente, `pytest` tarda 368–384 ms con la caché
+  presente y 953–1026 ms sin ella: **la caché valía ~615 ms**, y el número
+  anterior estaba inflado a favor del local en más de un tercio. Era una salvedad
+  que se podía eliminar, y documentarla en vez de arreglarla habría sido deuda
+  disfrazada de rigor.
 - **Tres ficheros publicaban números retirados.** `README.md` daba «12 s sobre
   `e32c846`» y remitía a `RESULTS.md` por una procedencia que allí ya no existía;
   `docs/reading-order.md` daba «menos de un segundo en local y 12 s en CI»; y

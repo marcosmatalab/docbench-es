@@ -200,9 +200,19 @@ ninguno de los dos. O sea que el «frío» local **no es el frío del runner**. 
 persigue esa paridad porque el local no es el número publicado: lo que se necesita
 de él es que sea estable y comparable consigo mismo, y eso sí lo es.
 
-**Por qué no se comparan las dos cifras.** El local es ~2,1× más rápido que el
-runner (1,70 s contra 3,62 s de mediana). La diferencia no se atribuye a ninguna
+**Por qué no se comparan las dos cifras.** El local es ~2,3× más rápido que el
+runner (1,74 s contra 3,95 s de mediana). La diferencia no se atribuye a ninguna
 causa: son máquinas distintas y no se ha medido el reparto.
+
+**La condición de la máquina se declara, porque se midió que importa.** Las cifras
+publicadas son con la máquina **en reposo** (`load average` 0,05). Una tanda
+anterior de n=10, tomada mientras corrían en la misma máquina los 51 agentes del
+escrutinio adversarial, dio mediana **1697,5 ms** (rango 1650 – 1783) contra los
+**1742 ms** (1715 – 1872) de la tanda en reposo. Son 44,5 ms de diferencia entre
+medianas con rangos que se solapan: **entre tandas hay más variación de la que
+sugiere el rango de una sola tanda**, y por eso la condición va escrita y no
+supuesta. La cifra publicada es la de reposo porque es la reproducible: un lector
+puede dejar su máquina quieta, no puede reproducir «mientras corrían 51 agentes».
 
 **La puerta se cronometra dentro de WSL**, en shell nativa, **nunca** por
 `wsl.exe`. Se sospechó que las cifras locales estuvieran infladas por invocarla
@@ -284,14 +294,18 @@ los mapas.
 ejemplos y las cachés de constantes de `hypothesis` sobrevivían a todas las
 corridas «en frío», mientras el runner nacía sin ellas. Se arregló el `Makefile`
 —`clean` ya la borra— y se volvió a medir: la mediana en frío pasó de **1095 ms a
-1697,5 ms**. **La caché valía ~600 ms**, o sea que el número anterior estaba
-inflado a favor del local en más de un tercio. Corregido el 22 ago 2026; es la
-razón de que la comparación local/runner pasara de ~3,3× a ~2,1×.
+1742 ms**. Corregido el 22 ago 2026; es la razón de que la comparación
+local/runner pasara de ~3,3× a ~2,3×.
 >
-> La cifra **en caliente** también se movió en ese remedido, de 720 a 691 ms, y eso
-> **no** lo explica el arreglo: en caliente la base de `hypothesis` está presente
-> igual que antes. Son 29 ms sobre un rango observado de 73, o sea variación de la
-> máquina entre tandas. No se atribuye a ninguna causa.
+> **Cuánto valía la caché, medido directamente y no por diferencia de medianas.**
+> El escrutinio adversarial cronometró el paso responsable por separado:
+> `uv run pytest tests/unit -q --no-header` tarda **368–384 ms con `.hypothesis/`
+> presente y 953–1026 ms sin ella**. Son ~615 ms, y esa es la cifra que vale,
+> porque no mezcla condiciones de máquina como sí lo haría restar dos medianas
+> tomadas en tandas distintas.
+>
+> La cifra **en caliente** apenas se movió (720 → 723 ms), como cabía esperar: en
+> caliente la base de `hypothesis` está presente igual que antes.
 
 **Los 28 ficheros de `lint-imports` atribuidos a `mypy`.** Los cuatro recuentos de
 la puerta son distintos a propósito, y una versión de esa línea se los cruzaba.

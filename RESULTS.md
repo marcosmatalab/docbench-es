@@ -92,11 +92,15 @@ centro.**
 
 | Medida | Mediana | Rango observado (n=10) | Fecha |
 |---|---|---|---|
-| `make fast` en frío | **1697,5 ms** | 1650 – 1783 ms | 2026-08-22 |
-| `make fast` en caliente | **691 ms** | 660 – 733 ms | 2026-08-22 |
+| `make fast` en frío | **1742 ms** | 1715 – 1872 ms | 2026-08-22 |
+| `make fast` en caliente | **723 ms** | 697 – 752 ms | 2026-08-22 |
 
-En frío: `1696 1698 1701 1728 1687 1650 1783 1719 1687 1697`. En caliente:
-`694 716 686 669 688 719 733 660 661 723`.
+En frío: `1750 1737 1752 1737 1747 1717 1715 1872 1732 1771`. En caliente:
+`730 697 711 727 719 715 704 727 752 750`.
+
+**Condición de máquina: en reposo**, `load average` 0,05. Se declara porque
+importa: una tanda anterior tomada mientras corrían agentes de verificación en la
+misma máquina dio una mediana 44 ms distinta. Ver [`docs/metrics.md`](docs/metrics.md).
 
 - **Máquina:** AMD Ryzen 9 9950X3D, 8 vCPU asignadas a WSL2, 31 GB RAM ·
   Ubuntu 24.04.3 LTS sobre WSL2 (kernel 6.6.87.2) · Python 3.12.3 · uv 0.12.0.
