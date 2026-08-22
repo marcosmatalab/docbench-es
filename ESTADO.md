@@ -79,12 +79,24 @@
    hacerlo antes sería infraestructura para tres cifras que caben en una lectura.
    Mientras tanto el riesgo está declarado aquí y no en ningún sitio más.
 
+6. **`ADR-0016` desalinea tres secciones del manual, y el manual manda.** Al
+   disolver `anexo-png` quedan desactualizadas §9.4 (que lo lista entre los seis
+   estratos de dificultad), §2 (el glosario, que lo pone en el eje de dificultad
+   cuando la capa de texto vive en los dos) y §10.1 (`strata_rules`, donde
+   `no_text_layer` sigue sin definicion operativa). **`CLAUDE.md` dice que si el
+   repo y el manual no coinciden manda el manual**, asi que mientras no se
+   transcriba, el ADR es una decision declarada contra un manual que dice otra cosa.
+   **Se transcribe en L3**, que es quien implementa `strata()`. Precio: media hora
+   de edicion del manual. Hasta entonces el ADR lleva escrito que esta pendiente de
+   implementar.
+
 ## Decisiones tomadas fuera del manual
 
 | Decision | ADR | En una linea |
 |---|---|---|
 | `types` es un paquete, no un fichero | [`0013`](docs/adr/0013-types-como-paquete.md) | Las ~30 estructuras de §6 salen 340 lineas y `CLAUDE.md` prohibe pasar de 300. `docbench_es.types` sigue siendo la unica superficie de import, y un test lo hace cumplir |
 | Los mapas del modelo de datos se congelan | [`0014`](docs/adr/0014-mapas-inmutables-en-el-modelo-de-datos.md) | `frozen=True` no congelaba los mapas y un test afirmaba que si. `congelar_mapas` en `__post_init__` |
+| `anexo-png` se disuelve en capa de texto | [`0016`](docs/adr/0016-anexo-png-se-disuelve-en-capa-de-texto.md) | Mezclaba un documento con una figura y un anexo escaneado de 136 paginas. La frontera que decide que extractor compite no son las imagenes, es si hay capa de texto |
 | La regla del intervalo se acota a las **estimaciones** | [`0015`](docs/adr/0015-alcance-de-la-regla-del-intervalo.md) | Un tiempo no tiene poblacion de la que muestrear: lleva rango, n y resolucion, no IC. Se acota **y se endurece**: los numeros que no son estimaciones dejan de poder publicarse desnudos |
 
 Los numeros 0001 a 0012 estan **reservados** para los doce ADR de §4 del manual.

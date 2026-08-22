@@ -204,11 +204,17 @@ documento, máximo 95.
 «~36 días» calculados sobre agosto, que es el mes más flojo del año: era una **cota
 superior**, no una estimación. Con las tres ventanas medidas:
 
-| Ventana | Universo (secc. I+III) | Días publicados | Densidad | 1.000 docs | 120 `celdas-combinadas` |
-|---|---|---|---|---|---|
-| **otoño 2025** | 827 | 17 | **48,6 doc/día** | **21 días** (~4 semanas) | **15 días** |
-| primavera 2026 | 802 | 17 | 47,2 doc/día | 22 días | 23 días |
-| agosto 2026 | 524 | 18 | 29,1 doc/día | 35 días | 23 días |
+| Ventana | Universo (secc. I+III) | Días publicados | Densidad | Tasa `celdas-combinadas` | 1.000 docs | 120 `celdas-combinadas` |
+|---|---|---|---|---|---|---|
+| **otoño 2025** | 827 | 17 | **48,6 doc/día** | 34/200 = 17,00% | **21 días** (~4 semanas) | **15 días** |
+| primavera 2026 | 802 | 17 | 47,2 doc/día | 23/200 = 11,50% | 22 días | 23 días |
+| agosto 2026 | 524 | 18 | 29,1 doc/día | 36/200 = 18,00% | 35 días | 23 días |
+
+Las dos últimas columnas se derivan así, y con la tasa **sin redondear**:
+`densidad = universo / días`; `1.000 docs = ⌈1000 / densidad⌉`;
+`120 celdas-combinadas = ⌈(120 / tasa) / densidad⌉`. En primavera, `120 / 0,1150 =
+1.043` documentos y `1.043 / 47,2 = 22,1 → 23 días`. Usando el 12% redondeado
+saldrían 21, y de ahí que la tasa vaya con su conteo.
 
 **El número que vale para planificar es el de una ventana normal: 21-22 días de
 publicación para los 1.000 documentos del criterio de L3**, o sea unas cuatro
@@ -281,17 +287,21 @@ Tres ventanas de 19 días naturales, separadas por hasta once meses, todas con
 `--n 200 --semilla 20260822 --secciones 1,3`. Rangos **pasados y cerrados**, así que
 son reproducibles para siempre.
 
+Cada celda lleva **el conteo al lado del porcentaje**, `%(k/n)`, para que todo lo
+que sale de aquí —los pesos, el rendimiento— se pueda re-derivar sin volver al JSON.
+Un porcentaje redondeado no basta: 12% y 11,50% dan 21 y 23 días de barrido.
+
 | Métrica | otoño 2025 | primavera 2026 | agosto 2026 | ¿solapan? |
 |---|---|---|---|---|
-| Emparejado PDF+XML | 100% [98–100] | 100% [98–100] | 100% [98–100] | **sí** |
-| Con `<table>` | 31% [25–38] | 28% [23–35] | 28% [23–35] | **sí** |
-| …de ésos, con span > 1 | 55% [43–67] | 40% [29–53] | 63% [50–74] | **sí** |
-| …de ésos, con `rowspan` > 1 | 44% [32–56] | 25% [15–37] | 42% [30–55] | **sí** |
-| `celdas-combinadas` (sobre la muestra) | 17% [12–23] | 12% [8–17] | 18% [13–24] | **sí** |
-| `tabla-simple` | 14% [10–19] | 17% [12–23] | 10% [7–16] | **sí** |
-| `sin-tabla` | 64% [57–70] | 66% [59–72] | 71% [64–77] | **sí** |
-| `anexo-png` | 5,0% [2,7–9,0] | 5,5% [3,1–9,6] | 0,5% [0,1–2,8] | **no** |
-| Descarte a umbral 0,85 | 4% [2–8] | 6% [3–10] | 2% [1–5] | **sí** |
+| Emparejado PDF+XML | 100% (200/200) [98–100] | 100% (200/200) [98–100] | 100% (200/200) [98–100] | **sí** |
+| Con `<table>` | 31% (62/200) [25–38] | 28% (57/200) [23–35] | 28% (57/200) [23–35] | **sí** |
+| …de ésos, con span > 1 | 55% (34/62) [43–67] | 40% (23/57) [29–53] | 63% (36/57) [50–74] | **sí** |
+| …de ésos, con `rowspan` > 1 | 44% (27/62) [32–56] | 25% (14/57) [15–37] | 42% (24/57) [30–55] | **sí** |
+| `celdas-combinadas` (sobre la muestra) | 17% (34/200) [12–23] | 11,5% (23/200) [8–17] | 18% (36/200) [13–24] | **sí** |
+| `tabla-simple` | 14% (28/200) [10–19] | 17% (34/200) [12–23] | 10% (21/200) [7–16] | **sí** |
+| `sin-tabla` | 64% (128/200) [57–70] | 66% (132/200) [59–72] | 71% (142/200) [64–77] | **sí** |
+| `anexo-png` | 5,0% (10/200) [2,7–9,0] | 5,5% (11/200) [3,1–9,6] | 0,5% (1/200) [0,1–2,8] | **no** |
+| Descarte a umbral 0,85 | 4% (9/200) [2–8] | 6% (11/200) [3–10] | 2% (4/200) [1–5] | **sí** |
 
 Ventanas: otoño `20251006–20251024`, primavera `20260302–20260320`, agosto
 `20260803–20260821`. n=200 en cada una, cero fallos en las tres.
@@ -323,6 +333,20 @@ apuntan en la misma dirección (agosto por debajo) desde dos ventanas independie
 y eso es sugerente aunque no esté establecido. Queda escrito para que, si en L3
 aparece otra vez, no se lea como un hallazgo nuevo.
 
+### Y por qué, operativamente, da igual que se mueva
+
+Aunque se moviera, **no cambiaría ni un peso del plan de muestreo**, porque el
+`weight` de cada estrato en el `SamplingPlan` **no se hereda de este sondeo**: §10.2
+lo define como `found / total` **medido sobre el corpus real de la campaña**, con
+`found` contado en el censo completo, no estimado en una muestra de 200. El sondeo
+dimensiona —cuántos días hay que barrer— y no pondera.
+
+> **Esto va escrito porque el riesgo es concreto:** dentro de seis meses alguien lee
+> «`anexo-png` 5%» en estas notas y lo mete como `weight: 0.05` en un `plan.yaml`.
+> Sería un peso inventado sobre una ventana de 19 días, y §12 lo propagaría a la
+> exactitud ponderada de todos los resultados. **Los pesos se miden sobre el corpus
+> que se va a usar, siempre.**
+
 ### Un defecto del propio estrato, que L3 hereda
 
 Al mirar qué son esos documentos, `anexo-png` resulta **no ser homogéneo**. En
@@ -330,7 +354,11 @@ otoño llevan de 1 a 14 imágenes y de 7 a 15 páginas; en primavera hay documen
 **134 imágenes y 136 páginas** junto a otros de una sola imagen. La etiqueta mezcla
 «un documento con una figura» con «un anexo escaneado de 136 páginas», que para un
 extractor no son el mismo problema ni de lejos. **La regla `anexo-png` de §9.4
-necesita un umbral**, y esa es una decisión de L3, no de este sondeo.
+necesita un umbral**, y no es el número de imágenes: es si el PDF trae **capa de
+texto**, que es lo que decide qué familia de extractor puede competir. Resuelto en
+[ADR-0016](adr/0016-anexo-png-se-disuelve-en-capa-de-texto.md): `anexo-png` se
+disuelve en `nacido-digital` y `escaneado`, medidos por caracteres extraíbles por
+página. Se implementa en L3.
 
 ### La conclusión, para L6
 
@@ -371,8 +399,9 @@ corpus de una colección de CSV.
    no «Fuente de los datos:…», porque el banco crea obra derivada.
 5. **`multipagina` no se puede etiquetar desde el XML.** O se mide sobre el PDF, o
    el estrato se declara vacío. Es una decisión que L3 tiene que tomar explícitamente.
-6. **`anexo-png` necesita un umbral.** Tal como está la regla de §9.4 mete en la
-   misma etiqueta un documento con una figura y un anexo escaneado de 136 páginas.
+6. **`anexo-png` desaparece como estrato**, disuelto en `nacido-digital` y
+   `escaneado` por capa de texto:
+   [ADR-0016](adr/0016-anexo-png-se-disuelve-en-capa-de-texto.md).
 7. **El plan de L6 declara su ventana con las fechas y la densidad medida**, no como
    estrato —no lo es— sino como condición. Dimensionar con agosto pide un 67% más de
    calendario del necesario.
