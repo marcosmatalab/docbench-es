@@ -145,13 +145,15 @@ el de L5. La puerta va a crecer y el margen a encogerse.
 
 ### Qué cubre exactamente ese tiempo
 
-`ruff check` (34 ficheros) + `ruff format --check` (33) + `mypy --strict src` (24)
+`ruff check` (36 ficheros) + `ruff format --check` (35) + `mypy --strict src` (24)
 + `lint-imports` (4 contratos, 32 ficheros, 42 dependencias) + `pytest tests/unit`
 (15 tests, dos property-based con `hypothesis`). Sin red y sin Docker.
 
 **Los cuatro recuentos son distintos y es correcto**, no un descuadre: `ruff
-check` suma `pyproject.toml` a los 33 `.py`, `ruff format` sólo los `.py`, `mypy`
-sólo `src/`, y `lint-imports` recorre el grafo de paquetes. Comprobados con
+check` suma `pyproject.toml` a los 35 `.py`, `ruff format` sólo los `.py`, `mypy`
+sólo `src/`, y `lint-imports` recorre el grafo de paquetes —que es el del paquete
+`docbench_es`, así que `scripts/` no entra en él ni en el de `mypy`, pero sí en los
+de `ruff`. Comprobados con
 `uv run ruff check . -v`; los de `mypy` y `lint-imports` coinciden con los que
 imprime la corrida `32572683716`.
 
@@ -306,6 +308,12 @@ local/runner pasara de ~3,3× a ~2,3×.
 >
 > La cifra **en caliente** apenas se movió (720 → 723 ms), como cabía esperar: en
 > caliente la base de `hypothesis` está presente igual que antes.
+
+**Los recuentos de la puerta subieron al entrar `scripts/`.** El sondeo del BOE
+añadió dos ficheros Python fuera de `src/`: `ruff check` pasó de 34 a 36 y
+`ruff format` de 33 a 35. `mypy --strict src` y `lint-imports` no se mueven, porque
+uno mira `src/` y el otro el grafo del paquete `docbench_es`. Anotado el 22 ago 2026
+al añadir `scripts/sondeo_boe.py`.
 
 **Los 28 ficheros de `lint-imports` atribuidos a `mypy`.** Los cuatro recuentos de
 la puerta son distintos a propósito, y una versión de esa línea se los cruzaba.
