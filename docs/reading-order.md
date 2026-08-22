@@ -19,7 +19,9 @@ tercera **te deja poder cambiarlo**.
 | 3 | ✅ [`LIMITS.md`](../LIMITS.md), los límites 4, 10 y 11 | El sesgo de corpus, la falta de potencia y por qué `NO_APLICABLE` no es cero |
 
 **Si después de esto te sirve**, el siguiente paso es `make fast`: la puerta entera
-en menos de un segundo en local y 12 s en CI, sin red.
+en ~1,7 s en local y 4,43 s en el runner de GitHub, sin red. Las dos cifras y su
+rango, en [`RESULTS.md`](../RESULTS.md); el método, en
+[`docs/metrics.md`](metrics.md).
 
 ---
 
@@ -36,7 +38,7 @@ Esta es la ruta de quien va a juzgar el proyecto, no a usarlo.
 | 5 | ✅ [`tests/unit/test_types.py`](../tests/unit/test_types.py) | Cómo se escribe un test aquí: la pregunta no es *qué prueba* sino *qué demuestra* |
 | 6 | ✅ `MANUAL.md` §12, *"Métricas: fórmula, supuestos y caso degenerado"* | Que cada métrica declara qué hace cuando la entrada es degenerada |
 | 7 | ✅ `MANUAL.md` §14, la tabla de tests | Los tres que casi nadie tiene: degradación, deriva sintética y los tres adaptadores hostiles |
-| 8 | 🕓 `docs/metrics.md` — **L2** | Lo mismo que §12 pero con los números ya medidos al lado |
+| 8 | ✅ [`docs/metrics.md`](metrics.md) | El método de cada número publicado: qué mide, resolución del instrumento, de dónde sale su incertidumbre, y el historial de correcciones. Hoy sólo el tiempo de la puerta; crece con TEDS en L2 y con exactitud y kappa en L5 y L8b |
 
 **El atajo de un minuto para un examinador con prisa:** §14 del manual y el
 `.importlinter`. Uno dice qué se prueba y por qué; el otro impide que deje de

@@ -104,8 +104,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     adaptadores hostiles, de la fuga de credenciales ni de la degradación.** Se
     corren a mano o no se corren. El motivo de nacer dormidos en vez de rojos es
     que un rojo permanente durante ~90 horas enseña a ignorar el color.
-26. **La única cobertura automática hoy es la puerta rápida.** 10 tests
-    unitarios sobre el modelo de datos y los errores. Nada de lo que este repo
+26. **La única cobertura automática hoy es la puerta rápida.** 15 tests
+    unitarios sobre el modelo de datos y los errores, dos de ellos
+    property-based. Nada de lo que este repo
     promete medir está medido todavía: ver la cabecera de `RESULTS.md`.
 27. **La protección de los ficheros congelados no es hermética: es prevención
     parcial más detección.** `guard-frozen.sh` es `PreToolUse` con matcher
@@ -147,10 +148,11 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     fichero prometen que **se publican las dos cifras** y que el desglose por
     estrato *no es opcional en ningún informe*; `GlossaryContribution` sí lo
     tiene, los otros dos no.
-    **Por qué no se arregla en L0 y por qué no duele todavía:** en L0 no hay un
-    solo número medido, así que no hay nada que publicar sin intervalo. El
-    primero que rellena `StructureMetrics` de verdad es **L5**, y ahí deja de ser
-    teórico.
+    **Por qué no se arregla en L0 y por qué no duele todavía:** en L0 no hay una
+    sola **métrica de calidad** medida, que es a lo que la regla 2 le exige
+    intervalo; el único número publicado es un tiempo de puerta, que no es una
+    estimación estadística y va con su rango observado. El primero que rellena
+    `StructureMetrics` de verdad es **L5**, y ahí deja de ser teórico.
     **Lo que cuesta cerrarlo, para que no sea deuda escondida:** un `ci` por
     estimador —`ci_teds`, `ci_teds_s`, `ci_cell_f1`— o pasar a
     `ci: Mapping[str, tuple[float, float]]`; añadir `by_stratum` y la cifra

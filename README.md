@@ -80,8 +80,8 @@ poder cambiarlo.
 
 | | |
 |---|---|
-| Release en curso | `v0.1.0` · L0 en cierre, L1 a L8b pendientes |
-| La puerta | `make fast` en verde, 12 s en el runner de GitHub sobre `e32c846`, presupuesto 90 s. Procedencia y matices en [`RESULTS.md`](RESULTS.md) |
+| Release en curso | `v0.1.0` · L0 cerrado el 22 ago 2026, L1 a L8b pendientes |
+| La puerta | `make fast` en verde, **4,43 s** en el runner de GitHub sobre `28186b9`, presupuesto 90 s. Rango observado sobre código idéntico: 3,41 – 4,43 s (n=4, corte 22 ago 2026). Procedencia y matices en [`RESULTS.md`](RESULTS.md) |
 | Dónde va el checkpoint | [`ESTADO.md`](ESTADO.md), que se actualiza al cerrar cada hito |
 
 ## Documentos
@@ -89,7 +89,7 @@ poder cambiarlo.
 | Fichero | Qué es |
 |---|---|
 | [`MANUAL.md`](MANUAL.md) | La especificación completa: modelo de datos, interfaces, métricas, hitos |
-| [`RESULTS.md`](RESULTS.md) | Los números medidos, con su intervalo, su máquina y su comando |
+| [`RESULTS.md`](RESULTS.md) | Los números medidos, con su máquina y su comando; y las métricas de calidad, con su intervalo |
 | [`LIMITS.md`](LIMITS.md) | Lo que este proyecto **no** mide y dónde se rompe |
 | [`ESTADO.md`](ESTADO.md) | Dónde estamos y cuál es el siguiente paso |
 | [`CHANGELOG.md`](CHANGELOG.md) | Qué cambió en cada hito |

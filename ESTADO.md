@@ -10,7 +10,7 @@
 
 | Hito | Horas | Estado | Criterio de aceptación | Número medido |
 |---|---|---|---|---|
-| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Con intervalo, n=3 sobre código idéntico: mediana **3,62 s**, rango 3,41 – 4,43 s. Local: 1095 ms en frío, rango 1058–1148, n=10 |
+| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1697,5 ms en frío, rango 1650–1783, n=10 (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | PENDIENTE | Solapes, huecos y spans fuera de rango detectados al 100% | — |
 | L2 `core.teds` + validación contra PubTabNet | 10-14 | PENDIENTE | Coincide a cuatro decimales con la referencia | — |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
@@ -57,11 +57,35 @@
    adaptadores hostiles, de la fuga de credenciales ni de la degradacion. Ver el
    limite 25 de `LIMITS.md`.
 
+5. **Los números publicados se copian a cuatro ficheros y derivan. Hoy se cazan
+   leyendo; en L5 ya no.** Al cerrar L0, tres sitios fuera de `RESULTS.md`
+   publicaban cifras retiradas: `README.md` —la puerta de entrada del repo— daba
+   «`make fast` en verde, 12 s sobre `e32c846`» **y remitía a `RESULTS.md` por una
+   procedencia que allí ya no existía**; `docs/reading-order.md`, la ruta de 5
+   minutos, daba «menos de un segundo en local y 12 s en CI»; y `LIMITS.md` 26
+   decía «10 tests» cuando son 15. Los tres se encontraron **leyendo**, con un
+   escrutinio adversarial, no con una prueba.
+   **Por qué no basta con disciplina:** hoy es un número que viaja a tres sitios.
+   En L5 son exactitud, TEDS, `cell_f1` y cobertura evaluable **por extractor y
+   por estrato** —decenas de cifras—, más el coste. Un humano no las relee todas
+   en cada commit, y el fallo es del tipo más grave que hay aquí: el repo
+   afirmando algo que otro fichero del repo desmiente.
+   **Lo que cierra el agujero, y su precio:** un test en la puerta rápida que
+   compruebe que ningún número publicado fuera de `RESULTS.md` lo contradice. Los
+   números que viajan se marcan en origen y en destino con un ancla —por ejemplo
+   `<!-- RESULTS:l0.ci.gate -->`—, el test extrae ambos y falla si no coinciden.
+   Precio estimado: 2-3 h, un fichero de test más el marcado de las anclas
+   existentes. **Se hace en L5**, que es el primero que lo necesita de verdad;
+   hacerlo antes sería infraestructura para tres cifras que caben en una lectura.
+   Mientras tanto el riesgo está declarado aquí y no en ningún sitio más.
+
 ## Decisiones tomadas fuera del manual
 
 | Decision | ADR | En una linea |
 |---|---|---|
 | `types` es un paquete, no un fichero | [`0013`](docs/adr/0013-types-como-paquete.md) | Las ~30 estructuras de §6 salen 340 lineas y `CLAUDE.md` prohibe pasar de 300. `docbench_es.types` sigue siendo la unica superficie de import, y un test lo hace cumplir |
+| Los mapas del modelo de datos se congelan | [`0014`](docs/adr/0014-mapas-inmutables-en-el-modelo-de-datos.md) | `frozen=True` no congelaba los mapas y un test afirmaba que si. `congelar_mapas` en `__post_init__` |
+| La regla del intervalo se acota a las **estimaciones** | [`0015`](docs/adr/0015-alcance-de-la-regla-del-intervalo.md) | Un tiempo no tiene poblacion de la que muestrear: lleva rango, n y resolucion, no IC. Se acota **y se endurece**: los numeros que no son estimaciones dejan de poder publicarse desnudos |
 
 Los numeros 0001 a 0012 estan **reservados** para los doce ADR de §4 del manual.
 Se transcriben conforme llega el hito que implementa cada uno.

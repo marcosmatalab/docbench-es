@@ -16,8 +16,14 @@ De ahí salen las demás reglas.
 
 1. **El juez no puede ser concursante.** `docbench-es` NUNCA construye un extractor
    propio. Si alguna vez parece buena idea, no lo es: el ranking valdría cero.
-2. **Todo número publicado lleva su intervalo y su comando de reproducción.** Un
-   número sin intervalo no se publica. Un número que no se puede reproducir no existe.
+2. **Todo número publicado lleva su comando de reproducción, y toda ESTIMACIÓN
+   lleva su intervalo.** Un número que no se puede reproducir no existe. Una
+   estimación sin intervalo no se publica: exactitud, TEDS, kappa, coste por
+   éxito, aporte del glosario. Un número que NO es una estimación —un tiempo, un
+   recuento, una tasa de descarte sobre el censo completo— no lleva intervalo,
+   pero lleva su método y su incertidumbre declarada: n, rango y resolución del
+   instrumento. Una cifra desnuda no se admite en ninguno de los dos casos.
+   Ver [ADR-0015](docs/adr/0015-alcance-de-la-regla-del-intervalo.md).
 3. **El bootstrap remuestrea DOCUMENTOS, nunca preguntas.** Las preguntas de un mismo
    documento están correlacionadas.
 4. **Un extractor que no expresa `rowspan`/`colspan` sale `NO_APLICABLE`, no cero**,
@@ -132,5 +138,7 @@ no casa con nada es una regla que no existe, y no avisa de ello.
 - `ESTADO.md` — dónde estamos. **Lo inyecta el hook `SessionStart`**, así que ya lo
   tienes arriba: no hace falta volver a leerlo cada sesión.
 - `LIMITS.md` — lo que este proyecto NO mide. Se escribe conforme se descubre. Lo crea L0.
-- `RESULTS.md` — los números medidos, con fecha y comando. Lo crea L0.
+- `RESULTS.md` — los números medidos, con fecha y comando. **Sólo números.** Lo crea L0.
+- `docs/metrics.md` — el **método** de cada número: qué mide, con qué resolución, de
+  dónde sale su incertidumbre, y el historial de correcciones. Lo crea L0.
 - `docs/adr/` — una decisión por fichero, con su alternativa descartada.

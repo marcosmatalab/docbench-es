@@ -44,5 +44,5 @@ fix:  ## arregla formato e imports
 cov:  ## cobertura del nucleo puro
 	uv run pytest tests/unit --cov=src/docbench_es --cov-report=term-missing -q
 
-clean:  ## borra caches de pytest, mypy, ruff y cobertura
-	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage
+clean:  ## borra caches de pytest, mypy, ruff, hypothesis y cobertura
+	rm -rf .pytest_cache .mypy_cache .ruff_cache .hypothesis htmlcov .coverage
