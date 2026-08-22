@@ -78,10 +78,14 @@ afirmación del repo:
 
 #### Verificado, ejecutándolo
 
-**1 · La puerta, en verde y dentro de presupuesto.** `make fast` en **3,41 s** en
-el runner de GitHub contra los 90 s de §15, corrida `32572385551` sobre el commit
-de L0. `RESULTS.md` separa ese número del job (11 s) y del run (16 s), que no son
-lo mismo, y da además el local con su n y su rango.
+**1 · La puerta, en verde y dentro de presupuesto.** `make fast` en **4,43 s** en
+el runner de GitHub contra los 90 s de §15, corrida `32572683716` sobre `28186b9`,
+el commit que cierra L0. `RESULTS.md` separa ese número del job (11 s) y del run
+(15 s), que no son lo mismo, y le pone intervalo: las tres corridas del cierre
+—`78ee8f0`, `4e4ea0b` y `28186b9`— corren un árbol de código idéntico byte a byte,
+sólo cambia markdown, así que valen como n=3 y dan **mediana 3,62 s, rango
+3,41 – 4,43 s**. La cifra que se publicó primero, 3,41 s, era la mejor de las tres;
+la diferencia es dispersión del runner compartido, no una regresión.
 
 **2 · Que `python-version` no hacía nada.** Los tres workflows se lo pasaban a
 `astral-sh/setup-uv@v3`, que **no acepta ese input**. Comprobado empujando una

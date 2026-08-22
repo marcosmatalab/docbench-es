@@ -10,7 +10,7 @@
 
 | Hito | Horas | Estado | Criterio de aceptación | Número medido |
 |---|---|---|---|---|
-| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **3,41 s** en el runner de GitHub, corrida [`32572385551`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572385551), commit `78ee8f0`. **26× de margen**. Local: 1095 ms en frío, rango 1058–1148, n=10 |
+| L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Con intervalo, n=3 sobre código idéntico: mediana **3,62 s**, rango 3,41 – 4,43 s. Local: 1095 ms en frío, rango 1058–1148, n=10 |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | PENDIENTE | Solapes, huecos y spans fuera de rango detectados al 100% | — |
 | L2 `core.teds` + validación contra PubTabNet | 10-14 | PENDIENTE | Coincide a cuatro decimales con la referencia | — |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |

@@ -36,9 +36,9 @@ portátil delante.
 
 | Medida | Valor | Presupuesto | Margen |
 |---|---|---|---|
-| **`make fast` en `ubuntu-latest`, en frío** | **3,41 s** | **90 s** | **26×** |
+| **`make fast` en `ubuntu-latest`, en frío** | **4,43 s** | **90 s** | **20×** |
 | Job `fast` completo (incluye `checkout`, `setup-uv`, `uv sync`) | 11 s | — | — |
-| *Run* completo (incluye encolado y pasos `Post`) | 16 s | — | — |
+| *Run* completo (incluye encolado y pasos `Post`) | 15 s | — | — |
 
 > **Qué mide cada fila, porque las tres se han confundido antes.** Sólo la
 > primera es el criterio de aceptación de L0: es el paso `la puerta`, medido desde
@@ -46,28 +46,78 @@ portátil delante.
 > y nada más. Las otras dos se publican para que nadie las confunda con ella: el
 > job añade el `checkout`, el `setup-uv` y el `uv sync`, y el run añade encima el
 > encolado y los pasos `Post`. Una versión anterior de esta tabla publicaba los
-> 16 s del run como si fueran `make fast`, y luego el job como «cota superior»
-> porque el log ya no estaba disponible. Ahora está el número exacto.
+> segundos del *run* como si fueran `make fast`, y luego el job como «cota
+> superior» porque el log ya no estaba disponible. Ahora está el número exacto.
 
-- **Corrida:** [`32572385551`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572385551) · commit `78ee8f0` · 2026-08-22T12:13:00Z · `success`
+- **Corrida:** [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716) · commit `28186b9` · 2026-08-22T12:19:37Z · `success`
+- **Job:** `fast`, id `97030392923` · arranca 12:19:40Z, termina 12:19:51Z
+- **Ventana exacta de la puerta:** de `12:19:45.6204105Z`, la línea
+  `##[group]Run make fast`, a `12:19:50.0508128Z`, el `[100%]` de `pytest`. Son
+  **4,4304 s**. La línea siguiente del log es `Post job cleanup`, 70 ms más tarde:
+  la ventana no se deja fuera ningún trozo del paso.
 - **Máquina:** runner estándar de GitHub, `ubuntu-latest`, 4 vCPU
 - **En frío** de verdad: no hay caché de mypy, ruff ni import-linter que valga,
   porque el runner nace limpio. La caché de `setup-uv` sólo cubre la descarga de
-  paquetes, que queda **fuera** de los 3,41 s por estar en el paso anterior.
-- **Reproducción:**
+  paquetes, que queda **fuera** de los 4,43 s por estar en el paso anterior.
+- **Este número mide L0**, el commit `28186b9`, el que cierra el hito, no el pack
+  de arranque. La tabla original citaba la corrida `32482756941` de `e32c846`, del
+  pack; se sustituyó al cerrar el hito, como estaba previsto.
+
+#### El intervalo: n=3, y sobre código idéntico
+
+La versión anterior de esta sección decía «sin intervalo porque es n=1». Ya no
+hace falta esa salvedad: **el cierre de L0 dejó tres corridas cuyo árbol de código
+es el mismo byte a byte.** Los tres commits —`78ee8f0`, `4e4ea0b` y `28186b9`—
+sólo se diferencian en ficheros `.md`, y ningún `.md` entra en lo que mide la
+puerta: `ruff` mira los `.py` y `pyproject.toml`, `mypy --strict` sólo `src/`,
+`lint-imports` el grafo de paquetes y `pytest` sólo `tests/unit`. Comprobado, y no
+de palabra:
+
+```bash
+git diff --name-only 78ee8f0 28186b9 | grep -v '\.md$'   # no imprime nada
+```
+
+O sea que las tres no son tres medidas de tres cosas distintas: son **tres
+repeticiones de la misma medición**, que es justo lo que hace falta para dar un
+rango.
+
+| Corrida | Commit | `make fast` | Job | Run |
+|---|---|---|---|---|
+| [`32572385551`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572385551) | `78ee8f0` | 3,41 s | 11 s | 16 s |
+| [`32572585111`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572585111) | `4e4ea0b` | 3,62 s | 10 s | 14 s |
+| [**`32572683716`**](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716) | **`28186b9`** | **4,43 s** | **11 s** | **15 s** |
+
+**Mediana 3,62 s · rango 3,41 – 4,43 s · n=3.** Contra el presupuesto de 90 s el
+margen va de **26×** en el mejor caso a **20×** en el peor, con **25×** en la
+mediana. Los tres cumplen el criterio de L0 y ninguno se acerca al límite.
+
+**El número publicado sube de 3,41 s a 4,43 s, y eso no es una regresión.** Es la
+misma puerta sobre el mismo código: lo que se ve es la dispersión del runner
+compartido de GitHub, **±30% entre corridas**. Queda escrito porque la cifra que
+estaba publicada era la **mejor de las tres**, y presentar el mínimo de una
+muestra como si fuera *el* número es exactamente el sesgo que este fichero existe
+para evitar. La fila que manda es la de `28186b9`, el commit que cierra el hito;
+el rango está para que una corrida futura de 4,2 s no se lea como un problema.
+
+- **Reproducción** de la corrida de L0:
   ```bash
-  gh run view 32572385551
+  gh run view 32572683716 --repo marcosmatalab/docbench-es
   # y el desglose por pasos, que `--json` no da:
-  JID=$(gh run view 32572385551 --json jobs -q '.jobs[0].databaseId')
+  JID=$(gh run view 32572683716 --repo marcosmatalab/docbench-es \
+        --json jobs -q '.jobs[0].databaseId')
   gh api "repos/marcosmatalab/docbench-es/actions/jobs/$JID/logs" \
     | grep -E '##\[group\]Run make fast|\[100%\]'
   ```
-- **Este número mide L0**, el commit `78ee8f0`, no el pack de arranque. La tabla
-  anterior citaba la corrida `32482756941` de `e32c846`, y lo decía; se ha
-  sustituido al cerrar el hito, como estaba previsto.
-- **Sin intervalo porque es n=1**: una sola corrida en el runner. El rango con
-  n=10 está abajo, en local. Publicar un intervalo de una sola medición sería
-  inventárselo.
+- **Reproducción del rango entero**, las tres a la vez:
+  ```bash
+  for R in 32572385551 32572585111 32572683716; do
+    JID=$(gh run view "$R" --repo marcosmatalab/docbench-es \
+          --json jobs -q '.jobs[0].databaseId')
+    gh api "repos/marcosmatalab/docbench-es/actions/jobs/$JID/logs" \
+      | grep -E '##\[group\]Run make fast|\[100%\]'
+  done
+  ```
+  Las dos marcas de tiempo de cada corrida, restadas, dan su fila de la tabla.
 
 **Qué comprueba además esa corrida**, y es parte del resultado: el paso
 `CI corre el Python de .python-version` imprime `esperado=3.12 real=3.12`. Hasta
@@ -89,15 +139,18 @@ la mediana en frío salía «1,00 s» y el máximo también «1,00 s», que es u
 que se lee como imposible. Medidas en frío: `1112 1148 1058 1118 1098 1091 1080
 1101 1078 1093`. En caliente: `716 720 740 717 713 721 749 748 714 730`.
 
-Medidas sobre `78ee8f0`, el árbol tal como queda al cerrar L0. Suben respecto a
-la primera medición del hito (958 / 564 ms) porque L0 creció al cerrarse: cinco
-tests más —dos de ellos property-based, que ejecutan 100 casos cada uno—, dos
-módulos más y los `__post_init__` que congelan los mapas. Se deja escrito para que
+Medidas sobre `78ee8f0`, que es el mismo código que `28186b9`: entre esos dos
+commits sólo cambia markdown, como se comprueba arriba, así que valen igual para
+el commit que cierra el hito. Suben respecto a la primera medición del hito
+(958 / 564 ms) porque L0 creció al cerrarse: cinco tests más —dos de ellos
+property-based, que ejecutan 100 casos cada uno—, dos módulos más y los
+`__post_init__` que congelan los mapas. Se deja escrito para que
 la subida no se lea como una regresión sin causa.
 
-**El local es ~3× más rápido que el runner** (1,1 s contra 3,41 s) y esa
-diferencia no se atribuye aquí a ninguna causa concreta: son máquinas distintas y
-no se ha medido el reparto. El número que vale es el del runner.
+**El local es ~3,3× más rápido que el runner** (1,1 s contra los 3,62 s de
+mediana) y esa diferencia no se atribuye aquí a ninguna causa concreta: son
+máquinas distintas y no se ha medido el reparto. El número que vale es el del
+runner.
 
 - **Máquina:** AMD Ryzen 9 9950X3D, 8 vCPU asignadas a WSL2, 31 GB RAM ·
   Ubuntu 24.04.3 LTS sobre WSL2 (kernel 6.6.87.2) · Python 3.12.3 · uv 0.12.0
@@ -106,7 +159,7 @@ no se ha medido el reparto. El número que vale es el del runner.
 - **"En frío"** aquí significa **sin cachés de herramienta**: `make clean` más
   borrar `.import_linter_cache` antes de cada corrida. **No** incluye `uv sync`,
   que en CI queda fuera del paso medido igualmente. O sea que las dos cifras —los
-  1095 ms de aquí y los 3,41 s del runner— miden lo mismo, `make fast` a secas, en
+  1095 ms de aquí y los 4,43 s del runner— miden lo mismo, `make fast` a secas, en
   máquinas distintas. Se publica la del runner porque es la reejecutable.
 - **Reproducción** (desde una shell dentro de WSL, no desde Windows):
   ```bash
@@ -152,7 +205,7 @@ check` incluye `pyproject.toml` además de los 33 `.py`, `ruff format` sólo los
 `.py`, `mypy --strict` sólo `src/`, y `lint-imports` recorre el grafo de paquetes.
 Se anota porque una versión anterior de esta línea le atribuía a mypy los 28 de
 `lint-imports`. Comprobados con `uv run ruff check . -v`, y el de `mypy` y el de
-`lint-imports` coinciden con los que imprime la corrida `32572385551`.
+`lint-imports` coinciden con los que imprime la corrida `32572683716`, la de L0.
 
 ### Control negativo, ejecutado
 
