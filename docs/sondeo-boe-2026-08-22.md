@@ -17,7 +17,9 @@
 
 ## La respuesta, en tres líneas
 
-**La premisa se sostiene, pero sólo si `discover` filtra por sección.** Sobre el
+**La premisa se sostiene, la mezcla de estratos es estable en el tiempo, y el
+diseño de L3 es seguro con cualquier ventana** —pero sólo si `discover` filtra por
+sección. Sobre el
 BOE entero las tablas son el 12% y el `rowspan` una rareza; sobre las secciones de
 disposiciones —I y III, que es donde §9.4 del manual dice que `discover` filtra—
 las tablas son el 28% y **el 63% de ellas traen `rowspan` o `colspan` > 1**. El
@@ -28,6 +30,12 @@ es tan alta que el umbral de descarte casi no muerde.
 a ser parte de la definición del corpus. Sin él, tres de cada cuatro documentos
 descargados son anuncios y edictos sin tabla.
 
+**Lo que NO cambia:** la ventana temporal. Se midió sobre tres ventanas separadas
+por once meses y **las proporciones no se mueven** —§6—. Lo que sí se mueve, y
+mucho, es la **densidad**: agosto rinde 29 documentos por día publicado contra los
+49 de octubre. Eso no afecta a la composición del corpus, sólo a cuántos días hay
+que barrer.
+
 ---
 
 ## Condiciones del sondeo
@@ -37,7 +45,7 @@ Estampadas por el propio script en el JSON de salida, no escritas a mano.
 | | |
 |---|---|
 | Ejecutado | 2026-08-22T17:56:17Z |
-| Rango consultado | 20260803 – 20260821 (19 días naturales) |
+| Rangos consultados | `20251006–20251024`, `20260302–20260320`, `20260803–20260821` · 19 días naturales cada uno, todos ya cerrados |
 | Semilla | `20260822` |
 | Muestreo | `random.Random(semilla).sample` sobre el universo ordenado por identificador |
 | Espera entre peticiones | 0,25 s |
@@ -45,20 +53,33 @@ Estampadas por el propio script en el JSON de salida, no escritas a mano.
 | Plataforma | Linux 6.6.87.2 (WSL2), glibc 2.39 |
 | Commit | `f846873`, árbol limpio salvo `scripts/` sin seguir |
 
-**Códigos de salida de todo lo consultado.** 19 sumarios pedidos: **18 con HTTP 200
-y uno con 404** (20260816, domingo: el BOE no publica). El 404 va escrito porque un
-día que no se pudo consultar tiene que verse, no desaparecer del denominador.
+**Códigos de salida de todo lo consultado.** 19 sumarios pedidos por ventana. En
+agosto, **18 con HTTP 200 y uno con 404**; en otoño y primavera, **17 y dos 404**.
+Los 404 caen todos en domingo. Van escritos porque un día que no se pudo consultar
+tiene que verse, no desaparecer del denominador.
 
 ### Reproducción
 
+Las **tres ventanas son rangos pasados y cerrados**, elegidos así a propósito: un
+rango que aún no ha terminado deja de ser reproducible en cuanto el BOE publica un
+día más.
+
 ```bash
-uv run --with httpx --with pypdf python scripts/sondeo_boe.py \
-    --desde 20260803 --hasta 20260821 --n 200 --semilla 20260822 --secciones 1,3 \
-    --cache /tmp/sondeo_boe --json /tmp/sondeo/C.json
+for R in "20251006 20251024 otono-2025" \
+         "20260302 20260320 primavera-2026" \
+         "20260803 20260821 agosto-2026"; do
+  set -- $R
+  uv run --with httpx --with pypdf python scripts/sondeo_boe.py \
+      --desde "$1" --hasta "$2" --n 200 --semilla 20260822 --secciones 1,3 \
+      --cache /tmp/sondeo_boe --json "docs/sondeo-boe-$3.json"
+done
 ```
 
-Quitando `--secciones` sale la pasada de todo el BOE. Con `--solo-licencia` se
-comprueba sólo el punto 5, que es lo que más probablemente cambie con el tiempo.
+El JSON crudo de las tres está commiteado al lado de estas notas:
+[`otoño`](sondeo-boe-otono-2025.json), [`primavera`](sondeo-boe-primavera-2026.json),
+[`agosto`](sondeo-boe-agosto-2026.json). Quitando `--secciones` sale la pasada de
+todo el BOE. Con `--solo-licencia` se comprueba sólo el punto 5, que es lo que más
+probablemente cambie con el tiempo.
 
 ---
 
@@ -179,16 +200,29 @@ documento, máximo 95.
 
 ### Rendimiento, para dimensionar L3
 
-El universo de secciones I y III en 19 días naturales es de **524 documentos**
-(510 de la III y 14 de la I), o sea ~28 por día de publicación. Con las tasas de
-arriba:
+**Corregido con la ventana más densa.** La primera versión de estas notas daba
+«~36 días» calculados sobre agosto, que es el mes más flojo del año: era una **cota
+superior**, no una estimación. Con las tres ventanas medidas:
 
-- **1.000 documentos emparejados** —el criterio de aceptación de L3— salen de unos
-  **36 días de publicación**, mes y medio de BOE.
-- Los **120 de `celdas-combinadas`** que pide el plan de §10.2 salen de ~667
-  documentos de estas dos secciones, unos **24 días de publicación**.
+| Ventana | Universo (secc. I+III) | Días publicados | Densidad | 1.000 docs | 120 `celdas-combinadas` |
+|---|---|---|---|---|---|
+| **otoño 2025** | 827 | 17 | **48,6 doc/día** | **21 días** (~4 semanas) | **15 días** |
+| primavera 2026 | 802 | 17 | 47,2 doc/día | 22 días | 23 días |
+| agosto 2026 | 524 | 18 | 29,1 doc/día | 35 días | 23 días |
 
-No hace falta barrer años. **Cabe en un rango de fechas de dos meses.**
+**El número que vale para planificar es el de una ventana normal: 21-22 días de
+publicación para los 1.000 documentos del criterio de L3**, o sea unas cuatro
+semanas naturales. El rango entre ventanas es de 21 a 35 días, y el extremo alto es
+agosto.
+
+Agosto es peor por **densidad, no por composición**: tuvo 18 días publicados frente
+a 17 de las otras dos ventanas, y aun así un 37% menos de documentos.
+
+> **Detalle del calendario, medido y no supuesto:** el BOE **publica los sábados** y
+> no los domingos. En las tres ventanas los únicos HTTP 404 caen en domingo. La
+> excepción es el **domingo 9 de agosto de 2026**, que sí publicó (HTTP 200). Los
+> «días publicados» de la tabla son los sumarios con HTTP 200, contados, no los días
+> hábiles supuestos.
 
 ---
 
@@ -237,6 +271,86 @@ de atribución». El texto legal dice:
 
 ---
 
+## 6 · ¿Se mueven las proporciones con la ventana temporal?
+
+La pregunta no es cuánto vale cada proporción en otoño: es **si se mueven**. Si se
+movieran, la ventana temporal sería un estrato más y habría que declararlo **antes**
+de que L6 congele el plan de muestreo.
+
+Tres ventanas de 19 días naturales, separadas por hasta once meses, todas con
+`--n 200 --semilla 20260822 --secciones 1,3`. Rangos **pasados y cerrados**, así que
+son reproducibles para siempre.
+
+| Métrica | otoño 2025 | primavera 2026 | agosto 2026 | ¿solapan? |
+|---|---|---|---|---|
+| Emparejado PDF+XML | 100% [98–100] | 100% [98–100] | 100% [98–100] | **sí** |
+| Con `<table>` | 31% [25–38] | 28% [23–35] | 28% [23–35] | **sí** |
+| …de ésos, con span > 1 | 55% [43–67] | 40% [29–53] | 63% [50–74] | **sí** |
+| …de ésos, con `rowspan` > 1 | 44% [32–56] | 25% [15–37] | 42% [30–55] | **sí** |
+| `celdas-combinadas` (sobre la muestra) | 17% [12–23] | 12% [8–17] | 18% [13–24] | **sí** |
+| `tabla-simple` | 14% [10–19] | 17% [12–23] | 10% [7–16] | **sí** |
+| `sin-tabla` | 64% [57–70] | 66% [59–72] | 71% [64–77] | **sí** |
+| `anexo-png` | 5,0% [2,7–9,0] | 5,5% [3,1–9,6] | 0,5% [0,1–2,8] | **no** |
+| Descarte a umbral 0,85 | 4% [2–8] | 6% [3–10] | 2% [1–5] | **sí** |
+
+Ventanas: otoño `20251006–20251024`, primavera `20260302–20260320`, agosto
+`20260803–20260821`. n=200 en cada una, cero fallos en las tres.
+
+### Ocho de nueve se solapan. La novena no sobrevive al examen
+
+**`anexo-png` es la única que no solapa, y sólo en un par de tres.** Primavera
+(11/200) contra agosto (1/200) no se tocan; otoño contra agosto sí, por un pelo
+(2,74 frente a 2,78). Otoño contra primavera coinciden casi exactamente.
+
+Mirar solapes de intervalos no basta aquí, porque el cuadro tiene **27
+comparaciones por pares** (9 métricas × 3 pares) y a ese volumen aparecen
+discrepancias por azar. Se contrasta con la **prueba exacta de Fisher**:
+
+| Par | k/n | p |
+|---|---|---|
+| otoño vs primavera | 10/200 vs 11/200 | 1,000 |
+| otoño vs agosto | 10/200 vs 1/200 | 0,011 |
+| primavera vs agosto | 11/200 vs 1/200 | 0,0056 |
+
+Con corrección de Bonferroni sobre las 27 comparaciones el umbral es 0,0019, y
+**ninguna de las tres lo cruza**. Y hay un argumento más fuerte que el estadístico:
+`anexo-png` y `sin-tabla` son **la misma población** partida por una prueba de
+imagen —un documento sin `<table>`, con o sin `<img>`—. Sumados, las tres ventanas
+son indistinguibles: **69% [62–75], 72% [65–77], 72% [65–77]**.
+
+**No se declara como movimiento**, pero tampoco se entierra: los dos contrastes
+apuntan en la misma dirección (agosto por debajo) desde dos ventanas independientes,
+y eso es sugerente aunque no esté establecido. Queda escrito para que, si en L3
+aparece otra vez, no se lea como un hallazgo nuevo.
+
+### Un defecto del propio estrato, que L3 hereda
+
+Al mirar qué son esos documentos, `anexo-png` resulta **no ser homogéneo**. En
+otoño llevan de 1 a 14 imágenes y de 7 a 15 páginas; en primavera hay documentos de
+**134 imágenes y 136 páginas** junto a otros de una sola imagen. La etiqueta mezcla
+«un documento con una figura» con «un anexo escaneado de 136 páginas», que para un
+extractor no son el mismo problema ni de lejos. **La regla `anexo-png` de §9.4
+necesita un umbral**, y esa es una decisión de L3, no de este sondeo.
+
+### La conclusión, para L6
+
+**La mezcla de estratos se mantiene dentro de los intervalos, así que el diseño de
+L3 es seguro con cualquier ventana, y la ventana temporal NO es un estrato.** Lo que
+sí hay que declarar en el plan es otra cosa:
+
+1. **La densidad varía 1,7×** entre agosto y octubre (29,1 contra 48,6 documentos
+   por día publicado). No cambia la composición, pero sí cuántos días hay que
+   barrer, y un plan que dimensione con agosto pedirá un 67% más de calendario del
+   necesario.
+2. **La ventana usada va escrita en el plan**, con sus fechas exactas y su densidad
+   medida. No como estrato, sino como condición declarada — la misma lección que las
+   cifras locales de `docs/metrics.md`.
+3. **Este sondeo mira tres ventanas de 19 días.** No dice nada de enero, de junio ni
+   de un cambio de gobierno. Que tres ventanas coincidan no demuestra que todas lo
+   hagan.
+
+---
+
 ## Lo que esto cambia en L3, y lo que no
 
 **Se confirma y no hay que tocarlo:** la verdad de referencia sale del XML sin
@@ -257,12 +371,20 @@ corpus de una colección de CSV.
    no «Fuente de los datos:…», porque el banco crea obra derivada.
 5. **`multipagina` no se puede etiquetar desde el XML.** O se mide sobre el PDF, o
    el estrato se declara vacío. Es una decisión que L3 tiene que tomar explícitamente.
+6. **`anexo-png` necesita un umbral.** Tal como está la regla de §9.4 mete en la
+   misma etiqueta un documento con una figura y un anexo escaneado de 136 páginas.
+7. **El plan de L6 declara su ventana con las fechas y la densidad medida**, no como
+   estrato —no lo es— sino como condición. Dimensionar con agosto pide un 67% más de
+   calendario del necesario.
 
 ## Lo que este sondeo NO mide
 
-- **Un rango de 19 días de agosto.** Agosto es atípico en el BOE: menos disposiciones
-  y más anuncios. Las proporciones por sección pueden no valer para el resto del año,
-  y eso **no se ha comprobado**.
+- **Tres ventanas de 19 días, no el año.** Se comprobó que las proporciones no se
+  mueven entre octubre, marzo y agosto (§6), pero **no se ha mirado enero, ni junio,
+  ni un año con cambio de gobierno o de legislatura**. Que tres ventanas coincidan no
+  demuestra que todas lo hagan.
+- **Nada sobre por qué agosto es un 37% menos denso.** Se mide que lo es; la causa
+  —vacaciones, calendario administrativo, otra cosa— **no se ha investigado**.
 - **La calidad del XML como verdad de referencia.** Que haya `<table>` no dice que
   la tabla sea correcta ni que coincida con lo que se ve en el PDF. Eso es L4 y L8b.
 - **Nada sobre los otros tres estratos de corpus** de §3 bis.
