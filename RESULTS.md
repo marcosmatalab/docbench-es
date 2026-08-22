@@ -35,32 +35,43 @@ portátil delante.
 
 | Medida | Valor | Presupuesto | Margen |
 |---|---|---|---|
-| *Run* completo del workflow `fast`, en frío | **12 s** | — | — |
-| Job `fast` dentro de ese run | **10 s** | 90 s | 9× |
+| **`make fast` en `ubuntu-latest`, en frío** | **3,41 s** | **90 s** | **26×** |
+| Job `fast` completo (incluye `checkout`, `setup-uv`, `uv sync`) | 11 s | — | — |
+| *Run* completo (incluye encolado y pasos `Post`) | 16 s | — | — |
 
-> **Qué mide exactamente cada fila, porque no es lo que parece.** Los 12 s son el
-> reloj de pared del *run* entero: encolado, `actions/checkout`, `setup-uv`,
-> `uv sync`, la puerta y los pasos `Post`. El job son 10 s. **`make fast` a secas
-> es un subconjunto de esos 10 s, y no se puede desglosar**: el log de la corrida
-> ya no está disponible y `gh run view --json` no da tiempos por paso. Así que
-> contra el presupuesto de §15 se compara el job, que es una **cota superior** del
-> tiempo de la puerta: si 10 s cabe en 90 s, `make fast` también. Una versión
-> anterior de esta tabla publicaba los 12 s como si fueran `make fast`.
+> **Qué mide cada fila, porque las tres se han confundido antes.** Sólo la
+> primera es el criterio de aceptación de L0: es el paso `la puerta`, medido desde
+> su `##[group]Run make fast` hasta la última línea de `pytest`, o sea `make fast`
+> y nada más. Las otras dos se publican para que nadie las confunda con ella: el
+> job añade el `checkout`, el `setup-uv` y el `uv sync`, y el run añade encima el
+> encolado y los pasos `Post`. Una versión anterior de esta tabla publicaba los
+> 16 s del run como si fueran `make fast`, y luego el job como «cota superior»
+> porque el log ya no estaba disponible. Ahora está el número exacto.
 
-- **Corrida:** [`32482756941`](https://github.com/marcosmatalab/docbench-es/actions/runs/32482756941) · commit `e32c846` · 2026-08-21T12:37:19Z
+- **Corrida:** [`32572385551`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572385551) · commit `78ee8f0` · 2026-08-22T12:13:00Z · `success`
 - **Máquina:** runner estándar de GitHub, `ubuntu-latest`, 4 vCPU
-- **En frío** de verdad: incluye `uv sync --only-group dev` y no hay caché de
-  mypy, ruff ni import-linter que valga, porque el runner nace limpio.
-- **Reproducción:** `gh run list --workflow fast` · `gh run view 32482756941`
+- **En frío** de verdad: no hay caché de mypy, ruff ni import-linter que valga,
+  porque el runner nace limpio. La caché de `setup-uv` sólo cubre la descarga de
+  paquetes, que queda **fuera** de los 3,41 s por estar en el paso anterior.
+- **Reproducción:**
+  ```bash
+  gh run view 32572385551
+  # y el desglose por pasos, que `--json` no da:
+  JID=$(gh run view 32572385551 --json jobs -q '.jobs[0].databaseId')
+  gh api "repos/marcosmatalab/docbench-es/actions/jobs/$JID/logs" \
+    | grep -E '##\[group\]Run make fast|\[100%\]'
+  ```
+- **Este número mide L0**, el commit `78ee8f0`, no el pack de arranque. La tabla
+  anterior citaba la corrida `32482756941` de `e32c846`, y lo decía; se ha
+  sustituido al cerrar el hito, como estaba previsto.
+- **Sin intervalo porque es n=1**: una sola corrida en el runner. El rango con
+  n=10 está abajo, en local. Publicar un intervalo de una sola medición sería
+  inventárselo.
 
-> **Honestidad sobre a qué commit corresponde.** Esa corrida mide `e32c846`, el
-> pack de arranque parcheado, no el contenido de L0. L0 añade el modelo de datos
-> (28 ficheros analizados en vez de 18) y 10 tests en vez de 1. **Este número se
-> vuelve a tomar en el push de L0**, con `/cerrar`, y esta tabla se sustituye por
-> el de su corrida. Publicarlo ahora como si fuera el de L0 sería exactamente el
-> tipo de cosa que este repo dice no hacer.
-> Sin intervalo porque es **n=1**: una sola corrida. Con dos o más se publica el
-> rango, como abajo.
+**Qué comprueba además esa corrida**, y es parte del resultado: el paso
+`CI corre el Python de .python-version` imprime `esperado=3.12 real=3.12`. Hasta
+este hito el pin era decorativo —`setup-uv@v3` ignoraba el input `python-version`
+con un aviso en cada corrida— y CI y local coincidían por casualidad.
 
 ### El número local: mi máquina, declarada, y en frío y en caliente
 
@@ -69,18 +80,23 @@ para que la diferencia entre frío y caliente no se cuele en la cifra publicada.
 
 | Medida | Mediana | Rango (n=10) |
 |---|---|---|
-| `make fast` en frío | **1089 ms** | 1052 – 1107 ms |
-| `make fast` en caliente | **730 ms** | 687 – 760 ms |
+| `make fast` en frío | **1095 ms** | 1058 – 1148 ms |
+| `make fast` en caliente | **720 ms** | 713 – 749 ms |
 
 En milisegundos y en crudo, no redondeado a dos cifras: con el redondeo anterior
 la mediana en frío salía «1,00 s» y el máximo también «1,00 s», que es una tabla
-que se lee como imposible. Medidas en frío: `1104 1084 1096 1079 1086 1074 1107
-1095 1052 1092`. En caliente: `690 698 729 760 732 757 749 687 740 714`.
+que se lee como imposible. Medidas en frío: `1112 1148 1058 1118 1098 1091 1080
+1101 1078 1093`. En caliente: `716 720 740 717 713 721 749 748 714 730`.
 
-Suben respecto a la primera medición de L0 (958 / 564 ms) porque el hito creció
-al cerrarse: cinco tests más —dos de ellos property-based, que ejecutan 100 casos
-cada uno—, un módulo más en `src/` y los `__post_init__` que congelan los mapas.
-Se deja escrito para que la subida no se lea como una regresión sin causa.
+Medidas sobre `78ee8f0`, el árbol tal como queda al cerrar L0. Suben respecto a
+la primera medición del hito (958 / 564 ms) porque L0 creció al cerrarse: cinco
+tests más —dos de ellos property-based, que ejecutan 100 casos cada uno—, dos
+módulos más y los `__post_init__` que congelan los mapas. Se deja escrito para que
+la subida no se lea como una regresión sin causa.
+
+**El local es ~3× más rápido que el runner** (1,1 s contra 3,41 s) y esa
+diferencia no se atribuye aquí a ninguna causa concreta: son máquinas distintas y
+no se ha medido el reparto. El número que vale es el del runner.
 
 - **Máquina:** AMD Ryzen 9 9950X3D, 8 vCPU asignadas a WSL2, 31 GB RAM ·
   Ubuntu 24.04.3 LTS sobre WSL2 (kernel 6.6.87.2) · Python 3.12.3 · uv 0.12.0
@@ -121,16 +137,17 @@ no hacerlo son esos 0,15 s.
 
 ### Qué cubre exactamente ese tiempo
 
-`ruff check` (33 ficheros) + `ruff format --check` (32 ficheros) +
+`ruff check` (34 ficheros) + `ruff format --check` (33 ficheros) +
 `mypy --strict src` (24 ficheros) + `lint-imports` (4 contratos, 32 ficheros y 42
 dependencias analizadas) + `pytest tests/unit` (15 tests, dos de ellos
 property-based con `hypothesis`). Sin red y sin Docker.
 
 Los cuatro recuentos son distintos y eso es correcto, no un descuadre: `ruff
-check` incluye `pyproject.toml` además de los 32 `.py`, `ruff format` sólo los
+check` incluye `pyproject.toml` además de los 33 `.py`, `ruff format` sólo los
 `.py`, `mypy --strict` sólo `src/`, y `lint-imports` recorre el grafo de paquetes.
 Se anota porque una versión anterior de esta línea le atribuía a mypy los 28 de
-`lint-imports`. Comprobados con `uv run ruff check . -v`.
+`lint-imports`. Comprobados con `uv run ruff check . -v`, y el de `mypy` y el de
+`lint-imports` coinciden con los que imprime la corrida `32572385551`.
 
 ### Control negativo, ejecutado
 

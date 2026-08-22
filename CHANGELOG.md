@@ -78,9 +78,10 @@ afirmación del repo:
 
 #### Verificado, ejecutándolo
 
-**1 · La puerta, en verde y dentro de presupuesto.** Ver `RESULTS.md`, que separa
-el tiempo del *run* completo del job y da el local con su n y su rango. El número
-de la corrida de CI de L0 se toma en el push de este commit.
+**1 · La puerta, en verde y dentro de presupuesto.** `make fast` en **3,41 s** en
+el runner de GitHub contra los 90 s de §15, corrida `32572385551` sobre el commit
+de L0. `RESULTS.md` separa ese número del job (11 s) y del run (16 s), que no son
+lo mismo, y da además el local con su n y su rango.
 
 **2 · Que `python-version` no hacía nada.** Los tres workflows se lo pasaban a
 `astral-sh/setup-uv@v3`, que **no acepta ese input**. Comprobado empujando una
