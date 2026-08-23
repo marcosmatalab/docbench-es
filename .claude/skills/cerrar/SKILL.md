@@ -62,8 +62,8 @@ disable-model-invocation: true
    ```
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
-   FUERA del arnés.** «Los 18 mutantes mueren» habla de esos 18 huecos, no de la
-   suite: en L2 el arnés cubría 149 de 177 tests, o sea que 28 quedaban fuera.
+   FUERA del arnés.** «Los 21 mutantes mueren» habla de esos 21 huecos, no de la
+   suite: en L2 el arnés cubría 160 de 183 tests, o sea que 23 tests quedaban fuera.
 
    **Estos recuentos NO se copian a mano a ningún documento.** Los calcula
    `tests/unit/conftest.py` en cada colección y `tests/unit/test_recuentos.py`
@@ -81,6 +81,18 @@ disable-model-invocation: true
 
    En L2 la primera versión cazaba **2 de 4**. Si tu ronda caza menos que
    documentos has tocado, falta un patrón: añádelo antes de cerrar.
+
+   **Y el censo de fraseos**, que mide el hueco en vez de suponerlo:
+
+   ```bash
+   uv run python scripts/cobertura_patrones.py --detalle   # 0 falsos positivos, 7 escapes
+   ```
+
+   Los **falsos positivos tienen que quedarse en cero**: uno solo pone rojo un
+   documento que no miente, y un candado que da rojos falsos deja de leerse. Los
+   escapes son el hueco declarado en el límite 54; si suben mucho, añade patrones
+   —pero **estrechos**: ante la duda, se cambia la redacción del documento, no el
+   patrón.
 
 3. **¿Sigue alcanzando la estrategia el sitio donde vive el bug NUEVO?** Un test
    de propiedad que sigue **en verde** después de cambiar la implementación **no

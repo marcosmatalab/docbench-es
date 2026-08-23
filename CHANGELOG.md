@@ -28,7 +28,7 @@ de cada número vive con su método, en `docs/metrics.md`.
   ejecuta sin tocarle una línea a la lógica. `apted`, `distance` y `lxml` van por
   `uv run --with` y **no** entran en `pyproject.toml`: así nadie puede acabar
   calculando TEDS con la implementación ajena por accidente.
-- **95 tests nuevos** (82 → 177), y nueve mutantes más (9 → 18).
+- **101 tests nuevos** (82 → 183), y doce mutantes más (9 → 21).
 - **`scripts/ancla.py`**: un ancla de documento publicado tiene que aparecer
   **exactamente una vez** o no se edita nada. Nace de haber duplicado ~230
   líneas de `RESULTS.md` con un `s.index` sobre un encabezado que se repite
@@ -152,6 +152,60 @@ afirmaba algo que el código no cumplía.
   tabla de ADR enumeraba «los cuatro» existiendo 0013–0025. No es cosmético: el
   hook `SessionStart` inyecta ese fichero entero, así que la sesión siguiente lo
   lee antes que nada.
+
+#### Corregido en la auditoría en frío de `b7cc6c3`
+
+**El guardián de recuentos se rompía al correrlo solo.** `uv run pytest
+tests/unit/test_recuentos.py` fallaba en árbol limpio, con un mensaje que hablaba
+de una desincronización que no existía. Dos causas encadenadas:
+
+- **La precondición no estaba declarada.** Los recuentos salen de lo COLECTADO, así
+  que un fichero suelto —o un `-k`— daba `dentro=0` y alimentaba la comparación con
+  cifras falsas.
+- **Un patrón laxo.** `0 (?:muertes )?de {_N} tests` se escribió para el control
+  negativo del arnés de mutantes, pero el «muertes» opcional lo hacía casar con
+  cualquier «0 de N tests» — incluido el texto que el propio test se construye. Y
+  la laxitud no dependía de la primera causa: un documento que escribiera «0 de 23
+  tests» hablando de los de fuera se habría leído como `dentro`.
+
+**Lo que se hizo con cada cosa:**
+
+- **La precondición desaparece en vez de declararse**
+  ([ADR-0026](docs/adr/0026-los-recuentos-se-recuperan-no-se-saltan.md)): en una
+  corrida parcial los recuentos se **recuperan** con un `--collect-only` en
+  subproceso, **233 ms medidos**, y sólo se pagan cuando la selección incluye estos
+  tests. Descartadas por escrito las dos alternativas: **saltar** —un guardián que
+  se salta es un guardián muerto fuera de CI— y **fallar** —un rojo que no es un
+  bug enseña a ignorar el color, límite 25—.
+- **Contrapartida de recuperar en vez de saltar**: un test lee el `Makefile` y
+  `fast.yml` y se cae si la puerta deja de correr `tests/unit` entero o si CI deja
+  de llamar a `make fast`. El guardián funciona en cualquier corrida, pero lo que
+  impide que un número viejo llegue a `main` es que la puerta lo ejecute.
+- **Todos los patrones repasados con el mismo criterio**, no sólo el de la línea 96.
+  Cinco eran laxos y se estrecharon: `[Ss]on {_N} mutantes` casaba con «Son 0
+  mutantes supervivientes», `cubr[eí]a?n? {_N} de \d+` con «cubre 3 de 7 casos»,
+  `[Ll]os {_N} restantes` con «los cinco conversores restantes», `{_N} mutantes
+  existentes` con prosa histórica, y el de la línea 96 con cualquier «0 de N
+  tests». **El criterio queda escrito**: ante la duda el patrón se ESTRECHA, y si
+  una redacción no casa se cambia la redacción, no el patrón.
+- **Segundo control negativo, el que faltaba: cifras DEGENERADAS.** El que había
+  cubría «los números no cuadran entre documentos»; éste cubre «los números contra
+  los que comparo no son una medición». `exigir_sano()` impone cuatro invariantes
+  estructurales —`total == dentro + fuera`, y los tres recuentos ≥ 1— y
+  `desacuerdos()` los exige antes de mirar un solo documento.
+
+#### Añadido
+
+- **`scripts/cobertura_patrones.py`**: censo de 30 frases que alguien escribiría en
+  este repo, en las dos direcciones. **0 falsos positivos de 12** y **7 escapes de
+  18**. `LIMITS.md` 54 deja de ser una afirmación y pasa a tener número y comando.
+- **Tres mutantes para el guardián**, que era el candado más nuevo del repo y el
+  único sin uno: `recuentos_todo_vale` (la guarda de degenerados acepta todo),
+  `recuentos_sin_claude` (deja de mirar `.claude/`) y `recuentos_plano_flojo` (no
+  colapsa saltos de línea, lo que además rompe las excepciones históricas). Los
+  tres murieron con un solo asesino, y se les añadió el segundo partiendo los tests
+  que mezclaban dos preguntas. Sale de la deuda 7 de `ESTADO.md`: *«un candado que
+  no se ha probado contra su propia rotura no es un candado»*.
 
 #### Corregido en la auditoría en frío de `c71b31f`
 

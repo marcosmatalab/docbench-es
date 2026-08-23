@@ -64,6 +64,13 @@ PLAN = [
     ),
     ("cellmatch_siempre_ok", "tests/unit/test_cellmatch.py"),
     ("cellmatch_siempre_roto", "tests/unit/test_cellmatch.py"),
+    # El candado más nuevo del repo, contra su propia rotura. Sale de la deuda 7
+    # de `ESTADO.md`: «un candado que no se ha probado contra su propia rotura no
+    # es un candado», y éste es una barrera, o sea código cuyo único trabajo es
+    # ponerse rojo.
+    ("recuentos_todo_vale", "tests/unit/test_recuentos.py"),
+    ("recuentos_sin_claude", "tests/unit/test_recuentos.py"),
+    ("recuentos_plano_flojo", "tests/unit/test_recuentos.py"),
 ]
 
 

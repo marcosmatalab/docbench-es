@@ -413,7 +413,7 @@ sino **la pendiente**.
 |---|---|---|---|---|
 | L0 | 1742 ms | 1715 – 1872 | 15 | Modelo de datos y errores |
 | L1 | 3829 ms | 3713 – 3875 | 82 | Invariantes, cinco conversores, 17 propiedades de `hypothesis` y `mypy --strict` sobre `tests/` |
-| L2 | **5604 ms** (n=40, p90 5728, σ=76) | 5140 – 6048 | 177 | TEDS y su validación contra los 20 casos de PubTabNet, `cellmatch`, y el presupuesto de ejemplos declarado en las ocho suites |
+| L2 | **5604 ms** (n=40, p90 5728, σ=76) | 5140 – 6048 | 183 | TEDS y su validación contra los 20 casos de PubTabNet, `cellmatch`, y el presupuesto de ejemplos declarado en las ocho suites |
 
 **+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
 `mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de

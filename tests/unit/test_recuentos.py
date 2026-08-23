@@ -17,22 +17,31 @@ uno y olvidar tres, y eso es una clase distinta: no es un error de edición, es 
 aparecen en más de un sitio concuerden»—. Habría cazado *este* caso, pero no el
 peor: **si los cuatro documentos dicen 12 y la realidad es 18, concuerdan y el
 test pasa en verde**. Comparar copias entre sí no comprueba nada contra el mundo;
-sólo comprueba que se copiaron bien.
+sólo comprueba que se copiaron bien. (Verificado por la auditoría de `b7cc6c3`:
+metiendo un mutante de más en el `PLAN` sin tocar ningún documento, esto se pone
+rojo y nombra las seis apariciones.)
 
-**Descartado: que `matar.py` escriba los recuentos a un JSON.** Ese JSON sólo
-está al día si alguien se acuerda de correr `matar.py`. Sería una **quinta copia
-capaz de quedarse vieja**, o sea el mismo fallo una capa más abajo, y encima con
-más apariencia de autoridad.
+**Descartado: que `matar.py` escriba los recuentos a un JSON.** Ese JSON sólo está
+al día si alguien se acuerda de correr `matar.py`. Sería una **quinta copia capaz
+de quedarse vieja**, o sea el mismo fallo una capa más abajo, y con más apariencia
+de autoridad.
 
-**Elegido: calcularlos donde no pueden estar viejos.** `tests/unit/conftest.py`
-los computa en `pytest_collection_modifyitems`, o sea **en cada `make fast`**: no
-hay fichero almacenado, así que no hay nada que sincronizar. Y son exactos, con la
-parametrización ya resuelta — un `grep "def test_"` daría otro número. El
-`PLAN` de `matar.py` se lee directamente, que es **la definición** de «dentro del
-arnés», en vez de copiarla aquí.
+**Elegido: calcularlos donde no pueden estar viejos.** `conftest.py` los computa
+en `pytest_collection_modifyitems`, o sea **en cada `make fast`**, leyendo el
+`PLAN` de `matar.py`. No hay fichero almacenado, así que no hay nada que
+sincronizar, y el recuento es exacto con la parametrización ya resuelta.
 
-Coste: un fichero de test y un hook de colección. No añade tiempo medible a la
-puerta porque no ejecuta nada, sólo cuenta lo ya colectado.
+## El criterio con el que se escriben los patrones
+
+**Ante la duda, el patrón se ESTRECHA, no se ensancha.** Un patrón laxo se pone
+rojo contra prosa correcta, y un candado que da rojos falsos enseña a ignorar el
+color — que es el argumento del límite 25 de este repo. Un patrón estrecho, en
+cambio, deja una redacción sin comprobar, y **eso ya está declarado en el límite
+54**. Entre un hueco declarado y un falso rojo, el hueco.
+
+Corolario: cuando una redacción de un documento no casa con ningún patrón, la
+respuesta por defecto es **cambiar la redacción a la canónica**, no aflojar el
+patrón para que quepa.
 """
 
 from __future__ import annotations
@@ -40,9 +49,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import conftest
 import pytest
-from conftest import FUERA_POR_FICHERO, RECUENTOS
+from conftest import RecuentoDegenerado, exigir_sano, fuera_por_fichero, recuentos
 
 RAIZ = Path(__file__).resolve().parents[2]
 
@@ -68,7 +76,7 @@ PALABRAS = {
     "dieciocho": 18,
     "diecinueve": 19,
     "veinte": 20,
-    "veintitrés": 23,
+    "veintiocho": 28,
 }
 """Este repo escribe los números en prosa tanto como en cifra —«los dieciocho
 mutantes del repo mueren»—, así que un patrón que sólo mire dígitos deja fuera
@@ -76,38 +84,45 @@ justo las frases de titular."""
 
 _N = r"(\d+|[a-záéíóúñ]+)"
 
-# Cada patrón exige ADYACENCIA con una palabra que sólo aparece en una afirmación
-# de RECUENTO. Sin eso, «los dos mutantes» —que en este repo es el NOMBRE de una
-# regla de `/cerrar`, no una cantidad— se leería como el recuento y el test
-# pediría que hubiera dos mutantes en el repo.
 PATRONES: tuple[tuple[str, str], ...] = (
+    # ---- mutantes: el número va SIEMPRE pegado a la palabra `mutantes` ----
     ("mutantes", rf"{_N} mutantes(?: del repo)? mueren"),
-    ("mutantes", rf"[Ss]on {_N} mutantes"),
-    ("mutantes", rf"{_N} mutantes existentes"),
+    ("mutantes", rf"[Ss]on {_N} mutantes, no \d+"),
+    # `{_N} mutantes existentes` a secas casaba con «Los 12 mutantes existentes
+    # antes de este cierre», que es prosa histórica correcta. «sobre los» fija
+    # que la frase habla del censo de HOY, que es lo único que este test sabe.
+    ("mutantes", rf"sobre los {_N} mutantes existentes"),
     ("mutantes", rf"{_N} mutantes (?:están versionados|se versionan)"),
     ("mutantes", rf"[Ll]os {_N} mutantes apuntan"),
-    # «cubre N de M» sin exigir qué palabra va antes: el control negativo destapó
-    # que `arn[eé]s cubr` no casaba con «El arnés DE MUTANTES cubre 107 de 176», y
-    # que exigir «tests» detrás dejaba pasar «149 de 176.» con punto. Un patrón
-    # que sólo caza la redacción que ya existe no protege de la siguiente.
-    ("dentro", rf"cubr[eí]a?n? {_N} de \d+"),
-    ("dentro", rf"suite entera: {_N} de \d+"),
-    ("total", rf"suite entera: \d+ de {_N}"),
-    ("dentro", rf"0 (?:muertes )?de {_N} tests"),
+    # ---- dentro / total: sólo la forma canónica «cubre N de M tests» ----
+    # `cubre {_N} de \d+` a secas casaba con «cubre 3 de 7 casos», que no habla de
+    # tests. Exigir `tests` detrás obliga a que la prosa sea canónica, y ésa es la
+    # dirección correcta: se arregla la frase del documento, no el patrón.
+    ("dentro", rf"cubr[eí]a?n? {_N} de \d+ tests"),
+    ("total", rf"cubr[eí]a?n? \d+ de {_N} tests"),
+    # ---- el control negativo del arnés: `muertes` es obligatorio ----
+    # Era `0 (?:muertes )?de {_N} tests`, y el «muertes» opcional lo hacía casar
+    # con CUALQUIER «0 de N tests». Con `dentro=0` de una colección parcial, el
+    # propio texto de prueba «el arnés cubre 0 de 5 tests» capturaba el 5 y se
+    # comparaba contra dentro. Lo reportó la auditoría en frío de `b7cc6c3`.
+    ("dentro", rf"0 muertes de {_N} tests"),
     ("dentro", rf"control negativo 0 de {_N}"),
+    # ---- fuera: siempre pegado a `tests` o a una forma inequívoca ----
+    # `[Ll]os {_N} restantes` a secas casaría con «los cinco conversores
+    # restantes», que es prosa correcta de este repo y no habla de tests.
     ("fuera", rf"{_N} tests restantes"),
-    ("fuera", rf"[Ll]os {_N} restantes"),
+    ("fuera", rf"[Ll]os {_N} tests que quedan fuera"),
     ("fuera", rf"esos {_N} tests"),
-    ("fuera", rf"{_N} quedaban fuera"),
-    ("total", rf"cubr[eí]a?n? \d+ de {_N}"),
+    ("fuera", rf"{_N} tests quedaban fuera"),
     ("total", rf"suite ya en {_N} tests"),
+    ("total", rf"suite entera: \d+ de {_N} tests"),
+    ("dentro", rf"suite entera: {_N} de \d+ tests"),
 )
 
 HISTORICOS: dict[str, str] = {
     # El contexto va SIN comillas invertidas ni asteriscos, porque se compara
     # contra el texto ya aplanado por `_plano`. Escribirlo con el markdown puesto
-    # hacía que la excepción no casara nunca y los dos históricos se contaran como
-    # error — que es un falso positivo, pero del lado seguro.
+    # hacía que la excepción no casara nunca.
     "nueve mutantes están versionados": (
         "Los nueve mutantes están versionados en scripts/mutantes/, porque la regla"
     ),
@@ -120,8 +135,8 @@ HISTORICOS: dict[str, str] = {
 Las dos son de L1, que cerró con nueve mutantes. La clave es la frase que casa; el
 valor es **la oración entera que tiene que seguir estando ahí**. Si alguien
 reescribe esa oración, la excepción deja de aplicarse y el test **se cae** — que
-es lo que se quiere. Eximir el fichero entero, en cambio, escondería también los
-errores nuevos, y `RESULTS.md` es justo donde más números viven."""
+es lo que se quiere. Eximir el fichero entero escondería también los errores
+nuevos, y `RESULTS.md` es justo donde más números viven."""
 
 
 def _documentos() -> list[Path]:
@@ -140,7 +155,7 @@ def _documentos() -> list[Path]:
 
 
 def _plano(texto: str) -> str:
-    """Sin asteriscos y con los espacios colapsados.
+    """Sin asteriscos, sin comillas invertidas y con los espacios colapsados.
 
     Las tres cosas hacen falta y las tres salieron de fallar: el énfasis de
     markdown parte `**18 mutantes**` por sitios distintos según dónde caiga la
@@ -156,7 +171,13 @@ def _valor(token: str) -> int | None:
 
 
 def desacuerdos(documentos: list[tuple[str, str]], esperado: dict[str, int]) -> list[str]:
-    """Las citas que no coinciden con el recuento real. Vacío = todo cuadra."""
+    """Las citas que no coinciden con el recuento real. Vacío = todo cuadra.
+
+    **Exige recuentos sanos antes de mirar nada**: comparar contra cifras
+    degeneradas produce una lista de acusaciones falsas contra documentos
+    correctos, que es peor que no comprobar.
+    """
+    exigir_sano(esperado)
     fallos: list[str] = []
     for nombre, texto in documentos:
         plano = _plano(texto)
@@ -178,62 +199,180 @@ def _leidos() -> list[tuple[str, str]]:
 def test_ningun_documento_publicado_cita_un_recuento_viejo() -> None:
     """**La comprobación.** Cuatro copias del mismo número, una sola verdad.
 
-    **Sólo vale sobre `tests/unit` entero**, y por eso se salta si no lo es: con
-    `pytest tests/unit/test_recuentos.py` el recuento colectado son 4 tests, y
-    compararlo contra los documentos declararía que todos mienten. Saltarlo con
-    su motivo es lo honesto; dejarlo pasar en verde sobre una colección parcial
-    sería un test que dice más de lo que ha mirado.
-
     Si esto se cae, el arreglo NO es tocar el número del documento hasta que pase:
-    es mirar cuál de los dos es cierto. El de `RECUENTOS` sale de contar lo que
-    pytest acaba de colectar y del `PLAN` de `matar.py`, así que normalmente el
-    que está mal es el documento — pero conviene mirarlo, porque un `PLAN` mal
-    escrito también movería este número.
+    es mirar cuál de los dos es cierto. El de `recuentos()` sale de contar la
+    colección y del `PLAN` de `matar.py`, así que normalmente el que está mal es el
+    documento — pero conviene mirarlo, porque un `PLAN` mal escrito también movería
+    este número.
     """
-    if not conftest.COMPLETA:
-        pytest.skip("colección parcial: este recuento sólo vale sobre tests/unit entero")
-    fallos = desacuerdos(_leidos(), RECUENTOS)
+    fallos = desacuerdos(_leidos(), recuentos())
     assert fallos == [], "recuentos desincronizados entre documentos:\n  " + "\n  ".join(fallos)
 
 
 def test_la_comprobacion_se_cae_con_una_cifra_desincronizada() -> None:
-    """**El control negativo.** Sin esto, un patrón roto da la misma luz verde.
+    """**Control negativo 1: cifras DESINCRONIZADAS.**
 
-    Es el mismo argumento que el control negativo del arnés de mutantes: un
-    detector que nunca ha demostrado que sabe decir «no» no ha demostrado nada.
+    Un detector que nunca ha demostrado que sabe decir «no» no ha demostrado nada.
+    Es el mismo argumento que el control negativo del arnés de mutantes.
     """
+    reales = recuentos()
     viejo = "Los 12 mutantes mueren, y el arnés cubre 107 de 145 tests."
-    fallos = desacuerdos([("inventado.md", viejo)], RECUENTOS)
+    fallos = desacuerdos([("inventado.md", viejo)], reales)
     assert len(fallos) == 3, f"tendría que cazar mutantes, dentro y total: {fallos}"
     assert all("inventado.md" in f for f in fallos)
 
-    # Y la otra mitad: sobre el texto correcto NO inventa un desacuerdo.
     bueno = (
-        f"Los {RECUENTOS['mutantes']} mutantes mueren, "
-        f"y el arnés cubre {RECUENTOS['dentro']} de {RECUENTOS['total']} tests."
+        f"Los {reales['mutantes']} mutantes mueren, "
+        f"y el arnés cubre {reales['dentro']} de {reales['total']} tests."
     )
-    assert desacuerdos([("inventado.md", bueno)], RECUENTOS) == []
+    assert desacuerdos([("inventado.md", bueno)], reales) == [], (
+        "sobre el texto CORRECTO no puede inventar un desacuerdo: eso es lo que "
+        "pasaba cuando `0 (?:muertes )?de N tests` casaba con «cubre 0 de 5 tests»"
+    )
+
+
+def test_la_comprobacion_se_niega_con_recuentos_degenerados() -> None:
+    """**Control negativo 2: cifras DEGENERADAS.** El caso 3 de `/adversarial`.
+
+    El primero cubría «los números no cuadran entre documentos». Éste cubre la
+    otra mitad, que es la que rompió el mecanismo en `b7cc6c3`: **que los números
+    contra los que se compara no sean una medición**.
+
+    Una colección parcial da `dentro=0` y `total=5`. La primera versión los usaba
+    tal cual y acusaba a los documentos correctos de estar desincronizados — un
+    mensaje que hablaba de una desincronización que no existía. Ahora se distingue:
+    *«no hay medición»* no es *«el documento está mal»*.
+    """
+    descuadrado = {"mutantes": 18, "total": 999, "dentro": 149, "fuera": 28}
+    with pytest.raises(RecuentoDegenerado, match=r"total=999"):
+        exigir_sano(descuadrado)
+
+    sin_plan = {"mutantes": 0, "total": 177, "dentro": 149, "fuera": 28}
+    with pytest.raises(RecuentoDegenerado, match=r"PLAN de matar\.py está vacío"):
+        exigir_sano(sin_plan)
+
+    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5}
+    with pytest.raises(RecuentoDegenerado, match="dentro=0"):
+        exigir_sano(parcial)
+
+    # Y la otra mitad, sin la cual esto pasaría por rechazarlo todo:
+    assert exigir_sano(recuentos()) == recuentos()
+
+
+def test_desacuerdos_se_niega_a_comparar_contra_recuentos_degenerados() -> None:
+    """El segundo asesino de `recuentos_todo_vale`, por otra puerta.
+
+    El de arriba comprueba `exigir_sano` en directo. Éste comprueba que
+    **`desacuerdos` lo llama antes de mirar un solo documento**, que es lo que de
+    verdad importa: una guarda que existe y que nadie invoca no guarda nada. Los
+    dos hacen falta, y por eso van separados en vez de en el mismo test.
+    """
+    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5}
+    with pytest.raises(RecuentoDegenerado, match="dentro=0"):
+        desacuerdos([("da_igual.md", "Los 18 mutantes mueren")], parcial)
+
+    with pytest.raises(RecuentoDegenerado, match="la colección no llegó a correr"):
+        desacuerdos([("da_igual.md", "")], {})
+
+
+def test_una_corrida_parcial_recupera_los_recuentos_de_verdad() -> None:
+    """**La precondición, resuelta en vez de declarada.**
+
+    `pytest tests/unit/test_recuentos.py` colecta 5 tests: `dentro=0`, `total=5`.
+    Esas cifras son ciertas sobre la corrida y **falsas sobre el repo**.
+
+    Las dos salidas que se plantearon:
+
+    | | Coste |
+    |---|---|
+    | **saltar** si la corrida es parcial | un guardián que se salta es un guardián |
+    | | muerto en todo contexto que no sea CI |
+    | **fallar** con «exige la suite entera» | pone rojo el desarrollo normal, y un |
+    | | rojo que no es un bug enseña a ignorar el color |
+
+    **Se eligió una tercera, que quita el dilema**: recuperar los recuentos de
+    verdad con un `--collect-only` en un subproceso. **233 ms medidos**, y sólo se
+    pagan cuando la selección INCLUYE estos tests — si `-k` los deselecciona, no se
+    ejecutan y no hay coste. Así el guardián vive en **todas** las corridas.
+
+    Este test comprueba que la recuperación funciona: sea cual sea la corrida,
+    `recuentos()` devuelve cifras sanas y coherentes con el disco.
+    """
+    cuenta = recuentos()
+    exigir_sano(cuenta)
+    ficheros_en_disco = len(list((RAIZ / "tests" / "unit").glob("test_*.py")))
+    assert cuenta["total"] > ficheros_en_disco, (
+        f"total={cuenta['total']} con {ficheros_en_disco} ficheros de test: "
+        "eso no es el repo entero, la recuperación no funcionó"
+    )
+    assert set(fuera_por_fichero()) <= {p.name for p in (RAIZ / "tests" / "unit").glob("test_*.py")}
+
+
+def test_el_guardian_corre_donde_importa_y_no_solo_donde_se_le_llama() -> None:
+    """La contrapartida de recuperar en vez de saltar: **comprobar dónde vive**.
+
+    Aunque la recuperación hace que funcione en cualquier corrida, lo que de verdad
+    impide que un número viejo llegue a `main` es que **la puerta lo ejecute**. Si
+    alguien estrecha el `pytest` del Makefile a un subconjunto, o CI deja de llamar
+    a `make fast`, el guardián sigue verde y deja de guardar.
+
+    Esto se cae ese día, que es el único momento en que sirve de algo.
+    """
+    makefile = (RAIZ / "Makefile").read_text(encoding="utf-8")
+    fast = makefile[makefile.index("\nfast:") :]
+    fast = fast[: fast.index("\n\n")]
+    assert "pytest tests/unit" in fast, f"la puerta ya no corre tests/unit entero:\n{fast}"
+    assert "test_recuentos" not in fast, "la puerta selecciona ficheros sueltos, no el directorio"
+
+    ci = (RAIZ / ".github" / "workflows" / "fast.yml").read_text(encoding="utf-8")
+    assert "make fast" in ci, "el CI ya no llama a `make fast`: el guardián se quedó sin casa"
 
 
 def test_la_comprobacion_mira_de_verdad_dentro_de_claude() -> None:
     """`.claude/` es donde estaba el tercer «12», y donde nadie mira.
 
     Sin esto, `_documentos()` podría dejar de recorrer `.claude/` —un `rglob` mal
-    escrito, un directorio renombrado— y los dos tests de arriba seguirían verdes
-    sobre menos ficheros de los que dicen cubrir.
+    escrito, un directorio renombrado— y los tests de arriba seguirían verdes sobre
+    menos ficheros de los que dicen cubrir.
     """
-    if not conftest.COMPLETA:
-        pytest.skip("colección parcial: este recuento sólo vale sobre tests/unit entero")
     revisados = [n for n, _ in _leidos()]
     del_claude = [n for n in revisados if n.startswith(".claude/")]
     assert del_claude, "no se está mirando .claude/, que es donde vive el guion de /cerrar"
 
+
+def test_claude_aporta_al_menos_una_cita_de_recuento() -> None:
+    """Segundo asesino de `recuentos_sin_claude`, y otra pregunta.
+
+    El de arriba comprueba que `.claude/` **está en la lista**. Éste, que además
+    **aporta algo**: un `.claude/` recorrido pero sin ninguna cita daría la misma
+    luz verde que no recorrerlo, y entonces la afirmación «cubre `.claude/`» sería
+    cierta y vacía a la vez.
+    """
+    del_claude = [n for n, _ in _leidos() if n.startswith(".claude/")]
     citas = sum(
-        len(re.findall(patron, _plano(Path(RAIZ / n).read_text(encoding="utf-8"))))
+        len(re.findall(patron, _plano((RAIZ / n).read_text(encoding="utf-8"))))
         for n in del_claude
         for _, patron in PATRONES
     )
     assert citas >= 1, "ningún fichero de .claude/ cita un recuento: la cobertura sería vacía"
+
+
+def test_plano_colapsa_los_saltos_de_linea_y_no_solo_los_espacios() -> None:
+    """Segundo asesino de `recuentos_plano_flojo`, y la razón por la que existe.
+
+    Los documentos de este repo van a 80 columnas, así que **casi toda frase larga
+    está partida**. Un `_plano` que colapsara sólo espacios y tabuladores dejaría
+    de casar con `LIMITS.md` 51 —cuyo «Los / 21 mutantes apuntan» cruza una línea—
+    y también rompería las excepciones de `HISTORICOS`, que se comparan contra el
+    texto aplanado: medido, ese mutante convierte las dos citas históricas de L1 en
+    dos falsos positivos.
+
+    El otro asesino es la comprobación entera; éste mira la pieza sola, que es lo
+    que permite saber **cuál** de las dos cosas se rompió.
+    """
+    assert _plano("Los\n21 mutantes") == "Los 21 mutantes"
+    assert _plano("uno\n\n  dos\ttres") == "uno dos tres"
+    assert _plano("**negrita** y `código`") == "negrita y código"
 
 
 def test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos() -> None:
@@ -242,23 +381,15 @@ def test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos() -> None
     El límite real de esto es que sólo caza los **fraseos que alguien previó**.
     Medido durante su construcción: desincronizando una cifra a propósito en cuatro
     documentos, la primera versión cazó 2, la segunda 3, y la cuarta hizo falta
-    porque «no cubre la suite entera: 149 de 176» no se parecía a ningún patrón.
+    porque «no cubre la suite entera: 149 de 177» no se parecía a nada previsto.
 
     Eso no se puede cerrar del todo —el español no se enumera— pero sí se puede
-    cerrar su **forma peligrosa**: que un patrón deje de casar en todas partes y
-    el test siga verde sin comprobar nada. Aquí se exige que cada uno de los
-    cuatro recuentos aparezca cazado en **dos documentos distintos como mínimo**,
-    que es la situación real —los cuatro viven repartidos— y la que hace útil la
-    comparación. Si alguien reescribe una sección y el patrón deja de casar, esto
-    se cae en vez de pasar en verde sobre cero citas.
+    cerrar su **forma peligrosa**: que un patrón deje de casar en todas partes y el
+    test siga verde sin comprobar nada. Aquí se exige que cada uno de los cuatro
+    recuentos aparezca cazado en **dos documentos distintos como mínimo**.
 
-    Lo que queda sin cubrir, en `LIMITS.md` 54: una redacción nueva en un
-    documento nuevo, si ningún patrón la reconoce, no se comprueba. El
-    procedimiento que lo detecta es el control negativo a mano, y es un paso de
-    `/cerrar`.
+    Lo que queda sin cubrir, en `LIMITS.md` 54.
     """
-    if not conftest.COMPLETA:
-        pytest.skip("colección parcial: este recuento sólo vale sobre tests/unit entero")
     cobertura: dict[str, set[str]] = {clave: set() for clave, _ in PATRONES}
     for nombre, texto in _leidos():
         plano = _plano(texto)
@@ -275,23 +406,16 @@ def test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos() -> None
 def test_el_desglose_de_los_que_quedan_fuera_es_el_que_publica_limits() -> None:
     """La lista de ficheros, no sólo el total. Es lo que estaba mal de verdad.
 
-    `LIMITS.md` 51 y `ESTADO.md` no sólo decían «38»: **nombraban a
-    `teds_limites` y `teds_batch` como módulos sin mutante**, y los dos ya tenían
-    uno. Un total correcto con una lista falsa es peor que un total falso, porque
-    manda a alguien a escribir trabajo que ya existe — que es exactamente lo que
-    la deuda 7 de `ESTADO.md` mandaba hacer.
+    `LIMITS.md` 51 y `ESTADO.md` no sólo decían «38»: **nombraban a `teds_limites`
+    y `teds_batch` como módulos sin mutante**, y los dos ya tenían uno. Un total
+    correcto con una lista falsa es peor que un total falso, porque manda a alguien
+    a escribir trabajo que ya existe — que es lo que la deuda 7 de `ESTADO.md`
+    mandaba hacer.
     """
-    if not conftest.COMPLETA:
-        pytest.skip("colección parcial: este recuento sólo vale sobre tests/unit entero")
     limits = _plano((RAIZ / "LIMITS.md").read_text(encoding="utf-8"))
     trozo = limits[limits.index("51. La suite no está medida por mutación") :][:700]
-    for fichero, n in FUERA_POR_FICHERO.items():
+    for fichero, n in fuera_por_fichero().items():
         corto = fichero.removeprefix("test_").removesuffix(".py")
         assert f"{corto} ({n})" in trozo, (
             f"el límite 51 no nombra a `{corto}` con sus {n} tests: {trozo[:300]}"
         )
-    dentro_del_plan = {"teds_limites", "teds_batch", "cellmatch", "canonical"}
-    for nombre in dentro_del_plan:
-        assert f"`{nombre}`" not in trozo or nombre in {
-            f.removeprefix("test_").removesuffix(".py") for f in FUERA_POR_FICHERO
-        }, f"el límite 51 nombra `{nombre}` como sin mutante, y sí lo tiene"

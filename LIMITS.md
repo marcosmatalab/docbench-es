@@ -373,11 +373,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 149 de 177 tests.** Los
-    **18 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **28 tests restantes** —`types_invariantes` (7),
-    `ancla` (5), `recuentos` (5), `types` (5), `errors` (3) y `sin_consumidor`
-    (3)— **no tienen
+51. **La suite no está medida por mutación: el arnés cubre 160 de 183 tests.** Los
+    **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
+    árbol de TEDS y el lote. Los **23 tests restantes** —`types_invariantes` (7),
+    `ancla` (5), `types` (5), `errors` (3) y `sin_consumidor` (3)— **no tienen
     ningún mutante escrito contra su código**, así que «los 18 mueren» no dice
     nada sobre si esos tests cazarían un bug. Algunos matan mutantes de rebote
     cuando `--tabla` recorre la suite entera, y eso es daño colateral, no
@@ -429,11 +428,27 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     reconoce **no se comprueba**, y eso no se puede cerrar del todo porque el
     español no se enumera.
 
-    **Está medido cuánto de cierto es el riesgo**, que es lo único honesto que se
-    puede decir: desincronizando a propósito una cifra en cada uno de los cuatro
-    documentos, la primera versión cazó **2 de 4**, la segunda 3, y la cuarta hizo
-    falta porque «no cubre la suite entera: 149 de 177» no se parecía a nada
-    previsto. La versión que se publica caza **4 de 4**.
+    **Está medido, en las dos direcciones**, con un corpus de 30 frases que alguien
+    escribiría en este repo, sacado de un escrutinio adversarial con un agente por
+    familia de patrón: `uv run python scripts/cobertura_patrones.py --detalle`.
+
+    | | |
+    |---|---|
+    | **falsos positivos** — prosa correcta leída como recuento | **0 de 12** |
+    | **escapes** — recuento real que ningún patrón ve | **7 de 18** |
+
+    Las dos direcciones no pesan igual, y por eso el criterio es **estrechar el
+    patrón ante la duda**: un falso positivo pone rojo un documento que no miente,
+    y un candado que da rojos falsos deja de leerse —el argumento del límite 25—;
+    un escape deja un hueco, que es lo que este límite declara. Los siete que se
+    escapan son formas que ningún documento usa hoy: «el PLAN tiene 21 mutantes»,
+    «mueren los 21 mutantes», «21/21», una fila de tabla, «cubre 160 de los 183
+    tests», «quedan 23 tests fuera» y «la suite tiene 183 tests en total».
+
+    **Y está medido cómo se llegó ahí**: desincronizando a propósito una cifra en
+    cada uno de los cuatro documentos, la primera versión cazó **2 de 4**, la
+    segunda 3, y la cuarta hizo falta porque «no cubre la suite entera: 149 de 177»
+    no se parecía a nada previsto. La que se publica caza **4 de 4**.
 
     **Lo que sí está cerrado es la forma peligrosa**: que un patrón deje de casar
     en todas partes y el test siga verde sin comparar nada.

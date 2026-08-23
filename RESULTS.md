@@ -483,7 +483,7 @@ Y los cuatro sutiles, que son los que justifican el hito:
 | TEDS lote (7) | `batch_sobrescribe` — la última tabla pisa a las demás | 3 |
 | cellmatch (7) | `cellmatch_por_pertenencia` | 2 |
 
-**Los dieciocho mutantes del repo mueren**, con control negativo **0 de 149**.
+**Los veintiún mutantes del repo mueren**, con control negativo **0 de 160**.
 `uv run python scripts/mutantes/matar.py; echo $?`
 
 `teds_cuenta_la_raiz` es el que justifica el hito: mueve **todos** los TEDS un
@@ -495,23 +495,22 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 149 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 160 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: 149 de 177.** El control negativo y
+**El arnés no cubre la suite entera: cubre 160 de 183 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **28 restantes** —`test_types_invariantes` (7), `test_ancla` (5),
-`test_recuentos` (5), `test_types` (5), `test_errors` (3) y
-`test_sin_consumidor` (3)— quedan fuera
+Los **23 tests restantes** —`test_types_invariantes` (7), `test_ancla` (5),
+`test_types` (5), `test_errors` (3) y `test_sin_consumidor` (3)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
-invariantes de tipos y las barreras por AST. Así que «los 18 mutantes mueren» dice
+invariantes de tipos y las barreras por AST. Así que «los 21 mutantes mueren» dice
 que **esos 18** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 28 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 23 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
-**Bajó de 38 a 28** porque `test_teds_limites` y `test_teds_batch` **ya tienen
+**Bajó de 38 a 23** porque `test_teds_limites` y `test_teds_batch` **ya tienen
 mutante**: los añadió este cierre.
 
 **Las dos columnas son dos agregaciones distintas sobre las 3 repeticiones**, y la
@@ -519,7 +518,7 @@ diferencia es información: **SIEMPRE** es la intersección —muere en las tres
 **ALGUNA VEZ** es la unión. *Un asesino intermitente no es un asesino*: depende de
 que un sorteo de `hypothesis` salga bien.
 
-**Son 18 mutantes, no 12**: el escrutinio y el paso 2 de `/cerrar` añadieron seis
+**Son 21 mutantes, no 12**: el escrutinio y el paso 2 de `/cerrar` añadieron seis
 —los dos del árbol, el del lote, y las tres casillas que faltaban de
 `siempre_ok` × `siempre_roto` sobre las dos funciones que L2 construye—.
 
@@ -563,7 +562,7 @@ saber por qué. Aquí se ve que las tres diferencias tienen nombre y tasa.
 > [límite 50](LIMITS.md). Para afinar un caso concreto:
 > `uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE`.
 
-**La afirmación, recontada contra esta tabla:** sobre los 18 mutantes existentes,
+**La afirmación, recontada contra esta tabla:** sobre los 21 mutantes existentes,
 la propiedad de normalización **no es la única asesina de ninguno**; es asesina
 **determinista** de `normalizador_agresivo` —donde además hay otros ocho— y
 aparece **esporádicamente** sobre otros dos, `n3_incompleta` y
@@ -681,34 +680,50 @@ Las dos con el mismo protocolo, ahora ejecutable en una orden:
 `uv run python scripts/medir_puerta.py --techo 8500; echo $?` — devuelve 1 si el
 p90 pasa del techo.
 
-**Remedido al cerrar, con la suite ya en 177 tests** (n=40 en 10 tandas en frío,
-0 descartadas):
+**Remedido dos veces**, la segunda tras la auditoría en frío de `b7cc6c3`:
 
-| | ms |
-|---|---|
-| mínimo | 5140 |
-| mediana | **5593** |
-| p90 | **5933** |
-| máximo | 6048 |
-| desviación típica | 286 |
-| medianas por tanda | 5304 – 5820 |
+| | al cerrar L2 | tras la auditoría |
+|---|---|---|
+| tests | 177 | **183** |
+| n | 40 en 10 tandas | 20 en 5 tandas |
+| mínimo | 5140 | 5742 |
+| **mediana** | **5593** | **5920** |
+| **p90** | **5933** | **6033** |
+| máximo | 6048 | 6041 |
+| desviación típica | 286 | **73** |
+| medianas por tanda | 5304 – 5820 | 5876 – 5954 |
 
-**Margen en el p90 sobre el techo de 8500: 2567 ms.** Y el dato que confirma el
-diagnóstico de ADR-0022: la suite pasó de **145 a 177 tests** —+32, o sea +22%— y
-la mediana se movió de 5604 a **5593**, o sea **nada**. Lo que domina es el
-arranque del proceso, no los tests, exactamente como decía la condición de parada
-número 2. La σ sube de 76 a 286 y **no sé por qué**: es estado de la máquina, y la
-carga no se registró (deuda de L3, `medir_puerta.py` debería anotarla).
+**La mediana sube 327 ms y sólo sé explicar la mitad.** Aislado en la misma
+corrida con `--ignore`, el comprobador de recuentos cuesta **130 ms** —medido dos
+veces, 170 y 130, mediana de 3 corridas en frío cada vez—. Los otros ~180 ms no se
+los atribuyo a nada: la σ pasó de 286 a 73 entre las dos tandas, o sea que la
+máquina estaba en un estado distinto, y **no registré la carga** (la misma deuda de
+L3 que ya se apuntó). Decir «los 327 ms son los tests nuevos» sería el error de los
+285 ms otra vez.
+
+**Margen en el p90 sobre el techo de 8500: 2467 ms.** Y el dato que confirma el
+diagnóstico de ADR-0022: la suite pasó de **145 a 183 tests** —+38, o sea +26%— y
+la mediana se movió de 5604 a 5920, o sea **+316 ms para +38 tests**: 8 ms por
+test, cuando el arranque del proceso solo cuesta ~900. Lo que domina sigue siendo
+el arranque, exactamente como decía la condición de parada número 2, y por eso
+recortar tests no es la palanca. La σ salta de 76 a 286 y vuelve a 73 entre tandas
+**sin que sepa por qué**: es estado de la máquina, y la carga no se registró
+(deuda de L3, `medir_puerta.py` debería anotarla).
 
 **Lo que cuesta el comprobador de recuentos, aislado del estado de la máquina**
 (`pytest tests/unit` con y sin `--ignore=tests/unit/test_recuentos.py`, mediana de
 3 corridas en frío):
 
-| | ms |
-|---|---|
-| con el comprobador | 3960 |
-| sin él | 3790 |
-| **coste** | **170 ms** |
+| | primera medida | tras la auditoría |
+|---|---|---|
+| con el comprobador | 3960 ms | 3960 ms |
+| sin él | 3790 ms | 3830 ms |
+| **coste** | **170 ms** | **130 ms** |
+
+Dos medidas del mismo coste, 170 y 130 ms, con el fichero ya en 11 tests. La
+diferencia entre ellas es ruido de la máquina y **no se promedia para dar una
+cifra más precisa de la que hay**: lo que se puede afirmar es que está por debajo
+de 200 ms.
 
 Se mide así y no comparando medianas de `make fast` entre commits porque **la
 mediana se movió 395 ms entre dos tandas de distinto tamaño** —5593 con n=40,
