@@ -78,6 +78,7 @@ class _Contexto:
         self.rowspan = 1
         self.colspan = 1
         self.en_caption = False
+        self.en_cabecera = False
 
     def abrir_celda(self, *, is_header: bool, rowspan: int, colspan: int) -> None:
         self.cerrar_celda()
@@ -125,7 +126,11 @@ class _LectorDeTablas(HTMLParser):
             return
         if tag in ("td", "th"):
             ctx.abrir_celda(
-                is_header=tag == "th",
+                # `<thead><td>` es una celda de CABECERA. No marcarla perdía la
+                # condición en todo corpus que use esa forma —PubTabNet la usa
+                # SIEMPRE— y `is_header` salía False en el 100% de las cabeceras.
+                # Encontrado en L2, al construir el árbol de TEDS.
+                is_header=tag == "th" or ctx.en_cabecera,
                 rowspan=_entero(attrs, "rowspan"),
                 colspan=_entero(attrs, "colspan"),
             )
@@ -135,6 +140,7 @@ class _LectorDeTablas(HTMLParser):
         elif tag in SECCIONES:
             ctx.cerrar_celda()
             ctx.colocador.cerrar_seccion()
+            ctx.en_cabecera = tag == "thead"
         elif tag == "caption":
             ctx.en_caption = True
         elif tag in BLOQUES and ctx.celda is not None:
@@ -163,6 +169,7 @@ class _LectorDeTablas(HTMLParser):
         elif tag in SECCIONES:
             ctx.cerrar_celda()
             ctx.colocador.cerrar_seccion()
+            ctx.en_cabecera = False
         elif tag == "caption":
             ctx.en_caption = False
         elif tag in BLOQUES and ctx.celda is not None:

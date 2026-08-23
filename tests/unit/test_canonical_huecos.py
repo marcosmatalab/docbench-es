@@ -8,6 +8,9 @@ resuelve (ADR-0018) y este fichero es su forma ejecutable.
 La distinción es **hueco de cola** (legítimo, informativo) contra **hueco
 interior** (fatal). Y toda ella depende de una pregunta que tiene dos respuestas
 opuestas sobre un caso real: qué significa «hay una celda a la derecha».
+
+**Presupuesto de ejemplos: 60**, el mismo que las otras propiedades de
+invariantes.
 """
 
 from __future__ import annotations
@@ -18,6 +21,8 @@ from hypothesis import strategies as st
 
 from docbench_es.core.canonical import holes, validate
 from docbench_es.types import CanonicalCell, CanonicalTable, HallazgoTabla
+
+EJEMPLOS = 60
 
 
 def _hay_posicion_ocupada_a_la_derecha(t: CanonicalTable, fila: int, col: int) -> bool:
@@ -31,6 +36,7 @@ def _hay_posicion_ocupada_a_la_derecha(t: CanonicalTable, fila: int, col: int) -
     return any(t.cell_at(fila, c) is not None for c in range(col + 1, t.n_cols))
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=tabla_con_rowspan_sobre_fila_corta())
 def test_el_rowspan_que_baja_sobre_una_fila_corta_es_legal(t: CanonicalTable) -> None:
     """**La condición 1.** Demuestra que la definición no tiene falso positivo.
@@ -56,8 +62,10 @@ def test_el_rowspan_que_baja_sobre_una_fila_corta_es_legal(t: CanonicalTable) ->
     )
 
 
-@given(t=tabla_con_rowspan_sobre_fila_corta())
+# 25 y no EJEMPLOS: esta propiedad sólo comprueba que la lectura descartada
+# discrimina, y la familia que genera es pequeña y cerrada.
 @settings(max_examples=25)
+@given(t=tabla_con_rowspan_sobre_fila_corta())
 def test_la_lectura_de_la_rejilla_rellena_rechaza_html_legal(t: CanonicalTable) -> None:
     """Demuestra POR QUÉ se descartó la otra lectura, en vez de afirmarlo.
 
@@ -102,6 +110,7 @@ def test_hueco_interior_es_fatal() -> None:
     assert HallazgoTabla.HUECO_INTERIOR in codigos(problemas), problemas
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=tabla_bien_formada(), rompe=st.booleans(), span=st.integers(min_value=-2, max_value=9))
 def test_holes_enumera_exactamente_lo_que_cell_at_no_cubre(
     t: CanonicalTable, rompe: bool, span: int
@@ -171,6 +180,7 @@ def test_un_hueco_no_es_una_celda_vacia() -> None:
     assert validate(con_celda_vacia) == (True, [])
 
 
+@settings(max_examples=EJEMPLOS)
 @given(
     t=tabla_bien_formada(),
     de_mas=st.integers(min_value=1, max_value=3),

@@ -1,0 +1,49 @@
+{
+ "teds_negativo": {
+  "pred": "<html><body><table><thead><tr><td></td><td></td><td></td><td></td></tr></thead></table></body></html>",
+  "gold": "<html><body><table><thead><tr><td rowspan=\"2\"></td></tr></thead><tbody><tr></tr><tr><td></td></tr></tbody></table></body></html>",
+  "teds": -0.1428571428571428,
+  "teds_s": -0.1428571428571428,
+  "referencia_sobre_el_crudo": -0.1428571428571428
+ },
+ "hueco_contra_completa": {
+  "pred": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td></tr></tbody></table></body></html>",
+  "gold": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></tbody></table></body></html>",
+  "teds": 0.8571428571428572,
+  "teds_s": 0.8571428571428572,
+  "referencia_sobre_el_crudo": 0.8571428571428572
+ },
+ "celda_vacia_contra_completa": {
+  "pred": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td><td></td></tr></tbody></table></body></html>",
+  "gold": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></tbody></table></body></html>",
+  "teds": 0.8571428571428572,
+  "teds_s": 1.0,
+  "referencia_sobre_el_crudo": 0.8571428571428572
+ },
+ "celda_vacia_contra_hueco": {
+  "pred": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td><td></td></tr></tbody></table></body></html>",
+  "gold": "<html><body><table><tbody><tr><td>a</td><td>b</td></tr><tr><td>c</td></tr></tbody></table></body></html>",
+  "teds": 0.8571428571428572,
+  "teds_s": 0.8571428571428572,
+  "referencia_sobre_el_crudo": 0.8571428571428572
+ },
+ "tbody_de_mas": {
+  "pred": "<html><body><table><tr><td>a</td></tr></table></body></html>",
+  "gold": "<html><body><table><tbody><tr><td>a</td></tr></tbody></table></body></html>",
+  "teds": 1.0,
+  "teds_s": 1.0,
+  "referencia_sobre_el_crudo": 0.6666666666666667
+ },
+ "th_donde_va_td": {
+  "pred": "<html><body><table><tbody><tr><th>a</th></tr></tbody></table></body></html>",
+  "gold": "<html><body><table><tbody><tr><td>a</td></tr></tbody></table></body></html>",
+  "teds": 0.6666666666666667,
+  "teds_s": 0.6666666666666667,
+  "referencia_sobre_el_crudo": 0.6666666666666667
+ },
+ "dos_vacias": {
+  "pred": "<html><body><table></table></body></html>",
+  "gold": "<html><body><table></table></body></html>",
+  "referencia": "ZeroDivisionError: float division by zero"
+ }
+}

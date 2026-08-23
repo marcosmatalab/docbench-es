@@ -8,6 +8,13 @@ tranquilizadora, y nadie se entera.
 
 Por eso hay dos capas: seis tests de ejemplo, uno por normalización aplicada, y
 dos propiedades que acorralan a la función entera para que no pueda crecer.
+
+**Presupuesto de ejemplos: 100**, el más alto de la suite y a propósito. Aquí
+viven las propiedades que impiden que `normalize_cell_text` crezca —«no toca
+ningún glifo visible», «los acentos sobreviven»— y son las que atrapan la trampa
+silenciosa de la regla de oro 7. Es también la suite más cara: `test_r1` cuesta
+**570 ms**, más que ningún otro test. Si algún día hay que recortar la puerta,
+bajarla a 50 ahorra ~285 ms y **es lo último que se toca**, no lo primero.
 """
 
 from __future__ import annotations
@@ -16,7 +23,7 @@ import unicodedata
 from pathlib import Path
 
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from docbench_es.core.canonical import NORMALIZACIONES, normalize_cell_text
@@ -25,6 +32,9 @@ from docbench_es.core.canonical._normalizar import (
     LIGADURAS,
     _sin_espacios_invisibles,
 )
+
+EJEMPLOS = 100
+
 
 CUALQUIER_TEXTO = st.text(
     alphabet=st.characters(codec="utf-8"),
@@ -66,6 +76,16 @@ def test_n3_los_espacios_raros_se_mapean_pero_nunca_se_borran() -> None:
     medir. La víctima declarada de N3 es la otra mitad: el NBSP deja de
     distinguirse de un espacio normal.
     """
+    # U+2028 y U+2029 son `Zl` y `Zp`, NO `Zs`, y la primera versión de N3 los
+    # dejaba fuera. Estas dos líneas documentan el comportamiento, pero **NO
+    # sirven de candado**, y merece la pena saber por qué: `str.split()` también
+    # los considera espacio, así que parte igual con N3 correcta que con N3
+    # mutada y el daño queda ENMASCARADO a nivel de texto. Se intentó usarlas
+    # como segundo asesino determinista de `n3_incompleta` y no funcionó.
+    # Quien lo caza es `test_n3_cubre_exactamente_lo_que_split_considera_espacio`,
+    # que consulta la CATEGORÍA declarada en vez del texto resultante.
+    assert normalize_cell_text("a\u2028b") == "a b", "U+2028 LINE SEPARATOR"
+    assert normalize_cell_text("a\u2029b") == "a b", "U+2029 PARAGRAPH SEPARATOR"
     assert normalize_cell_text("1\u00a0234,56") == "1 234,56"
     assert normalize_cell_text("1\u202f234") == "1 234"
     assert normalize_cell_text("Nombre\nApellidos") == "Nombre Apellidos"
@@ -93,6 +113,7 @@ def test_n6_expande_las_siete_ligaduras_y_solo_esas() -> None:
         assert normalize_cell_text(ligadura) == expansion
 
 
+@settings(max_examples=EJEMPLOS)
 @given(s=CUALQUIER_TEXTO)
 def test_r1_los_acentos_y_la_enye_sobreviven_siempre(s: str) -> None:
     """Demuestra que NUNCA se quitan diacríticos, sobre entrada arbitraria.
@@ -137,6 +158,7 @@ def test_r6_no_es_nfkc() -> None:
     assert unicodedata.normalize("NFKC", "m²") == "m2", "si esto cambia, revisa el razonamiento"
 
 
+@settings(max_examples=EJEMPLOS)
 @given(s=CUALQUIER_TEXTO)
 def test_no_toca_ningun_glifo_visible_salvo_las_ligaduras(s: str) -> None:
     """**La propiedad que impide que esta función crezca.**
@@ -153,6 +175,7 @@ def test_no_toca_ningun_glifo_visible_salvo_las_ligaduras(s: str) -> None:
     assert _sin_espacios_invisibles(normalize_cell_text(s)) == esperado
 
 
+@settings(max_examples=EJEMPLOS)
 @given(s=CUALQUIER_TEXTO)
 def test_idempotente(s: str) -> None:
     """Demuestra que el número no depende de cuántas capas atravesó el texto.

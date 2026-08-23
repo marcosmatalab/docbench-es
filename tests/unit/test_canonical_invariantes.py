@@ -10,6 +10,10 @@ de `validate` antes de darlo por bueno: `siempre_ok`, que devuelve `(True, [])`,
 `siempre_roto`, que devuelve `(False, ["x"])`. La suite tiene que caerse contra
 **los dos**. Un test que sólo afirma `not ok` pasa en verde contra el que rechaza
 todo, y entonces no demuestra detección: demuestra pesimismo.
+
+**Presupuesto de ejemplos: 60.** Las mutaciones que generan estas propiedades son
+baratas —construir una tabla y validarla— y 60 bastan para que el censo
+determinista de `scripts/censo_invariantes.py` siga siendo el que da el número.
 """
 
 from __future__ import annotations
@@ -25,6 +29,8 @@ from hypothesis import strategies as st
 
 from docbench_es.core.canonical import validate
 from docbench_es.types import CanonicalCell, CanonicalTable, HallazgoTabla
+
+EJEMPLOS = 60
 
 
 def _sin_fatales(problemas: list[str]) -> bool:
@@ -45,6 +51,7 @@ def _reemplazar(t: CanonicalTable, i: int, celda: CanonicalCell) -> CanonicalTab
     )
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=tabla_completa())
 def test_la_tabla_completa_no_produce_ni_un_hallazgo(t: CanonicalTable) -> None:
     """**El control negativo, y va el primero.**
@@ -58,6 +65,7 @@ def test_la_tabla_completa_no_produce_ni_un_hallazgo(t: CanonicalTable) -> None:
     assert validate(t) == (True, []), f"{t.cells}"
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=tabla_bien_formada())
 def test_la_fila_corta_es_legal_y_no_invalida_la_tabla(t: CanonicalTable) -> None:
     """Demuestra que lo cotidiano del BOE no se rechaza.
@@ -91,6 +99,7 @@ def _tabla_con_solape(draw: st.DrawFn) -> tuple[CanonicalTable, int]:
     return _reemplazar(t, i, crecida), i
 
 
+@settings(max_examples=EJEMPLOS)
 @given(caso=_tabla_con_solape())
 def test_solape_detectado_siempre(caso: tuple[CanonicalTable, int]) -> None:
     """Demuestra el invariante 1 sobre tablas donde el span es la NORMA.
@@ -123,6 +132,7 @@ def _tabla_con_span_fuera_de_rango(draw: st.DrawFn) -> CanonicalTable:
     return _reemplazar(t, i, rota)
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=_tabla_con_span_fuera_de_rango())
 def test_span_fuera_de_rango_detectado(t: CanonicalTable) -> None:
     """Demuestra el invariante 3: el rectángulo de una celda cabe en la tabla.
@@ -136,6 +146,7 @@ def test_span_fuera_de_rango_detectado(t: CanonicalTable) -> None:
     assert HallazgoTabla.SPAN_FUERA_DE_RANGO in codigos(problemas), problemas
 
 
+@settings(max_examples=EJEMPLOS)
 @given(
     t=tabla_completa(),
     span=st.integers(min_value=-3, max_value=0),
@@ -267,3 +278,33 @@ def test_validate_y_is_wellformed_dan_la_misma_respuesta(t: CanonicalTable) -> N
     en el otro lado: el día que las dos respuestas se separen, esto se cae.
     """
     assert validate(t) == t.is_wellformed()
+
+
+@settings(max_examples=EJEMPLOS)
+@given(t=tabla_bien_formada())
+def test_is_header_no_cambia_ni_un_hallazgo_de_validate(t: CanonicalTable) -> None:
+    """**La auditoría de L2 sobre L1, convertida en candado.**
+
+    L2 encontró que `from_html` no marcaba como cabecera un `<td>` dentro de
+    `<thead>`: `is_header` salía `False` en el 100% de las cabeceras de PubTabNet.
+    La pregunta obligada fue si alguna cifra publicada por L1 dependía de eso, y
+    la respuesta es no, **porque `validate` no lee `is_header` en ninguna rama**.
+
+    Esto lo fija: voltear la condición de cabecera de todas las celdas no cambia
+    ni el veredicto ni la lista de hallazgos. Si algún día un invariante empieza
+    a mirar `is_header`, este test se cae y obliga a revisar si el censo de L1
+    —8.525/8.525 y 0/45— sigue siendo el mismo número.
+    """
+    volteada = CanonicalTable(
+        cells=tuple(
+            CanonicalCell(c.row, c.col, c.rowspan, c.colspan, c.text, not c.is_header)
+            for c in t.cells
+        ),
+        n_rows=t.n_rows,
+        n_cols=t.n_cols,
+        page_span=t.page_span,
+        caption=t.caption,
+        expresses_spans=t.expresses_spans,
+        source_format=t.source_format,
+    )
+    assert validate(volteada) == validate(t)

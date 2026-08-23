@@ -2,6 +2,11 @@
 
 Separado de `test_types.py`, que cubre la forma del modelo —inmutabilidad y
 superficie de import—, porque juntos pasaban de las 300 líneas de `CLAUDE.md`.
+
+**Presupuesto de ejemplos: 100.** La propiedad que importa aquí es la
+inyectividad de `key()`, que es la unidad de remuestreo del bootstrap, y su
+estrategia es DIRIGIDA: cada ejemplo cae en la zona donde la colisión puede
+ocurrir, así que son 100 intentos útiles y no 100 tiros al aire.
 """
 
 from __future__ import annotations
@@ -10,10 +15,12 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-from hypothesis import assume, given
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 from docbench_es.types import CanonicalCell, CanonicalTable, Cost, DocRef, Extraction, Glossary
+
+EJEMPLOS = 100
 
 
 def test_la_clave_de_documento_es_estable_y_distingue_documentos() -> None:
@@ -67,6 +74,7 @@ def _mismos_trozos_partidos_distinto(draw: st.DrawFn) -> tuple[tuple[str, str], 
     return (todo[:i], todo[i:]), (todo[:j], todo[j:])
 
 
+@settings(max_examples=EJEMPLOS)
 @given(par=_mismos_trozos_partidos_distinto())
 def test_documentos_distintos_nunca_comparten_clave(
     par: tuple[tuple[str, str], tuple[str, str]],
@@ -94,6 +102,7 @@ def test_documentos_distintos_nunca_comparten_clave(
     assert clave_a != clave_b, f"colisión: {a!r} y {b!r} comparten {clave_a!r}"
 
 
+@settings(max_examples=EJEMPLOS)
 @given(entity=st.text(), external_id=st.text())
 def test_la_clave_no_depende_de_los_campos_que_no_identifican(
     entity: str, external_id: str

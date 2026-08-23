@@ -36,10 +36,34 @@ disable-model-invocation: true
      dirección tranquilizadora**: da un 100% de detección que en realidad es un
      100% de pesimismo.
 
-   Se montan como plugins de pytest que parchean el símbolo en el módulo que lo
-   consume, y se corren con `PYTHONPATH=<scratchpad> uv run pytest ... -p <mutante>`.
-   **Pega los dos recuentos** (`N failed, M passed`) en el cierre. Un mutante que
-   no mata a nadie es un hueco en la suite, no un mutante mal escrito.
+   Están versionados en `scripts/mutantes/`. Dos órdenes, y las dos se pegan:
+
+   ```bash
+   uv run python scripts/mutantes/matar.py; echo $?          # todos mueren
+   uv run python scripts/mutantes/matar.py --tabla           # QUÉ test mata a cuál
+   ```
+
+   **`matar.py` empieza por el CONTROL NEGATIVO**: la suite sin mutar tiene que
+   dar **0 muertes**. Sin ese cero la tabla no vale nada, porque cada «muerte»
+   podría ser un fallo de fondo de la suite y no el mutante.
+
+   **`--tabla` publica dos agregaciones sobre 3 repeticiones**: los que matan
+   SIEMPRE y los que matan ALGUNA VEZ. *Un asesino intermitente no es un
+   asesino.* Y delata los **puntos únicos de fallo**: un mutante al que mata un
+   solo test es una garantía sostenida por una sola aserción, y hay que añadirle
+   un segundo asesino o declarar por qué no se puede.
+
+   **SIEMPRE no es una categoría, es una estimación con n = 3** (límite 50): a
+   p = 0,9 un test intermitente sale «SIEMPRE» el 73% de las veces. Cuando las dos
+   columnas difieran y no se explique sola, se afina el caso antes de publicarlo:
+
+   ```bash
+   uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE
+   ```
+
+   **Publica el n al lado de la tabla, y publica también cuántos tests quedan
+   FUERA del arnés.** «Los 12 mutantes mueren» habla de esos 12 huecos, no de la
+   suite: en L2 el arnés cubría 149 de 172 tests.
 
 3. **¿Sigue alcanzando la estrategia el sitio donde vive el bug NUEVO?** Un test
    de propiedad que sigue **en verde** después de cambiar la implementación **no
@@ -82,20 +106,39 @@ disable-model-invocation: true
    filtrar. Trátalos uno a uno delante del usuario: arreglado, descartado con razón
    escrita, o anotado en LIMITS.md. Un hallazgo sin tratar deja el hito abierto.
 
-6. **Números medidos.** Añade a `RESULTS.md` los números que este hito produce, con
+6. **La puerta, con el protocolo de ADR-0022.** Ejecuta y **pega la salida**:
+
+   ```bash
+   uv run python scripts/medir_puerta.py --techo <el del hito>; echo $?
+   ```
+
+   40 corridas en frío en 10 tandas, `.hypothesis` borrada, corridas con `rc != 0`
+   descartadas. Devuelve 1 si el p90 pasa del techo. **Publica mediana, p90,
+   máximo y desviación**, y fija el techo del hito siguiente con la proyección
+   escrita. Si se cumple alguna de las tres condiciones de parada de ADR-0022, la
+   respuesta ya no es subir el techo: es reestructurar, y eso va con su ADR.
+
+7. **Números medidos.** Añade a `RESULTS.md` los números que este hito produce, con
    fecha, versión y **el comando exacto que los reproduce**. Un hito sin número medido
    no se cierra.
 
-7. **Límites.** Si has descubierto algo que el proyecto NO mide o dónde se rompe,
+   **Si editas un documento publicado con un script, el ancla pasa por
+   `scripts/ancla.py`.** Un encabezado como «### El coste en la puerta» se repite
+   por hito: un `s.index` sobre él corta por el del hito viejo y **duplica** todo
+   lo que hay en medio —pasó en L2, ~230 líneas—, y con cero apariciones **borra**
+   sin que nadie lo note. `unica(texto, ancla)` aborta si no aparece exactamente
+   una vez.
+
+8. **Límites.** Si has descubierto algo que el proyecto NO mide o dónde se rompe,
    añádelo a `LIMITS.md` numerado.
 
-8. **ADR.** Si has tomado una decisión de diseño no prevista, escríbela en
+9. **ADR.** Si has tomado una decisión de diseño no prevista, escríbela en
    `docs/adr/` con su alternativa descartada y su trade-off.
 
-9. **ESTADO.md.** Marca $hito como CERRADO con su fecha y su número. Marca el
+10. **ESTADO.md.** Marca $hito como CERRADO con su fecha y su número. Marca el
    siguiente como PENDIENTE. No inventes hitos que no estén en el manual.
 
-10. **Commit.** Prepara el mensaje: qué cierra, **el número medido en el asunto** si lo
+11. **Commit.** Prepara el mensaje: qué cierra, **el número medido en el asunto** si lo
    hay, y los ficheros. No hagas push.
 
 Ejemplo de asunto bueno: `L2: TEDS validado contra PubTabNet, coincidencia a 4 decimales`

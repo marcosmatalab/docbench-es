@@ -11,6 +11,207 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### L2 · TEDS validado contra PubTabNet · medido el 2026-08-22, cerrado el 2026-08-23
+
+#### Añadido
+
+- **`core.teds`**, paquete: `teds`, `teds_struct` y `teds_batch`. La distancia es
+  **Zhang-Shasha escrito a mano** —la referencia usa APTED—, con el coste de su
+  `CustomConfig` copiado línea a línea, y el árbol de TEDS con su forma canónica
+  declarada (ADR-0021).
+- **`core.cellmatch`**: exactitud celda a celda de §12 y su F1. Emparejado por
+  posición y de multiconjuntos.
+- **`tests/fixtures/pubtabnet/`, el primer directorio CONGELADO de verdad**: los
+  20 casos propios de PubTabNet con su procedencia y su licencia Apache-2.0, más
+  6 casos límite, todos con los valores que da **su** implementación.
+- **`scripts/pubtabnet_golden.py`**, el generador, que baja `metric.py` y lo
+  ejecuta sin tocarle una línea a la lógica. `apted`, `distance` y `lxml` van por
+  `uv run --with` y **no** entran en `pyproject.toml`: así nadie puede acabar
+  calculando TEDS con la implementación ajena por accidente.
+- **90 tests nuevos** (82 → 172), y nueve mutantes más (9 → 18).
+- **`scripts/ancla.py`**: un ancla de documento publicado tiene que aparecer
+  **exactamente una vez** o no se edita nada. Nace de haber duplicado ~230
+  líneas de `RESULTS.md` con un `s.index` sobre un encabezado que se repite
+  por hito. Mata las dos mitades de la clase, y la que importa es la
+  invisible: con cero apariciones se **borra** y nadie echa de menos lo que
+  falta.
+- **Caché de `mypy` en `fast.yml`**: 1614 ms en frío contra 124 en caliente.
+
+#### Cambiado
+
+- **`from_html` marca como cabecera un `<td>` dentro de `<thead>`.** Era un fallo
+  de L1: PubTabNet escribe **todas** sus cabeceras así, o sea que `is_header`
+  salía `False` en el 100% de ellas.
+- **Presupuesto de `max_examples` declarado en las ocho suites de propiedad**,
+  que hasta ahora heredaban el 100 por defecto sin decirlo.
+
+#### Corregido
+
+- **La justificación de `holes()` en L1 era falsa.** ADR-0018 decía que era «lo
+  que L2 usa para emitir celda ausente»; **`core.teds` no la llama**, y hay un
+  test que lo comprueba por AST. La distinción hueco/celda vacía sí se respeta,
+  pero por construcción del árbol. Corregido en ADR-0018, en el código y en
+  `RESULTS.md`.
+- **Un test afirmaba `0 <= teds <= 1`, y es falso.** TEDS puede salir **negativo**
+  —la distancia se calcula con la raíz y el denominador sin ella— y la referencia
+  devuelve el mismo −0,142857. La cota real es [−1, 1]. Lo encontró `hypothesis`
+  en una corrida de la puerta, no la revisión.
+
+#### Corregido en el bloque de cierre
+
+- **Se publicó una palanca que no existe.** `RESULTS.md` y `docs/metrics.md`
+  decían que bajar la suite de normalización de 100 a 50 ejemplos ahorraba
+  **~285 ms**, presentado como medido. Era una estimación por regla de tres.
+  Medido: **990 / 946 / 935 ms** a 100 / 50 / 25 ejemplos, o sea **44 ms**. El
+  coste lo domina el arranque del proceso. Corregido en los dos ficheros con el
+  error de razonamiento escrito.
+- **La distribución de la puerta estaba caracterizada con dos tandas.** Remedida
+  con **40 corridas en frío en 10 tandas**: mediana 5517, p90 5801, máximo 5858,
+  σ=134. El p90 consumía el **97%** del techo de 6000.
+- **Auditoría del fallo de `is_header`**: ninguna cifra publicada por L1 dependía
+  de él. Verificado por dos vías —`is_header` no aparece en la ruta de validación,
+  y voltearlo en 500 tablas no cambia ni un hallazgo— y **fijado con un test de
+  propiedad** para que deje de ser una comprobación de una sola vez.
+- **La tabla de asesinos se publicó con un recuento mal hecho.** Al reescribir
+  `matar.py --tabla` para dar las dos agregaciones se perdió el colapso por
+  corrida, y un test **parametrizado** sumaba una vez por caso: 7 parámetros × 3
+  corridas = 21, distinto de 3, y el test salía de la columna «mata SIEMPRE»
+  **aunque mate en las tres**. Afectaba a cinco filas. La versión anterior de la
+  tabla, que sí colapsaba, era la correcta. Corregido con un `set` por corrida y
+  las tres versiones reconciliadas a la vista en `RESULTS.md`.
+- **«Mata SIEMPRE» se publicó como categoría siendo una estimación con n = 3.**
+  Medido con `--reps 10`, `test_idempotente` mata a `normalizador_agresivo`
+  **26 de 30** veces: p̂ = 0,867, Wilson 95% [0,703 – 0,947], o sea que una tanda
+  de tres lo llama determinista el **66% [35% – 85%]** de las veces. Ahora el n y
+  el intervalo van al lado de la tabla y `--reps` permite afinarlo.
+
+#### Corregido en el escrutinio adversarial de L2
+
+El revisor trajo **12 hallazgos y ninguno se descartó**. Los dos primeros son de
+los que la regla que gobierna el repo llama el fallo más grave posible: el repo
+afirmaba algo que el código no cumplía.
+
+- **El criterio de aceptación de L2 no podía ver un error en el árbol.** El golden
+  se genera dando a la referencia el render canónico de las mismas tablas, así que
+  el mapeo `CanonicalTable → árbol` **aparece en los dos lados y se cancela**.
+  Medido: con las columnas de cada fila invertidas, la suite entera daba
+  **145 passed**; con `<thead>` reducido a la primera fila, también. Y regenerando
+  el golden bajo esos mutantes seguía verde, o sea que un error presente el día de
+  la generación sería **invisible para siempre**. Arreglado con
+  `test_el_render_canonico_es_el_que_genero_el_golden` sobre los campos
+  `html_canonico_*` que el fixture **ya guardaba y nadie miraba**, más un caso a
+  mano de dos filas de cabecera. Los dos mutantes van versionados y mueren en
+  **20** y **7** tests. Lo que sigue sin cubrirse, en `LIMITS.md` 52.
+- **`teds_batch` perdía tablas en silencio.** La clave es la del documento, así que
+  un documento con varias tablas manda varios pares; `dict[clave] = nota`
+  **sobrescribía**. Medido: la tabla mal extraída desaparecía y
+  `evaluable_coverage` seguía diciendo 1,0 — la regla de oro 6 rota en sus dos
+  mitades, y con sesgo hacia arriba justo en los documentos con más tablas.
+  [ADR-0024](docs/adr/0024-teds-batch-varias-tablas-por-documento.md).
+- **Cinco números que se contradecían entre ficheros del repo**: 5440/6000 contra
+  5604/8500, «17×» contra «16×», «133 tests» contra 145, «12 valores distintos»
+  contra 15, «cinco unos» contra seis. Y **«Cifras retiradas: Ninguna» era falso**:
+  este hito retira cuatro.
+- **Tasas Bernoulli publicadas sin intervalo**, contra la regla de oro 2. Wilson
+  95%: 26/30 → **[0,703 – 0,947]**, y el 66% derivado pasa a **66% [35% – 85%]**.
+  Los 0/15 y 2/15 de `max_examples` llevan los suyos, **que se solapan** — y eso
+  es lo que sostiene la palabra «ruido», que sin intervalo no la sostenía nada.
+- **El techo de 8000 ms no salía de la fórmula del propio ADR-0022**, que da 7623,
+  7635 u 8467. Era un número redondo vestido de fórmula, y encima quedaba por
+  debajo de la mediana proyectada de L3. Recalculado: **8500**, el escenario
+  adverso redondeado **hacia arriba**. Y el «p90» del script queda declarado: es
+  el 37.º valor de 40, o sea el percentil 92,5 — conservador, y se deja porque
+  cambiarlo haría incomparables L0, L1 y L2.
+- **«Para una tabla de documento es inmediato» era falso y no estaba medido.**
+  `scripts/coste_teds.py`: 101 ms a 20x8, **1617 ms a 60x10**, **4712 ms a
+  100x10**. `LIMITS.md` 42 reescrito con la tabla y con las tres salidas que L5
+  tendrá que elegir.
+- **El golden se generaba ejecutando código bajado de una rama móvil.** Ahora el
+  script comprueba el **SHA-256** de `metric.py` y aborta si cambió. De paso, su
+  recorte pasaba por un `.index` —la misma clase de fallo que duplicó 230 líneas
+  de `RESULTS.md`— y ahora pasa por `unica`.
+- **`StructureMetrics.cell_f1: float` no podía recibir lo que produce
+  `cell_f1()`**, que devuelve `float | None`. O el tipo estaba mal o L5 acabaría
+  metiendo un 0,0, que es justo lo que ADR-0006 prohíbe. Corregido en `types` **y
+  transcrito al manual** (regla de oro 8). De rebote, mypy destapó que el tipo del
+  JSON del fixture era falso: se escribió por lo que se usaba, no por lo que el
+  fichero tiene.
+- **§12 dice «emparejado por posición tras alinear» y `cellmatch` no alinea.** La
+  decisión era buena y vivía en un docstring, sin ADR y sin límite:
+  `grep -rn "alinea" LIMITS.md RESULTS.md docs/` no devolvía nada.
+  [ADR-0025](docs/adr/0025-la-exactitud-de-celda-no-alinea.md), límite 53, y
+  transcrito a §12.
+- **`_firma` ignoraba `is_header` sin decirlo**, justo en el hito que descubrió que
+  `is_header` salía mal en el 100% de las cabeceras de PubTabNet. Se declara con su
+  medida —`cell_accuracy` = 1,0 y `teds` = **0,5** sobre dos tablas que sólo
+  difieren en el flag— y un test fija **las dos mitades**.
+- **La barrera de los conversores sin validar cubría 3 scripts de 7**, escritos a
+  mano, mientras `LIMITS.md` 49 afirmaba «los scripts que producen números
+  publicados». Ahora recorre todos con `rglob`.
+- **`ESTADO.md` decía «Siguiente paso: `/hito L1`»** con L1 y L2 cerrados, y su
+  tabla de ADR enumeraba «los cuatro» existiendo 0013–0025. No es cosmético: el
+  hook `SessionStart` inyecta ese fichero entero, así que la sesión siguiente lo
+  lee antes que nada.
+
+#### Corregido en el paso 3 de `/cerrar`, que es donde se ve si la estrategia llega
+
+- **Ninguna propiedad podía generar `n_cabecera >= 2`**: `_estrategias.py` fijaba
+  `is_header = fila == 0`. Ampliado a un sorteo de 0 a 2, que llega a 2 en **11 de
+  300** ejemplos… y **seguía sin bastar**: a 30 ejemplos por suite eso es ~1 caso.
+  Añadida `tabla_con_dos_filas_de_cabecera`, que la genera **a propósito**, más la
+  propiedad `test_mover_la_frontera_de_la_cabecera_cambia_la_estructura`.
+- **Y el hallazgo de fondo: ninguna propiedad de TEDS puede ver un reetiquetado
+  consistente del árbol.** Todas son invariantes —rango, simetría, una tabla
+  contra sí misma vale 1— y un invariante no cambia si `T` cambia igual en los dos
+  lados. Medido: **24 propiedades pasan** bajo el mutante del `<thead>` y **las 6**
+  bajo el del orden invertido. La propiedad nueva sí lo ve porque **perturba un
+  solo lado**; lo demás lo cubre el censo de los 20 casos.
+- **`teds_batch` no tenía ninguna propiedad**, y su familia de fallo nueva —varias
+  tablas por clave— no la generaba nada. Añadida, con las claves sorteadas de un
+  alfabeto de **dos** para que la colisión ocurra.
+- **El censo de invariantes no miraba por familia.** Un 8525/8525 sale verde igual
+  si una familia deja de generar mutantes. Ahora cuenta las **20 familias**, avisa
+  si alguna queda vacía, y `--familias` publica el desglose.
+
+#### Decisiones
+
+- [ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md) · el techo de la puerta:
+  **8500 ms local / 20 000 en CI**, re-justificado en cada cierre, que **avisa**
+  mientras que el 90 s del manual **bloquea**. Con la proyección de L3 escrita:
+  **6000 no aguantaba L3 en ningún escenario**.
+- [ADR-0023](docs/adr/0023-teds-negativo-suelo-al-publicar.md) · el TEDS negativo
+  se calcula tal cual y se recorta **sólo al publicar**, con `para_publicar()`.
+- [ADR-0020](docs/adr/0020-teds-compara-contenido-canonico.md) · TEDS compara el
+  contenido **canónico** y el golden se genera sobre él. **Transcrita al manual**
+  (§9.2) en el mismo commit.
+- [ADR-0021](docs/adr/0021-forma-canonica-del-arbol-de-teds.md) · la forma del
+  árbol: `<thead>` con el prefijo de cabecera, todo `<td>`, el hueco sin nodo.
+  **Transcrita al manual** (§9.2) en el mismo commit.
+- [ADR-0024](docs/adr/0024-teds-batch-varias-tablas-por-documento.md) · un
+  documento con **varias tablas**: la nota es la media de sus tablas evaluables y
+  ninguna se pierde. La cobertura se cuenta sobre **tablas**, que es lo que §6 ya
+  decía. **No contradice el manual: lo cumple.**
+- [ADR-0025](docs/adr/0025-la-exactitud-de-celda-no-alinea.md) · *«tras alinear»*
+  de §12 se lee como **la colocación canónica de L1**: `cell_accuracy` no hace un
+  segundo alineamiento y es exactitud **posicional**. **Transcrita al manual**
+  (§12) en el mismo commit, con `is_header` fuera de la firma y su medida.
+- [ADR-0023](docs/adr/0023-teds-negativo-suelo-al-publicar.md) **transcrita a
+  §9.2** en este commit: `para_publicar()` era una función pública que la interfaz
+  del manual no declaraba, y una interfaz incompleta es una contradicción como
+  cualquier otra.
+
+#### Cifras retiradas
+
+- **Sí las hay, y decir «ninguna» era el error.** Este hito retira los **285 ms**
+  de la palanca de `max_examples` (valen **44**), la caracterización de la puerta
+  por dos tandas (remedida con 40 corridas), el techo de **6000 ms** (ADR-0022 lo
+  sube a 8500 local / 20 000 CI) y una tabla de mutantes con el recuento mal
+  hecho. Detalle arriba, en «Corregido en el bloque de cierre».
+- La serie de la puerta suma su tercer punto: 1742 ms en L0, 3829 en L1,
+  **5604 ms en L2** (n=40, p90 5728), con techo declarado de **8500**. La versión
+  anterior de esta línea publicaba 5440 y 6000: los dos números que el propio
+  hito acababa de derogar.
+
 ### L1 · La forma canónica: invariantes y los cinco conversores · cerrado el 2026-08-22
 
 #### Añadido

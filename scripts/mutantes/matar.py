@@ -10,6 +10,7 @@ borra `.hypothesis` antes de cada corrida —para que la búsqueda empiece de ce
 por eso lo que se exige es «muere», no «muere en N tests».
 
 Uso:  uv run python scripts/mutantes/matar.py   ·   echo $?
+      uv run python scripts/mutantes/matar.py --tabla [--reps N] [--solo MUTANTE]
 """
 
 from __future__ import annotations
@@ -42,16 +43,49 @@ PLAN = [
     ),
     ("clave_sin_escapar", "tests/unit/test_types_clave.py"),
     ("clave_orden_malo", "tests/unit/test_types_clave.py"),
+    (
+        "teds_siempre_uno",
+        "tests/unit/test_teds_referencia.py tests/unit/test_teds_propiedades.py"
+        " tests/unit/test_teds_huecos.py",
+    ),
+    ("teds_cuenta_la_raiz", "tests/unit/test_teds_referencia.py"),
+    ("cellmatch_por_pertenencia", "tests/unit/test_cellmatch.py"),
+    ("arbol_orden_invertido", "tests/unit/test_teds_referencia.py"),
+    ("arbol_thead_solo_la_primera", "tests/unit/test_teds_referencia.py"),
+    ("batch_sobrescribe", "tests/unit/test_teds_batch.py"),
+    # Las cuatro casillas de `siempre_ok` x `siempre_roto` sobre las dos funciones
+    # que L2 construye. `teds_siempre_uno` ya estaba; las otras tres faltaban, y
+    # sin `siempre_roto` no hay quien cace al test que sólo afirma la mitad
+    # negativa —«esto BAJA la nota»—, que un 0,0 constante satisface entero.
+    (
+        "teds_siempre_cero",
+        "tests/unit/test_teds_referencia.py tests/unit/test_teds_propiedades.py"
+        " tests/unit/test_teds_huecos.py tests/unit/test_teds_limites.py",
+    ),
+    ("cellmatch_siempre_ok", "tests/unit/test_cellmatch.py"),
+    ("cellmatch_siempre_roto", "tests/unit/test_cellmatch.py"),
 ]
 
 
-def _corre(mutante: str, suite: str) -> tuple[int, int]:
+def _corre_sin_mutar(suite: str) -> tuple[int, int]:
+    """El CONTROL NEGATIVO: la misma suite sin mutante ninguno.
+
+    «Los 12 mutantes mueren» no prueba nada si el arnés no ha demostrado que sabe
+    **no** matar. Si esto no da 0 fallos, la tabla entera no vale: significaría
+    que la suite se cae sola y que cada «muerte» podría ser ese mismo fallo de
+    fondo, no el mutante.
+    """
+    return _corre(None, suite)
+
+
+def _corre(mutante: str | None, suite: str) -> tuple[int, int]:
     shutil.rmtree(RAIZ / ".hypothesis", ignore_errors=True)
+    plugin = ["-p", mutante] if mutante else []
     salida = subprocess.run(
         # SIN `-q`: `addopts` de pyproject ya lo pone, y `-qq` hace que pytest
         # SUPRIMA la linea de resumen. La primera version de este script leia
         # entonces «0 de 0» y declaraba SOBREVIVE sobre mutantes que si mueren.
-        ["uv", "run", "pytest", *suite.split(), "-p", mutante, "--tb=no"],
+        ["uv", "run", "pytest", *suite.split(), *plugin, "--tb=no"],
         cwd=RAIZ,
         capture_output=True,
         text=True,
@@ -65,11 +99,95 @@ def _corre(mutante: str, suite: str) -> tuple[int, int]:
         # Ni un test recogido no es «el mutante sobrevive»: es que la medicion no
         # se hizo. Distinguirlo importa, porque las dos cosas se leen igual en la
         # tabla y una es un hueco en la suite y la otra un script roto.
-        raise RuntimeError(f"{mutante}: pytest no recogio ni un test.\n{texto[-800:]}")
+        raise RuntimeError(
+            f"{mutante or 'sin mutar'}: pytest no recogio ni un test.\n{texto[-800:]}"
+        )
     return fallan, pasan
 
 
+def _tabla_de_asesinos(reps: int = 3, solo: str = "") -> int:
+    """Qué test mata a cada mutante, sobre `reps` repeticiones en frío.
+
+    Recorre la suite ENTERA por mutante, no sólo su suite objetivo: un mutante
+    puede morir en un fichero que no es el suyo, y saberlo es lo que revela los
+    puntos únicos de fallo — un mutante al que sólo mata un test es una sola
+    aserción sosteniendo una garantía.
+
+    Publica **dos agregaciones**, que no son lo mismo: los que matan SIEMPRE (las
+    `reps` repeticiones) y los que matan ALGUNA VEZ (unión). Un asesino
+    intermitente no es un asesino: depende de que un sorteo salga bien.
+
+    **SIEMPRE no es una categoría, es una estimación con este n.** Un test que
+    mata con probabilidad p sale «SIEMPRE» con probabilidad p^reps: a p = 0,9 y
+    reps = 3, eso es el 73% de las veces. Por eso `--reps` existe y por eso el n
+    va publicado al lado de la tabla.
+
+        --reps 10 --solo normalizador_agresivo    # afinar la tasa de uno
+    """
+    print(f"{'mutante':<28}{'siempre':>9}{'alguna vez':>12}   único asesino, si lo hay")
+    unicos: list[str] = []
+    for mutante, _ in PLAN:
+        if solo and mutante != solo:
+            continue
+        cuenta: dict[str, int] = {}
+        for _ in range(reps):
+            shutil.rmtree(RAIZ / ".hypothesis", ignore_errors=True)
+            salida = subprocess.run(
+                ["uv", "run", "pytest", "tests/unit", "-p", mutante, "--tb=no"],
+                cwd=RAIZ,
+                capture_output=True,
+                text=True,
+                env={**os.environ, "PYTHONPATH": str(RAIZ / "scripts" / "mutantes")},
+                check=False,
+            )
+            # Un test parametrizado imprime UNA linea FAILED POR PARAMETRO, asi
+            # que hay que colapsarlas por corrida antes de contar. Sin este
+            # `set`, `test_teds_coincide_con_la_referencia` sumaba 39 —13 casos x
+            # 3 corridas— en vez de 3, no cumplia `n == 3` y salia de la columna
+            # SIEMPRE aunque mate en las tres. Se publico asi: `teds_cuenta_la_raiz`
+            # aparecio como 6 de 8 deterministas cuando sus 8 asesinos lo son.
+            for nombre in {
+                linea.split()[1].split("[")[0]
+                for linea in (salida.stdout + salida.stderr).splitlines()
+                if linea.startswith("FAILED")
+            }:
+                cuenta[nombre] = cuenta.get(nombre, 0) + 1
+        siempre = sorted(t for t, n in cuenta.items() if n == reps)
+        unico = siempre[0].split("::")[-1] if len(cuenta) == 1 else ""
+        if len(cuenta) == 1:
+            unicos.append(f"{mutante} -> {unico}")
+        print(f"  {mutante:<26}{len(siempre):>9}{len(cuenta):>12}   {unico[:44]}")
+        # La diferencia entre las dos columnas SIEMPRE lleva nombre y tasa. Sin
+        # esto, dos corridas del mismo arnes dan columnas distintas y no hay
+        # forma de saber por que: paso en L2 con `normalizador_agresivo`, 9/9 en
+        # una corrida y 8/9 en la siguiente, y reconciliarlo costo medir aparte.
+        for t, n in sorted(cuenta.items()):
+            # Con `--solo` se listan TODOS con su tasa, no sólo los flojos: para
+            # poder afirmar «esta propiedad lo mata 10 de 10» hace falta ver el
+            # 10, no deducirlo de que no aparezca en la lista de intermitentes.
+            if n < reps or solo:
+                print(f"{'':<28}{n:>2}/{reps}   {t.split('/')[-1]}")
+    if unicos:
+        print("\nPUNTO ÚNICO DE FALLO (un solo test sostiene la garantía):")
+        for u in unicos:
+            print(f"  {u}")
+    return 0
+
+
 def main() -> int:
+    if "--tabla" in sys.argv:
+        reps = int(sys.argv[sys.argv.index("--reps") + 1]) if "--reps" in sys.argv else 3
+        solo = sys.argv[sys.argv.index("--solo") + 1] if "--solo" in sys.argv else ""
+        return _tabla_de_asesinos(reps, solo)
+
+    # CONTROL NEGATIVO primero: el arnés tiene que saber NO matar.
+    suites = " ".join(sorted({s for _, s in PLAN}))
+    fallan, pasan = _corre_sin_mutar(suites)
+    print(f"control negativo (sin mutar): {fallan} muertes de {fallan + pasan} tests")
+    if fallan:
+        print("EL ÁRBOL SIN MUTAR YA FALLA. La tabla de mutantes no vale nada hasta arreglarlo.")
+        return 1
+
     supervivientes: list[str] = []
     print(f"{'mutante':<26} {'suite se cae':>13}   qué caza")
     for mutante, suite in PLAN:

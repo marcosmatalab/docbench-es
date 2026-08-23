@@ -4,6 +4,8 @@
 Aquí van `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic`, y
 sobre todo lo que comparten: **`expresses_spans` lo fija el conversor según el
 formato de origen, nunca el extractor**.
+
+**Presupuesto de ejemplos: 50.**
 """
 
 from __future__ import annotations
@@ -24,6 +26,9 @@ from docbench_es.core.canonical import (
     validate,
 )
 from docbench_es.types import HallazgoTabla
+
+EJEMPLOS = 50
+
 
 MD = """
 Texto que no es tabla.

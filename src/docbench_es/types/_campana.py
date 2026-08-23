@@ -63,7 +63,11 @@ class StructureMetrics:
 
     teds: float | None
     teds_s: float | None
-    cell_f1: float
+    # `core.cellmatch.cell_f1` devuelve `float | None`: `None` cuando la verdad no
+    # trae celdas (NO_APLICABLE, regla de oro 4). Declararlo `float` a secas
+    # obligaba a quien lo rellenara a meter un 0,0, que es justo lo que ADR-0006
+    # prohíbe: cero dice «lo intentó y falló», no «no había nada que medir».
+    cell_f1: float | None
     evaluable_coverage: float
     failures: Mapping[ExtractionFailure, int]
     ci: tuple[float, float]

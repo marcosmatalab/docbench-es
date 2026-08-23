@@ -335,6 +335,74 @@ se me ocurrió. Los dos números publicados salen del censo.
 
 ---
 
+## L2 · TEDS: qué mide, contra qué se valida y qué NO dice
+
+**La fórmula**, copiada de la implementación de referencia:
+
+    TEDS = 1 - distancia_de_edición(pred, gold) / max(nodos(pred), nodos(gold))
+
+donde `nodos` son los **descendientes** de `<table>` —no cuenta la raíz— y la
+distancia se calcula sobre los árboles **con** su raíz. Esa asimetría no es un
+descuido de nadie: es la fórmula publicada, y es la razón de que **TEDS pueda
+salir negativo**.
+
+**El coste de edición**, línea a línea del `CustomConfig` de la referencia:
+borrar o insertar un nodo cuesta 1; renombrar cuesta 1 si cambia la etiqueta, el
+`colspan` o el `rowspan`; entre dos `td` de la misma forma con algún contenido,
+cuesta la distancia de Levenshtein entre sus contenidos **normalizada por el más
+largo**; y entre dos `td` los dos vacíos, 0.
+
+**El algoritmo aquí es Zhang-Shasha, no APTED.** Los dos resuelven el mismo
+problema de forma exacta, así que dan el mismo número; APTED es más rápido y
+Zhang-Shasha cabe en un fichero sin añadir dependencia al núcleo puro. **Que den
+el mismo número no se supone: es el criterio de aceptación de L2**, y sale 20 de
+20 a cuatro decimales.
+
+### Contra qué se valida, exactamente
+
+Los 20 casos son **los de PubTabNet**: `src/sample_gt.json` y `src/sample_pred.json`
+de su repo, tablas de artículos científicos. **No son tablas del BOE**, y eso
+importa para leer el número: lo que valida es *«¿tu TEDS es TEDS?»*, no *«¿tu TEDS
+funciona sobre el corpus español?»*. Lo segundo no lo puede contestar L2, porque
+el corpus llega en L3.
+
+El golden lo calcula **su** `metric.py` con APTED, sobre el **render canónico** de
+las mismas tablas (ADR-0020). Los dos lados ven el mismo contenido y la misma
+forma, así que una diferencia sólo puede venir del algoritmo.
+
+### La incertidumbre de este número
+
+**No tiene intervalo, y no por descuido**: no es una estimación. Es un recuento
+—20 de 20— sobre el censo completo de casos disponibles, y el cálculo es
+determinista: sin aleatoriedad, sin semilla, mismo resultado en cualquier máquina.
+Lo que sí lleva es su **población**: los 20 casos propios de PubTabNet, más 6
+casos límite escritos a mano.
+
+Lo que **no** cubre, y está en `LIMITS.md` 39 a 45: la comparabilidad con la
+literatura, la descomposición forma/normalización en 5 de los 15 casos que
+difieren, `is_header` intercalado, el coste de Zhang-Shasha en tablas enormes, el
+recorte del TEDS negativo al publicar, y cuántas cabeceras del BOE viajaban sin
+marcar antes del arreglo de `<thead><td>`.
+
+### Historial de este número
+
+**El primer intento comparaba contra el HTML crudo y no cerraba.** 15 de 20 casos
+daban distinto, con diferencias de hasta 0,207. La causa no era un bug de TEDS:
+la referencia no normaliza nada y cuenta el marcado inline de las celdas. Se
+resolvió comparando sobre el mismo contenido (ADR-0020) y midiendo la diferencia
+aparte, que es lo que está publicado en `RESULTS.md`.
+
+**Un test afirmaba `0 <= teds <= 1` y era falso.** Lo encontró `hypothesis` en una
+corrida de la puerta, no la revisión. La cota real es [−1, 1] y la referencia
+devuelve el mismo −0,142857.
+
+**`from_html` no marcaba como cabecera un `<td>` dentro de `<thead>`.** Era un
+fallo de L1 que sólo se vio al construir el árbol de TEDS: en PubTabNet **todas**
+las cabeceras tienen esa forma, así que `is_header` salía `False` en el 100% de
+ellas. Arreglado en L2; los golden se regeneraron después del arreglo.
+
+---
+
 ## El tiempo de la puerta es una SERIE, no un dato por hito
 
 Dos puntos ya son una serie. Se sigue de hito en hito en la misma tabla, con el
@@ -345,6 +413,7 @@ sino **la pendiente**.
 |---|---|---|---|---|
 | L0 | 1742 ms | 1715 – 1872 | 15 | Modelo de datos y errores |
 | L1 | 3829 ms | 3713 – 3875 | 82 | Invariantes, cinco conversores, 17 propiedades de `hypothesis` y `mypy --strict` sobre `tests/` |
+| L2 | **5604 ms** (n=40, p90 5728, σ=76) | 5140 – 6048 | 172 | TEDS y su validación contra los 20 casos de PubTabNet, `cellmatch`, y el presupuesto de ejemplos declarado en las ocho suites |
 
 **+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
 `mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de
@@ -354,6 +423,24 @@ n=3 en frío— y los **~806 ms** restantes son los tests y sus 17 propiedades d
 Que el mayor trozo del crecimiento sea el tipado y no los tests importa para la
 decisión de mañana: si algún día aprieta, lo primero que hay que mirar es la
 caché de `mypy` en CI, no los ejemplos de `hypothesis`.
+
+**En L2 se hizo eso, y con número.** `mypy --strict src tests` cuesta **1614 ms**
+en frío y **124 ms** en caliente, así que la caché de CI ahorra ~1490 ms por
+corrida; entró en `fast.yml`. `hypothesis` **no** se cachea a propósito: su base
+guarda lo ya explorado, así que cachearla haría que CI buscase menos, y el verde
+de CI vale justo porque nace limpio.
+
+**Y se declaró presupuesto de ejemplos en las ocho suites de propiedad**, que
+hasta L2 heredaban el 100 por defecto sin decirlo.
+
+**La palanca de `max_examples` no existe, y esto es una corrección de método.**
+Se publicó que bajar la suite de normalización de 100 a 50 ahorraba ~285 ms,
+presentado como medido cuando era una estimación por regla de tres. Medido:
+**990 ms a 100, 946 a 50, 935 a 25** — media de 5 corridas en frío por
+presupuesto. La palanca vale **44 ms**. El coste lo domina el arranque del
+proceso, no los ejemplos, y **el error fue suponer que un test escala con su
+`max_examples`**. Regla que deja: antes de publicar una palanca, se acciona y se
+mide; una palanca estimada es un plan de contingencia que no existe.
 
 **Cuando se acerque al presupuesto, el arreglo es `--max-examples` por suite,
 NUNCA borrar tests.** Se escribe ahora, con 24× de margen, y no el día que

@@ -64,7 +64,10 @@ python_version = "3.12"
 # (nombre vacio, de ahi el espacio inicial), o con "Source file found twice under
 # different module names". Con `explicit_package_bases`, el crawl PARA en src/.
 # Reproducido y verificado con mypy 2.3.1.
-mypy_path = "src:tests/unit"
+# `scripts` va aqui porque `tests/unit/test_ancla.py` importa `scripts/ancla.py`:
+# la precondicion de los documentos publicados vive en `scripts/` —su consumidor
+# es el script de un solo uso— y su test tiene que poder importarla con tipos.
+mypy_path = "src:tests/unit:scripts"
 explicit_package_bases = true
 namespace_packages = true
 strict = true

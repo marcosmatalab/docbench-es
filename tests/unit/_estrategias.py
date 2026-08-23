@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from html import escape
 
+from hypothesis import assume
 from hypothesis import strategies as st
 
 from docbench_es.types import CanonicalCell, CanonicalTable
@@ -34,12 +35,21 @@ def _celdas_colocadas(
     ancho_max: int,
     *,
     permitir_cortar: bool,
+    filas_de_cabecera: int = 1,
 ) -> list[CanonicalCell]:
     """El algoritmo de colocación del estándar HTML, escrito a mano.
 
     Para cada fila, un cursor que avanza de izquierda a derecha saltando lo que ya
     ocupa un `rowspan` de arriba. `permitir_cortar` es lo que distingue una tabla
     con huecos de cola —la fila corta, cotidiana en el BOE— de una tabla completa.
+
+    **`filas_de_cabecera` existe porque esto ponía `is_header = fila == 0`.** Una
+    sola fila de cabecera hace que «prefijo máximo» y «la primera fila» sean lo
+    mismo, así que **ninguna propiedad podía llegar a la rama `n_cabecera >= 2`**
+    de `_arbol.py`: el mutante que confunde las dos reglas sobrevivía a todas.
+    Ejemplo del paso 3 de `/cerrar`: la estrategia codifica dónde creías que
+    estaban los bugs cuando la escribiste, y ésta se escribió antes de que
+    existiera el árbol de TEDS.
     """
     ocupado: set[tuple[int, int]] = set()
     celdas: list[CanonicalCell] = []
@@ -69,7 +79,7 @@ def _celdas_colocadas(
                     rowspan=rowspan,
                     colspan=colspan,
                     text=draw(TEXTOS),
-                    is_header=fila == 0,
+                    is_header=fila < filas_de_cabecera,
                 )
             )
             col += colspan
@@ -110,10 +120,18 @@ def tabla_completa(draw: st.DrawFn, max_lado: int = 5) -> CanonicalTable:
 
 @st.composite
 def tabla_bien_formada(draw: st.DrawFn, max_lado: int = 5) -> CanonicalTable:
-    """Legal, pero con filas cortas: puede traer huecos de cola y filas vacías."""
+    """Legal, pero con filas cortas: puede traer huecos de cola y filas vacías.
+
+    **El número de filas de cabecera se sortea entre 0 y 2**, no se fija en 1: con
+    1 fijo, la rama del prefijo máximo de `<thead>` era inalcanzable para toda
+    propiedad. Con 0 se ejercita además la tabla sin `<thead>` ninguno.
+    """
     n_filas = draw(st.integers(min_value=1, max_value=max_lado))
     ancho = draw(st.integers(min_value=1, max_value=max_lado))
-    celdas = draw(_celdas_colocadas(n_filas, ancho, permitir_cortar=True))
+    cabeceras = draw(st.integers(min_value=0, max_value=min(2, n_filas)))
+    celdas = draw(
+        _celdas_colocadas(n_filas, ancho, permitir_cortar=True, filas_de_cabecera=cabeceras)
+    )
     return _envolver(celdas, n_filas)
 
 
@@ -188,3 +206,31 @@ def a_html(t: CanonicalTable) -> str:
         partes.append("</tr>")
     partes.append("</table>")
     return "".join(partes)
+
+
+@st.composite
+def tabla_con_dos_filas_de_cabecera(draw: st.DrawFn) -> CanonicalTable:
+    """**La forma que hace falta para ADR-0021 punto 2, generada a propósito.**
+
+    `tabla_bien_formada` sortea entre 0 y 2 filas de cabecera y llega a 2 en
+    **11 de 300** ejemplos: alcanzable, pero a 30 ejemplos por suite eso es ~1
+    caso, o sea suerte y no candado. Medido: la propiedad de la frontera de
+    cabecera **no mataba** al mutante `arbol_thead_solo_la_primera` apoyándose
+    sólo en `tabla_bien_formada`.
+
+    Es el mismo fallo que L0 documentó en su test de `key()` y que
+    `tabla_con_rowspan_sobre_fila_corta` ya corrige para los huecos: **no generar
+    la forma que importa es no probarla**, y una propiedad en verde sobre una
+    forma que nunca sale no es evidencia de nada.
+    """
+    n_filas = draw(st.integers(min_value=3, max_value=5))
+    ancho = draw(st.integers(min_value=1, max_value=4))
+    celdas = draw(_celdas_colocadas(n_filas, ancho, permitir_cortar=False, filas_de_cabecera=2))
+    # Pedir dos filas de cabecera NO garantiza dos filas que ORIGINEN celdas: un
+    # `rowspan=3` desde la fila 0 se traga la fila 1 entera, y entonces
+    # `_filas_de_cabecera` cuenta 1 — que es lo correcto, no un bug. Lo encontró
+    # esta misma estrategia al estrenarse. Se descartan esos sorteos aquí, en vez
+    # de que el test se salte el caso: un test que se salta lo que no le encaja
+    # pasa en verde sobre cero ejemplos y nadie se entera.
+    assume(len({c.row for c in celdas if c.is_header}) >= 2)
+    return _envolver(celdas, n_filas)

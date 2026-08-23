@@ -14,6 +14,9 @@ cancela: se vuelve invisible**. De ahí que haya dos tests independientes y no u
    primero no puede: que el malentendido no esté en los dos lados a la vez.
 
 Si algún día parece que sobra uno de los dos, no sobra.
+
+**Presupuesto de ejemplos: 60** para la ida y vuelta, que es la propiedad cara de
+este fichero: renderiza, vuelve a parsear y compara celda a celda.
 """
 
 from __future__ import annotations
@@ -33,6 +36,9 @@ from docbench_es.types import CanonicalTable, HallazgoTabla
 # sondeo guardaba `most_common(12)` por documento. De los 489 <img>, sólo 21 están
 # en documentos que tienen alguna tabla. Este golden reproduce las FORMAS; los
 # recuentos dicen que son formas frecuentes, no cuántas veces salen en una celda.
+EJEMPLOS = 60
+
+
 BOE_TIPICO = """
 <table>
   <caption>Tabla salarial 2026</caption>
@@ -49,8 +55,8 @@ BOE_TIPICO = """
 """
 
 
+@settings(max_examples=EJEMPLOS)
 @given(t=tabla_bien_formada())
-@settings(max_examples=100)
 def test_ida_y_vuelta(t: CanonicalTable) -> None:
     """Demuestra que `from_html` es FIEL, no sólo que no revienta.
 

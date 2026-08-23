@@ -70,9 +70,15 @@ def holes(t: CanonicalTable) -> tuple[tuple[int, int], ...]:
     """Las posiciones sin cubrir, en orden de fila y columna.
 
     Es la mitad ejecutable del «o declara los huecos» de §6.2 (ADR-0018). Un
-    hueco **no es una celda vacía**, y L2 necesita la diferencia para emitir
-    celda ausente en vez de celda vacía: son árboles distintos y TEDS los puntúa
-    distinto.
+    hueco **no es una celda vacía**: son árboles distintos y TEDS los puntúa
+    distinto —medido, 1,000000 contra 0,857143 en TEDS-S—.
+
+    **Corregido en L2:** `core.teds` NO llama a esta función. Construye su árbol
+    recorriendo las celdas que originan en cada fila, así que el hueco no es un
+    nodo que haya que omitir sino uno que nunca existió, y la distinción se
+    respeta por construcción. Quien la usa es `validate`, que declara los huecos,
+    y la usarán L4 y L5 para el informe. La justificación de L1 decía «lo que L2
+    usa» y era optimista.
 
     Misma definición de «cubrir» que `cell_at`, calculada de una pasada sobre las
     celdas en vez de una consulta por posición: L2 la llama una vez por tabla y

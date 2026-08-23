@@ -77,9 +77,15 @@ def main() -> int:
                 rechazadas_siendo_legales.append(f"{nombre}: {validate(mutada)[1]}")
     rotas = 0
     sin_detectar: list[str] = []
+    # Por familia, no sólo el total: un 8525/8525 sigue saliendo verde si una
+    # familia deja de generar mutantes —un cambio en `_base` y esa forma de romper
+    # la tabla ya no se prueba—. El total no lo ve; el recuento por familia sí.
+    por_familia: dict[str, list[int]] = {}
     for base in bases:
         for nombre, codigo, mutada in _mutaciones(base):
             rotas += 1
+            cuenta = por_familia.setdefault(nombre, [0, 0])
+            cuenta[1] += 1
             ok, problemas = validate(mutada)
             visto = {p.split(":", 1)[0] for p in problemas}
             fatales = {v for v in visto if HallazgoTabla(v).es_fatal}
@@ -91,6 +97,8 @@ def main() -> int:
             de_mas = codigo in UN_SOLO_CODIGO and fatales != esperados
             if (ok and deberia_invalidar) or codigo not in visto or de_mas:
                 sin_detectar.append(f"{nombre} en {base.n_rows}x{base.n_cols}: {problemas}")
+            else:
+                cuenta[0] += 1
 
     familia = list(_familia_condicion_1())
     aceptadas = [t for t in familia if validate(t)[0]]
@@ -104,6 +112,15 @@ def main() -> int:
     for nombre in FORMAS_DEL_BOE:
         print(f"      · {nombre}")
     print(f"  detección de tablas rotas ..... {rotas - len(sin_detectar)}/{rotas}")
+    vacias = [n for n, (_, t) in por_familia.items() if t == 0]
+    print(
+        f"  familias de mutación .......... {len(por_familia)}, ninguna vacía"
+        if not vacias
+        else f"  FAMILIAS SIN UN SOLO MUTANTE: {vacias}"
+    )
+    if "--familias" in sys.argv:
+        for nombre, (bien, total) in sorted(por_familia.items()):
+            print(f"      {bien:>5}/{total:<5} {nombre}")
     print(f"  falsos positivos · tablas base . {len(falsos_positivos)}/{len(bases)}")
     print(f"  falsos positivos · huecos rellenados {len(rechazadas_siendo_legales)}/{legales}")
     print(f"  condición 1 · aceptadas ....... {len(aceptadas)}/{len(familia)} (lectura del origen)")

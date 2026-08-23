@@ -45,7 +45,17 @@ No se añade campo a `CanonicalTable`.
 
 **Lo que L2 hereda:** un hueco **no es una celda vacía**. `<tr><td>a</td></tr>` y
 `<tr><td>a</td><td></td></tr>` son árboles distintos y TEDS los puntúa distinto.
-`holes()` es lo que permite a L2 emitir celda **ausente** en vez de celda vacía.
+
+> **Corregido en L2.** La frase que había aquí —*«`holes()` es lo que permite a L2
+> emitir celda ausente»*— era optimista y resultó falsa: **`core.teds` no llama a
+> `holes()`**, y hay un test que lo comprueba por AST. El árbol de TEDS se
+> construye recorriendo las celdas que ORIGINAN en cada fila, así que un hueco no
+> es un nodo que haya que omitir: es un nodo que nunca existió, y la distinción
+> se respeta por construcción. La distinción sí está medida contra la referencia:
+> en TEDS-S, celda vacía **1,000000** contra hueco **0,857143**.
+>
+> `holes()` mantiene sus consumidores —`validate` declara los huecos, y L4 y L5
+> los necesitan para el informe— pero no es L2 quien la usa. Ver ADR-0021.
 
 De la misma regla —«qué puede producir un formato de origen»— salen dos hallazgos
 más, asimétricos y por buen motivo: **`COLUMNA_VACIA` es fatal**, porque ningún

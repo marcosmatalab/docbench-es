@@ -792,7 +792,7 @@ class CampaignResult:
 class StructureMetrics:            # nivel 1, por extractor
     teds: float | None             # None = NO_APLICABLE, nunca 0
     teds_s: float | None
-    cell_f1: float
+    cell_f1: float | None          # None = NO_APLICABLE, igual que teds
     evaluable_coverage: float      # sobre cuántas tablas se pudo calcular
     failures: Mapping[ExtractionFailure, int]   # enum cerrado como CLAVE, no str
     ci: tuple[float, float]
@@ -1256,9 +1256,24 @@ def teds(pred: CanonicalTable, gold: CanonicalTable) -> float: ...
 def teds_struct(pred, gold) -> float:
     """TEDS-S: solo estructura, ignora el contenido de las celdas."""
 def teds_batch(pairs) -> TedsReport: ...
+
+def para_publicar(valor: float) -> float:
+    """El SUELO de presentación: recorta a 0 un TEDS negativo. ADR-0023."""
 ```
 
+> **Transcrito de [ADR-0023](docs/adr/0023-teds-negativo-suelo-al-publicar.md), en L2.** TEDS **no está acotado por cero** —la distancia se calcula con la raíz y el denominador cuenta sólo los descendientes—, y la referencia de PubTabNet devuelve el mismo negativo. El cálculo **no se toca**: recortar dentro de `teds()` rompería el criterio de aceptación de este mismo hito. El recorte es de **presentación**, vive en `para_publicar()` y se declara junto al número, incluido **cuántos se recortaron**. Requisito para L5 en `LIMITS.md` 46.
+
 **Validación obligatoria:** contra la implementación de referencia de PubTabNet sobre sus propios casos, en `tests/fixtures/pubtabnet/`. Si no reproduce sus números, la implementación está mal. **No se valida "a ojo"**, porque TEDS no tiene valores intuibles.
+
+> **Transcrito de [ADR-0020](docs/adr/0020-teds-compara-contenido-canonico.md) y [ADR-0021](docs/adr/0021-forma-canonica-del-arbol-de-teds.md), en L2.** *«Sus números»* hay que precisarlo, porque tal cual se lee mal y el hito no se podría cerrar.
+>
+> **La referencia no normaliza nada** —tokeniza la celda en caracteres sueltos y compara con Levenshtein— y **cuenta en el denominador el marcado inline dentro de las celdas**: 189 nodos `<b>`/`<i>`/`<sup>` en sus 20 casos, que `CanonicalTable` no guarda porque su modelo de celda es texto plano. Comparar mi TEDS sobre tablas canónicas contra sus valores sobre HTML crudo da **15 de 20 casos distintos** —media +0,0092, rango [−0,0342, +0,2070]—, y **en 10 de ésos la normalización no toca ni un texto**: la causa dominante es la forma del árbol, no normalizar.
+>
+> Por eso **el golden se genera dando a la referencia el MISMO contenido**: el render canónico de las mismas tablas. Los dos lados parten del mismo árbol y del mismo texto, así que una diferencia sólo puede venir del algoritmo, que es lo que esta sección manda validar. Resultado medido: **20 de 20 a cuatro decimales**. La diferencia contra el HTML crudo se publica en `RESULTS.md` con su descomposición, y el precio —que estos TEDS no son directamente comparables con los publicados en la literatura sobre PubTabNet— está en `LIMITS.md` 39.
+>
+> **La forma del árbol es una decisión con número** (ADR-0021): `<thead>` sólo con el prefijo máximo de filas de cabecera, `<tbody>` el resto, **todas las celdas `<td>` y nunca `<th>`** —la referencia no le lee los spans a un `<th>`—, `<td>` como hoja, y **el hueco no emite nodo**. Medido: un `<tbody>` de más o un `<th>` donde va un `<td>` cuestan **0,667** en una tabla de una celda.
+>
+> **Y dos casos degenerados donde manda §12 y no la referencia:** dos tablas vacías dan **1** —la referencia devuelve `0.0` para dos cadenas vacías y **revienta con `ZeroDivisionError`** ante `<table></table>`, porque divide por cero nodos—; una vacía y otra no dan **0**, que sí coincide.
 
 ### 9.3 `core.answer` — los seis verificadores
 
@@ -1612,6 +1627,12 @@ Todo esto vive también en `docs/metrics.md`. Es donde un examinador con formaci
 | **TEDS** | Distancia de edición de árbol normalizada entre la tabla predicha y la real | Que ambas se pueden expresar como árbol de celdas | Tabla vacía: se define como 1 si las dos lo están, 0 si solo una |
 | **TEDS-S** | Igual ignorando el contenido | Idem | Idem |
 | **Exactitud de celda** | Celdas correctas / celdas de la verdad | Emparejado por posición tras alinear | Sin celdas: `NO_APLICABLE` |
+
+> **Transcrito de [ADR-0025](docs/adr/0025-la-exactitud-de-celda-no-alinea.md), en L2.** *«Tras alinear»* hay que precisarlo, igual que *«sus números»* de §9.2: **el alineamiento es el de L1**, o sea la colocación canónica en la rejilla que hacen los cinco conversores resolviendo `rowspan`/`colspan`. `core.cellmatch` **no hace un segundo alineamiento**: no busca el desplazamiento que maximiza aciertos.
+>
+> **La consecuencia, dicha antes de que sorprenda:** una tabla desplazada una fila entera saca **0,0** con todas sus celdas bien transcritas. Es deliberado —en una tabla de importes la posición es el dato, y una columna de más cambia a qué concepto pertenece cada número— y el fallo **sí se mide, en TEDS**, que ve el cambio de forma del árbol. `cell_accuracy` es **exactitud posicional** y no se compara con cifras de la literatura que alinean. Precio en `LIMITS.md` 53.
+
+> **Y `is_header` NO entra en la identidad de la celda**, también a propósito: decide el corte `<thead>`/`<tbody>` del árbol (ADR-0021), así que una cabecera mal marcada la penaliza TEDS. Medido sobre dos tablas que sólo difieren en el flag: `cell_accuracy` = **1,0**, `teds` = **0,5**. Meterlo en las dos sería contar el mismo fallo dos veces.
 | **Tablas no detectadas** | Tablas de la verdad sin correspondencia | El emparejado es correcto | — |
 | **Tablas partidas o fusionadas** | Recuento con su tipo | Idem | — |
 | **Cobertura evaluable** | Tablas evaluables para ese extractor / tablas totales | `expresses_spans` es correcto | Si es 0, no se publica nota, solo `NO_APLICABLE` |

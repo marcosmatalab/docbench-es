@@ -243,3 +243,196 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     está cerrado recortando a la tabla, pero la proporcionalidad con el área se
     mantiene y **no hay tope declarado**. Los adaptadores hostiles de L8 son el
     sitio donde esto se prueba a propósito.
+
+### L2 · 22 de agosto de 2026
+
+39. **Los TEDS de este proyecto NO son directamente comparables con los TEDS
+    publicados en la literatura sobre PubTabNet.** El golden se calcula sobre el
+    render canónico de las tablas y no sobre el HTML crudo (ADR-0020), porque la
+    implementación de referencia no normaliza nada y cuenta en el denominador el
+    marcado inline dentro de las celdas, que `CanonicalTable` no guarda. Medido
+    sobre sus 20 casos: **15 de 20 dan un número distinto**, media +0,0092,
+    rango [−0,0342, +0,2070]. Un paper que diga «TEDS 0,94 en PubTabNet» **no se
+    puede poner al lado** de un número de aquí sin decir esto. Es un límite
+    serio: la comparabilidad externa era una de las cosas que daba usar TEDS.
+40. **De esos 15 casos, la parte atribuible a NORMALIZAR no está separada de la
+    atribuible a la FORMA del árbol.** Se sabe que en **10 de los 15** la
+    normalización no cambia ni un texto de celda, o sea que ésos son forma pura;
+    en los otros 5 las dos causas van mezcladas y no se han descompuesto.
+    Separarlas exigiría un conversor que devolviera el texto sin normalizar, que
+    hoy no existe y que no se construye sólo para esto.
+41. **`is_header` sobrevive de forma parcial al árbol de TEDS.** Sólo el
+    **prefijo máximo** de filas de cabecera va a `<thead>` (ADR-0021): una fila
+    de cabecera en mitad de la tabla acaba en `<tbody>` y su condición se pierde
+    para la métrica. En el BOE las cabeceras van arriba, pero **cuántas tablas
+    tienen cabeceras intercaladas no está medido**. Se mide en L3, que es quien
+    trae el corpus.
+42. **La distancia de edición es Zhang-Shasha, y su coste ESTÁ MEDIDO: no es
+    inmediato.** `uv run python scripts/coste_teds.py`, mediana de 3, tablas sin
+    spans:
+
+    | Tabla | Celdas | Un `teds()` |
+    |---|---|---|
+    | 10×5 | 50 | 9 ms |
+    | 20×8 | 160 | 101 ms |
+    | 40×8 | 320 | 447 ms |
+    | 60×10 | 600 | **1617 ms** |
+    | 80×10 | 800 | **2979 ms** |
+    | 100×10 | 1000 | **4712 ms** |
+
+    **Este límite decía «para una tabla de documento es inmediato» y que el coste
+    sólo se dispara con «miles de filas». Las dos cosas eran falsas y ninguna
+    estaba medida.** A 100 filas —que no es hipotético: el sondeo del BOE midió
+    `rowspan` de hasta 33— un solo par cuesta **4,7 s**, y el crecimiento es
+    ~×2 cada 20 filas, o sea cuadrático en celdas como manda O(|a|·|b|·h²).
+
+    **La consecuencia es de L5, y hay que decidirla allí con este número
+    delante:** ocho extractores × miles de tablas a segundos por par no cabe en
+    ningún presupuesto. Las salidas son tres, y ninguna es gratis: **tope de
+    tamaño declarado** —y entonces las tablas grandes salen `NO_APLICABLE`, no
+    cero—, **APTED** como la referencia, que es asintóticamente mejor pero mete
+    una dependencia en el núcleo, o **paralelizar**, que no cambia el coste por
+    par. **Lo que no vale es descubrirlo en L5 con la campaña corriendo.**
+
+    Lo que sigue sin haber: **tope declarado y test de carga**. El caso hostil es
+    de L8.
+43. **`teds_batch` decide `NO_APLICABLE` mirando SÓLO si la verdad trae celdas
+    combinadas y el extractor declara no expresarlas.** Es la regla de ADR-0006 y
+    cubre el caso que importa, pero no cubre otros: un extractor que expresa
+    spans y aun así no puede con una tabla multipágina se puntúa igual, con un
+    cero que mide su formato y no su calidad. El resto de causas de
+    `NO_APLICABLE` se descubren en L5, con extractores de verdad.
+44. **TEDS puede salir NEGATIVO, y este proyecto no lo recorta.** La distancia se
+    calcula sobre los árboles con su raíz y el denominador cuenta sólo los
+    descendientes, así que entre dos tablas suficientemente distintas la
+    distancia se pasa del denominador. Medido, y **la implementación de
+    referencia devuelve exactamente lo mismo**: −0,142857 sobre el par congelado
+    en `casos_limite.json`. La cota real es [−1, 1], no [0, 1]. Lo encontró
+    `hypothesis`, no la revisión. **Consecuencia para L5:** §12 publica TEDS como
+    nota y una nota negativa no se pondera igual que una entre 0 y 1; L5 tiene
+    que decidir si se recorta a cero **al publicar** y decirlo en el informe.
+    Recortarlo dentro de `core.teds` sería apartarse de la referencia en
+    silencio, así que no se hace aquí.
+45. **`from_html` no marcaba como cabecera un `<td>` dentro de `<thead>`, y eso
+    era un fallo de L1 que L2 destapó.** PubTabNet escribe **todas** sus
+    cabeceras así, o sea que `is_header` salía `False` en el 100% de las
+    cabeceras de ese corpus. Arreglado en L2. En el BOE el efecto es menor
+    —usa `<th>` 2.659 veces contra 596 `<thead>`— pero **cuántas cabeceras del
+    BOE viajaban sin marcar no está medido**: se mide en L3, con el corpus.
+
+### L2 · cierre · 23 de agosto de 2026
+
+46. **REQUISITO DE L5: el suelo del TEDS negativo es de PRESENTACIÓN, y se
+    publican LAS DOS CIFRAS.** TEDS puede salir negativo —medido, −0,142857, y la
+    referencia devuelve lo mismo— y `core.teds` **no lo recorta nunca**. Quien
+    publique:
+    1. aplica `para_publicar()` **a los valores por documento Y al agregado**
+       —mezclar escalas en la misma tabla es peor que cualquiera de las dos—;
+    2. **publica también el agregado CRUDO, sin recortar, en su propia columna**.
+       Recortar a 0 antes de agregar **sesga la media hacia arriba**, y decir
+       cuántos se recortaron no basta para deshacer el sesgo: obliga al lector a
+       fiarse del criterio. Con las dos columnas al lado, la objeción desaparece
+       en vez de quedar contestada. Cuesta una columna;
+    3. y dice **cuántos se recortaron**.
+
+    Los valores crudos siguen además en el artefacto de la campaña. Ver
+    [ADR-0023](docs/adr/0023-teds-negativo-suelo-al-publicar.md).
+47. **`teds` declara una PRECONDICIÓN que no comprueba, y de ahí sale el
+    requisito de L5.** *(Reescrito: la primera versión de este límite decía «L5
+    valida antes de puntuar», que dejaba una suposición sobre un módulo de L2 en
+    manos de un hito futuro — justo lo contrario del patrón que este proyecto
+    acaba de escribir: **el módulo declara, el consumidor comprueba**.)*
+
+    **Lo declarado**, en el docstring de `teds` y no en un comentario: asume que
+    las dos tablas pasan `validate()` sin hallazgos fatales. **Lo que no
+    comprueba**: nada de eso. Si la precondición no se cumple, devuelve un número
+    igualmente y **ese número no es interpretable** — medido, una tabla con
+    `SOLAPE` saca **0,75**, que tiene aspecto de nota normal. Hay un test que fija
+    el contrato y que **se cae si alguien decide que `teds` valide**, porque eso
+    cambiaría la firma de §9.2.
+
+    **El requisito derivado, para L5:** quien puntúa valida antes, y cuenta las
+    tablas que no pasan como lo que son —un fallo del extractor— en vez de
+    dejarlas entrar en la media con una nota de aspecto normal.
+48. **L2 no ha ejercitado casi nada de L1, y L3 tiene que saberlo.** El código de
+    `core.teds` y `core.cellmatch` **no llama a ninguna función de
+    `core.canonical`**: trabaja sobre `CanonicalTable` directamente. Lo único
+    ejercitado de verdad, y sólo desde los tests, es **`from_html`** —sobre 20
+    tablas reales de PubTabNet, que es lo que destapó el fallo de `is_header`—.
+50. **«Mata SIEMPRE» es una estimación con n = 3, no una categoría.** La tabla de
+    asesinos de `RESULTS.md` llama determinista a un test que mata en las 3
+    repeticiones. Un test que mata con probabilidad p sale «SIEMPRE» con
+    probabilidad p³: **a p = 0,9 eso es el 73% de las veces**. Medido sobre un
+    caso real con `--reps 10`, `test_idempotente` mata a `normalizador_agresivo`
+    **26 de 30**: p̂ = 0,867 con **Wilson 95% [0,703 – 0,947]**, o sea un
+    **66% [35% – 85%]** de falso «determinista» por tanda.
+
+    **Lo que este proyecto NO mide es la tasa de muerte de cada asesino.** Medirla
+    con precisión útil costaría decenas de repeticiones por mutante. Lo que se
+    hace en su lugar: publicar el n al lado de la tabla, y dejar `--reps` y
+    `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
+    las dos columnas no se explique sola.
+
+51. **La suite no está medida por mutación: el arnés cubre 149 de 172 tests.** Los
+    12 mutantes apuntan a `canonical`, `types.clave`, `teds` y `cellmatch`. Los
+    **38 tests restantes** —`teds_limites`, `types_invariantes`, `types`, `ancla`,
+    `teds_batch`, `errors` y `sin_consumidor`— **no tienen ningún mutante escrito
+    contra su código**, así que «los 12 mueren» no dice nada sobre si esos tests
+    cazarían un bug. Algunos matan mutantes de rebote cuando `--tabla` recorre la
+    suite entera, y eso es daño colateral, no cobertura diseñada.
+
+52. **El criterio de aceptación de L2 valida la DISTANCIA, no el mapeo
+    `CanonicalTable → árbol`.** El golden se generó dando a la referencia el
+    render canónico de las mismas tablas (ADR-0020), así que el número congelado
+    es `f_ref(T(pred), T(gold))` y el nuestro `f(T(pred), T(gold))`: **`T`
+    aparece en los dos lados y se cancela**. Lo que «20 de 20 a cuatro decimales»
+    demuestra es que este Zhang-Shasha calcula lo mismo que APTED. No demuestra
+    que `T` sea el árbol correcto.
+
+    **Medido, no razonado.** Dos mutantes de `_arbol.py` contra el fixture
+    congelado tal cual:
+
+    | Mutante | Qué rompe | Antes | Ahora |
+    |---|---|---|---|
+    | `arbol_orden_invertido` | el HTML de **los 20** casos | 145 passed | **20 mueren** |
+    | `arbol_thead_solo_la_primera` | el HTML de **6** de 20 | 145 passed | **7 mueren** |
+
+    Y peor: regenerando el golden con la referencia real bajo esos mutantes,
+    sigue verde. **Un error en `T` presente el día que se generó el golden sería
+    invisible para siempre.**
+
+    **Lo que se hizo:** `test_el_render_canonico_es_el_que_genero_el_golden` ata
+    `a_html` a los campos `html_canonico_gold`/`html_canonico_pred` que el fixture
+    **ya guardaba y nadie miraba**, más un caso a mano de dos filas de cabecera
+    —`_estrategias.py` fija `is_header = fila == 0`, así que ninguna propiedad
+    puede generar `n_cabecera >= 2`—.
+
+    **Lo que sigue sin estar cubierto, y por eso esto es un límite y no un
+    arreglo:** ese test es un **candado de regresión**, no una validación. Ata
+    `a_html` a lo que era el día del golden; no demuestra que ese día fuera
+    correcto. Validarlo de verdad exige comparar contra el HTML **original** de
+    PubTabNet módulo las normalizaciones declaradas, y eso es trabajo de L5, que
+    es quien trae extractores reales. Hasta entonces, el mapeo se sostiene sobre
+    la revisión humana de ADR-0021 y sobre estos dos mutantes.
+
+53. **La exactitud de celda NO alinea, y §12 dice «tras alinear».** Ver ADR-0025.
+    Una tabla desplazada una fila entera saca **0,0** en `cell_accuracy` teniendo
+    todas las celdas bien transcritas. La decisión está tomada y razonada, pero el
+    número que publica el nivel 1 en L5 hereda ese supuesto: **`cell_accuracy` es
+    exactitud POSICIONAL**, y comparar con la literatura que sí alinea no vale.
+
+49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
+    `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están
+    escritos y tienen tests propios, pero **nadie los ha usado para producir
+    nada**. Lo mismo con los campos `page_span` —que además no está medido,
+    límite 32— y `caption`: ninguna métrica los lee.
+
+    **Ninguna cifra publicada puede pasar por ellos**, y no es una nota: lo
+    impide `tests/unit/test_sin_consumidor.py`, que recorre por AST `src/` y
+    **todos** los `scripts/**.py`. Una prohibición que se comprueba
+    leyendo es una prohibición que se rompe sin que nadie se entere.
+
+    **Su primer consumidor real es L5**, con los ocho extractores: `pymupdf4llm` y
+    `marker` emiten Markdown, `camelot` DataFrames, `grobid` TEI y `tesseract`
+    texto plano. Ese día el test se cae y obliga a quitarlos de la lista **a
+    mano**, que es el momento exacto en que hay que decidir si ya están validados.

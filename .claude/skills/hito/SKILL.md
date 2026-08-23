@@ -26,6 +26,23 @@ ese hito toca. Después:
    demuestra).
 5. Di qué **ADR** hay que escribir o actualizar, si aplica.
 
+6. **Las suposiciones que este hito hace sobre los módulos que CONSUME.** Una por
+   línea, con la comprobación que las verifica. Va en el plan, no en la revisión
+   final.
+
+   **Por qué es un paso y no una buena intención.** El hito que ESCRIBE un módulo
+   no encuentra los bugs que encuentra el hito que lo CONSUME: escribe los tests
+   que se le ocurren, que son los del código que acaba de escribir. Caso real:
+   L1 cerró en verde y L2 descubrió que `from_html` no marcaba como cabecera un
+   `<td>` dentro de `<thead>` —el **100%** de las cabeceras de PubTabNet mal
+   marcadas—, y sólo apareció al construir el árbol de TEDS, que es el primer
+   código que de verdad **necesitaba** `is_header`.
+
+   La consecuencia operativa: cada hito que consume un módulo anterior escribe
+   **qué da por supuesto** sobre él y **cómo lo comprueba**. Si la comprobación
+   es «lo mismo que ya prueba su suite», no cuenta: su suite es justo la que no
+   encontró el fallo.
+
 **PARA AQUÍ.** No escribas código. Espera el OK del usuario.
 
 Regla de tamaño: ningún fichero nuevo por encima de 300 líneas. Si un módulo se pasa,

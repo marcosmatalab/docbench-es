@@ -38,7 +38,43 @@ jobs:
           real=$(uv run python -c 'import sys; print("%d.%d" % sys.version_info[:2])')
           echo "esperado=$esperado real=$real"
           [ "$esperado" = "$real" ] || { echo "::error::CI corre $real, .python-version dice $esperado"; exit 1; }
+      # La cache de mypy, y NO la de hypothesis. Al cerrar L2 el reparto del
+      # crecimiento de la puerta estaba medido: de los +2090 ms de L1, 1284 eran
+      # `mypy --strict` tipando tambien `tests/`. Ese es el sitio donde tocar
+      # cuando aprieta, y por eso se cachea. `hypothesis` NO se cachea a
+      # proposito: su base guarda lo ya explorado, asi que cachearla haria que CI
+      # buscase menos, y el verde de CI vale justo porque nace limpio y explora
+      # mas que un local en caliente (docs/metrics.md).
+      - uses: actions/cache@v4
+        with:
+          path: .mypy_cache
+          key: mypy-${{ runner.os }}-${{ hashFiles('uv.lock', 'pyproject.toml') }}-${{ github.sha }}
+          restore-keys: |
+            mypy-${{ runner.os }}-${{ hashFiles('uv.lock', 'pyproject.toml') }}-
       # La puerta es UNA sola definicion, la del Makefile. Repetir aqui sus pasos
       # garantiza que local y CI se separen con el tiempo.
-      - name: la puerta
-        run: make fast
+      #
+      # DOS umbrales, y hacen cosas distintas a proposito (ADR-0022):
+      #   - 90 s es el presupuesto del MANUAL (§15). Pasarse BLOQUEA.
+      #   - TECHO_MS es la alarma de CRECIMIENTO, re-justificada en cada hito a
+      #     partir de la medicion del anterior. Pasarse AVISA, no bloquea.
+      # El techo no bloquea porque un runner lento pondria la puerta roja por el
+      # motivo equivocado, y una puerta que se pone roja por motivos equivocados
+      # enseña a ignorar el color. Bloquear se reserva para la promesa publicada.
+      - name: la puerta, cronometrada contra su techo
+        env:
+          TECHO_MS: 20000
+        run: |
+          inicio=$(date +%s%N)
+          make fast
+          fin=$(date +%s%N)
+          ms=$(( (fin - inicio) / 1000000 ))
+          echo "puerta: ${ms} ms · techo de crecimiento ${TECHO_MS} ms · presupuesto del manual 90000 ms"
+          echo "puerta_ms=${ms}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$ms" -gt 90000 ]; then
+            echo "::error::La puerta tardo ${ms} ms y §15 del manual dice 90000. Esto es una promesa publicada rota."
+            exit 1
+          fi
+          if [ "$ms" -gt "$TECHO_MS" ]; then
+            echo "::warning::La puerta tardo ${ms} ms y el techo de crecimiento es ${TECHO_MS}. No bloquea, pero el proximo /cerrar tiene que re-justificar el techo o gastar una palanca. Ver ADR-0022."
+          fi
