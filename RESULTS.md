@@ -506,21 +506,38 @@ Los **23 tests restantes** —`test_types_invariantes` (7), `test_ancla` (5),
 `test_types` (5), `test_errors` (3) y `test_sin_consumidor` (3)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 21 mutantes mueren» dice
-que **esos 18** huecos están tapados, **no** que la suite esté medida. Algunos de
+que **esos 21** huecos están tapados, **no** que la suite esté medida. Algunos de
 esos 23 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
-**Bajó de 38 a 23** porque `test_teds_limites` y `test_teds_batch` **ya tienen
-mutante**: los añadió este cierre.
+**Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
+`test_teds_limites` (`teds_siempre_cero`), `test_teds_batch` (`batch_sobrescribe`)
+y `test_recuentos` (los tres `recuentos_*`). Se nombran en vez de publicar la
+resta: un «bajó de 38 a 23» obliga al lector a fiarse de una aritmética que no
+puede comprobar, y **se queda viejo en silencio** en cuanto entra el siguiente.
 
 **Las dos columnas son dos agregaciones distintas sobre las 3 repeticiones**, y la
 diferencia es información: **SIEMPRE** es la intersección —muere en las tres— y
 **ALGUNA VEZ** es la unión. *Un asesino intermitente no es un asesino*: depende de
 que un sorteo de `hypothesis` salga bien.
 
-**Son 21 mutantes, no 12**: el escrutinio y el paso 2 de `/cerrar` añadieron seis
-—los dos del árbol, el del lote, y las tres casillas que faltaban de
-`siempre_ok` × `siempre_roto` sobre las dos funciones que L2 construye—.
+**Son 21 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
+
+| De dónde salen | Cuáles |
+|---|---|
+| **L0 y L1** (9) | `ok`, `roto`, `normalizador_identidad`, `normalizador_agresivo`, `n3_incompleta`, `sin_tablas`, `sin_spans`, `clave_sin_escapar`, `clave_orden_malo` |
+| **L2, el hito** (3) | `teds_siempre_uno`, `teds_cuenta_la_raiz`, `cellmatch_por_pertenencia` |
+| **El escrutinio adversarial** (3) | `arbol_orden_invertido`, `arbol_thead_solo_la_primera`, `batch_sobrescribe` |
+| **El paso 2 de `/cerrar`** (3) | `teds_siempre_cero`, `cellmatch_siempre_ok`, `cellmatch_siempre_roto` |
+| **La auditoría en frío del guardián** (3) | `recuentos_todo_vale`, `recuentos_sin_claude`, `recuentos_plano_flojo` |
+
+> **Aquí ponía «Son 21 mutantes, no 12: … añadieron seis», y 12 + 6 = 18.** El
+> guardián de recuentos había actualizado el dígito de 18 a 21 —porque el patrón
+> `[Ss]on {_N} mutantes, no \d+` lo ve— y **la enumeración de al lado siguió
+> nombrando seis**. El número quedó correcto dentro de una frase que se
+> contradecía sola, que es más difícil de ver leyendo que un número viejo en una
+> frase coherente. Ver `LIMITS.md` 55. La tabla de arriba sustituye la suma por
+> una enumeración exhaustiva: si falta uno, se ve sin restar.
 
 | Mutante | Lo matan SIEMPRE | Lo matan ALGUNA VEZ | Intermitente, con su tasa |
 |---|---|---|---|
@@ -703,8 +720,13 @@ L3 que ya se apuntó). Decir «los 327 ms son los tests nuevos» sería el error
 
 **Margen en el p90 sobre el techo de 8500: 2467 ms.** Y el dato que confirma el
 diagnóstico de ADR-0022: la suite pasó de **145 a 183 tests** —+38, o sea +26%— y
-la mediana se movió de 5604 a 5920, o sea **+316 ms para +38 tests**: 8 ms por
-test, cuando el arranque del proceso solo cuesta ~900. Lo que domina sigue siendo
+la mediana se movió de **5593 a 5920**, o sea **+327 ms para +38 tests**: 8,6 ms
+por test, cuando el arranque del proceso solo cuesta ~900.
+
+> **Este párrafo decía «de 5604 a 5920, o sea +316 ms».** 5604 era la mediana de
+> L2 **antes** de remedirla; la tabla de aquí arriba publica 5593, así que el
+> párrafo restaba contra un número que el documento ya no sostenía. Cuarta
+> aparición del límite 55 en el mismo barrido. Lo que domina sigue siendo
 el arranque, exactamente como decía la condición de parada número 2, y por eso
 recortar tests no es la palanca. La σ salta de 76 a 286 y vuelve a 73 entre tandas
 **sin que sepa por qué**: es estado de la máquina, y la carga no se registró

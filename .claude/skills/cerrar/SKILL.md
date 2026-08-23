@@ -94,6 +94,17 @@ disable-model-invocation: true
    —pero **estrechos**: ante la duda, se cambia la redacción del documento, no el
    patrón.
 
+   **Y lo que ningún regex puede hacer por ti (límite 55): cuando el guardián te
+   obligue a cambiar una cifra, RELEE LA FRASE ENTERA, no sólo el dígito.** El
+   guardián sincroniza números, no afirmaciones. Cambió un 18 por un 21 y dejó al
+   lado «añadieron seis»: 12 + 6 = 18, y el resultado —número correcto en una
+   frase que se contradice sola— es **más difícil de ver leyendo** que el número
+   viejo, porque la cifra da bien al comprobarla.
+
+   Al releer, busca **sumas, restas, enumeraciones y «de N a M»** alrededor de la
+   cifra que cambió. Y al escribir, **prefiere enumerar a sumar**: una lista de 21
+   se ve incompleta de un vistazo; un «12 + 6» no.
+
 3. **¿Sigue alcanzando la estrategia el sitio donde vive el bug NUEVO?** Un test
    de propiedad que sigue **en verde** después de cambiar la implementación **no
    es evidencia** hasta comprobarlo. Una estrategia codifica dónde creías que

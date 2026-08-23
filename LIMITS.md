@@ -460,6 +460,46 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     paso de `/cerrar`. Como todo paso manual, alguien puede saltárselo; ver el
     mismo argumento en ADR-0022 sobre el protocolo de las 40 corridas.
 
+55. **EL GUARDIÁN SINCRONIZA NÚMEROS, NO AFIRMACIONES.** Y esto no se arregla con
+    más regex: es la forma del problema, no un hueco de cobertura.
+
+    Una cifra sólo significa algo **dentro de su frase**. El guardián ve el dígito
+    y no la oración: cuando obliga a cambiar el dígito y la prosa de alrededor se
+    queda vieja, el resultado es **un número correcto en una frase que se
+    contradice sola** — y eso es **más difícil de detectar leyendo** que un número
+    viejo en una frase coherente, porque el lector comprueba la cifra contra el
+    resto del repo, la encuentra bien, y no vuelve sobre el razonamiento.
+
+    **Ocurrió, y lo destapó una auditoría, no el guardián.** `RESULTS.md` decía:
+
+    > «Son **21** mutantes, no 12: el escrutinio y el paso 2 de `/cerrar`
+    > añadieron **seis** —los dos del árbol, el del lote, y las tres casillas…—»
+
+    12 + 6 = **18**, no 21. El patrón `[Ss]on {_N} mutantes, no \d+` vio el dígito
+    y lo subió de 18 a 21; la enumeración de al lado siguió nombrando seis y
+    **nadie la tocó**. En el mismo barrido aparecieron otras dos: «dice que esos
+    **18** huecos están tapados», a dos líneas de un «los **21** mutantes mueren»,
+    un «bajó de 38 a 23» cuya causa ya sólo nombraba dos de los tres ficheros que
+    habían salido de la lista, un «+316 ms» que restaba contra una mediana que el
+    propio documento ya había sustituido, y un «la mediana no se movió» que era
+    cierto cuando se escribió y dejó de serlo al remedir. **Cinco en un barrido**,
+    y ninguna la vio el guardián.
+
+    **Ningún patrón puede cazar esto**: exigiría entender que «añadieron seis» es
+    una suma sobre «no 12», o sea leer la frase. Las dos mitigaciones son de
+    escritura, no de código:
+
+    1. **Cuando el guardián obligue a cambiar una cifra, se relee la frase entera,
+       no sólo el dígito.** Es un paso de `/cerrar`.
+    2. **Preferir enumeraciones exhaustivas a sumas y a restas.** Una tabla que
+       lista los 21 mutantes por origen se ve incompleta de un vistazo; un
+       «12 + 6» o un «bajó de 38 a 23» obliga al lector a una aritmética que no
+       puede comprobar, y se queda viejo en silencio. Las tres frases se
+       reescribieron así.
+
+    **Este límite no se cierra.** Es el precio de que un guardián automático
+    mantenga cifras dentro de prosa escrita a mano.
+
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están
     escritos y tienen tests propios, pero **nadie los ha usado para producir

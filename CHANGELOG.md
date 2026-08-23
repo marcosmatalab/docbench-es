@@ -153,6 +153,41 @@ afirmaba algo que el código no cumplía.
   hook `SessionStart` inyecta ese fichero entero, así que la sesión siguiente lo
   lee antes que nada.
 
+#### Corregido en la auditoría en frío de `6ebf592` · el guardián creó el fallo
+
+**El guardián sincroniza NÚMEROS, no AFIRMACIONES**, y eso deja un fallo que
+ningún patrón puede cazar: cambia el dígito y la prosa de alrededor sigue contando
+otra historia. `RESULTS.md` decía «Son **21** mutantes, no 12: … añadieron
+**seis**», y 12 + 6 = **18**. El patrón subió el dígito de 18 a 21 porque lo ve;
+la enumeración de al lado siguió nombrando seis porque no la ve nadie.
+
+**Un número correcto dentro de una frase que se contradice sola es más difícil de
+ver leyendo que un número viejo en una frase coherente**, porque el lector
+comprueba la cifra contra el resto del repo, la encuentra bien, y no vuelve sobre
+el razonamiento.
+
+**Barrido completo por sumas, restas, enumeraciones y «de N a M» alrededor de los
+recuentos que cambiaron: cinco frases, y ninguna la vio el guardián.**
+
+| Dónde | Decía | Era |
+|---|---|---|
+| `RESULTS.md` | «Son 21 mutantes, no 12 … añadieron seis» | 12 + 6 = 18 |
+| `RESULTS.md` | «esos **18** huecos están tapados» | a dos líneas de «los 21 mutantes mueren» |
+| `RESULTS.md` | «Bajó de 38 a 23 porque `teds_limites` y `teds_batch`…» | eran **tres** ficheros, no dos: faltaba `test_recuentos` |
+| `RESULTS.md` | «de 5604 a 5920, o sea +316 ms» | restaba contra una mediana que el propio documento ya había sustituido por 5593 → **+327 ms** |
+| `ESTADO.md` | «la mediana **no se movió**» | cierto con 177 tests, falso al remedir con 183 |
+
+**Las tres primeras se reescribieron sin aritmética**: donde había una suma o una
+resta ahora hay una **enumeración exhaustiva** —la tabla de los 21 mutantes por
+origen, y los tres ficheros que salieron de la lista, nombrados—. Una lista de 21
+se ve incompleta de un vistazo; un «12 + 6» obliga al lector a una aritmética que
+no puede comprobar y **se queda viejo en silencio**.
+
+Lo estructural va en `LIMITS.md` **55**, que **no se cierra**: es el precio de que
+un guardián automático mantenga cifras dentro de prosa escrita a mano. Y la
+mitigación operativa es un paso de `/cerrar`: **cuando el guardián obligue a
+cambiar una cifra, se relee la frase entera, no sólo el dígito.**
+
 #### Corregido en la auditoría en frío de `b7cc6c3`
 
 **El guardián de recuentos se rompía al correrlo solo.** `uv run pytest
