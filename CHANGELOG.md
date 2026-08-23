@@ -28,7 +28,7 @@ de cada número vive con su método, en `docs/metrics.md`.
   ejecuta sin tocarle una línea a la lógica. `apted`, `distance` y `lxml` van por
   `uv run --with` y **no** entran en `pyproject.toml`: así nadie puede acabar
   calculando TEDS con la implementación ajena por accidente.
-- **90 tests nuevos** (82 → 172), y nueve mutantes más (9 → 18).
+- **95 tests nuevos** (82 → 177), y nueve mutantes más (9 → 18).
 - **`scripts/ancla.py`**: un ancla de documento publicado tiene que aparecer
   **exactamente una vez** o no se edita nada. Nace de haber duplicado ~230
   líneas de `RESULTS.md` con un `s.index` sobre un encabezado que se repite
@@ -152,6 +152,43 @@ afirmaba algo que el código no cumplía.
   tabla de ADR enumeraba «los cuatro» existiendo 0013–0025. No es cosmético: el
   hook `SessionStart` inyecta ese fichero entero, así que la sesión siguiente lo
   lee antes que nada.
+
+#### Corregido en la auditoría en frío de `c71b31f`
+
+- **La corrección de los recuentos llegó a `RESULTS.md` y no a los otros tres
+  sitios**, dentro del mismo commit. `LIMITS.md` 51, la deuda 7 de `ESTADO.md` y
+  `.claude/skills/cerrar/SKILL.md` seguían diciendo «12» donde hoy hay 18 y «38»
+  donde hoy hay 28, y los dos primeros **nombraban a `teds_limites` y
+  `teds_batch` como módulos sin mutante** cuando `teds_siempre_cero` y
+  `batch_sobrescribe` ya apuntaban a ellos. La deuda mandaba a L3 escribir
+  trabajo que ya existía.
+- **La deuda 7 se reescribe contra la lista real** —`types_invariantes`, `ancla`,
+  `recuentos`, `types`, `errors`, `sin_consumidor`— con su precio recalculado:
+  **~1 h 40 min**, no «~20 min por módulo nuevo». Y con el orden de urgencia
+  dicho: `ancla`, `recuentos` y `sin_consumidor` son **barreras**, código cuyo
+  único trabajo es ponerse rojo, y un candado que no se ha probado contra su
+  propia rotura no es un candado.
+
+#### Añadido para que esa clase no se repita
+
+- **`tests/unit/conftest.py` + `tests/unit/test_recuentos.py`.** Los recuentos
+  volátiles —mutantes, tests dentro y fuera del arnés, total— se calculan en
+  `pytest_collection_modifyitems`, o sea **en cada `make fast`**, leyendo el
+  `PLAN` de `matar.py`. No hay fichero almacenado, así que no hay nada que
+  sincronizar; y el recuento es exacto, con la parametrización ya resuelta.
+  Un test compara contra **todo lo publicado, `.claude/` incluido**, que es donde
+  se quedó el tercer «12».
+
+  **Descartado: comparar los documentos entre sí por regex.** Habría cazado este
+  caso y no el peor — si los cuatro dicen 12 y la realidad es 18, concuerdan y
+  pasa en verde. **Descartado: que `matar.py` escriba un JSON.** Sería una quinta
+  copia capaz de quedarse vieja, el mismo fallo una capa más abajo.
+
+  **Control negativo, medido**: desincronizando a propósito una cifra en cada uno
+  de los cuatro documentos, la primera versión cazó **2 de 4** —`arnés cubr` no
+  casaba con «El arnés DE MUTANTES cubre», y exigir «tests» detrás dejaba pasar
+  «149 de 177.» con punto—. La publicada caza **4 de 4**. Lo que sigue sin
+  cubrirse, en `LIMITS.md` 54.
 
 #### Corregido en el paso 3 de `/cerrar`, que es donde se ve si la estrategia llega
 

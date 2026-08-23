@@ -373,13 +373,15 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 149 de 172 tests.** Los
-    12 mutantes apuntan a `canonical`, `types.clave`, `teds` y `cellmatch`. Los
-    **38 tests restantes** —`teds_limites`, `types_invariantes`, `types`, `ancla`,
-    `teds_batch`, `errors` y `sin_consumidor`— **no tienen ningún mutante escrito
-    contra su código**, así que «los 12 mueren» no dice nada sobre si esos tests
-    cazarían un bug. Algunos matan mutantes de rebote cuando `--tabla` recorre la
-    suite entera, y eso es daño colateral, no cobertura diseñada.
+51. **La suite no está medida por mutación: el arnés cubre 149 de 177 tests.** Los
+    **18 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
+    árbol de TEDS y el lote. Los **28 tests restantes** —`types_invariantes` (7),
+    `ancla` (5), `recuentos` (5), `types` (5), `errors` (3) y `sin_consumidor`
+    (3)— **no tienen
+    ningún mutante escrito contra su código**, así que «los 18 mueren» no dice
+    nada sobre si esos tests cazarían un bug. Algunos matan mutantes de rebote
+    cuando `--tabla` recorre la suite entera, y eso es daño colateral, no
+    cobertura diseñada.
 
 52. **El criterio de aceptación de L2 valida la DISTANCIA, no el mapeo
     `CanonicalTable → árbol`.** El golden se generó dando a la referencia el
@@ -420,6 +422,28 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     todas las celdas bien transcritas. La decisión está tomada y razonada, pero el
     número que publica el nivel 1 en L5 hereda ese supuesto: **`cell_accuracy` es
     exactitud POSICIONAL**, y comparar con la literatura que sí alinea no vale.
+
+54. **La comprobación de recuentos sólo caza los FRASEOS PREVISTOS.**
+    `tests/unit/test_recuentos.py` compara contra los documentos publicados con
+    una tabla de patrones. Un número escrito de una forma que ningún patrón
+    reconoce **no se comprueba**, y eso no se puede cerrar del todo porque el
+    español no se enumera.
+
+    **Está medido cuánto de cierto es el riesgo**, que es lo único honesto que se
+    puede decir: desincronizando a propósito una cifra en cada uno de los cuatro
+    documentos, la primera versión cazó **2 de 4**, la segunda 3, y la cuarta hizo
+    falta porque «no cubre la suite entera: 149 de 177» no se parecía a nada
+    previsto. La versión que se publica caza **4 de 4**.
+
+    **Lo que sí está cerrado es la forma peligrosa**: que un patrón deje de casar
+    en todas partes y el test siga verde sin comparar nada.
+    `test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos` exige que
+    cada recuento aparezca cazado en dos documentos como mínimo.
+
+    **Lo que queda como procedimiento y no como código**: el control negativo a
+    mano —desincronizar una cifra por documento y comprobar que se caza— es un
+    paso de `/cerrar`. Como todo paso manual, alguien puede saltárselo; ver el
+    mismo argumento en ADR-0022 sobre el protocolo de las 40 corridas.
 
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están

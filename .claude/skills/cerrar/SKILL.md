@@ -62,8 +62,25 @@ disable-model-invocation: true
    ```
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
-   FUERA del arnés.** «Los 12 mutantes mueren» habla de esos 12 huecos, no de la
-   suite: en L2 el arnés cubría 149 de 172 tests.
+   FUERA del arnés.** «Los 18 mutantes mueren» habla de esos 18 huecos, no de la
+   suite: en L2 el arnés cubría 149 de 177 tests, o sea que 28 quedaban fuera.
+
+   **Estos recuentos NO se copian a mano a ningún documento.** Los calcula
+   `tests/unit/conftest.py` en cada colección y `tests/unit/test_recuentos.py`
+   comprueba que todo documento publicado que los cite coincida — `.claude/`
+   incluido, que es donde se quedó un «12» en el cierre de L2.
+
+   **Y una vez por cierre, su control negativo A MANO**, porque el test sólo caza
+   los fraseos previstos (límite 54):
+
+   ```bash
+   # cambia UNA cifra en cada documento y comprueba que las caza TODAS
+   uv run pytest tests/unit -q -k recuentos    # tiene que fallar, con 4 líneas
+   git checkout -- RESULTS.md LIMITS.md ESTADO.md .claude/
+   ```
+
+   En L2 la primera versión cazaba **2 de 4**. Si tu ronda caza menos que
+   documentos has tocado, falta un patrón: añádelo antes de cerrar.
 
 3. **¿Sigue alcanzando la estrategia el sitio donde vive el bug NUEVO?** Un test
    de propiedad que sigue **en verde** después de cambiar la implementación **no

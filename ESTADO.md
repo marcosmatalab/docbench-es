@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1742 ms en frío, rango 1715–1872, n=10, máquina en reposo (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | **CERRADO 2026-08-22** | Solapes, huecos y spans fuera de rango detectados al 100% | **8.525/8.525 detectadas y 0/45 falsos positivos**, censo determinista y exhaustivo, `uv run python scripts/censo_invariantes.py`. No es una estimación: es una tasa sobre el censo completo, así que no lleva intervalo (ADR-0015). Puerta: **3829 ms** en frío, rango 3713–3875, n=10, todas con `rc=0`, `load average` 0,93 — **24× de margen**. Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **172 tests** (+19%) y la mediana no se movió: domina el arranque. **18 mutantes**, todos mueren, control negativo **0 de 149**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
+| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **177 tests** (+22%) y la mediana no se movió: domina el arranque. **18 mutantes**, todos mueren, control negativo **0 de 149**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | PENDIENTE | La verdad derivada reproduce las tablas a mano | — |
 | L5 `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | 14-18 | PENDIENTE | Primera tabla de estructura con coste y cobertura evaluable | — |
@@ -140,12 +140,27 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés de mutantes cubre 149 de 172 tests, y no hay mutante para el resto.**
-   Límite 51. Sin mutante contra `teds_batch`, el enum de `errors`, las
-   invariantes de `types` ni las barreras por AST, «los 12 mutantes mueren» no
-   dice nada sobre si esos 38 tests cazarían un bug. **Se cierra a plazos**: cada
-   hito que añada módulo añade su mutante, y el que no lo haga lo declara.
-   Precio en L3: un mutante por módulo nuevo, ~20 min cada uno.
+7. **El arnés de mutantes cubre 149 de 177 tests, y no hay mutante para el resto.**
+   Límite 51. Los **23 tests** que quedan fuera son de cinco módulos, y ésta es la
+   lista de verdad —la anterior mandaba a L3 escribir un mutante para `teds_batch`
+   que **ya existe**, `batch_sobrescribe`—:
+
+   | Sin mutante | Tests | Qué habría que romper | Precio |
+   |---|---|---|---|
+   | `types_invariantes` | 7 | las invariantes de `Documento` y la clave | ~25 min |
+   | `ancla` | 5 | `unica()` devolviendo el primer índice sin contar | ~10 min |
+   | `recuentos` | 5 | un patrón que deja de casar y pasa en verde sobre cero citas | ~15 min |
+   | `types` | 5 | `congelar_mapas` que no congela | ~20 min |
+   | `errors` | 3 | el enum de fallo con una causa de más o de menos | ~15 min |
+   | `sin_consumidor` | 3 | la barrera por AST que no mira los scripts | ~15 min |
+
+   **~1 h 25 min en total**, no «~20 min por módulo nuevo»: son cinco módulos ya
+   escritos, no futuros. **Se cierra a plazos** —cada hito que añada módulo añade
+   su mutante— pero éstos ya están en deuda y tienen precio puesto.
+
+   `ancla` y `sin_consumidor` son los que más urgen: son **barreras**, o sea
+   código cuyo único trabajo es ponerse rojo, y un candado que no se ha probado
+   contra su propia rotura no es un candado.
 
 8. **La tasa de muerte de cada asesino no está medida.** Límite 50. La columna
    «mata SIEMPRE» se calcula con n = 3, y eso llama determinista a un test con
@@ -210,7 +225,7 @@ regla de oro 8 —gana la fuente que el bucle lee primero— aplicado a este fic
 
 Lo que L3 hereda y no puede ignorar esta en «Deuda abierta», arriba: el techo de
 8500 ms se re-justifica con `scripts/medir_puerta.py`, y los limites 42 (coste de
-TEDS por tamaño), 51 (el arnes cubre 149 de 172) y 52 (el criterio de L2 no valida
+TEDS por tamaño), 51 (el arnes cubre 149 de 177) y 52 (el criterio de L2 no valida
 el mapeo) llegan con su precio puesto.
 
 Lo que L1 hereda de L0 y no puede ignorar:

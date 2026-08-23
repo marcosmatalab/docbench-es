@@ -500,17 +500,18 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: 149 de 172.** El control negativo y
+**El arnés no cubre la suite entera: 149 de 177.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **23 restantes** —`test_types_invariantes` (7), `test_ancla` (5),
-`test_types` (5), `test_errors` (3) y `test_sin_consumidor` (3)— quedan fuera
+Los **28 restantes** —`test_types_invariantes` (7), `test_ancla` (5),
+`test_recuentos` (5), `test_types` (5), `test_errors` (3) y
+`test_sin_consumidor` (3)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 18 mutantes mueren» dice
 que **esos 18** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 23 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 28 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
-**Bajó de 38 a 23** porque `test_teds_limites` y `test_teds_batch` **ya tienen
+**Bajó de 38 a 28** porque `test_teds_limites` y `test_teds_batch` **ya tienen
 mutante**: los añadió este cierre.
 
 **Las dos columnas son dos agregaciones distintas sobre las 3 repeticiones**, y la
@@ -680,7 +681,7 @@ Las dos con el mismo protocolo, ahora ejecutable en una orden:
 `uv run python scripts/medir_puerta.py --techo 8500; echo $?` — devuelve 1 si el
 p90 pasa del techo.
 
-**Remedido al cerrar, con la suite ya en 172 tests** (n=40 en 10 tandas en frío,
+**Remedido al cerrar, con la suite ya en 177 tests** (n=40 en 10 tandas en frío,
 0 descartadas):
 
 | | ms |
@@ -693,11 +694,27 @@ p90 pasa del techo.
 | medianas por tanda | 5304 – 5820 |
 
 **Margen en el p90 sobre el techo de 8500: 2567 ms.** Y el dato que confirma el
-diagnóstico de ADR-0022: la suite pasó de **145 a 172 tests** —+27, o sea +19%— y
+diagnóstico de ADR-0022: la suite pasó de **145 a 177 tests** —+32, o sea +22%— y
 la mediana se movió de 5604 a **5593**, o sea **nada**. Lo que domina es el
 arranque del proceso, no los tests, exactamente como decía la condición de parada
 número 2. La σ sube de 76 a 286 y **no sé por qué**: es estado de la máquina, y la
 carga no se registró (deuda de L3, `medir_puerta.py` debería anotarla).
+
+**Lo que cuesta el comprobador de recuentos, aislado del estado de la máquina**
+(`pytest tests/unit` con y sin `--ignore=tests/unit/test_recuentos.py`, mediana de
+3 corridas en frío):
+
+| | ms |
+|---|---|
+| con el comprobador | 3960 |
+| sin él | 3790 |
+| **coste** | **170 ms** |
+
+Se mide así y no comparando medianas de `make fast` entre commits porque **la
+mediana se movió 395 ms entre dos tandas de distinto tamaño** —5593 con n=40,
+5988 con n=12— y atribuir eso al mecanismo sería el mismo error que atribuir a la
+suite la bajada de σ de 134 a 76. Aislar los dos lados en la misma corrida es lo
+único que separa el coste del ruido.
 
 > **La σ baja de 134 a 76 y eso NO se atribuye a la suite.** Añadir cuatro tests
 > no reduce la dispersión de un tiempo; si acaso la sube. La bajada es **estado
