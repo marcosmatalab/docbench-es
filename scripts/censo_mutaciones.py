@@ -49,7 +49,12 @@ FORMAS_DEL_BOE = {
         "<table><tr><td>fuera<table><tr><td>dentro</td></tr></table></td>"
         "<td>z</td></tr><tr><td>a</td><td>b</td></tr></table>"
     ),
-    "span 33, el máximo observado en el sondeo": (
+    # Era «el máximo observado en el sondeo», y es FALSO: 33 es el máximo de la
+    # ventana de agosto. Recomputado sobre las tres ventanas (n=600):
+    # otoño **59**, agosto 33, primavera 22. El censo se queda en 33 —cambiar la
+    # forma movería el 8.525/8.525 publicado— y la distancia hasta 59 se declara
+    # en `LIMITS.md` en vez de esconderse detrás de una etiqueta que no era cierta.
+    "span 33, el máximo de la ventana de agosto (el de las tres es 59)": (
         '<table><tr><td colspan="33">cabecera larga</td></tr>'
         "<tr>" + "<td>x</td>" * 33 + "</tr></table>"
     ),

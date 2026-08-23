@@ -317,8 +317,30 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     era un fallo de L1 que L2 destapó.** PubTabNet escribe **todas** sus
     cabeceras así, o sea que `is_header` salía `False` en el 100% de las
     cabeceras de ese corpus. Arreglado en L2. En el BOE el efecto es menor
-    —usa `<th>` 2.659 veces contra 596 `<thead>`— pero **cuántas cabeceras del
-    BOE viajaban sin marcar no está medido**: se mide en L3, con el corpus.
+    —usa `<th>` 2.659 veces contra 596 `<thead>`—.
+
+    **MEDIDO en L3, y la respuesta es CERO.** `docs/censo-boe-50.json`, 50
+    documentos de las secciones I+III, `uv run python scripts/censo_boe_50.py`:
+
+    | | |
+    |---|---|
+    | `<thead>` en el corpus | 68 |
+    | `<th>` totales | 323 |
+    | `is_header=True` que emite `from_html` | 323 |
+    | **`<td>` dentro de `<thead>`** | **0** — las que viajaban sin marcar |
+    | documentos con al menos uno | **0 / 50** [0,0–7,1]% |
+
+    **Comparado por CONJUNTOS y no por totales**, que es lo que hace la afirmación
+    válida: «323 = 323» sola no demuestra que sean las mismas celdas — un `<th>`
+    sin marcar más un `<td>` dentro de `<thead>` marcado darían el mismo total.
+    Medidos por separado, **los dos sumandos son 0**, así que la igualdad no
+    escondía una compensación. (Hay 4 `<th>` **fuera** de `<thead>`, que se marcan
+    igual antes y después del arreglo.)
+
+    **Conclusión: el fallo que L2 destapó, donde afectaba al 100% de las cabeceras
+    de PubTabNet, en el BOE no habría aparecido nunca.** El BOE escribe sus
+    cabeceras con `<th>`, no con `<td>` dentro de `<thead>`. n=50; se re-mide sobre
+    el corpus completo cuando exista.
 
 ### L2 · cierre · 23 de agosto de 2026
 
@@ -500,6 +522,82 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Este límite no se cierra.** Es el precio de que un guardián automático
     mantenga cifras dentro de prosa escrita a mano.
 
+56. **`from_html` tiene dos defectos reproducidos que el BOE NO dispara: 0 de 50.**
+    Los encontró el escrutinio al preparar L3 y los reproduje en árbol limpio:
+
+    | Entrada | Qué sale | Por qué importa |
+    |---|---|---|
+    | `<td><![CDATA[Importe 1.234]]></td>` | celda `''` | **se traga el texto en silencio** |
+    | `<x:table xmlns:x="urn:z">…` | **0 tablas** | el documento pasaría a contarse como `sin-tabla`: **no falla, RECLASIFICA** |
+
+    El segundo es el peligroso: nada se pone rojo, y el estrato es un resultado
+    publicado.
+
+    **Medido antes de decidir arreglarlos**, sobre 50 documentos reales de las
+    secciones I+III (`uv run python scripts/censo_boe_50.py`, censo versionado en
+    `docs/censo-boe-50.json`):
+
+    | | |
+    |---|---|
+    | XML con **CDATA** | **0 / 50** [0,0–7,1]% |
+    | XML con prefijo de namespace **en `<table\|tr\|td\|th>`** | **0 / 50** [0,0–7,1]% |
+    | XML con prefijo de namespace en cualquier etiqueta | 4 / 50 — existen, pero **fuera** de las tablas |
+
+    **Así que NO se arreglan**, y eso es una decisión con número detrás, no
+    pereza: arreglar un defecto que el corpus no dispara nunca es trabajo sin
+    valor medido. **Lo que sí queda es la reproducción exacta de arriba**, para
+    que el día que el intervalo se mueva —otra entidad, otra ventana— nadie tenga
+    que volver a encontrarlos.
+
+    **Y la condición de reapertura, escrita:** si un censo posterior encuentra
+    **uno solo**, se arregla `from_html` **con su mutante en el `PLAN` de
+    `matar.py`** antes de bajar un documento más. No después.
+
+57. **El tamaño del corpus de L3 está medido, y el sondeo no lo había mirado.**
+    `docs/censo-boe-50.json`, n=50, tamaños tomados del campo `szBytes` que la
+    **propia API entrega en el sumario** — o sea sin bajar un solo PDF:
+
+    | | mediana | media | máximo |
+    |---|---|---|---|
+    | PDF | 216 KB | 255 KB | 1.034 KB |
+    | XML | **15 KB** | 29 KB | 380 KB |
+
+    **La primera proyección de esta nota decía «≈ 277 MB» y estaba baja casi a la
+    mitad.** Salía de multiplicar la media de los 50 en bruto por 1.000, y **esos
+    50 no se parecen al corpus**: tienen **6,1 páginas de media** contra las **8,8**
+    de los 600 del sondeo. Proyectar desde una muestra más ligera que la población
+    subestima, y aquí subestimaba el doble.
+
+    **Proyección corregida**, en dos pasos y con los dos declarados: **KB por
+    página** del censo (n=50) × **distribución de páginas por estrato** del sondeo
+    (n=600, tres ventanas):
+
+    | | PDF | XML |
+    |---|---|---|
+    | por página | 58,3 KB | 3,7 KB |
+
+    | Estrato | % natural | páginas (media) |
+    |---|---|---|
+    | `sin-tabla` | 67,0% | 5,9 |
+    | `celdas-combinadas` | 15,5% | **14,7** |
+    | `tabla-simple` | 13,8% | 11,2 |
+    | `anexo-png` | 3,7% | **27,9** |
+
+    | Mezcla de 1.000 documentos | Proyección |
+    |---|---|
+    | **no estratificada** (mezcla natural) | **533 MB** |
+    | con `--strata-target celdas-combinadas=120` | **518 MB** |
+
+    **Y el resultado va contra la intuición, por eso se mide:** sobremuestrear
+    `celdas-combinadas` **no sube** el total, lo **baja** un poco — porque el
+    objetivo de 120 sobre 1.000 es **12%, por debajo del 15,5% natural**. Lo que
+    de verdad mueve el tamaño es `anexo-png`, con **27,9 páginas de media**.
+
+    **Nada de esto es una medición.** Es una proyección de dos etapas —una tasa
+    sobre n=50 aplicada a una distribución sobre n=600— y se publica con esa
+    palabra. Cabe de sobra en cualquier caso, y `data/` ya está en `.gitignore`.
+    El tamaño real se publica cuando el corpus exista, y entonces será un recuento.
+
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están
     escritos y tienen tests propios, pero **nadie los ha usado para producir
@@ -507,8 +605,25 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     límite 32— y `caption`: ninguna métrica los lee.
 
     **Ninguna cifra publicada puede pasar por ellos**, y no es una nota: lo
-    impide `tests/unit/test_sin_consumidor.py`, que recorre por AST `src/` y
-    **todos** los `scripts/**.py`. Una prohibición que se comprueba
+    impide `tests/unit/test_sin_consumidor.py` — **pero las dos mitades no tienen
+    el mismo alcance, y decir que sí lo tienen era falso**:
+
+    | Qué protege | Qué recorre |
+    |---|---|
+    | los cuatro **conversores** | `src/` entero y **todos** los `scripts/**.py` |
+    | los dos **campos** (`page_span`, `caption`) | **cuatro ficheros**: `core/teds/*.py` y `core/cellmatch.py` |
+
+    O sea que un módulo nuevo que leyera `caption` fuera de esos cuatro ficheros
+    **pasaría por delante de la barrera sin ponerla roja**. La frase anterior decía
+    que el recorrido de `src/` cubría las dos cosas, y no es cierto. Detectado al
+    preparar L3, que es justo el hito que estrena módulos capaces de leerlos.
+
+    **Ensanchar el test de los campos NO es de una línea**, y por eso va como deuda
+    con su tamaño y no como arreglo: `core/canonical/_html.py` **escribe** los dos
+    campos legítimamente, así que el test tendría que distinguir «los escribe» de
+    «una métrica los lee», y eso es análisis de AST sobre el uso, no sobre el
+    nombre. Precio estimado **~45 min**, y **no se promete**: lo que se hace ahora
+    es no afirmar una cobertura que no existe. Una prohibición que se comprueba
     leyendo es una prohibición que se rompe sin que nadie se entere.
 
     **Su primer consumidor real es L5**, con los ocho extractores: `pymupdf4llm` y

@@ -161,6 +161,13 @@ base, y **no todas son sintéticas**:
   anidada y el span 33. Un «cero falsos positivos» sobre una rejilla que no
   contuviera las formas del corpus afirmaría bastante menos de lo que suena.
 
+  > **El 33 llevaba una etiqueta falsa: «el máximo observado en el sondeo».** Es el
+  > máximo de **una** ventana. Recomputado sobre las tres (n=600,
+  > `docs/sondeo-boe-*.json`): otoño **59**, agosto 33, primavera 22. El censo
+  > mantiene la forma de 33 —cambiarla movería este mismo 8.525— y **la distancia
+  > hasta 59 queda declarada como cobertura que falta**, no escondida detrás de la
+  > etiqueta. Detectado al preparar L3.
+
 **Meter las formas reales cambió el censo, y para bien.** Sobre una tabla con
 hueco de cola, crecer un `colspan` **rellena el hueco** en vez de solapar, y la
 tabla resultante es legal: es lo que se vería si la celda tuviera de verdad ese
@@ -697,6 +704,57 @@ Las dos con el mismo protocolo, ahora ejecutable en una orden:
 `uv run python scripts/medir_puerta.py --techo 8500; echo $?` — devuelve 1 si el
 p90 pasa del techo.
 
+### La línea base de L3, con n=40 y la carga registrada
+
+`uv run python scripts/medir_puerta.py --techo 8500`, 40 corridas en frío en 10
+tandas, cero descartadas:
+
+| | ms |
+|---|---|
+| mínimo | 5801 |
+| **mediana** | **6004** |
+| **p90** | **6134** |
+| máximo | 6238 |
+| desviación típica | **83** |
+| medianas por tanda | 5931 – 6081 |
+| **carga de la máquina** | mediana **0,93**, rango 0,50–1,11 |
+
+**Margen hasta el techo de 8500: 2366 ms sobre el p90.** Ése es el presupuesto que
+L3 puede gastar en la puerta.
+
+> **La carga se registra desde esta tanda**, y cierra la deuda que llevaba cuatro
+> cierres apuntada. La desviación típica de este mismo protocolo ha ido **134, 76,
+> 286, 73 y 83**, y hasta hoy la respuesta a «¿por qué se movió?» era siempre «no
+> se sabe» porque nadie miraba la máquina.
+
+> **Y una medición se tiró por contaminarla.** La primera tanda de 40 salió con
+> **29 corridas descartadas por `rc != 0`**: estaba editando ficheros mientras
+> corría, así que `make fast` estaba rojo en más de la mitad. Se repitió sobre el
+> árbol quieto. Publicar aquella habría sido exactamente «atribuir lo que no se ha
+> aislado».
+
+### De dónde salen los +411 ms desde el cierre de L2, paso a paso
+
+La comparación honesta es **n=40 contra n=40**: 5593 al cerrar L2, **6004** hoy.
+Los 6.290 que publiqué antes salían de un n=12 y no eran una línea base.
+
+| Paso | L2 cierre | hoy | delta |
+|---|---|---|---|
+| `pytest tests/unit` | 3800 ms | 4043 ms | **+243** |
+| `mypy --strict src tests` | 1614 ms | 1745 ms | **+131** |
+| `lint-imports` | 132 ms | 130 ms | −2 |
+| `ruff check` + `format --check` | 102 ms | 117 ms | +15 |
+| **suma** | 5648 ms | 6035 ms | **+387** |
+
+**387 de los 411 quedan atribuidos**; el residuo son **24 ms**, por debajo del
+ruido entre tandas. La suma de pasos (6035) cuadra con la mediana medida (6004),
+así que la descomposición está completa y no falta ningún paso.
+
+**Los dos que crecen son los dos que miran más ficheros**: `pytest` por los tests
+nuevos —el comprobador de recuentos costaba 130 ms aislados con `--ignore`— y
+`mypy` por los ficheros nuevos de `src` y `tests`. Ninguno es misterioso, y por eso
+se publica la tabla en vez de una frase.
+
 **Remedido dos veces**, la segunda tras la auditoría en frío de `b7cc6c3`:
 
 | | al cerrar L2 | tras la auditoría |
@@ -721,7 +779,9 @@ L3 que ya se apuntó). Decir «los 327 ms son los tests nuevos» sería el error
 **Margen en el p90 sobre el techo de 8500: 2467 ms.** Y el dato que confirma el
 diagnóstico de ADR-0022: la suite pasó de **145 a 185 tests** —+40, o sea +28%— y
 la mediana se movió de **5593 a 5920**, o sea **+327 ms para +40 tests**: 8,2 ms
-por test, cuando el arranque del proceso solo cuesta ~900.
+por test. **El arranque del proceso son 273 ms medidos, el 8%** —aquí ponía
+«~900» y era falso, ver la corrección en ADR-0022—, así que el 92% del coste son
+los tests.
 
 > **Este párrafo decía «de 5604 a 5920, o sea +316 ms».** 5604 era la mediana de
 > L2 **antes** de remedirla; la tabla de aquí arriba publica 5593, así que el
@@ -791,7 +851,9 @@ normalización y la clave de documento, 60 en los invariantes, 50 y 30 en el res
 > un test escala con `max_examples` partiendo de que `test_r1` cuesta 570 ms.
 > Medido de verdad —media de 5 corridas en frío por presupuesto— la suite cuesta
 > **990 ms a 100, 946 a 50 y 935 a 25**: la palanca vale **44 ms**, no 285,
-> porque el coste lo domina el arranque del proceso (~900 ms), no los ejemplos.
+> porque subir ejemplos no multiplica el coste como se suponía. **Aquí ponía que
+> «lo domina el arranque (~900 ms)», y es falso**: medido, el arranque son 273 ms,
+> el 8%. La palanca sigue valiendo 44 ms; lo que era falso es la explicación.
 > Y también se midió lo otro, que no se puede suponer: contra el mutante que
 > reintroduce la regresión de U+2028, la propiedad la caza **0 de 15** veces a
 > 100 ejemplos —Wilson 95% [0,000 – 0,204]— y **2 de 15** a 50 —[0,037 – 0,379]—.

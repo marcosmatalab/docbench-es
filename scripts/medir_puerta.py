@@ -24,6 +24,7 @@ PR sin que nadie decida ejecutarlo.
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import statistics
 import subprocess
@@ -54,13 +55,28 @@ def _en_frio() -> None:
     (RAIZ / ".coverage").unlink(missing_ok=True)
 
 
-def _una_corrida() -> tuple[int, int]:
+def _carga() -> float:
+    """`load average` de 1 minuto. Sale de la deuda que dejaron cinco tandas.
+
+    La desviacion tipica de este mismo protocolo ha ido **134, 76, 286, 73 y 359** entre tandas, y
+    ninguna de esas variaciones se pudo explicar porque **nadie registró el estado
+    de la máquina**. Sin esta columna, la respuesta a «¿por qué se movió?» es
+    siempre «no se sabe», y eso ya se ha escrito cuatro veces.
+    """
+    try:
+        return os.getloadavg()[0]
+    except OSError:
+        return float("nan")
+
+
+def _una_corrida() -> tuple[int, int, float]:
     _en_frio()
+    carga = _carga()
     inicio = time.monotonic_ns()
     resultado = subprocess.run(
         ["make", "fast"], cwd=RAIZ, capture_output=True, text=True, check=False
     )
-    return (time.monotonic_ns() - inicio) // 1_000_000, resultado.returncode
+    return (time.monotonic_ns() - inicio) // 1_000_000, resultado.returncode, carga
 
 
 def main() -> int:
@@ -71,12 +87,14 @@ def main() -> int:
     args = partes.parse_args()
 
     todas: list[int] = []
+    cargas: list[float] = []
     medianas: list[float] = []
     descartadas = 0
     for tanda in range(1, args.tandas + 1):
         fila: list[int] = []
         for _ in range(args.por_tanda):
-            ms, rc = _una_corrida()
+            ms, rc, carga = _una_corrida()
+            cargas.append(carga)
             if rc == 0:
                 fila.append(ms)
                 todas.append(ms)
@@ -98,6 +116,8 @@ def main() -> int:
         f"p90 {p90} · máximo {ordenadas[-1]}\n"
         f"  desviación típica {statistics.stdev(ordenadas):.0f} · "
         f"medianas por tanda {int(min(medianas))}-{int(max(medianas))}\n"
+        f"  carga de la máquina: mediana {statistics.median(cargas):.2f} · "
+        f"rango {min(cargas):.2f} a {max(cargas):.2f}\n"
         f"  techo {args.techo} · margen en el p90: {args.techo - p90} ms"
     )
     if p90 > args.techo:

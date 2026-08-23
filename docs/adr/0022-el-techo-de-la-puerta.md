@@ -51,8 +51,22 @@ frío por presupuesto:
 | 25 | 935 ms |
 
 **La palanca vale 44 ms, no 285.** La suite está dominada por el arranque del
-proceso —`uv run pytest` cuesta ~900 ms antes de ejecutar nada—, no por los
-ejemplos. Con 44 ms no se salva un techo al 97%.
+proceso, no por los ejemplos.
+
+> **CORRECCIÓN, 23 ago 2026, al preparar L3.** Aquí ponía que `uv run pytest`
+> cuesta **~900 ms** antes de ejecutar nada y que el arranque **domina**. Medido
+> —mediana de 3 en frío, `pytest tests/unit -q -k <nombre inexistente>` contra la
+> suite entera—: **arranque + colección 273 ms (8%)**, **tests 3229 ms (92%)**.
+> `uv run python -c pass` son 44 ms. **La afirmación estaba invertida.**
+>
+> **Qué NO cambia:** la decisión de este ADR. La palanca de `max_examples` sigue
+> valiendo **44 ms medidos**, y con eso no se salva un techo — el argumento de
+> descartar la opción (b) se sostiene solo, sin necesidad de que el arranque
+> domine. El techo sigue en 8500/20 000.
+>
+> **Qué SÍ cambia:** que «recortar tests no compra nada» es falso. Con los tests al
+> 92%, recortarlos **es** la palanca — sólo que sigue sin hacer falta usarla, y
+> cuando haga falta, la condición de parada 2 de más abajo es la que manda. Con 44 ms no se salva un techo al 97%.
 
 ### Y bajar ejemplos tampoco sale gratis en cobertura
 
@@ -172,10 +186,10 @@ medidas en el cierre:**
 1. **La mediana en el runner pasa de 30 000 ms**, o sea un tercio del presupuesto
    de §15. Con el ×2,3 medido en L0 entre local y runner, eso son ~13 000 ms
    locales. Es el número de parada.
-2. **El tiempo EN PROCESO de `pytest tests/unit` pasa de 10 s.** Hoy son 2,8 s de
-   los ~3,8 s del paso: el resto es arranque. Mientras el arranque domine, el
-   problema no son los tests y recortarlos no compra nada —es justo el error que
-   se cometió al estimar la palanca de `max_examples` en 285 ms cuando valía 44—.
+2. **El tiempo EN PROCESO de `pytest tests/unit` pasa de 10 s.** Hoy son 3,2 s de
+   los 3,5 s del paso: el arranque son **273 ms, el 8%**. Ésta es la condición que
+   manda, y por eso está escrita sobre el tiempo en proceso y no sobre el total:
+   es la que separa «la suite hace más trabajo» de «la máquina va lenta».
 3. **Dos hitos seguidos con incremento mayor de 2 000 ms.** L1→L2 fue +1688. Dos
    seguidos por encima de 2 000 significa que la pendiente cambió y que la
    proyección lineal ya no sirve.

@@ -23,8 +23,9 @@ sección. Sobre el
 BOE entero las tablas son el 12% y el `rowspan` una rareza; sobre las secciones de
 disposiciones —I y III, que es donde §9.4 del manual dice que `discover` filtra—
 las tablas son el 28% y **el 63% de ellas traen `rowspan` o `colspan` > 1**. El
-emparejado PDF/XML es del **100%** sin un solo fallo, y la coherencia entre los dos
-es tan alta que el umbral de descarte casi no muerde.
+emparejado PDF/XML es del **100%** sin un solo fallo, y el umbral de coherencia de
+0,85 descarta un **4,00% [2,7–5,9]** agregado — pero entre **2,0% y 5,5%** según la
+ventana, o sea que **la tasa de descarte depende de cuándo coseches**.
 
 **Lo que cambia en L3:** el filtro por sección deja de ser una optimización y pasa
 a ser parte de la definición del corpus. Sin él, tres de cada cuatro documentos
@@ -149,20 +150,36 @@ responde a «¿está todo el XML dentro del PDF?», que es la pregunta de L3.
 | Similitud de secuencia | 0,992 | 0,906 | 0,783 |
 | Contención del XML en el PDF | 0,986 | 0,867 | 0,653 |
 
-**A qué tasa descarta cada umbral** (n=200, secciones I y III):
+**A qué tasa descarta cada umbral, por ventana y agregado** (secciones I y III):
 
-| Umbral | Descarta por similitud | Descarta por contención |
-|---|---|---|
-| 0,70 | 0% [0–2] | 1% [0–4] |
-| 0,80 | 1% [0–4] | 2% [1–5] |
-| **0,85** | **2% [1–5]** | **5% [3–9]** |
-| 0,90 | 5% [3–9] | 14% [10–19] |
-| 0,95 | 18% [14–24] | 24% [18–30] |
+| Umbral | agosto 2026 | otoño 2025 | primavera 2026 | **POOLED n=600** |
+|---|---|---|---|---|
+| 0,70 | 0,0% | 1,0% | 3,0% | **1,33% [0,7–2,6]** |
+| 0,80 | 1,0% | 3,0% | 3,5% | **2,50% [1,5–4,1]** |
+| **0,85** | **2,0%** | **4,5%** | **5,5%** | **4,00% [2,7–5,9]** |
+| 0,90 | 5,0% | 7,5% | 8,0% | **6,83% [5,1–9,1]** |
+| 0,95 | 18,5% | 22,0% | 21,5% | **20,67% [17,6–24,1]** |
 
-**La recomendación para L3: similitud ≥ 0,85, y que el umbral viva en el perfil de
-la entidad, no en el código.** Descarta un 2% [1–5], que es coste asumible, y deja
-fuera la cola de documentos donde el PDF y el XML de verdad no dicen lo mismo. Subir
-a 0,95 descartaría uno de cada cinco documentos buenos.
+> **CORRECCIÓN, 23 ago 2026.** Esta tabla publicaba **una sola columna de «n=200»**
+> sin decir de qué ventana salía, y era **la más favorable**: el «2% [1–5]» de 0,85
+> es el de agosto. Sobre las tres ventanas la tasa es **4,00%**, o sea el doble. Una
+> cifra de la ventana mejor publicada como general es una afirmación falsa, y las
+> afirmaciones falsas no son deuda: se corrigen. Es el mismo error que estas notas
+> ya se habían corregido con los «~36 días», que también salían de agosto.
+>
+> **Y lo que hay dentro, que es la consecuencia de verdad:** entre 2,0% y 5,5% hay
+> un **factor 2,75**. **La tasa de descarte depende de CUÁNDO coseches.** Así que la
+> que publique L3 será igual de dependiente de la ventana, y **se publica con su
+> ventana y su dispersión, nunca como cifra única** (ADR-0030).
+
+**La recomendación para L3 se mantiene: similitud ≥ 0,85, y el umbral vive en el
+perfil de la entidad, no en el código.** Descarta un **4,00% [2,7–5,9]** agregado
+—coste asumible— y deja fuera la cola donde el PDF y el XML de verdad no dicen lo
+mismo. Subir a 0,95 descartaría uno de cada cinco documentos buenos.
+
+**La columna de contención se retira** en vez de recalcularse: no se usó para
+decidir nada —la decisión es sobre similitud— y publicar una segunda columna que
+nadie ha vuelto a comprobar es exactamente lo que acaba en la próxima corrección.
 
 ### La normalización, declarada
 
@@ -394,7 +411,9 @@ corpus de una colección de CSV.
    incompleto en silencio. El envoltorio `texto` del sumario aparece de forma
    irregular en varios niveles.
 3. **El umbral de coherencia entra en el perfil de la entidad** con valor 0,85, y su
-   tasa de descarte (2% [1–5]) es un resultado que hay que publicar, no un detalle.
+   tasa de descarte —**4,00% [2,7–5,9]** agregado, 2,0–5,5% según ventana— es un
+   resultado que hay que publicar **con su ventana**, no un detalle ni una cifra
+   única.
 4. **`attribution` del adaptador del BOE tiene que decir «Basado en datos de…»**,
    no «Fuente de los datos:…», porque el banco crea obra derivada.
 5. **`multipagina` no se puede etiquetar desde el XML.** O se mide sobre el PDF, o
