@@ -483,7 +483,7 @@ Y los cuatro sutiles, que son los que justifican el hito:
 | TEDS lote (7) | `batch_sobrescribe` — la última tabla pisa a las demás | 3 |
 | cellmatch (7) | `cellmatch_por_pertenencia` | 2 |
 
-**Los veintiún mutantes del repo mueren**, con control negativo **0 de 160**.
+**Los veintiún mutantes del repo mueren**, con control negativo **0 de 162**.
 `uv run python scripts/mutantes/matar.py; echo $?`
 
 `teds_cuenta_la_raiz` es el que justifica el hito: mueve **todos** los TEDS un
@@ -495,12 +495,12 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 160 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 162 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 160 de 183 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 162 de 185 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
 Los **23 tests restantes** —`test_types_invariantes` (7), `test_ancla` (5),
 `test_types` (5), `test_errors` (3) y `test_sin_consumidor` (3)— quedan fuera
@@ -701,7 +701,7 @@ p90 pasa del techo.
 
 | | al cerrar L2 | tras la auditoría |
 |---|---|---|
-| tests | 177 | **183** |
+| tests | 177 | **185** |
 | n | 40 en 10 tandas | 20 en 5 tandas |
 | mínimo | 5140 | 5742 |
 | **mediana** | **5593** | **5920** |
@@ -719,8 +719,8 @@ L3 que ya se apuntó). Decir «los 327 ms son los tests nuevos» sería el error
 285 ms otra vez.
 
 **Margen en el p90 sobre el techo de 8500: 2467 ms.** Y el dato que confirma el
-diagnóstico de ADR-0022: la suite pasó de **145 a 183 tests** —+38, o sea +26%— y
-la mediana se movió de **5593 a 5920**, o sea **+327 ms para +38 tests**: 8,6 ms
+diagnóstico de ADR-0022: la suite pasó de **145 a 185 tests** —+40, o sea +28%— y
+la mediana se movió de **5593 a 5920**, o sea **+327 ms para +40 tests**: 8,2 ms
 por test, cuando el arranque del proceso solo cuesta ~900.
 
 > **Este párrafo decía «de 5604 a 5920, o sea +316 ms».** 5604 era la mediana de

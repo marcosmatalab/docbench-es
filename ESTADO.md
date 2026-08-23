@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1742 ms en frío, rango 1715–1872, n=10, máquina en reposo (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | **CERRADO 2026-08-22** | Solapes, huecos y spans fuera de rango detectados al 100% | **8.525/8.525 detectadas y 0/45 falsos positivos**, censo determinista y exhaustivo, `uv run python scripts/censo_invariantes.py`. No es una estimación: es una tasa sobre el censo completo, así que no lleva intervalo (ADR-0015). Puerta: **3829 ms** en frío, rango 3713–3875, n=10, todas con `rc=0`, `load average` 0,93 — **24× de margen**. Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **183 tests** (+26%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **21 mutantes**, todos mueren, control negativo **0 de 160**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
+| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **21 mutantes**, todos mueren, control negativo **0 de 162**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | PENDIENTE | La verdad derivada reproduce las tablas a mano | — |
 | L5 `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | 14-18 | PENDIENTE | Primera tabla de estructura con coste y cobertura evaluable | — |
@@ -140,7 +140,7 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés de mutantes cubre 160 de 183 tests, y no hay mutante para el resto.**
+7. **El arnés de mutantes cubre 162 de 185 tests, y no hay mutante para el resto.**
    Límite 51. Los **23 tests** de fuera son de cinco módulos, y ésta es la
    lista de verdad —la anterior mandaba a L3 escribir un mutante para `teds_batch`
    que **ya existe**, `batch_sobrescribe`—:
@@ -161,6 +161,38 @@ nota. Ver LIMITS 49.
    `ancla` y `sin_consumidor` son los que más urgen: son **barreras**, o sea
    código cuyo único trabajo es ponerse rojo, y un candado que no se ha probado
    contra su propia rotura no es un candado.
+
+9. **El guardián de recuentos tiene puntos ciegos, y el tamaño está MEDIDO: 7 de
+   18.** Límite 54. Sobre un corpus de 30 frases que alguien escribiría en este
+   repo —12 que no son recuentos y 18 que sí—,
+   `uv run python scripts/cobertura_patrones.py --detalle` da **0 falsos positivos
+   de 12** y **7 escapes de 18**. O sea que **casi cuatro de cada diez formas
+   naturales de publicar un recuento no las vigila nadie**.
+
+   Las siete: «el PLAN tiene 21 mutantes», «mueren los 21 mutantes», «21/21», una
+   fila de tabla `| Mutantes | 21 |`, «cubre 162 de los 185 tests», «quedan 23
+   tests fuera» y «la suite tiene 185 tests en total».
+
+   **Dos de esos puntos ciegos ya se cobraron su pieza**, y por eso la cifra no es
+   teórica: la forma de `ESTADO.md`:15 —«21 mutantes, todos mueren»— se escapaba
+   entera, en el documento que el hook `SessionStart` inyecta en cada sesión; y el
+   mensaje de error enumeraba sólo lo que veía, así que **corregir lo enumerado
+   dejaba `ESTADO.md` en verde mintiendo**. Los dos están tapados; los siete de
+   arriba no.
+
+   **Precio de barrerlo, medido sobre lo que costó esta ronda**: cada fraseo son
+   ~10 min entre escribir el patrón, comprobar que no genera falsos positivos
+   contra el corpus, y correr el control negativo. Siete fraseos ≈ **1 h 10 min**.
+   A eso hay que sumarle que el corpus de 30 frases **no es exhaustivo**: es lo
+   que un escrutinio adversarial de un agente por familia produjo en una tarde, y
+   el número real de fraseos posibles no lo sabe nadie.
+
+   **NO se promete cerrarla.** Barrer siete fraseos no cierra la clase —el español
+   no se enumera— y cada patrón nuevo es una oportunidad más de falso positivo,
+   que es la dirección grave. Lo que sí se hace: **el mensaje de error dice que la
+   lista no está completa y remite a este número**, para que nadie lea lo
+   enumerado como el total. Y si un punto ciego se cobra una pieza concreta, se
+   tapa ese, como se taparon estos dos.
 
 8. **La tasa de muerte de cada asesino no está medida.** Límite 50. La columna
    «mata SIEMPRE» se calcula con n = 3, y eso llama determinista a un test con
@@ -225,7 +257,7 @@ regla de oro 8 —gana la fuente que el bucle lee primero— aplicado a este fic
 
 Lo que L3 hereda y no puede ignorar esta en «Deuda abierta», arriba: el techo de
 8500 ms se re-justifica con `scripts/medir_puerta.py`, y los limites 42 (coste de
-TEDS por tamaño), 51 (el arnes cubre 160 de 183) y 52 (el criterio de L2 no valida
+TEDS por tamaño), 51 (el arnes cubre 162 de 185) y 52 (el criterio de L2 no valida
 el mapeo) llegan con su precio puesto.
 
 Lo que L1 hereda de L0 y no puede ignorar:

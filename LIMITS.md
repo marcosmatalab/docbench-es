@@ -373,7 +373,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 160 de 183 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 162 de 185 tests.** Los
     **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS y el lote. Los **23 tests restantes** —`types_invariantes` (7),
     `ancla` (5), `types` (5), `errors` (3) y `sin_consumidor` (3)— **no tienen

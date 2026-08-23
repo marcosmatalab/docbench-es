@@ -94,6 +94,12 @@ PATRONES: tuple[tuple[str, str], ...] = (
     ("mutantes", rf"sobre los {_N} mutantes existentes"),
     ("mutantes", rf"{_N} mutantes (?:están versionados|se versionan)"),
     ("mutantes", rf"[Ll]os {_N} mutantes apuntan"),
+    # La forma de `ESTADO.md`:15 —«21 mutantes, todos mueren»—, que la coma y el
+    # «todos» dejaban escapar: era un PUNTO CIEGO en el documento que el hook
+    # `SessionStart` inyecta entero en cada sesión. Reproducido antes de taparlo:
+    # subiendo el PLAN a 22 sin tocar documentos, el mensaje de error nombraba
+    # RESULTS x3, LIMITS y la skill, y **no ESTADO**.
+    ("mutantes", rf"{_N} mutantes, todos mueren"),
     # ---- dentro / total: sólo la forma canónica «cubre N de M tests» ----
     # `cubre {_N} de \d+` a secas casaba con «cubre 3 de 7 casos», que no habla de
     # tests. Exigir `tests` detrás obliga a que la prosa sea canónica, y ésa es la
@@ -118,6 +124,33 @@ PATRONES: tuple[tuple[str, str], ...] = (
     ("total", rf"suite entera: \d+ de {_N} tests"),
     ("dentro", rf"suite entera: {_N} de \d+ tests"),
 )
+
+NOMBRES_PROPIOS = frozenset({"los dos mutantes"})
+"""Frases que en este repo son un NOMBRE, no una cantidad.
+
+**«Los dos mutantes» es el paso 2 de `/cerrar`** —`siempre_ok` x `siempre_roto`—,
+y aparece con ese sentido en seis sitios: el título del paso en la skill, el de la
+sección de `RESULTS.md`, dos veces en `CHANGELOG.md`, y en dos tests. No es
+hipotético: `CHANGELOG.md` dice hoy «Los dos mutantes van versionados y **mueren**
+en 20 y 7 tests», y **quitar «van versionados y» al reescribir esa línea pondría
+la puerta roja con una frase cierta**.
+
+**La adyacencia NO cierra este riesgo**, y creer que sí lo cerraba fue un error
+publicado: en cuanto la frase sigue con el verbo natural —«los dos mutantes
+mueren»— casa y captura el 2. Lo que la adyacencia hace es distinto y más
+modesto: impide que un número **suelto** cerca de la palabra se lea como recuento.
+Contra un nombre propio que YA lleva el número dentro no puede hacer nada, porque
+la forma es idéntica a la del recuento. Por eso hace falta una lista, y por eso la
+lista es explícita en vez de un patrón más retorcido.
+
+Se comprueba contra la ventana que rodea al match, no contra la frase entera: así
+«Los 21 mutantes apuntan…» no se ve afectado."""
+
+
+def _es_nombre_propio(plano: str, inicio: int, fin: int) -> bool:
+    ventana = plano[max(0, inicio - 6) : fin].lower()
+    return any(nombre in ventana for nombre in NOMBRES_PROPIOS)
+
 
 HISTORICOS: dict[str, str] = {
     # El contexto va SIN comillas invertidas ni asteriscos, porque se compara
@@ -186,6 +219,8 @@ def desacuerdos(documentos: list[tuple[str, str]], esperado: dict[str, int]) -> 
                 frase = m.group(0)
                 if HISTORICOS.get(frase, "\0") in plano:
                     continue
+                if _es_nombre_propio(plano, m.start(), m.end()):
+                    continue
                 valor = _valor(m.group(1))
                 if valor is not None and valor != esperado[clave]:
                     fallos.append(f"{nombre}: «{frase}» pero {clave} es {esperado[clave]}")
@@ -206,7 +241,15 @@ def test_ningun_documento_publicado_cita_un_recuento_viejo() -> None:
     este número.
     """
     fallos = desacuerdos(_leidos(), recuentos())
-    assert fallos == [], "recuentos desincronizados entre documentos:\n  " + "\n  ".join(fallos)
+    assert fallos == [], (
+        "recuentos desincronizados entre documentos:\n  "
+        + "\n  ".join(fallos)
+        + "\n\n  ESTA LISTA NO ESTÁ COMPLETA. El guardián sólo caza los fraseos"
+        "\n  previstos: 7 de 18 formas naturales se le escapan (LIMITS 54,"
+        "\n  `uv run python scripts/cobertura_patrones.py --detalle`). Corregir sólo"
+        "\n  lo enumerado aquí es exactamente el fallo que este test existe para"
+        "\n  evitar: busca el mismo recuento en los demás documentos a mano."
+    )
 
 
 def test_la_comprobacion_se_cae_con_una_cifra_desincronizada() -> None:
@@ -228,6 +271,60 @@ def test_la_comprobacion_se_cae_con_una_cifra_desincronizada() -> None:
     assert desacuerdos([("inventado.md", bueno)], reales) == [], (
         "sobre el texto CORRECTO no puede inventar un desacuerdo: eso es lo que "
         "pasaba cuando `0 (?:muertes )?de N tests` casaba con «cubre 0 de 5 tests»"
+    )
+
+
+def test_la_forma_de_estado_md_esta_vigilada() -> None:
+    """Control negativo del punto ciego de `ESTADO.md`, que era el peor de todos.
+
+    `ESTADO.md`:15 publica «N mutantes, todos mueren», y la coma y el «todos»
+    rompían la adyacencia de todos los patrones de la familia. **Reproducido antes
+    de taparlo**: subiendo el `PLAN` a 22 sin tocar ningún documento, el mensaje de
+    error nombraba `RESULTS.md` x3, `LIMITS.md` y la skill — y **no `ESTADO.md`**.
+    El humano corrige lo enumerado y `ESTADO.md` se queda en verde mintiendo, que
+    es el fallo original reproducido por el mensaje de error del mecanismo.
+
+    Y era el documento donde más duele: el hook `SessionStart` lo inyecta entero,
+    así que la sesión siguiente lo lee antes que nada.
+    """
+    reales = recuentos()
+    # La frase de prueba lleva SÓLO esta forma. La primera versión decía
+    # «…, todos mueren, control negativo 0 de 1», y ese «0 de 1» casaba con otro
+    # patrón: el test pasaba aunque se borrara el patrón que dice comprobar.
+    # Comprobado quitándolo: la suite entera seguía verde.
+    viejo = f"{reales['mutantes'] + 1} mutantes, todos mueren"
+    assert desacuerdos([("estado_falso.md", viejo)], reales), (
+        "la forma de ESTADO.md:15 tiene que estar vigilada"
+    )
+    bueno = f"{reales['mutantes']} mutantes, todos mueren"
+    assert desacuerdos([("estado_bueno.md", bueno)], reales) == []
+
+
+def test_el_nombre_propio_no_se_lee_como_recuento() -> None:
+    """Control negativo del otro arreglo: «los dos mutantes» es un NOMBRE.
+
+    Es el paso 2 de `/cerrar`, en seis sitios del repo. `CHANGELOG.md` dice hoy
+    «Los dos mutantes van versionados y **mueren** en 20 y 7 tests»: **quitar tres
+    palabras al reescribir esa línea pondría la puerta roja con una frase cierta**,
+    y un candado que da rojos falsos deja de leerse.
+
+    Las dos mitades: las variantes razonables del nombre no disparan, y un recuento
+    de verdad con la misma forma sí.
+    """
+    reales = recuentos()
+    for nombre in (
+        "Los dos mutantes van versionados y mueren en 20 y 7 tests.",
+        "Los dos mutantes mueren en 20 y 7 tests.",
+        "Los dos mutantes están versionados en scripts/mutantes/.",
+        "Los dos mutantes apuntan a _arbol.py.",
+    ):
+        assert desacuerdos([("changelog_falso.md", nombre)], reales) == [], (
+            f"«{nombre}» es el nombre de la regla, no un recuento"
+        )
+
+    # Y la otra mitad, sin la cual la excepción taparía errores de verdad:
+    assert desacuerdos([("x.md", "Los 2 mutantes del repo mueren.")], reales), (
+        "un recuento con cifra SÍ tiene que compararse: la excepción es para el nombre"
     )
 
 

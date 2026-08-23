@@ -63,7 +63,7 @@ disable-model-invocation: true
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 21 mutantes mueren» habla de esos 21 huecos, no de la
-   suite: en L2 el arnés cubría 160 de 183 tests, o sea que 23 tests quedaban fuera.
+   suite: en L2 el arnés cubría 162 de 185 tests, o sea que 23 tests quedaban fuera.
 
    **Estos recuentos NO se copian a mano a ningún documento.** Los calcula
    `tests/unit/conftest.py` en cada colección y `tests/unit/test_recuentos.py`
@@ -171,6 +171,30 @@ disable-model-invocation: true
 
 8. **Límites.** Si has descubierto algo que el proyecto NO mide o dónde se rompe,
    añádelo a `LIMITS.md` numerado.
+
+   **La regla que decide qué es deuda y qué no, y no admite matices:**
+
+   > **Una AFIRMACIÓN FALSA nunca es deuda: se arregla en el momento en que se
+   > detecta.** La **COBERTURA que falta** sí es deuda: se declara con su **tamaño
+   > medido** y se cierra a plazos.
+
+   **Por qué la línea cae ahí:** el documento que declararía la deuda es el mismo
+   que estaría mintiendo. «Ya lo apunto y lo arreglo en L3» convierte `LIMITS.md`
+   —el fichero cuyo trabajo es decir la verdad sobre lo que el repo no hace— en
+   otro sitio donde vive una falsedad. Una cobertura que falta, en cambio, es
+   verdad desde el momento en que se escribe: *«esto no lo vigila nadie, son 7 de
+   18, costaría ~1 h 10 min, y no prometo hacerlo»* es una frase cierta y
+   comprobable.
+
+   Ejemplos de este mismo hito, uno de cada:
+
+   | | Qué se hizo |
+   |---|---|
+   | Un docstring afirmaba que la adyacencia cerraba el riesgo del nombre propio, y era falso | **Borrado en el acto**, y sustituido por lo que la adyacencia sí hace y lo que no |
+   | El guardián no vigila 7 de 18 fraseos naturales | **Deuda 9 de `ESTADO.md`**, con su cifra, su precio y sin promesa |
+
+   **Y una deuda con tamaño medido vale más que una promesa**: se puede priorizar
+   contra otras, y no caduca en silencio.
 
 9. **ADR.** Si has tomado una decisión de diseño no prevista, escríbela en
    `docs/adr/` con su alternativa descartada y su trade-off.

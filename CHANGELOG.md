@@ -28,7 +28,7 @@ de cada número vive con su método, en `docs/metrics.md`.
   ejecuta sin tocarle una línea a la lógica. `apted`, `distance` y `lxml` van por
   `uv run --with` y **no** entran en `pyproject.toml`: así nadie puede acabar
   calculando TEDS con la implementación ajena por accidente.
-- **101 tests nuevos** (82 → 183), y doce mutantes más (9 → 21).
+- **103 tests nuevos** (82 → 185), y doce mutantes más (9 → 21).
 - **`scripts/ancla.py`**: un ancla de documento publicado tiene que aparecer
   **exactamente una vez** o no se edita nada. Nace de haber duplicado ~230
   líneas de `RESULTS.md` con un `s.index` sobre un encabezado que se repite
@@ -152,6 +152,36 @@ afirmaba algo que el código no cumplía.
   tabla de ADR enumeraba «los cuatro» existiendo 0013–0025. No es cosmético: el
   hook `SessionStart` inyecta ese fichero entero, así que la sesión siguiente lo
   lee antes que nada.
+
+#### Corregido en la auditoría en frío de `a639a72` · último commit sobre el guardián
+
+- **Una afirmación falsa publicada, borrada.** El docstring de `PATRONES` afirmaba
+  que la adyacencia cerraba el riesgo del nombre propio. **Es falsa y estaba
+  medida**: «los dos mutantes **mueren**» casa y captura el 2. Sustituida por lo
+  que la adyacencia sí hace —impedir que un número **suelto** cerca de la palabra
+  se lea como recuento— y lo que no puede hacer: contra un nombre propio que ya
+  lleva el número dentro, la forma es idéntica a la del recuento.
+- **El mensaje de error mentía por omisión.** Enumeraba los sitios que ve y nada
+  más, así que se leía como lista completa: el humano corregía lo enumerado y
+  `ESTADO.md` se quedaba en verde. Ahora dice **que la lista no está completa**,
+  con la tasa medida (7 de 18) y el comando para verla.
+- **Dos puntos ciegos tapados, los dos con control negativo:**
+  - la forma de `ESTADO.md`:15 —«21 mutantes, todos mueren»—, que la coma y el
+    «todos» dejaban escapar **en el documento que el hook `SessionStart` inyecta
+    entero en cada sesión**;
+  - **«los dos mutantes» deja de leerse como cantidad**: es el nombre del paso 2
+    de `/cerrar`, en seis sitios. `CHANGELOG.md` dice hoy «Los dos mutantes van
+    versionados y **mueren** en 20 y 7 tests», a tres palabras de tumbar la puerta
+    con una frase cierta.
+
+  **Y el control negativo del primero estaba roto**, encontrado al ejercitarlo: su
+  frase de prueba llevaba dos patrones, así que pasaba por el otro — borrando el
+  patrón que dice comprobar, la suite seguía verde. Arreglado y re-verificado.
+
+- **La regla que ordena todo esto**, en `/cerrar`: **una afirmación falsa nunca es
+  deuda, se arregla en el momento**; la **cobertura que falta sí lo es**, y se
+  declara con su tamaño medido. La línea cae ahí porque **el documento que
+  declararía la deuda es el mismo que estaría mintiendo**.
 
 #### Corregido en la auditoría en frío de `6ebf592` · el guardián creó el fallo
 
