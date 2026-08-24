@@ -1,0 +1,36 @@
+{
+ "esquema": "docbench-es.desglose-ventana/1",
+ "leido_en": "2026-08-24T13:26:10+00:00",
+ "sello": "c8aba64+3",
+ "reconstruido": "los `intentados` por día NO los guardó la cosecha (límite 63): se vuelven a leer los sumarios con `BoeAdapter.discover`, el código de producción. Supone que el origen entrega hoy los mismos ítems que entregó durante la cosecha; el cuadre exacto es lo que lo sostiene",
+ "corte": "2026-03-20",
+ "ventana": {
+  "desde": "2026-03-09",
+  "hasta": "2026-04-11"
+ },
+ "dias_sin_boletin": 4,
+ "rendimiento_docs_por_dia": 41.7,
+ "trozos": {
+  "invierno": {
+   "intentados": 462,
+   "aceptados": 444,
+   "descartes": 18,
+   "tasa_descarte": 0.03896103896103896,
+   "dias_de_publicacion": 10
+  },
+  "primavera": {
+   "intentados": 581,
+   "aceptados": 556,
+   "descartes": 25,
+   "tasa_descarte": 0.043029259896729774,
+   "dias_de_publicacion": 15
+  },
+  "toda_la_ventana": {
+   "intentados": 1043,
+   "aceptados": 1000,
+   "descartes": 43,
+   "tasa_descarte": 0.04122722914669223,
+   "dias_de_publicacion": 25
+  }
+ }
+}

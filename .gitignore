@@ -27,6 +27,16 @@ runs/*/*
 # historial; fuera de git, «lo capturé al terminar la cosecha» es una afirmación
 # de palabra. Son ~100 KB de JSON. Ver límite 62.
 !runs/*/xml_sha256.json
+# EL MANIFIESTO TAMBIÉN, y por el criterio de aceptación, no por elegancia: §16
+# pide «1.000 documentos emparejados PDF/XML, CON MANIFIESTO y tasa de descarte».
+# Si el manifiesto no está en el repo, el `CUMPLE rc=0` de `verificar_corpus.py`
+# es una afirmación que sólo puede comprobar quien lo cosechó. Y ADR-0033 decide
+# que nace publicable: un manifiesto publicable que no se publica es una
+# contradicción. La separación es la misma que con el plan — decisión y evidencia
+# dentro, BYTES fuera: 520 KB de JSON entran, 362 MB de PDF no.
+!runs/*/manifiesto.json
+!runs/*/desglose.json
+!runs/*/README.md
 .claude/.ultima-puerta
 .env
 

@@ -771,14 +771,33 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     no fuera de una sola época — y con lo que el manifiesto guarda, ese propósito
     no se podía cumplir.
 
-    **El número existe igual, reconstruido y se dice cómo:**
+    **El número existe igual, reconstruido, y el método se declara entero:**
     `scripts/desglose_ventana.py` vuelve a leer los sumarios con
     `BoeAdapter.discover` —el código de producción, no una copia— y reparte los
-    `intentados` por día. Cuadra exacto: 462 + 581 = 1.043 intentados,
-    444 + 556 = 1.000 aceptados, 18 + 25 = 43 descartes. **Pero es una lectura del
-    origen POSTERIOR a la cosecha**, no una medición de la cosecha: si el BOE
-    reordenara o retirara un ítem de un sumario viejo, la reconstrucción
-    discreparía. El script lo comprueba y se cae si no cuadra.
+    `intentados` por día.
+
+    **EL SUPUESTO, con estas palabras:** *«`BoeAdapter.discover` devuelve HOY los
+    mismos ítems que devolvió durante la cosecha»*. No es gratis — **el BOE
+    corrige y anula documentos**, y un sumario viejo puede no ser hoy lo que fue.
+    Si un ítem se hubiera retirado o reordenado, la reconstrucción repartiría mal
+    los descartes y el desglose sería falso sin avisar.
+
+    **Lo que sostiene el supuesto es el cuadre exacto**, en las tres columnas a la
+    vez: 462 + 581 = 1.043 intentados, 444 + 556 = 1.000 aceptados,
+    18 + 25 = 43 descartes. Que las tres cuadren a la vez con un origen que hubiera
+    derivado es tan improbable que el cuadre **es** la comprobación. Por eso el
+    script **se cae si no cuadra** en vez de publicar un desglose aproximado: la
+    alternativa sería un número que no sabe que está mal.
+
+    **Y la fecha de la lectura va dentro del artefacto**, `leido_en` en
+    `runs/l3/desglose.json`, porque el supuesto se debilita con el tiempo: pegada a
+    la cosecha vale mucho y seis meses después vale poco, y sin la fecha no se
+    puede saber cuál de las dos es. Leído el **2026-08-24**, el mismo día que
+    terminó la cosecha, y **dos veces con el mismo resultado**.
+
+    Así, «reconstruido» deja de ser una debilidad y pasa a ser un método declarado:
+    tiene un supuesto escrito, una comprobación que lo respalda y una fecha que
+    dice cuánto vale.
 
     **El arreglo es el mismo cambio de esquema del límite 62**, así que van juntos:
     L4, **~30 min más**. Mientras tanto, cualquier cosecha futura hereda el hueco.
