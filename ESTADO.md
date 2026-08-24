@@ -59,6 +59,20 @@ nota. Ver LIMITS 49.
      de la referencia en silencio, así que la decisión es del informe.
    - **L3 · cuántas cabeceras del BOE viajaban sin marcar** (límite 45), antes de
      que L2 arreglara el `<thead><td>` de `from_html`.
+   - **L8b · LA UNIDAD DE ESTRATIFICACIÓN, decidida antes de empezar y no a mitad.**
+     L8b son **120 documentos con doble pasada ciega** y es lo que cierra `v0.1.0`,
+     o sea el hito más caro en horas de persona del release. Si sus estratos son de
+     **documento**, hereda el muestreo en dos etapas de L4 —el estrato garantiza que
+     *alguna* tabla del documento tiene spans, no la que salga—. Si son de **tabla**,
+     el censo tiene que calcular el estrato **por tabla**, y hoy lo calcula por
+     documento: `boe_xml.estratos` corre sobre el XML **entero**.
+
+     **No se resuelve aquí**, porque la respuesta depende de qué se anota en L8b —
+     tablas sueltas o documentos completos— y eso es su decisión. Lo que no puede
+     pasar es que se descubra con 120 documentos ya repartidos entre anotadores.
+     **Precio de la opción «por tabla»: ~1 h** de censo, medido por analogía con lo
+     que costó el censo actual.
+
    - **AL CERRAR L3 · reconciliar las TRES estimaciones de tamaño del corpus
      contra la medida real.** Están publicadas **277 MB** (media de los 50 en
      bruto del censo), **533 MB** (corrección por páginas y estrato) y **254 MB**

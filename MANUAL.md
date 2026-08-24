@@ -1883,9 +1883,19 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 > 2. **Cada discrepancia se adjudica una a una y su causa se publica**, con dos
 >    valores posibles: *fallo del código* o *error de transcripción*. **Sólo el
 >    primero habla del producto.**
-> 3. **El número separa las dos**: «N de 30 coinciden; de las M discrepancias, X
->    eran del código y Y errores de transcripción». Un 30/30 obtenido corrigiendo
->    fixtures vale cero; un 27/30 con las tres explicadas vale mucho.
+> 3. **El número separa las TRES**: «N de 30 coinciden; de las M discrepancias, X
+>    eran del código, Y errores de transcripción y Z de **frontera ambigua**». Un
+>    30/30 obtenido corrigiendo fixtures vale cero; un 27/30 con las tres explicadas
+>    vale mucho.
+>
+>    **La tercera categoría, FRONTERA DE TABLA AMBIGUA**, sale de que el renderizado
+>    del PDF y el modelo del XML **no coinciden en qué cuenta como fila**: el PDF
+>    parte lo que el XML tiene entero, duplica cabeceras al cambiar de página y deja
+>    fuera del borde notas que el XML lleva dentro. **El criterio para decidirla no
+>    es qué fuente es más cómoda, sino QUÉ ELECCIÓN PENALIZA A UN EXTRACTOR QUE
+>    ACIERTA** — y como un extractor lee el PDF, meter dentro lo que se ve fuera le
+>    quita puntos por acertar. **El mecanismo es el del límite 33**: se MARCA la fila
+>    como no evaluable en vez de incluirla o excluirla a ojo.
 > 4. **Si el código se arregla, se re-comparan LAS 30**, no sólo la que falló.
 >
 > Y lo que sostiene que las transcripciones sean independientes: **se transcriben

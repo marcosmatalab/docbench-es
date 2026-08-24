@@ -26,8 +26,26 @@ poblacion:
   # estan correlacionadas, asi que lo que se remuestrea son documentos). De cada
   # documento elegido sale UNA tabla, tambien por semilla: si se tomaran todas, el
   # documento de 332 tablas dominaria la muestra el solo.
-  unidad: documento
+  # MUESTREO EN DOS ETAPAS, y describirlo mal fue un defecto real del plan:
+  #   unidad PRIMARIA:   el documento — es a esta a la que se aplica la estratificacion
+  #   unidad SECUNDARIA: una tabla dentro del documento, elegida por la semilla
+  # Asi que NO son «30 tablas estratificadas»: son 30 DOCUMENTOS estratificados por
+  # sus seis celdas, con una tabla por documento. La diferencia muerde: el estrato
+  # `celdas-combinadas` etiqueta al DOCUMENTO —lo calcula boe_xml.estratos sobre el
+  # XML entero— asi que garantiza que ALGUNA tabla del documento tiene spans, no
+  # que los tenga la sorteada. Medido en BOE-A-2026-6204: documento en
+  # `celdas-combinadas`, tabla elegida sin un solo span.
+  #
+  # No es un defecto del diseño: es muestreo en dos etapas, que es legitimo. Lo que
+  # era un defecto era el nombre. Y se compensa PUBLICANDO LA DISTRIBUCION QUE
+  # SALIO —cuantas de las 30 tienen rowspan>1, colspan>1, su reparto de tamaños y
+  # bandas—, que sale gratis del censo. Un instrumento descrito vale mas que uno
+  # que promete lo que no da.
+  unidad_primaria: documento
+  unidad_secundaria: tabla
+  estratificacion_se_aplica_a: unidad_primaria
   tablas_por_documento_elegido: 1
+  publicar_distribucion_realizada: true
 
 # ------------------------------------------------------------- LA ESTRATIFICACION
 # Sobre lo ya medido, no sobre "40 tablas variadas". Los cuatro estratos se reducen
@@ -115,6 +133,23 @@ dimension_completa_en_las_30: true
 # discrepancia que no habla del producto. Por eso la ventana se queda aunque el
 # tiempo sobre. **Mi tasa de error transcribiendo NO esta medida** — haria falta una
 # segunda pasada ciega, que es lo que ADR-0039 descarta por coste.
+
+# ------------------------------------------------- COMO SE LOCALIZO CADA UNA
+# Si el proceso no es el mismo en las 30, mi tasa de error tampoco lo es. Cada
+# fixture anota `localizacion` con uno de tres valores, y en la adjudicacion ese
+# dato esta ahi para ponderar una discrepancia:
+#   automatica                     el localizador dio la pagina y habia una sola tabla
+#   automatica_con_desambiguacion  dio la pagina, pero habia varias y elegí por dimension
+#   a_ojo                          no dio ancla; hubo que buscarla leyendo el PDF
+localizacion_declarada_por_fixture: true
+
+# ------------------------------------------------ LO QUE LA TRANSCRIPCION MIDE GRATIS
+# `cruza_pagina` por fixture. El limite 32 dice que las paginas NO se derivan del
+# XML, asi que `multipagina` es un estrato declarado que el proyecto no puede medir
+# desde el origen. Transcribiendo del PDF se mide sin coste extra, y es la primera
+# cifra empirica sobre multipagina del proyecto. Va con su n y su intervalo: es la
+# MUESTRA, no el corpus.
+medir_cruza_pagina: true
 
 # Y las 30 se transcriben de una sentada y se congelan con hash ANTES de la primera
 # comparacion. El sello de esa congelacion se escribe aqui cuando ocurra.

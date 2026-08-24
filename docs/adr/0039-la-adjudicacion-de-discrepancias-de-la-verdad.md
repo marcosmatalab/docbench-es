@@ -87,6 +87,77 @@ a mano durante el arreglo del grupo de filas —`BOE-A-2026-7193`, `BOE-A-2026-7
 excluye**, porque excluirla sesgaría la selección estratificada; se **declara al
 lado del número**, que es información que quien lo lea necesita para pesarlo.
 
+## La TERCERA categoría: FRONTERA DE TABLA AMBIGUA
+
+**El renderizado del PDF y el modelo del XML no coinciden en QUÉ CUENTA COMO FILA DE
+LA TABLA.** El PDF tiene páginas, bordes y repeticiones visuales; el XML tiene un
+árbol de `<tr>`. Los dos describen la misma tabla y **no están de acuerdo en dónde
+empieza y dónde acaba**.
+
+No es un caso suelto. Aparecieron **tres en las quince primeras transcripciones**, y
+las tres son la misma clase por caminos distintos:
+
+| Documento | Qué pasa | Quién parte y quién une |
+|---|---|---|
+| `BOE-A-2026-5863` | la tabla **continúa** en la página siguiente | el PDF **parte** lo que el XML tiene entero |
+| `BOE-A-2026-6957` | la **cabecera se repite** al cambiar de página | el PDF **duplica** lo que el XML tiene una vez |
+| `BOE-A-2026-6971` | la **nota al pie** se ve fuera del borde y el XML la lleva dentro | el PDF **excluye** lo que el XML incluye |
+
+Las dos primeras se resuelven mirando: se comprueba la página siguiente antes de
+declarar nada. **La tercera no se resuelve mirando**, porque la pregunta no es qué
+se ve sino qué **es** la tabla.
+
+### El criterio, y no es «qué fuente es más cómoda»
+
+> **¿QUÉ ELECCIÓN PENALIZA A UN EXTRACTOR QUE ACIERTA?**
+
+Un extractor lee **el PDF**. Si la nota se renderiza fuera del borde y la verdad
+derivada la mete dentro, el extractor que **no la incluye** —que es lo que se ve—
+pierde puntos **por acertar**. Y al revés: si esa nota es semánticamente de la tabla
+—explica el asterisco de una de sus celdas—, incluirla puede ser lo correcto y
+excluirla penalizaría al extractor cuidadoso.
+
+**La respuesta no es obvia, y por eso el criterio se escribe antes que los casos.**
+Escribirlo después sería elegir la regla que hace pasar el caso que tengo delante.
+
+### El mecanismo ya existe: es el del límite 33
+
+El límite 33 construye un **marcador de celda no evaluable** para la celda cuyo
+único contenido es `<img>`: no es que la verdad esté mal, es que esa celda **no se
+puede puntuar contra esta verdad**.
+
+**Una fila cuya PERTENENCIA a la tabla es ambigua es exactamente lo mismo.** Se
+reusa el marcador. **Marcar es más honesto que incluir o excluir a ojo**, tiene ya
+su sitio en el modelo, y deja la decisión donde se puede revisar en vez de
+enterrarla en un fixture.
+
+### La consecuencia para la adjudicación: el número tiene TRES sumandos
+
+Una discrepancia de esta clase **no cuenta ni como fallo del código ni como error de
+transcripción**. Va a su propia columna:
+
+> **N de 30 coinciden.** De las M discrepancias, **X eran del código** —arregladas,
+> con su test—, **Y eran errores de transcripción** —corregidos con su razón— y
+> **Z eran de FRONTERA AMBIGUA**, marcadas como no evaluables.
+
+Meterlas en cualquiera de las otras dos columnas mentiría en las dos direcciones: en
+«código» acusa a un código que hace lo que puede, y en «transcripción» acusa a una
+transcripción que copió lo que se ve.
+
+## Lo que esta regla puede hacer de daño si se aplica mal
+
+**Una discrepancia falsa, adjudicada según la regla 1 —*primero el código*—, manda a
+«arreglar» código correcto.** Un arreglo hecho para satisfacer una transcripción
+equivocada es peor que no tener regla: convierte el instrumento en una fuente de
+bugs. **Es la única forma que tiene ADR-0039 de hacer daño en vez de bien**, y por
+eso la categoría de frontera va antes que las otras dos en el orden de sospecha.
+
+**Y de paso da un número que el proyecto no tenía.** El límite 32 dice que las
+páginas no se derivan del XML, así que `multipagina` es un estrato **declarado que
+el proyecto no puede medir desde el origen**. Transcribiendo del PDF se mide sin
+coste extra. Va con su n y su intervalo, y con la advertencia de que es **la
+muestra, no el corpus**.
+
 ## Alternativas descartadas
 
 **Poner un umbral —«28 de 30 basta»— y no adjudicar.** Es lo que parece práctico y

@@ -10,6 +10,14 @@ qué página del PDF aparece.
 leen del PDF. La circularidad estaría en tomar los valores del XML, no en usarlo
 para pasar página.
 
+**Y la desambiguación va POR ESTRUCTURA, nunca por contenido.** Cuando la página
+trae varias tablas hay que saber cuál es la buscada, y mirar el TEXTO del XML para
+decidirlo **contamina la transcripción**: quien ya ha visto los valores no los
+transcribe ciego, y su coincidencia no prueba nada. Por eso se publica la
+**dimensión** y **cuál es de las de su dimensión** —estructura, no valores—, que
+basta para elegirla en la página. Salió transcribiendo `BOE-A-2026-5979` t15, donde
+sí se miró el contenido: ese fixture queda marcado como contaminado.
+
     uv run python scripts/ubicar_tabla.py BOE-A-2026-5511 0
     uv run python scripts/ubicar_tabla.py --todas
 """
@@ -49,7 +57,8 @@ def _paginas(pdf: Path) -> list[str]:
 
 def ubicar(ident: str, indice: int) -> dict[str, object]:
     xml = (DOCS / f"{ident}.xml").read_text(encoding="utf-8", errors="replace")
-    t = boe_xml.tablas(xml)[indice]
+    tablas = boe_xml.tablas(xml)
+    t = tablas[indice]
     anclas = _anclas(xml, indice)
     paginas = _paginas(DOCS / f"{ident}.pdf")
     encontradas: list[int] = []
@@ -57,10 +66,20 @@ def ubicar(ident: str, indice: int) -> dict[str, object]:
         limpio = re.sub(r"\s+", " ", texto)
         if any(re.sub(r"\s+", " ", a) in limpio for a in anclas):
             encontradas.append(i)
+    # DESAMBIGUACION POR ESTRUCTURA, NUNCA POR CONTENIDO. Cuando hay varias tablas
+    # en la pagina, hay que saber cual es. Mirar el TEXTO del XML para decidirlo
+    # contamina la transcripcion: quien ya ha visto los valores no los transcribe
+    # ciego. La dimension y el ORDEN son estructura, no valores, y bastan.
+    misma_dimension = [
+        i for i, o in enumerate(tablas) if (o.n_rows, o.n_cols) == (t.n_rows, t.n_cols)
+    ]
     return {
         "external_id": ident,
         "tabla": indice,
         "dimension_xml": f"{t.n_rows}x{t.n_cols}",
+        "tablas_del_documento": len(tablas),
+        "es_la_n_esima_de_su_dimension": misma_dimension.index(indice) + 1,
+        "cuantas_hay_de_su_dimension": len(misma_dimension),
         "celdas": len(t.cells),
         "paginas_pdf": len(paginas),
         "paginas_con_la_tabla": encontradas,
