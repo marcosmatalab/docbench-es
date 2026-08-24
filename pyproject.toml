@@ -4,14 +4,30 @@ version = "0.0.1"
 description = "Banco de extracción documental en español, adaptable a cualquier entidad"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
-dependencies = ["benchcore==0.1.*", "pydantic>=2", "typer>=0.12", "pyyaml>=6"]
+# `httpx` entra con L3 y vive en UN solo fichero, `src/docbench_es/entity/boe_api.py`.
+# El contrato de capas lo prohibe en `core` (.importlinter), que es donde importa.
+dependencies = ["benchcore==0.1.*", "pydantic>=2", "typer>=0.12", "pyyaml>=6", "httpx>=0.27"]
 
 [project.optional-dependencies]
 extract-local = ["pymupdf4llm", "pdfplumber", "camelot-py", "docling", "marker-pdf", "unstructured"]
 ocr = ["pytesseract", "paddleocr", "surya-ocr"]
 
 [dependency-groups]
-dev = ["pytest>=8", "pytest-cov", "hypothesis>=6", "ruff>=0.6", "mypy>=1.11", "import-linter>=2"]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+    "hypothesis>=6",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "import-linter>=2",
+    "types-pyyaml>=6.0.12.20260815",
+    # Para SACAR TEXTO DE UN PDF en la comprobacion de coherencia del emparejado.
+    # Va en dev y no en `dependencies` a proposito: `src/` no importa ninguna
+    # libreria de PDF —`corpus.harvest` recibe los textos inyectados— y este texto
+    # NO puntua a nadie, asi que la regla de oro 1 sigue en pie: es preparacion de
+    # corpus, no un extractor del banco.
+    "pypdf>=5",
+]
 
 # benchcore es una dependencia PROPIA. Existe un paquete AJENO llamado igual en
 # PyPI: sin esta seccion, `uv sync` instala el de otra persona en silencio.
@@ -23,14 +39,25 @@ benchcore = { git = "https://github.com/marcosmatalab/benchcore", branch = "main
 docbench = "docbench_es.cli.main:app"
 
 # Los adaptadores propios entran por el MISMO mecanismo que los de un cliente.
+# Los dos grupos de entry points nacen VACIOS a proposito, y cada linea vuelve
+# CON SU FICHERO. ADR-0036: el descubrimiento falla CERRADO, asi que un entry
+# point que apunta a un modulo inexistente no es una declaracion de intenciones,
+# es un `ModuleNotFoundError` que rompe el descubrimiento ENTERO de su grupo.
+# Comprobado ejecutandolo el 23 ago 2026: los cinco que habia aqui fallaban.
+#
+#   docbench.entity     generico-pdf   -> cuando exista su fichero; ADR-0032 solo
+#                                         garantiza que el contrato no le cierra
+#                                         la puerta, no lo construye
+#   docbench.extractor  oracle, pymupdf4llm, docling -> vuelven en L5
+#
+# `boe` ya volvio: su fichero existe y pasa la suite de conformidad.
+
 [project.entry-points."docbench.entity"]
 boe = "docbench_es.entity.boe:BoeAdapter"
-generico-pdf = "docbench_es.entity.generico_pdf:GenericoPdfAdapter"
-
-[project.entry-points."docbench.extractor"]
-oracle = "docbench_es.extract.oracle:Oracle"
-pymupdf4llm = "docbench_es.extract.pymupdf4llm:PyMuPdf4LlmExtractor"
-docling = "docbench_es.extract.docling:DoclingExtractor"
+#
+# Sin ninguna linea, el grupo se descubre sin error y devuelve cero adaptadores,
+# que es exactamente la verdad de hoy. El nombre del grupo no se pierde: vive en
+# `docbench_es.entity.registry.GRUPO` y en ADR-0036.
 
 [tool.ruff]
 line-length = 100

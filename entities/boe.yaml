@@ -1,0 +1,75 @@
+# §10.1 · El perfil del BOE. AQUÍ viven las decisiones de la entidad, no en el código.
+#
+# Cada número de este fichero tiene detrás una medición o una fuente con fecha. Lo
+# que no la tiene, no está aquí.
+
+id: boe
+display_name: Boletín Oficial del Estado
+language: es
+truth_mode: DERIVED
+benchcore_api: "1.x"
+
+# ADR-0031, condiciones 2 y 3. El sondeo midió el ritmo real contra el declarado:
+# intervalo mediano 1,0 s sobre 53 peticiones.
+ritmo:
+  rps: 1.0
+  user_agent: "docbench-es/0.1 (banco de extraccion documental; +https://github.com/marcosmatalab/docbench-es)"
+  paralelismo: 1
+
+# Leída el 22 ago 2026 en https://www.boe.es/informacion/aviso_legal/ (HTTP 200,
+# 36.293 bytes), Resolución de la AEBOE de 27 de junio de 2024. Autoriza el uso
+# comercial y no comercial, la copia, la distribución y la obra derivada.
+license:
+  name: "Reutilización autorizada · Resolución AEBOE de 27 de junio de 2024"
+  may_redistribute_content: true
+  may_redistribute_derived: true
+  # ADR-0031, condición 5: la atribución va con las palabras de la licencia.
+  attribution: "Basado en datos de la Agencia Estatal Boletín Oficial del Estado"
+  source_url: "https://www.boe.es/informacion/aviso_legal/"
+  verified_on: 2026-08-22
+  notes: >-
+    La licencia no restringe el método de obtención. El conflicto con
+    `robots.txt` está resuelto por escrito en ADR-0031, con sus tres fuentes.
+
+# El BOE publica nombres y documentos de identidad parciales en resoluciones,
+# nombramientos y edictos: declararlo es obligatorio y decir que no los hay sería
+# falso. No hay categorías especiales del art. 9 RGPD — si las hubiera, el
+# adaptador NO se registraría.
+privacy:
+  contains_personal_data: true
+  categories: ["nombre", "documento_identidad_parcial"]
+  special_categories: false
+  lawful_basis: "Publicación oficial obligatoria; misión de interés público (art. 6.1.e RGPD)"
+  redaction_required: false
+  # FALSE, y es una decisión con ADR: ver docs/adr/0037.
+  #
+  # El campo mezcla DOS preguntas y sólo una la contesta el BOE:
+  #   (a) ¿permite la fuente retransmitir el documento?  -> su licencia dice que SÍ.
+  #   (b) ¿tiene el operador base legal para ESE tratamiento concreto —mandar datos
+  #       personales a un tercero, quizá fuera de la UE—?  -> eso no lo contesta la
+  #       licencia: depende de quién trate y desde dónde, y es del responsable del
+  #       tratamiento, no del organismo. «Publicado oficialmente» no es consentimiento
+  #       para cualquier tratamiento posterior.
+  #
+  # Sin respuesta a (b), el valor por defecto es el restrictivo. Y es barato: L5 son
+  # ocho extractores LOCALES y los VLM por API son L12, así que de L3 a L11 esto no
+  # quita nada — y de paso la ruta de rechazo se EJERCITA durante ocho hitos en vez
+  # de ser código muerto. SE REVISA EN L12, con el caso delante.
+  may_send_to_third_party: false
+
+# Caracteres no blancos por página por debajo de los cuales el PDF va sin capa de
+# texto: decide a la vez el estrato `escaneado` y la causa de fallo
+# `no_text_layer`. NO ESTÁ MEDIDO sobre el BOE todavía; es el valor por defecto.
+umbral_capa_texto: 100
+
+# Similitud de secuencia PDF/XML por debajo de la cual el par se descarta y se
+# cuenta. MEDIDO sobre n=600 en tres ventanas: descarta el 4,00%, IC [2,7 a 5,9].
+# A 0,95 descartaría uno de cada cinco documentos buenos.
+# Ver docs/sondeo-boe-2026-08-22.md.
+umbral_coherencia: 0.85
+
+# Parte de la DEFINICIÓN DEL CORPUS, no una optimización: sin filtro, tres de cada
+# cuatro documentos del BOE son anuncios sin tabla y cualquier tasa publicada
+# hablaría de otra población. I = Disposiciones generales, III = Otras
+# disposiciones. Son las secciones sobre las que se midió el sondeo.
+filtro_secciones: ["1", "3"]

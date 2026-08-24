@@ -39,6 +39,24 @@ para generar el golden, de modo que los dos lados comparen lo mismo:
    en mitad de la tabla se queda en `<tbody>`: HTML exige `<thead>` antes de
    `<tbody>`, y moverla cambiaría el orden de las filas, que es justo lo que el
    árbol codifica.
+
+   > **Esta decisión se declaró sin número, y ahora lo tiene.** Medido en L3 sobre
+   > 50 documentos reales del BOE (`docs/censo-boe-50.json`,
+   > `uv run python scripts/censo_boe_50.py`): **4 de 323 celdas de cabecera —el
+   > 1,2%— llegan como `<th>` sin `<thead>` que las envuelva**, y **las cuatro
+   > están en un solo documento de los 50** (`BOE-A-2026-17073`, sección III, 4
+   > tablas, 2 páginas). No están repartidas: es una forma concreta, no ruido.
+   >
+   > **Lo que este número NO dice**, y conviene decirlo: el censo cuenta etiquetas,
+   > no posiciones, así que **no distingue una fila de cabecera al principio sin
+   > `<thead>` de una intercalada de verdad**. Sólo la segunda activa la regla del
+   > prefijo máximo. Cuántas son de cada clase es el límite 41, que sigue abierto y
+   > se cierra con el corpus.
+   >
+   > Y para el caso de este 1,2%: `is_header` no depende del envoltorio —un `<th>`
+   > marca cabecera lo lleve `<thead>` o no—, así que **la forma canónica los
+   > recoloca en `<thead>` igualmente**. La decisión de arriba sólo muerde si la
+   > fila está en el medio.
 3. **`<tbody>` con el resto**, si queda alguna.
 4. **Todas las celdas son `<td>`, nunca `<th>`.** La referencia trata `<th>` como
    un nodo cualquiera: se baja a sus hijos y **no le lee los spans**, así que un

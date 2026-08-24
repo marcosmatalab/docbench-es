@@ -12,13 +12,13 @@
 |---|---|---|---|---|
 | L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1742 ms en frío, rango 1715–1872, n=10, máquina en reposo (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | **CERRADO 2026-08-22** | Solapes, huecos y spans fuera de rango detectados al 100% | **8.525/8.525 detectadas y 0/45 falsos positivos**, censo determinista y exhaustivo, `uv run python scripts/censo_invariantes.py`. No es una estimación: es una tasa sobre el censo completo, así que no lleva intervalo (ADR-0015). Puerta: **3829 ms** en frío, rango 3713–3875, n=10, todas con `rc=0`, `load average` 0,93 — **24× de margen**. Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **21 mutantes**, todos mueren, control negativo **0 de 162**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
-| L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | 16-20 | PENDIENTE | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | — |
+| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **21 mutantes**, todos mueren, control negativo **0 de 164**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
+| L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | ~~16-20~~ **18-23** | EN CURSO | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | Todavía **sin** el número del criterio. Medido hasta ahora: la puerta con `entity` dentro, **mediana 6208 ms, p90 6327**, n=40 en 10 tandas en frío, σ=89, cero descartadas, carga mediana 1,03, **sello `099e452+28`, con la suite en 203 tests** — **2173 ms de margen** bajo el techo de 8500, `uv run python scripts/medir_puerta.py --techo 8500`. Y **103 referencias comprobadas por ejecución, 15 rotas y las 15 declaradas**, `uv run python scripts/referencias.py`. Números en [`RESULTS.md`](RESULTS.md) |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | PENDIENTE | La verdad derivada reproduce las tablas a mano | — |
 | L5 `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | 14-18 | PENDIENTE | Primera tabla de estructura con coste y cobertura evaluable | — |
 | L6 `sample` con McNemar + bootstrap agrupado | 8-10 | PENDIENTE | Plan congelado y publicado antes de la primera campaña seria | — |
 | L7 quickstart: 20 documentos versionados + `make quickstart` | 6-8 | PENDIENTE | De clone a tabla en < 3 min, sin red y sin gastar | — |
-| L8 los tres adaptadores hostiles + cableado de `benchcore.core.policy` + fuga de credenciales | 10-12 | PENDIENTE | Los tres bloquean. Ningún secreto en ningún artefacto | — |
+| L8 los tres adaptadores hostiles + cableado de `benchcore.core.policy` + fuga de credenciales | ~~10-12~~ **11-14** | PENDIENTE | Los tres bloquean. Ningún secreto en ningún artefacto | **Alcance ampliado en L3 (ADR-0037):** L8 mueve `src/docbench_es/core/policy.py` a `benchcore.core.policy`, con su suite y subiendo el menor de `API_VERSION`. **~1 h 30 min**, y el rango sube porque un cambio en otro repo tiene ida y vuelta |
 | **L8b verdad auditada**: 120 documentos, doble pasada ciega | 20-26 | PENDIENTE | *"La verdad derivada coincide con la auditoría humana en X%, IC [a,b]"*. **Cierra `v0.1.0`** | — |
 
 ## Releases siguientes
@@ -59,6 +59,17 @@ nota. Ver LIMITS 49.
      de la referencia en silencio, así que la decisión es del informe.
    - **L3 · cuántas cabeceras del BOE viajaban sin marcar** (límite 45), antes de
      que L2 arreglara el `<thead><td>` de `from_html`.
+   - **AL CERRAR L3 · reconciliar las TRES estimaciones de tamaño del corpus
+     contra la medida real.** Están publicadas **277 MB** (media de los 50 en
+     bruto del censo), **533 MB** (corrección por páginas y estrato) y **254 MB**
+     (proyección desde el piloto, 254 KB × 1.000 sobre n=25). La medida del
+     piloto se parece a la primera y no a la corrección, o sea que **la corrección
+     a 533 pudo pasarse de frenada** — y fue una corrección deliberada, no un
+     descuido. Al cerrar se mide el tamaño real en disco y **se explica la
+     diferencia**, con el mismo criterio con el que se retiraron los «285 ms»:
+     si el 533 estaba mal, se dice por qué. Una cifra que se corrige se publica
+     corregida; una cifra que desaparece del documento es la que este repo
+     prohíbe.
    - **L3 · el techo de la puerta se queda corto si `entity.conformance` es puro
      y grande** (ADR-0022). La proyección da 6400–8000 ms suponiendo que la mitad
      de L3 va a `full` por necesitar red. **Ese supuesto se comprueba, no se
@@ -140,21 +151,107 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés de mutantes cubre 162 de 185 tests, y no hay mutante para el resto.**
-   Límite 51. Los **23 tests** de fuera son de cinco módulos, y ésta es la
-   lista de verdad —la anterior mandaba a L3 escribir un mutante para `teds_batch`
-   que **ya existe**, `batch_sobrescribe`—:
+7. **El arnés cubre 164 de 290 tests y su hueco se ensancha; la protección real
+   no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
+   velocidad** y **la segunda contabilidad**. Con las dos:
+
+   | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
+   |---|---|---|---|---|---|---|
+   | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
+   | **L3**, en curso | 290 | 164 | 56,6% | 287 | 99,0% | 3 |
+   | delta | +100 | +2 | **−30,1 puntos** | +100 | **+0,5 puntos** | **0** |
+
+   **Y las dos series van en direcciones distintas, que es exactamente lo que había
+   que saber antes de L5. La divergencia es ESTRUCTURAL, no deterioro**, y hay que
+   publicarla diciéndolo: el arnés cae **porque la regla de barreras funciona** —
+   cada módulo nuevo trae su control negativo en su propio fichero, en el mismo
+   hito, y el mutante que lo mediría por rotura va a plazos con su precio. Sin esa
+   frase al lado, un número que baja de 87,6% a 64,8% se lee como decadencia
+   cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha añadido veinticinco tests y **cero mutantes**: el
+   arnés no ha crecido, ha crecido la suite por debajo. Pero **los cien están
+   protegidos**: dos por el arnés —van a `test_recuentos.py`, que sí tiene
+   mutantes— y noventa y ocho por el control negativo de su propio fichero. Por
+   eso la protección no baja.
+   Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
+   escondería.
+
+   **Lo que sigue siendo verdad y hay que vigilar:** «los 21 mutantes mueren» dice
+   cada vez menos sobre el conjunto, y sólo el 78,1% está medido contra una rotura
+   real. Los mismos **3 tests sin ningún control** en las dos fechas son los de
+   `test_errors.py`.
+
+   **Dos puntos son un delta, no una tendencia; el tercero lo pone L4.** Con esa
+   reserva por delante, la proyección de una etapa: si L4 añadiera tests fuera del
+   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 56,6%
+   de hoy al entorno del 50%**, y L5 es un hito más grande (ocho extractores), así
+   que su escalón sería mayor. Es una **proyección sobre dos puntos**, no una
+   medición, y se publica con esa palabra.
+
+   **De los 126 de fuera, 123 llevan control negativo en su propio fichero.**
+   `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
+   incumple cinco aros a propósito, y **afirma el conjunto exacto** de
+   comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test
+   rojo, que es lo que hace un mutante. `test_entity_registry.py` (8) y
+   `test_barreras.py` (6) hacen lo mismo. El criterio está declarado en
+   `CONTROLES_NEGATIVOS` y verificado por AST; lo que no puede verificar —si el
+   control es *fuerte*— está en el límite 60.
+
+   ### La regla, decidida: barreras en el mismo hito, lo demás a plazos
+
+   `ESTADO.md` decía las dos cosas a la vez —«se cierra a plazos» y «cada hito que
+   añada módulo añade su mutante»— y en L3 pasó la primera. La regla, en firme:
+
+   > **Un módulo cuyo único trabajo es PONERSE ROJO —una barrera— trae su control
+   > negativo en el MISMO hito. El resto se cierra a plazos, con su precio.**
+
+   **Por qué la línea cae ahí.** Código de producción que está mal se delata en lo
+   que produce: sale un número raro, se cae un test, alguien lo ve. Una barrera que
+   está mal **se delata con silencio**, que es indistinguible de ir bien. Un
+   candado que nadie ha visto rojo no es un candado, y eso ya estaba escrito aquí
+   abajo para `ancla` y `sin_consumidor`.
+
+   **La forma del control negativo da igual** —un mutante en `scripts/mutantes/` o
+   un doble roto en el propio fichero de test, como `AdaptadorRoto`—. Lo que no es
+   negociable es que exista en el hito que estrena la barrera.
+
+   **Aplicada a L3, las cuatro barreras nuevas están pagadas EN EL HITO:**
+
+   | Barrera nueva | Su control negativo |
+   |---|---|
+   | `src/docbench_es/entity/conformance.py` + `_comprobaciones.py` | `AdaptadorRoto`, con sus cinco aros y el conjunto exacto afirmado |
+   | `src/docbench_es/entity/registry.py` | adaptadores sin versión y con mayor incompatible, rechazados en carga |
+   | `scripts/referencias.py` | `test_barreras.py`: dice que **no** ante una ruta que no existe, y que **sí** ante una que existe |
+   | el guardia del árbol de `medir_puerta.py` | `test_barreras.py`: detecta un fichero nuevo en un repo temporal, y el aborto sale con su causa |
+
+   **Las dos últimas se declararon como deuda y no lo eran.** Nacieron en L3, son
+   barreras, y por la regla de arriba vencían el mismo día: dejarlas a plazos era
+   incumplir la regla en el mismo documento en que se escribe. Se pagaron — seis
+   tests en `tests/unit/test_barreras.py`, con las dos direcciones cada una.
+
+   El desglose de los 46, por si alguien busca dónde escribir el primer mutante:
 
    | Sin mutante | Tests | Qué habría que romper | Precio |
    |---|---|---|---|
    | `types_invariantes` | 7 | las invariantes de `Documento` y la clave | ~25 min |
+   | `entity_conformance` | 9 | una comprobación de la suite que no mira nada, o un `NO_EJECUTADA` que pasa | ~25 min |
+   | `barreras` | 8 | el barrido que no extrae rutas, o la huella del árbol que no cambia | ~20 min |
+   | `boe` | 12 | `fetch` que se salta la autorización, o `discover` que no filtra | ~30 min |
+   | `boe_api` | 10 | el ritmo que no espera, o el 404 tratado como fallo | ~25 min |
+   | `pairing` | 8 | el umbral invertido, o un descarte que no se cuenta | ~20 min |
+   | `boe_xml` | 6 | los spans de valor 1 contados, o el estrato doble | ~15 min |
+   | `policy` | 7 | la puerta de egress que deja pasar, o que bloquea siempre | ~15 min |
+   | `harvest` | 12 | la reanudación que cuenta dos veces, o la parada que no para | ~30 min |
+   | `manifest` | 8 | la atribución que no se exige, o el JSON que no cuadra | ~20 min |
+   | `verificar_corpus` | 9 | el verificador que no mira nada y publica «CUMPLE» | ~25 min |
+   | `entity_registry` | 8 | el registro tragándose el rechazo por versión, o construyendo lo que descubre | ~20 min |
    | `ancla` | 5 | `unica()` devolviendo el primer índice sin contar | ~10 min |
    | `types` | 5 | `congelar_mapas` que no congela | ~20 min |
    | `errors` | 3 | el enum de fallo con una causa de más o de menos | ~15 min |
    | `sin_consumidor` | 3 | la barrera por AST que no mira los scripts | ~15 min |
 
-   **~1 h 25 min en total**, no «~20 min por módulo nuevo»: son cinco módulos ya
-   escritos, no futuros. `recuentos` salió de esta lista al escribírsele sus tres
+   **~5 h 30 min en total** para los dieciséis. No es «~20 min por módulo nuevo»: son
+   módulos ya escritos, no futuros. Y no son «tests sin proteger»: son **tests sin
+   mutante**, que con la segunda contabilidad delante es otra cosa. `recuentos` salió de esta lista al escribírsele sus tres
    mutantes en este mismo commit, que es cómo se cierra a plazos. **Se cierra a plazos** —cada hito que añada módulo añade
    su mutante— pero éstos ya están en deuda y tienen precio puesto.
 
@@ -162,16 +259,26 @@ nota. Ver LIMITS 49.
    código cuyo único trabajo es ponerse rojo, y un candado que no se ha probado
    contra su propia rotura no es un candado.
 
-9. **El guardián de recuentos tiene puntos ciegos, y el tamaño está MEDIDO: 7 de
-   18.** Límite 54. Sobre un corpus de 30 frases que alguien escribiría en este
-   repo —12 que no son recuentos y 18 que sí—,
+9. **El guardián de recuentos tiene puntos ciegos, y el tamaño está MEDIDO: 10 de
+   22.** Límite 54. Sobre un corpus de 35 frases que alguien escribiría en este
+   repo —13 que no son recuentos y 22 que sí—,
    `uv run python scripts/cobertura_patrones.py --detalle` da **0 falsos positivos
-   de 12** y **7 escapes de 18**. O sea que **casi cuatro de cada diez formas
+   de 13** y **10 escapes de 22**. O sea que **más de cuatro de cada diez formas
    naturales de publicar un recuento no las vigila nadie**.
 
-   Las siete: «el PLAN tiene 21 mutantes», «mueren los 21 mutantes», «21/21», una
-   fila de tabla `| Mutantes | 21 |`, «cubre 162 de los 185 tests», «quedan 23
-   tests fuera» y «la suite tiene 185 tests en total».
+   Las nueve: «el PLAN tiene N mutantes», «mueren los N mutantes», «N/N», una
+   fila de tabla `| Mutantes | N |`, «cubre N de los M tests», «quedan N tests
+   fuera», «la suite tiene N tests en total», «hay N reglas en .claude/rules/» y
+   «las N reglas se cargan solas».
+
+   **Y la comparación entre fechas, resuelta midiendo en vez de suponiendo.** El
+   corpus creció de 30 a 35 frases —la familia `reglas` y la forma que se escapó
+   en `RESULTS.md`—, así que la tasa global no se puede comparar con la de ayer.
+   El desglose sí: **8 de 19 en el subcorpus original** y **2 de 3 en la familia
+   nueva**. Y el precio de estrechar los patrones en `6ebf592`, que era la
+   sospecha razonable, es **cero**:
+   `uv run python scripts/cobertura_patrones.py --anchos` da 4 falsos positivos y
+   9 escapes de 19 contra 0 y 8 hoy.
 
    **Dos de esos puntos ciegos ya se cobraron su pieza**, y por eso la cifra no es
    teórica: la forma de `ESTADO.md`:15 —«21 mutantes, todos mueren»— se escapaba
@@ -244,11 +351,66 @@ Se transcriben conforme llega el hito que implementa cada uno.
 `benchcore` tiene que estar en `https://github.com/marcosmatalab/benchcore`, rama
 `main`. Sin el, `uv sync` muere en el primer comando y no hay puerta que valga.
 
+## Inventario real de L3, y por que la estimacion sube
+
+**El plan de diez ficheros que se aprobo no esta escrito en ningun sitio del
+repo**: vivio en la conversacion. Eso es la misma familia que el barrido de
+referencias persigue —una afirmacion sin fichero detras—, asi que aqui queda el
+inventario, que si se puede comprobar: `wc -l` sobre lo que hay.
+
+**Hecho** (lineas medidas el 24 ago 2026, `wc -l`):
+
+| Fichero | Lineas | Estaba en el plan |
+|---|---|---|
+| `src/docbench_es/entity/base.py` | 268 | si |
+| `src/docbench_es/entity/conformance.py` | 116 | si |
+| `src/docbench_es/entity/_comprobaciones.py` | 247 | **no**: parte de `conformance.py`, que juntos daban 330 y el limite son 300 |
+| `src/docbench_es/entity/registry.py` | 115 | **no**: sale de ADR-0036, el descubrimiento no era de `benchcore` |
+| `src/docbench_es/entity/boe_api.py` | 168 | si |
+| `src/docbench_es/entity/_sumario.py` | 151 | **no**: parte de `boe_api.py`, que juntos daban 298 |
+| `src/docbench_es/entity/boe.py` | 228 | si |
+| `src/docbench_es/entity/boe_xml.py` | 121 | si |
+| `src/docbench_es/corpus/pairing.py` | 191 | si |
+| `entities/boe.yaml` | 66 | si |
+| `tests/unit/test_entity_conformance.py` | 172 | si |
+| `tests/unit/test_entity_registry.py` | 173 | **no**: el camino de registro necesita su propio fichero |
+| `tests/unit/test_boe.py` · `test_boe_api.py` · `test_boe_xml.py` · `test_pairing.py` | 238 · 171 · 98 · 141 | si |
+| `tests/unit/_adaptadores_falsos.py` · `_adaptadores_rotos.py` | 170 · 183 | los cuatro falsos si; **partirlos en dos, no** |
+| `tests/unit/_boe_falso.py` | 168 | **no**: el doble del origen con la forma real del sumario |
+| `tests/unit/test_barreras.py` | 145 | **no**: el control negativo de las dos barreras de scripts |
+| `src/docbench_es/corpus/harvest.py` | 300 | si |
+| `src/docbench_es/corpus/manifest.py` | 232 | si |
+| `src/docbench_es/core/policy.py` | 86 | **no**: sale de ADR-0037, y su motor se muda a `benchcore` en L8 |
+| `tests/unit/test_harvest.py` · `test_manifest.py` · `test_policy.py` | 225 · 205 · 127 | los dos primeros si |
+| `scripts/referencias.py` · `scripts/sello.py` | 277 · 44 | **no**: salen del quinto entry point fantasma y del `18 de 54` viejo |
+
+**Falta**: nada de codigo. Los diez ficheros del plan estan escritos y sus tests
+pasan. Lo que queda es **la cosecha de los 1.000 documentos**, que es tiempo de
+reloj y no de teclado, y que **NO SE LANZA SIN AVISAR** (ver «Siguiente paso»).
+
+**Por que sube el rango a 18-23 h.** Es una **estimacion, no una medicion**, y va
+con su intervalo por la regla de oro 2. De donde sale: sobre las 16-20 h del plan
+se han anadido tres modulos y un script que no estaban —unos 720 lineas y 17
+tests—, y el trabajo que generaron alrededor (dos ADR, la transcripcion al manual,
+el guardia del arbol en `medir_puerta.py`, el patron de `reglas` en el guardian de
+recuentos) es de la misma clase: **no estaba previsto y no era opcional**. Estimo
+ese sobrecoste en **2 a 3 h**, que es lo que separa 16-20 de 18-23.
+
+**Lo que NO se pide con esto es recortar.** Se pide que el numero publicado del
+hito no se quede viejo mientras el hito crece, que es exactamente la familia de
+fallo que L3 lleva cazando desde que empezo.
+
 ## Siguiente paso
 
-`/hito L3` — `entity.base` + su suite de conformidad + `entity.boe` + `boe_xml` +
-`corpus`. Criterio del manual (§16): **un corpus del BOE descargado, versionado y
-reproducible**.
+**La cosecha de los 1.000 documentos.** El codigo esta y sus tests pasan; lo que
+queda es apuntar `harvest.cosechar` al BOE de verdad. Criterio del manual (§16):
+**un corpus del BOE descargado, versionado y reproducible**, con manifiesto y con
+la tasa de descarte publicada — con su ventana, su umbral y su denominador
+(ADR-0030).
+
+> **PARADA OBLIGATORIA antes de lanzar la cosecha de los 1.000 documentos.** Se
+> avisa y se espera respuesta. Es la primera vez que este proyecto le pide algo en
+> serio a un origen ajeno, y el ritmo va en el perfil, no en el codigo.
 
 **Esta linea decia `/hito L1` con L1 y L2 ya cerrados.** No es cosmetico: el hook
 `SessionStart` inyecta `ESTADO.md` entero, asi que la sesion siguiente lo lee
@@ -257,7 +419,7 @@ regla de oro 8 —gana la fuente que el bucle lee primero— aplicado a este fic
 
 Lo que L3 hereda y no puede ignorar esta en «Deuda abierta», arriba: el techo de
 8500 ms se re-justifica con `scripts/medir_puerta.py`, y los limites 42 (coste de
-TEDS por tamaño), 51 (el arnes cubre 162 de 185) y 52 (el criterio de L2 no valida
+TEDS por tamaño), 51 (el arnes cubre 162 de 192) y 52 (el criterio de L2 no valida
 el mapeo) llegan con su precio puesto.
 
 Lo que L1 hereda de L0 y no puede ignorar:

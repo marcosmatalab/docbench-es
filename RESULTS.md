@@ -470,27 +470,49 @@ por familia sí, y el censo se pone rojo si alguna queda a cero.
 
 ### Los mutantes
 
-**Son 18**, y las cuatro casillas de `siempre_ok` × `siempre_roto` están completas
-sobre las dos funciones que L2 construye. `siempre_roto` no es simetría decorativa:
-es el único que caza al test que sólo afirma la mitad tranquilizadora —«esto BAJA
-la nota»—, que un 0,0 constante satisface entero.
+**Son 21 mutantes, no 18**: los tres de `recuentos` entraron con el guardián de
+números y esta línea no se actualizó entonces. Las cuatro casillas de `siempre_ok`
+× `siempre_roto` están completas sobre las dos funciones que L2 construye.
+`siempre_roto` no es simetría decorativa: es el único que caza al test que sólo
+afirma la mitad tranquilizadora —«esto BAJA la nota»—, que un 0,0 constante
+satisface entero.
+
+**Sello de las dos tablas: `099e452+29 · 164 tests`**, que lo imprime la propia
+corrida de `uv run python scripts/mutantes/matar.py` (24 ago 2026). El `+28` son
+los ficheros sin commitear: **esta medición no es reproducible desde ningún
+commit**, y quien la lea tiene derecho a saberlo antes de compararla con la suya.
 
 | Función | `siempre_ok` | falla en | `siempre_roto` | falla en |
 |---|---|---|---|---|
-| `teds` / `teds_struct` | `teds_siempre_uno` | **18 de 54** | `teds_siempre_cero` | **34 de 65** |
+| `teds` / `teds_struct` | `teds_siempre_uno` | **19 de 56** | `teds_siempre_cero` | **34 de 67** |
 | `cell_accuracy` / `cell_f1` | `cellmatch_siempre_ok` | **3 de 7** | `cellmatch_siempre_roto` | **6 de 7** |
 
 Y los cuatro sutiles, que son los que justifican el hito:
 
-| Suite | Mutante | Se cae en |
-|---|---|---|
-| TEDS referencia (23) | `teds_cuenta_la_raiz` — el denominador incluye la raíz | 13 |
-| TEDS referencia (44) | `arbol_orden_invertido` — el árbol emite las columnas al revés | 20 |
-| TEDS referencia (44) | `arbol_thead_solo_la_primera` — `<thead>` no es el prefijo máximo | 7 |
-| TEDS lote (7) | `batch_sobrescribe` — la última tabla pisa a las demás | 3 |
-| cellmatch (7) | `cellmatch_por_pertenencia` | 2 |
+| Mutante | Se cae en |
+|---|---|
+| `teds_cuenta_la_raiz` — el denominador incluye la raíz | 13 de 45 |
+| `arbol_orden_invertido` — el árbol emite las columnas al revés | 21 de 45 |
+| `arbol_thead_solo_la_primera` — `<thead>` no es el prefijo máximo | 7 de 45 |
+| `batch_sobrescribe` — la última tabla pisa a las demás | 3 de 7 |
+| `cellmatch_por_pertenencia` | 2 de 7 |
 
-**Los veintiún mutantes del repo mueren**, con control negativo **0 de 162**.
+> **Estas cifras NO las vigila ningún guardián, y se mueven solas. Por eso llevan
+> sello.** El denominador es la suite objetivo del mutante, así que **crece cada
+> vez que alguien añade un test** — sin que el mutante cambie ni empeore. La
+> versión anterior de estas dos tablas publicaba `18 de 54`, `34 de 65` y `20`,
+> medidos con una suite más pequeña, y **L3 entero las estuvo publicando sin que
+> nadie pudiera saberlo leyendo**: la fecha no delata que la suite ha crecido, el
+> commit sí. Se re-miden en cada cierre (paso 2 de `/cerrar`) y el sello las hace
+> honestas entre medias.
+>
+> **Y el numerador tampoco es constante:** las suites llevan `hypothesis`, que
+> sortea. Dos corridas con el **mismo `src/` y los mismos 163 tests** dieron
+> `normalizador_identidad` en 5 y en 6, y `n3_incompleta` en 2 y en 1. Lo que se
+> exige es **«muere»**, no «muere en N tests»: estas cifras son un **suelo**, no
+> una constante.
+
+**Los veintiún mutantes del repo mueren**, con control negativo **0 de 164**.
 `uv run python scripts/mutantes/matar.py; echo $?`
 
 `teds_cuenta_la_raiz` es el que justifica el hito: mueve **todos** los TEDS un
@@ -502,19 +524,23 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 162 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 164 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 162 de 185 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 164 de 290 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **23 tests restantes** —`test_types_invariantes` (7), `test_ancla` (5),
-`test_types` (5), `test_errors` (3) y `test_sin_consumidor` (3)— quedan fuera
+Los **126 tests restantes** —`test_verificar_corpus` (14), `test_boe` (12),
+`test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
+`test_verificar_corpus` (9), `test_barreras` (8), `test_manifest` (8),
+`test_pairing` (8), `test_policy` (7), `test_types_invariantes` (7),
+`test_boe_xml` (6), `test_ancla` (5), `test_types` (5), `test_errors` (3) y
+`test_sin_consumidor` (3)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 21 mutantes mueren» dice
 que **esos 21** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 23 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 126 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -733,6 +759,179 @@ L3 puede gastar en la puerta.
 > árbol quieto. Publicar aquella habría sido exactamente «atribuir lo que no se ha
 > aislado».
 
+### Referencias a ficheros, módulos y comandos: 103 comprobadas, 15 rotas y las 15 declaradas
+
+`uv run python scripts/referencias.py --detalle`, 23 ago 2026. **No es una
+estimación: es un censo completo** sobre las fuentes que recorre, así que no lleva
+intervalo (ADR-0015). Comprobado **por ejecución** —`stat` para ficheros,
+`importlib` para módulos, `make -n` para objetivos, el `bin` del entorno para
+herramientas—, no leyendo el repo.
+
+| Tipo | Comprobadas |
+|---|---|
+| rutas de fichero o directorio | 84 |
+| objetivos de `make` | 9 |
+| módulos y atributos de entry point | 5 |
+| herramientas de `uv run` | 5 |
+| **total** | **103** |
+
+| | |
+|---|---|
+| rotas | **15** |
+| de ellas, declaradas con su razón | **15** |
+| **sin excusa** | **0** |
+
+**Ocho de las quince declaradas son el inventario de lo que le falta a L3**, que
+`ESTADO.md` publica. No son una excusa: son una lista de tareas que **el barrido
+tacha solo**, porque el día que el fichero exista su declaración sobra y el script
+se pone rojo pidiendo que la quites. Las otras siete son ficheros de L6 y L7, dos
+rutas de ejemplo en la ayuda del `Makefile` y una referencia que el propio texto
+declara opcional.
+
+**Este número se re-mide en cada cierre** (paso 8 de `/cerrar`) y no tiene guardián
+vivo: se mueve en cuanto alguien escribe una ruta nueva en un fichero operativo.
+
+**Por qué se mide esto.** El mismo fallo ha aparecido cinco veces —el docstring de
+`sources/`, «3 ficheros en `.claude/rules/`», los recuentos viejos, `is_header` y
+los cinco entry points fantasma— y **las cinco se encontraron tropezándose**. Este
+número es el resultado de buscarlo a propósito una vez. Lo que el barrido NO mira
+está en el límite 59.
+
+### La puerta con `entity` dentro: n=40, árbol quieto y COMPROBADO
+
+`uv run python scripts/medir_puerta.py --techo 8500`, 24 ago 2026, 40 corridas en
+frío en 10 tandas, **cero descartadas**, `rc=0` leído en primer plano.
+**Sello: `099e452+28`**, impreso por la propia corrida.
+
+| | ms |
+|---|---|
+| mínimo | 5968 |
+| **mediana** | **6208** |
+| **p90** | **6327** |
+| máximo | 6362 |
+| desviación típica | **89** |
+| medianas por tanda | 6159 – 6257 |
+| **carga de la máquina** | mediana **1,03**, rango 0,74 – 1,47 |
+
+**Margen sobre el techo de 8500: 2173 ms en el p90.**
+
+**Este protocolo reproduce a 10 ms**, y eso es un resultado aparte: la sección siguiente.
+
+**Lo que contesta:** la deuda 0 de `ESTADO.md` decía que *«el techo se queda corto
+si `entity.conformance` es puro y grande»* y que **el supuesto se comprueba, no se
+cree**. Es puro, está entero en la puerta, y el p90 se queda en 6262.
+
+**Contra la línea base de L3** —6004 de mediana, medida antes de escribir `entity`—:
+la suite pasó de 185 a 203 tests y la mediana subió **204 ms**. Eso son **11,3 ms
+por test si se reparte el delta entero entre los tests nuevos**, y esa frase es una
+división, no una medición: el delta también incluye lo que `mypy` y `ruff` tardan
+más con seis ficheros más, y la carga de la máquina no era la misma (0,93 contra
+1,03). Lo que sí se puede afirmar sin dividir nada es que **crece, no salta**, y
+que el margen sigue siendo de más de dos segundos.
+
+> **La serie ANTERIOR se descartó entera, y por eso ésta dice «árbol quieto».**
+> Aquélla corrió mientras yo editaba un docstring: parte de las 40 midió un código
+> y el resto otro, y cuántas de cada **no se sabe**. Su p90 no se publica aquí
+> —mirarlo ya sesga la decisión siguiente— y el caso está en la tabla de la
+> familia, en `/cerrar`, como el cuarto.
+>
+> **Y ya no depende de que alguien se acuerde:** `medir_puerta.py` compara `HEAD`
+> más `git status --porcelain` antes de empezar y **después de cada corrida**, y
+> aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
+> propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
+
+### Qué fracción de la suite está protegida por algo: 287 de 290
+
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 164 de 290» mide *el
+arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
+negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
+ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
+publicar un total sin su velocidad, un nivel más arriba.
+
+**El criterio, que es lo que hace que esto sea un número y no una etiqueta.** Un
+test está protegido si algo demuestra que se pondría rojo:
+
+1. **por el arnés** — su fichero es suite objetivo de algún mutante del `PLAN`; o
+2. **por un control negativo declarado** en `CONTROLES_NEGATIVOS`
+   (`tests/unit/conftest.py`): un test de su propio fichero que **ejerce el sujeto
+   contra algo deliberadamente malo y afirma que lo rechaza**.
+
+De (2) se verifica por ejecución que el test nombrado **existe y se colecta**
+(`test_cada_control_negativo_declarado_existe_de_verdad`, por AST). Lo que ninguna
+comprobación puede decidir es si es *fuerte* — límite 60.
+
+**Los dos puntos, con el mismo criterio aplicado a los dos:**
+
+| | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
+|---|---|---|---|---|---|---|
+| al cerrar **L2** (`099e452`) | 185 | 162 | 87,6% | 182 | **98,4%** | 3 |
+| **L3**, en curso | 290 | 164 | 56,6% | 287 | **99,0%** | 3 |
+
+**Y van en direcciones distintas, que es justo lo que había que saber:** la
+cobertura del arnés **cae 30,1 puntos** y la protección real **sube 0,5**. Los
+tests sin nada son los mismos **3 tests sin ningún control** en las dos fechas
+—los de `test_errors.py`, que afirman la forma de la jerarquía y del enum, no que
+algo rechace una entrada mala— y su fracción baja del 1,6% al 1,1%.
+
+**Lo que esto NO autoriza a decir.** No dice que la suite esté bien probada: dice
+que casi todo tiene *algo*, y que ese algo sólo está medido contra una rotura real
+en el 56,6%. La cobertura del arnés sigue publicada al lado como submedida, y su
+caída sigue siendo el número que hay que vigilar — deuda 7.
+
+**Reproducción:** `uv run pytest tests/unit -q` (los recuentos se calculan en cada
+colección, así que no pueden quedarse viejos) y
+`uv run python scripts/mutantes/matar.py` para el arnés. El punto de L2 se
+reconstruyó del desglose publicado en `099e452` y se verificó con
+`git show 099e452:tests/unit/<fichero>` que los cuatro controles negativos de
+entonces ya existían.
+
+### El protocolo reproduce a 10 ms: dos series de 40 el mismo día
+
+**La pregunta que contesta.** La serie de σ de este proyecto ha ido **134, 76,
+286, 73, 83, 64, 89**, y ante eso lo primero que cabe preguntar es si *«el
+protocolo mide algo o mide el ruido de la máquina»*. Salió medido por accidente
+—hubo que repetir una serie para que el sello viniera de la misma corrida— y vale
+más que la repetición:
+
+| | serie A | serie B |
+|---|---|---|
+| **sello** | `099e452+26` **reconstruido** | `099e452+28` **impreso** |
+| n | 40 en 10 tandas | 40 en 10 tandas |
+| descartadas por `rc != 0` | 0 | 0 |
+| **mediana** | **6198** | **6208** |
+| p90 | 6262 | 6327 |
+| σ | 64 | 89 |
+| medianas por tanda | 6157 – 6242 | 6159 – 6257 |
+| carga de la máquina | mediana 0,92 · 0,17 – 1,49 | mediana 1,03 · 0,74 – 1,47 |
+
+`uv run python scripts/medir_puerta.py --techo 8500`, las dos el 24 ago 2026.
+
+**La diferencia entre las dos medianas es de 10 ms: el 0,16%.** Y la σ *dentro* de
+cada serie —64 y 89— es de seis a nueve veces mayor que la diferencia *entre*
+ellas. O sea: **las corridas sueltas se dispersan, la mediana de cuarenta no.** Eso
+es exactamente lo que hace comparables dos hitos, y es la razón de que el
+protocolo pida 40 corridas y publique la mediana en vez de un tiempo.
+
+**Y no fue en condiciones idénticas, que es lo que le da valor:** la carga mediana
+de la máquina pasó de 0,92 a 1,03 entre las dos, y los dos árboles diferían en dos
+ficheros —`scripts/sello.py`, nuevo, y una línea de `import` en `matar.py`—. Mismo
+commit y **mismos 203 tests**, pero no el mismo árbol: decir «el mismo árbol»
+habría sido falso y aquí estaba escrito así hasta que se comprobó.
+
+> **Lo que este número NO dice, y es la mitad importante.** **Dos series no son una
+> estimación de la reproducibilidad: son una observación.** Lo que se puede
+> afirmar es que *estas dos* difirieron en 10 ms — no que la próxima vaya a caer
+> dentro de 10 ms, ni que la reproducibilidad del protocolo *sea* de 10 ms. Para
+> eso harían falta varias series y su intervalo, y eso son ~20 minutos de reloj
+> por serie. Con n=2 no se publica una tasa: se publica el par.
+>
+> **Y el sello de la serie A está RECONSTRUIDO, no impreso.** Corrió antes de que
+> `scripts/sello.py` existiera. Los 26 ficheros salen del `git status --porcelain`
+> ejecutado inmediatamente antes de lanzarla, sin nada en medio, y el propio
+> `medir_puerta.py` verificó que el árbol no se movió durante la serie. Es un
+> sello creíble, pero **no es el mismo grado de evidencia** que el de la serie B,
+> que lo imprimió el instrumento. Se marca como lo que es.
+
 ### De dónde salen los +411 ms desde el cierre de L2, paso a paso
 
 La comparación honesta es **n=40 contra n=40**: 5593 al cerrar L2, **6004** hoy.
@@ -746,9 +945,26 @@ Los 6.290 que publiqué antes salían de un n=12 y no eran una línea base.
 | `ruff check` + `format --check` | 102 ms | 117 ms | +15 |
 | **suma** | 5648 ms | 6035 ms | **+387** |
 
-**387 de los 411 quedan atribuidos**; el residuo son **24 ms**, por debajo del
-ruido entre tandas. La suma de pasos (6035) cuadra con la mediana medida (6004),
-así que la descomposición está completa y no falta ningún paso.
+**Los 387 ms atribuidos son 387 de 387, y los «24 ms de residuo» que puse aquí no
+eran tiempo sin explicar: eran un artefacto de sumar medianas.**
+
+La mediana de una suma no es la suma de las medianas, y este mismo método lo
+enseña con sus dos mediciones:
+
+| | suma de pasos | mediana medida | hueco de aditividad |
+|---|---|---|---|
+| L2 cierre | 5648 | 5593 | **55** |
+| hoy | 6035 | 6004 | **31** |
+
+**55 − 31 = 24**, que es exactamente el «residuo». O sea que no falta tiempo por
+atribuir: lo que cambió es **cuánto se aparta la suma de la mediana**, y eso es una
+propiedad del método, no del código.
+
+**Y por eso tampoco se publica un residuo de 24 ms como si fuera precisión real**:
+el propio método tiene un hueco del mismo orden —31 ms hoy—, así que afirmar algo
+por debajo de eso sería precisión inventada. Lo que se puede afirmar es que
+**crecen `pytest` y `mypy`, los dos pasos que miran más ficheros**, y esa conclusión
+aguanta entera.
 
 **Los dos que crecen son los dos que miran más ficheros**: `pytest` por los tests
 nuevos —el comprobador de recuentos costaba 130 ms aislados con `--ignore`— y

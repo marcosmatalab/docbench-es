@@ -14,6 +14,10 @@ o sea en cada `make fast`: los números no pueden estar viejos porque no están
 almacenados en ningún sitio. Y el recuento es **exacto**, con la parametrización
 ya resuelta, que es lo que un `grep "def test_"` no puede dar.
 
+**Y aquí vive también la fixture `registrar`.** No tiene nada que ver con los
+recuentos: está aquí porque la usan DOS ficheros de test —el del registro y el de
+la conformidad— y una fixture compartida vive en `conftest.py` o se duplica.
+
 **La precondición, que la primera versión no declaró y por eso se rompió.** Estos
 recuentos salen de lo COLECTADO. `pytest tests/unit/test_recuentos.py` colecta 5
 tests y da `dentro=0`, `total=5`: cifras ciertas sobre esa corrida y **falsas
@@ -23,13 +27,17 @@ una desincronización que no existía. Ahora eso lo resuelve `recuentos()`.
 
 from __future__ import annotations
 
+import importlib
 import importlib.util
 import re
 import subprocess
 import sys
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
+
+from docbench_es.entity.registry import GRUPO
 
 RAIZ = Path(__file__).resolve().parents[2]
 UNIT = RAIZ / "tests" / "unit"
@@ -77,6 +85,60 @@ def _plan() -> tuple[set[str], int]:
     return {Path(f).name for _, suite in plan for f in suite.split()}, len(plan)
 
 
+CONTROLES_NEGATIVOS: dict[str, str] = {
+    "test_entity_conformance.py": "test_el_adaptador_roto_se_cae_por_los_cinco_aros_que_rompe",
+    "test_entity_registry.py": "test_el_rechazo_por_version_ocurre_al_cargar",
+    "test_barreras.py": "test_el_barrido_dice_que_no_ante_una_referencia_rota",
+    "test_boe_api.py": "test_bajar_una_url_que_ningun_sumario_ha_dado_es_violacion_de_politica",
+    "test_boe.py": "test_fetch_de_una_ref_inventada_es_violacion_de_politica",
+    "test_boe_xml.py": "test_solo_cuentan_los_spans_mayores_que_uno",
+    "test_pairing.py": "test_un_par_que_no_dice_lo_mismo_se_descarta_con_su_causa",
+    "test_policy.py": "test_la_campana_no_arranca_con_un_extractor_por_api_y_la_fuente_cerrada",
+    "test_harvest.py": "test_la_cosecha_para_si_mas_del_cinco_por_ciento_agota_reintentos",
+    "test_manifest.py": "test_requisito_2_sin_atribucion_no_hay_manifiesto",
+    "test_verificar_corpus.py": "test_un_descarte_que_desaparece_del_denominador_pone_rojo",
+    "test_types_invariantes.py": "test_un_fallo_sin_causa_no_se_puede_construir",
+    "test_ancla.py": "test_un_ancla_que_no_existe_aborta_en_vez_de_borrar_hasta_el_final",
+    "test_types.py": "test_todo_el_modelo_de_datos_es_inmutable",
+    "test_sin_consumidor.py": "test_from_html_si_tiene_consumidor_y_por_eso_no_esta_en_la_lista",
+}
+"""Fichero de test -> el test suyo que **ejerce el sujeto contra algo
+deliberadamente malo y afirma que lo rechaza**.
+
+**Por qué existe esta tabla.** «El arnés cubre N de M» mide *el arnés*, no la
+protección: hay ficheros fuera del arnés que llevan su control negativo **dentro**,
+y contarlos como desprotegidos exagera el hueco tanto como ignorarlo lo esconde.
+Publicar sólo la cobertura del arnés era el mismo error que publicar el total sin
+la velocidad, un nivel más arriba.
+
+**El criterio es comprobable, y sólo hasta cierto punto.** Lo que se verifica por
+ejecución es que **el test nombrado existe y se colecta**
+(`test_cada_control_negativo_declarado_existe_de_verdad`). Lo que NINGUNA
+comprobación puede decidir es si ese test es *fuerte*: eso lo demuestra un mutante,
+y por eso la cobertura del arnés se sigue publicando al lado como submedida. Está
+en `LIMITS.md` 60.
+
+**`test_errors.py` no está aquí a propósito.** Sus tres tests afirman la forma de
+la jerarquía y del enum —estructura—, no que algo rechace una entrada mala. Es el
+único fichero de la suite sin nada que demuestre que se pondría rojo, y la lista
+lo dice en vez de estirarse para taparlo."""
+
+
+def _reglas() -> int:
+    """Cuántas reglas con `paths:` hay en `.claude/rules/`.
+
+    **No es un recuento de tests, y por eso está aquí.** `CLAUDE.md` dice cuántas
+    hay y las enumera, y ese número se quedó viejo en el mismo commit que añadió
+    la cuarta: entró `entidad-corpus.md` y la frase siguió diciendo «3». Es el
+    peor sitio donde puede vivir una cifra falsa, porque `CLAUDE.md` es lo primero
+    que lee **toda** sesión — antes que `RESULTS.md` y antes que nada.
+
+    Se calcula igual que los demás: contando, en cada colección, para que no haya
+    ninguna copia que pueda quedarse vieja.
+    """
+    return len(list((RAIZ / ".claude" / "rules").glob("*.md")))
+
+
 def _cuadrar(por_fichero: dict[str, int]) -> tuple[dict[str, int], dict[str, int]]:
     dentro_de, n_mutantes = _plan()
     fuera = {f: n for f, n in por_fichero.items() if f not in dentro_de}
@@ -86,6 +148,17 @@ def _cuadrar(por_fichero: dict[str, int]) -> tuple[dict[str, int], dict[str, int
             "total": sum(por_fichero.values()),
             "dentro": sum(n for f, n in por_fichero.items() if f in dentro_de),
             "fuera": sum(fuera.values()),
+            "reglas": _reglas(),
+            # La contabilidad reconciliada: protegido por el arnés O por un control
+            # negativo declarado en su propio fichero. Ver `CONTROLES_NEGATIVOS`.
+            "protegidos": sum(
+                n for f, n in por_fichero.items() if f in dentro_de or f in CONTROLES_NEGATIVOS
+            ),
+            "sin_nada": sum(
+                n
+                for f, n in por_fichero.items()
+                if f not in dentro_de and f not in CONTROLES_NEGATIVOS
+            ),
         },
         fuera,
     )
@@ -99,7 +172,11 @@ def exigir_sano(cuenta: dict[str, int]) -> dict[str, int]:
     - `total == dentro + fuera`, porque cada test cae en un lado o en el otro;
     - `mutantes >= 1`, o el `PLAN` está vacío;
     - `dentro >= 1`, o no se colectó ni un fichero del arnés;
-    - `fuera >= 1`, porque este mismo fichero está fuera del arnés.
+    - `fuera >= 1`, porque este mismo fichero está fuera del arnés;
+    - `reglas >= 1`, o el directorio de reglas no se leyó;
+    - `protegidos + sin_nada == total`, porque cada test cae en un lado o en otro
+      **de la segunda contabilidad también**, y las dos tienen que cuadrar contra
+      el mismo total o no son dos vistas de lo mismo.
 
     Sin esto, una colección parcial produce `dentro=0` y la comparación acusa a
     todos los documentos de mentir. Un recuento degenerado **no es un desacuerdo**:
@@ -116,6 +193,11 @@ def exigir_sano(cuenta: dict[str, int]) -> dict[str, int]:
         "mutantes=0: el PLAN de matar.py está vacío" if cuenta["mutantes"] < 1 else "",
         "dentro=0: no se colectó ni un fichero del arnés" if cuenta["dentro"] < 1 else "",
         "fuera=0: ni siquiera este fichero se contó" if cuenta["fuera"] < 1 else "",
+        "reglas=0: no se vio ni una regla en .claude/rules/" if cuenta.get("reglas", 0) < 1 else "",
+        f"protegidos+sin_nada={cuenta.get('protegidos', 0) + cuenta.get('sin_nada', -1)} "
+        f"pero total={cuenta['total']}"
+        if cuenta["total"] != cuenta.get("protegidos", 0) + cuenta.get("sin_nada", -1)
+        else "",
     ]
     rotos = [p for p in problemas if p]
     if rotos:
@@ -209,3 +291,38 @@ def pytest_collection_modifyitems(
     FUERA_POR_FICHERO.update(fuera)
     COLECTADOS.clear()
     COLECTADOS.update(cuenta)
+
+
+Registrar = Callable[[str, str], None]
+
+
+@pytest.fixture
+def registrar(tmp_path: Path) -> Iterator[Registrar]:
+    """Instala adaptadores falsos en el grupo real, y los desinstala al salir.
+
+    El directorio se quita de `sys.path` en el `finally` **siempre**: un test que
+    dejara su distribución falsa puesta contaminaría a los demás, y el fallo
+    aparecería en otro fichero.
+    """
+    raiz = tmp_path / "site-packages"
+    raiz.mkdir()
+    sys.path.insert(0, str(raiz))
+
+    def _registrar(nombre: str, destino: str) -> None:
+        info = raiz / f"{nombre.replace('-', '_')}-0.0.dist-info"
+        info.mkdir()
+        (info / "METADATA").write_text(
+            f"Metadata-Version: 2.1\nName: {nombre}\nVersion: 0.0\n", encoding="utf-8"
+        )
+        (info / "entry_points.txt").write_text(
+            f"[{GRUPO}]\n{nombre} = {destino}\n", encoding="utf-8"
+        )
+        # Sin esto, `importlib.metadata` puede servir el listado que cacheó antes
+        # de que existiera el directorio.
+        importlib.invalidate_caches()
+
+    try:
+        yield _registrar
+    finally:
+        sys.path.remove(str(raiz))
+        importlib.invalidate_caches()

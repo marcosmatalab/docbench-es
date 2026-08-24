@@ -31,7 +31,24 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "tests" / "unit"))
 
-from test_recuentos import PATRONES, _plano, _valor  # noqa: E402
+from test_recuentos import _N, PATRONES, _plano, _valor  # noqa: E402
+
+ESTRECHADOS: dict[str, str] = {
+    rf"[Ss]on {_N} mutantes, no \d+": rf"[Ss]on {_N} mutantes",
+    rf"sobre los {_N} mutantes existentes": rf"{_N} mutantes existentes",
+    rf"cubr[eí]a?n? {_N} de \d+ tests": rf"cubr[eí]a?n? {_N} de \d+",
+    rf"cubr[eí]a?n? \d+ de {_N} tests": rf"cubr[eí]a?n? \d+ de {_N}",
+    rf"suite entera: {_N} de \d+ tests": rf"suite entera: {_N} de \d+",
+    rf"suite entera: \d+ de {_N} tests": rf"suite entera: \d+ de {_N}",
+    rf"0 muertes de {_N} tests": rf"0 (?:muertes )?de {_N} tests",
+    rf"[Ll]os {_N} tests que quedan fuera": rf"[Ll]os {_N} restantes",
+    rf"{_N} tests quedaban fuera": rf"{_N} quedaban fuera",
+}
+"""Patrón de HOY -> el ANCHO que tenía antes de `6ebf592`, sacado del `git diff`.
+
+Existe para que **el precio del estrechamiento sea un comando y no una opinión**:
+`--anchos` corre el mismo censo con los nueve revertidos. Sin esto, «estrechar
+costó cobertura» sería una frase que nadie puede comprobar."""
 
 # (frase, clave que DEBERÍA leerse o None si la frase no es un recuento)
 CORPUS: tuple[tuple[str, str | None], ...] = (
@@ -48,6 +65,7 @@ CORPUS: tuple[tuple[str, str | None], ...] = (
     ("teds_siempre_uno se cae en 18 tests de esa suite", None),
     ("20 de 20 a cuatro decimales", None),
     ("la tabla de asesinos usa 3 repeticiones", None),
+    ("el fichero .claude/rules/tests.md tiene 3 secciones", None),
     # --- sí son recuentos: si NO casan, se escapan ---
     ("Los 21 mutantes del repo mueren.", "mutantes"),
     ("Son 21 mutantes, no 12.", "mutantes"),
@@ -67,14 +85,21 @@ CORPUS: tuple[tuple[str, str | None], ...] = (
     ("quedan 23 tests fuera del arnés", "fuera"),
     ("la suite ya en 183 tests", "total"),
     ("la suite tiene 183 tests en total", "total"),
+    # La forma que se le escapó DE VERDAD a `RESULTS.md` durante todo L3: el
+    # sustantivo vive en el encabezado de la sección —«### Los mutantes»— y no en
+    # la frase, así que no hay adyacencia que mirar. Ningún patrón sensato la caza.
+    ("**Son 18**, y las cuatro casillas de `siempre_ok` están completas", "mutantes"),
+    ("En `.claude/rules/` hay 4 ficheros con `paths:` en el frontmatter.", "reglas"),
+    ("hay 4 reglas en .claude/rules/", "reglas"),
+    ("las 4 reglas se cargan solas", "reglas"),
 )
 
 
-def _lee(frase: str) -> set[str]:
+def _lee(frase: str, patrones: tuple[tuple[str, str], ...] = PATRONES) -> set[str]:
     plano = _plano(frase)
     return {
         clave
-        for clave, patron in PATRONES
+        for clave, patron in patrones
         for m in re.finditer(patron, plano)
         if _valor(m.group(1)) is not None
     }
@@ -83,11 +108,20 @@ def _lee(frase: str) -> set[str]:
 def main() -> int:
     partes = argparse.ArgumentParser(description=__doc__)
     partes.add_argument("--detalle", action="store_true")
+    partes.add_argument(
+        "--anchos",
+        action="store_true",
+        help="revierte los nueve patrones que 6ebf592 estrechó, para medir su precio",
+    )
     args = partes.parse_args()
+
+    patrones = tuple((c, ESTRECHADOS.get(p, p)) for c, p in PATRONES) if args.anchos else PATRONES
+    if args.anchos:
+        print("PATRONES ANCHOS: los nueve de 6ebf592 revertidos a su forma anterior\n")
 
     falsos, escapes, bien = [], [], 0
     for frase, esperada in CORPUS:
-        leidas = _lee(frase)
+        leidas = _lee(frase, patrones)
         if esperada is None:
             if leidas:
                 falsos.append((frase, leidas))
@@ -109,6 +143,18 @@ def main() -> int:
     print(
         f"  escapes ............ {len(escapes)}/{recuentos}  (recuento real que ningún patrón ve)"
     )
+    # El desglose por familia, sin el cual «7 de 18» y «9 de 21» no se pueden
+    # comparar: hay que poder ver si el numerador subió o si sólo creció el corpus.
+    familias = {e for _, e in CORPUS if e is not None}
+    for familia in ("reglas",):
+        de_familia = [f for f, e in CORPUS if e == familia]
+        escapan = [f for f in de_familia if familia not in _lee(f, patrones)]
+        print(f"    de la familia `{familia}`: {len(escapan)} escapes de {len(de_familia)}")
+    resto = [(f, e) for f, e in CORPUS if e is not None and e not in {"reglas"}]
+    escapan_resto = [f for f, e in resto if e not in _lee(f, patrones)]
+    print(f"    del subcorpus ORIGINAL: {len(escapan_resto)} escapes de {len(resto)}")
+    del familias
+
     if args.detalle:
         for frase, leidas in falsos:
             print(f"    FALSO POSITIVO  {sorted(leidas)}  {frase}")

@@ -16,9 +16,26 @@ para en el primer paso que falla, así que una puerta rota da un tiempo MENOR: s
 esta comprobación, un fallo se publicaría como una mejora. Pasó en L1, con una
 tanda entera de 60 ms que era `ruff` en rojo.
 
+**Y ABORTA SI EL ÁRBOL SE MUEVE DURANTE LA SERIE.** Comprueba `HEAD` más
+`git status --porcelain` antes de empezar y **después de cada corrida**: si algo
+cambió, la serie **se descarta entera y no se imprime ni un tiempo**. Sale de un
+fallo real de L3: 40 corridas con un docstring editado a mitad, o sea una parte de
+la serie sobre un árbol y el resto sobre otro — y cuántas de cada, no se sabe.
+
+Es la forma barata de la regla ancha: **ninguna medición corre mientras el árbol
+se mueve.** Una regla que alguien tiene que recordar se olvida; ésta la comprueba
+el propio instrumento, que además es quien sabe cuándo empieza y cuándo acaba.
+
+No se imprimen los tiempos parciales a propósito. Mirar el p90 de una serie
+contaminada **sesga la decisión siguiente** aunque luego se descarte: el número ya
+está en la cabeza de quien decide.
+
 **Lo que este script NO puede hacer**, y por eso ADR-0022 lo dice en voz alta: no
 se ejecuta solo. El paso mecánico de verdad es el aviso de CI, que sale en cada
-PR sin que nadie decida ejecutarlo.
+PR sin que nadie decida ejecutarlo. Y su guardia mira el árbol de `git`, así que
+**no ve un cambio en algo que `git` no sigue** —un fichero ignorado, una variable
+de entorno, otro proceso comiéndose la máquina—. Para eso está la columna de
+`load average`, que tampoco lo cierra: lo declara.
 """
 
 from __future__ import annotations
@@ -33,6 +50,10 @@ import time
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, str(RAIZ / "scripts"))
+from sello import sello  # noqa: E402
+
 CACHES = (
     ".pytest_cache",
     ".mypy_cache",
@@ -69,6 +90,59 @@ def _carga() -> float:
         return float("nan")
 
 
+def _huella_arbol(raiz: Path = RAIZ) -> str:
+    """`HEAD` + todo lo que `git status` ve sin commitear, incluidos los sin seguir.
+
+    `--porcelain` es el formato estable —`--short` no lo es— y trae los `??`, que
+    es justo donde vive un fichero recién creado: el caso del hito que estrena
+    módulos. Las cachés que este script borra no salen porque están en
+    `.gitignore`; si algún día una dejara de estarlo, la serie abortaría siempre y
+    el aviso diría cuál.
+    """
+
+    def _git(*orden: str) -> str:
+        return subprocess.run(
+            ["git", *orden], cwd=raiz, capture_output=True, text=True, check=False
+        ).stdout
+
+    return _git("rev-parse", "HEAD").strip() + "\n" + _git("status", "--porcelain")
+
+
+def _lo_que_se_movio(antes: str, ahora: str) -> str:
+    """Las líneas que aparecen en una huella y no en la otra, en las dos direcciones."""
+    a, b = set(antes.splitlines()), set(ahora.splitlines())
+    fuera = [f"    - {linea}" for linea in sorted(a - b)]
+    dentro = [f"    + {linea}" for linea in sorted(b - a)]
+    return "\n".join(fuera + dentro)
+
+
+def _desviacion(muestras: list[int]) -> str:
+    """La desviación típica, o «n/a» con una sola muestra.
+
+    `statistics.stdev` revienta con n=1, y `--por-tanda 1` es una invocación legal
+    del propio script: no puede acabar en traza. Con una muestra la dispersión no
+    es cero, es que **no se ha medido**, y eso se escribe.
+    """
+    return f"{statistics.stdev(muestras):.0f}" if len(muestras) > 1 else "n/a (n=1)"
+
+
+def movimiento(antes: str, ahora: str, corrida: int, tanda: int) -> str | None:
+    """El aviso si el árbol se movió, o `None` si no. **La decisión, sin el bucle.**
+
+    Separada para que se pueda probar que dice «sí» y que dice «no» sin correr
+    cuarenta veces `make fast`. Un guardia que sólo se ha visto funcionar una vez
+    a mano está en el estado que el paso 4 de `/cerrar` llama insuficiente.
+    """
+    if antes == ahora:
+        return None
+    return (
+        f"\nEL ÁRBOL SE MOVIÓ durante la corrida {corrida} (tanda {tanda}).\n"
+        f"{_lo_que_se_movio(antes, ahora)}\n\n"
+        "  La serie se DESCARTA ENTERA y no se imprime ningún tiempo: una parte se midió\n"
+        "  sobre un árbol y el resto sobre otro. Deja el árbol quieto y vuelve a empezar."
+    )
+
+
 def _una_corrida() -> tuple[int, int, float]:
     _en_frio()
     carga = _carga()
@@ -86,14 +160,22 @@ def main() -> int:
     partes.add_argument("--techo", type=int, default=8500, help="techo local de ADR-0022")
     args = partes.parse_args()
 
+    print(f"sello: {sello()}")
+    huella = _huella_arbol()
     todas: list[int] = []
     cargas: list[float] = []
     medianas: list[float] = []
     descartadas = 0
+    corrida = 0
     for tanda in range(1, args.tandas + 1):
         fila: list[int] = []
         for _ in range(args.por_tanda):
             ms, rc, carga = _una_corrida()
+            corrida += 1
+            aviso = movimiento(huella, _huella_arbol(), corrida, tanda)
+            if aviso is not None:
+                print(aviso)
+                return 2
             cargas.append(carga)
             if rc == 0:
                 fila.append(ms)
@@ -114,7 +196,7 @@ def main() -> int:
         f"\n  n={len(todas)} en verde · descartadas por rc!=0: {descartadas}\n"
         f"  mínimo {ordenadas[0]} · mediana {statistics.median(ordenadas):.0f} · "
         f"p90 {p90} · máximo {ordenadas[-1]}\n"
-        f"  desviación típica {statistics.stdev(ordenadas):.0f} · "
+        f"  desviación típica {_desviacion(ordenadas)} · "
         f"medianas por tanda {int(min(medianas))}-{int(max(medianas))}\n"
         f"  carga de la máquina: mediana {statistics.median(cargas):.2f} · "
         f"rango {min(cargas):.2f} a {max(cargas):.2f}\n"

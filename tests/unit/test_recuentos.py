@@ -42,15 +42,51 @@ cambio, deja una redacción sin comprobar, y **eso ya está declarado en el lím
 Corolario: cuando una redacción de un documento no casa con ningún patrón, la
 respuesta por defecto es **cambiar la redacción a la canónica**, no aflojar el
 patrón para que quepa.
+
+**Y el precio de haber estrechado está MEDIDO, no supuesto.** `6ebf592` estrechó
+nueve patrones para matar cuatro falsos positivos. La pregunta natural —*«¿cuánta
+cobertura costó?»*— tiene comando:
+
+    uv run python scripts/cobertura_patrones.py            # los de hoy
+    uv run python scripts/cobertura_patrones.py --anchos   # los de antes
+
+Sobre el mismo corpus, contando sólo el subcorpus anterior a la familia `reglas`:
+
+| | falsos positivos | escapes del subcorpus original |
+|---|---|---|
+| anchos, antes de `6ebf592` | **4 de 13** | 9 de 19 |
+| estrechos, hoy | **0 de 13** | **8 de 19** |
+
+O sea que estrechar **no costó cobertura**: quitó cuatro rojos falsos y encima
+dejó un escape menos, porque dos de los nueve no se estrecharon sino que se
+reescribieron a una forma que casa mejor. La decisión era correcta y ahora se
+sabe **cuánto** costó, que es cero.
+
+**Lo que sí sigue abierto es otra cosa, y conviene no confundirlas:** hay formas
+que **ningún** juego de patrones caza, ni ancho ni estrecho. La que se cobró su
+pieza en L3 es *«**Son 18**, y las cuatro casillas…»* en `RESULTS.md`: el
+sustantivo —«mutantes»— vive en el **encabezado de la sección**, tres líneas más
+arriba, y no en la frase. Sin adyacencia no hay nada que mirar, y el patrón que la
+cazaría —«Son N,»— casaría con media documentación. Comprobado contra los dos
+juegos: **ninguno la ve**. Por eso está en el corpus como escape y por eso la
+regla de redacción es que **el sustantivo va pegado a la cifra**.
 """
 
 from __future__ import annotations
 
+import ast
 import re
 from pathlib import Path
 
 import pytest
-from conftest import RecuentoDegenerado, exigir_sano, fuera_por_fichero, recuentos
+from conftest import (
+    CONTROLES_NEGATIVOS,
+    RecuentoDegenerado,
+    _plan,
+    exigir_sano,
+    fuera_por_fichero,
+    recuentos,
+)
 
 RAIZ = Path(__file__).resolve().parents[2]
 
@@ -123,6 +159,19 @@ PATRONES: tuple[tuple[str, str], ...] = (
     ("total", rf"suite ya en {_N} tests"),
     ("total", rf"suite entera: \d+ de {_N} tests"),
     ("dentro", rf"suite entera: {_N} de \d+ tests"),
+    # ---- protegidos / sin_nada: la contabilidad RECONCILIADA ----
+    # La cobertura del arnés mide el arnés. Ésta mide lo que importa: cuántos
+    # tests tienen ALGO que demuestre que se pondrían rojos, sea un mutante o un
+    # control negativo en su propio fichero. Forma canónica, una sola.
+    ("protegidos", rf"{_N} de \d+ tests protegidos por algo"),
+    ("total", rf"\d+ de {_N} tests protegidos por algo"),
+    ("sin_nada", rf"{_N} tests sin ningún control"),
+    # ---- reglas: el recuento que vive en CLAUDE.md y se quedó viejo ----
+    # Primer caso REAL del límite 54, y en el peor documento posible: `CLAUDE.md`
+    # decía «hay 3 ficheros» con cuatro en el disco desde el commit anterior, y
+    # ningún patrón hablaba de reglas. El fichero que toda sesión lee primero es
+    # justo donde una cifra falsa hace más daño: la lee el agente al arrancar.
+    ("reglas", rf"En \.claude/rules/ hay {_N} ficheros"),
 )
 
 NOMBRES_PROPIOS = frozenset({"los dos mutantes"})
@@ -145,6 +194,20 @@ lista es explícita en vez de un patrón más retorcido.
 
 Se comprueba contra la ventana que rodea al match, no contra la frase entera: así
 «Los 21 mutantes apuntan…» no se ve afectado."""
+
+
+MONODOCUMENTO: dict[str, str] = {"reglas": "CLAUDE.md"}
+"""Recuentos que viven en UN solo documento porque duplicarlos sería el bug.
+
+Cuántas reglas hay en `.claude/rules/` lo dice `CLAUDE.md`, que es donde se
+enumeran. Escribir la misma cifra en un segundo documento para satisfacer el
+candado de «dos documentos» crearía **exactamente la copia que este mecanismo
+existe para evitar**.
+
+La garantía que da el candado de los dos —que un patrón roto no pase en verde— la
+da aquí `test_claude_md_declara_cuantas_reglas_hay_de_verdad`, que **exige que el
+patrón case**. Es más estrecho y más fuerte: no pide presencia en dos sitios
+cualesquiera, pide presencia en el sitio concreto."""
 
 
 def _es_nombre_propio(plano: str, inicio: int, fin: int) -> bool:
@@ -180,7 +243,18 @@ def _documentos() -> list[Path]:
     que sólo mirara `*.md` de la raíz lo habría dejado pasar.
     """
     sueltos = [
-        RAIZ / n for n in ("RESULTS.md", "LIMITS.md", "ESTADO.md", "CHANGELOG.md", "MANUAL.md")
+        RAIZ / n
+        for n in (
+            # `CLAUDE.md` va el primero y no estaba: es el que TODA sesión lee
+            # antes que nada, así que una cifra vieja aquí la hereda el agente
+            # entero. Entró al descubrirse que decía «3 ficheros» con cuatro.
+            "CLAUDE.md",
+            "RESULTS.md",
+            "LIMITS.md",
+            "ESTADO.md",
+            "CHANGELOG.md",
+            "MANUAL.md",
+        )
     ]
     return (
         sueltos + sorted((RAIZ / "docs").rglob("*.md")) + sorted((RAIZ / ".claude").rglob("*.md"))
@@ -245,7 +319,7 @@ def test_ningun_documento_publicado_cita_un_recuento_viejo() -> None:
         "recuentos desincronizados entre documentos:\n  "
         + "\n  ".join(fallos)
         + "\n\n  ESTA LISTA NO ESTÁ COMPLETA. El guardián sólo caza los fraseos"
-        "\n  previstos: 7 de 18 formas naturales se le escapan (LIMITS 54,"
+        "\n  previstos: 10 de 22 formas naturales se le escapan (LIMITS 54,"
         "\n  `uv run python scripts/cobertura_patrones.py --detalle`). Corregir sólo"
         "\n  lo enumerado aquí es exactamente el fallo que este test existe para"
         "\n  evitar: busca el mismo recuento en los demás documentos a mano."
@@ -259,9 +333,12 @@ def test_la_comprobacion_se_cae_con_una_cifra_desincronizada() -> None:
     Es el mismo argumento que el control negativo del arnés de mutantes.
     """
     reales = recuentos()
-    viejo = "Los 12 mutantes mueren, y el arnés cubre 107 de 145 tests."
+    viejo = (
+        "Los 12 mutantes mueren, y el arnés cubre 107 de 145 tests. "
+        "En `.claude/rules/` hay 9 ficheros con `paths:` en el frontmatter."
+    )
     fallos = desacuerdos([("inventado.md", viejo)], reales)
-    assert len(fallos) == 3, f"tendría que cazar mutantes, dentro y total: {fallos}"
+    assert len(fallos) == 4, f"tendría que cazar mutantes, dentro, total y reglas: {fallos}"
     assert all("inventado.md" in f for f in fallos)
 
     bueno = (
@@ -340,17 +417,23 @@ def test_la_comprobacion_se_niega_con_recuentos_degenerados() -> None:
     mensaje que hablaba de una desincronización que no existía. Ahora se distingue:
     *«no hay medición»* no es *«el documento está mal»*.
     """
-    descuadrado = {"mutantes": 18, "total": 999, "dentro": 149, "fuera": 28}
+    descuadrado = {"mutantes": 18, "total": 999, "dentro": 149, "fuera": 28, "reglas": 4}
     with pytest.raises(RecuentoDegenerado, match=r"total=999"):
         exigir_sano(descuadrado)
 
-    sin_plan = {"mutantes": 0, "total": 177, "dentro": 149, "fuera": 28}
+    sin_plan = {"mutantes": 0, "total": 177, "dentro": 149, "fuera": 28, "reglas": 4}
     with pytest.raises(RecuentoDegenerado, match=r"PLAN de matar\.py está vacío"):
         exigir_sano(sin_plan)
 
-    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5}
+    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5, "reglas": 4}
     with pytest.raises(RecuentoDegenerado, match="dentro=0"):
         exigir_sano(parcial)
+
+    # Un recuento al que le FALTA una clave tampoco es una medición: se rechaza
+    # con su nombre en vez de reventar con un `KeyError` que nadie sabe leer.
+    sin_reglas = {"mutantes": 18, "total": 177, "dentro": 149, "fuera": 28}
+    with pytest.raises(RecuentoDegenerado, match="reglas=0"):
+        exigir_sano(sin_reglas)
 
     # Y la otra mitad, sin la cual esto pasaría por rechazarlo todo:
     assert exigir_sano(recuentos()) == recuentos()
@@ -364,7 +447,7 @@ def test_desacuerdos_se_niega_a_comparar_contra_recuentos_degenerados() -> None:
     verdad importa: una guarda que existe y que nadie invoca no guarda nada. Los
     dos hacen falta, y por eso van separados en vez de en el mismo test.
     """
-    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5}
+    parcial = {"mutantes": 18, "total": 5, "dentro": 0, "fuera": 5, "reglas": 4}
     with pytest.raises(RecuentoDegenerado, match="dentro=0"):
         desacuerdos([("da_igual.md", "Los 18 mutantes mueren")], parcial)
 
@@ -482,8 +565,9 @@ def test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos() -> None
 
     Eso no se puede cerrar del todo —el español no se enumera— pero sí se puede
     cerrar su **forma peligrosa**: que un patrón deje de casar en todas partes y el
-    test siga verde sin comprobar nada. Aquí se exige que cada uno de los cuatro
-    recuentos aparezca cazado en **dos documentos distintos como mínimo**.
+    test siga verde sin comprobar nada. Aquí se exige que cada recuento aparezca
+    cazado en **dos documentos distintos como mínimo** — salvo los de
+    `MONODOCUMENTO`, que van con su propio candado y con su razón escrita.
 
     Lo que queda sin cubrir, en `LIMITS.md` 54.
     """
@@ -493,11 +577,73 @@ def test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos() -> None
         for clave, patron in PATRONES:
             if re.search(patron, plano):
                 cobertura[clave].add(nombre)
-    flojos = {c: sorted(d) for c, d in cobertura.items() if len(d) < 2}
+    minimo = {c: 1 if c in MONODOCUMENTO else 2 for c in cobertura}
+    flojos = {c: sorted(d) for c, d in cobertura.items() if len(d) < minimo[c]}
     assert flojos == {}, (
-        f"estos recuentos se citan en menos de dos documentos, así que la "
-        f"comprobación no está comparando nada: {flojos}"
+        f"estos recuentos se citan en menos documentos de los que deberían, así que "
+        f"la comprobación no está comparando nada: {flojos}"
     )
+    for clave, documento in MONODOCUMENTO.items():
+        assert cobertura[clave] == {documento}, (
+            f"`{clave}` tenía que estar sólo en {documento} y está en {sorted(cobertura[clave])}"
+        )
+
+
+def test_claude_md_declara_cuantas_reglas_hay_de_verdad() -> None:
+    """**El primer caso REAL del límite 54, y en el peor documento posible.**
+
+    `CLAUDE.md` decía *«En `.claude/rules/` hay 3 ficheros»* y las enumeraba, con
+    **cuatro en el disco** desde el commit anterior: `entidad-corpus.md` entró con
+    L3 y la frase no se tocó. Ningún patrón hablaba de reglas, así que el guardián
+    de recuentos no lo vio — no es un fallo nuevo del mecanismo, es su hueco
+    declarado dando su primer ejemplo medido.
+
+    **Y es el peor sitio donde puede vivir una cifra falsa**: `CLAUDE.md` lo lee
+    toda sesión antes que nada, así que una cifra vieja aquí la hereda el agente
+    entero. Ni siquiera estaba en la lista de documentos que este fichero mira.
+
+    Este test **exige que el patrón case**, no sólo que el número cuadre: si
+    alguien reescribe la frase de una forma que el patrón no reconoce, esto se cae
+    en vez de dejar de comprobar en silencio.
+    """
+    plano = _plano((RAIZ / "CLAUDE.md").read_text(encoding="utf-8"))
+    clave, patron = next((c, p) for c, p in PATRONES if c == "reglas")
+
+    encontrados = [_valor(m.group(1)) for m in re.finditer(patron, plano)]
+
+    assert encontrados, f"ningún patrón de `{clave}` casa ya en CLAUDE.md: ¿cambió la frase?"
+    assert set(encontrados) == {recuentos()["reglas"]}
+    # Y las que enumera son las que hay: un número correcto con una lista falsa
+    # manda a alguien a buscar una regla que no existe.
+    for regla in sorted((RAIZ / ".claude" / "rules").glob("*.md")):
+        assert f".claude/rules/{regla.name}" in plano, f"CLAUDE.md no nombra {regla.name}"
+
+
+def test_cada_control_negativo_declarado_existe_de_verdad() -> None:
+    """**El criterio de «protegido» es comprobable, y esto es lo que comprueba.**
+
+    `CONTROLES_NEGATIVOS` es una etiqueta, y una etiqueta sin verificación es lo
+    que cada uno quiera que sea. Aquí se exige, por fichero declarado, que **el
+    test nombrado exista de verdad** —por AST, no por `grep`— y que el fichero se
+    colecte. Si alguien renombra o borra ese test, el número publicado de
+    «protegidos» deja de ser cierto y esto se cae en la puerta.
+
+    **Lo que NO puede comprobar, y por eso está en `LIMITS.md` 60:** si el control
+    negativo es *fuerte*. Que un test exista y ejercite una entrada mala no
+    demuestra que cazaría un cambio en el sujeto — eso lo demuestra un mutante, y
+    por eso la cobertura del arnés se sigue publicando al lado como submedida y no
+    se sustituye por ésta.
+    """
+    dentro_de, _ = _plan()
+    colectados = set(fuera_por_fichero()) | dentro_de
+
+    for fichero, nombre in CONTROLES_NEGATIVOS.items():
+        ruta = RAIZ / "tests" / "unit" / fichero
+        assert ruta.exists(), f"`{fichero}` está declarado y no existe"
+        arbol = ast.parse(ruta.read_text(encoding="utf-8"))
+        definidos = {n.name for n in ast.walk(arbol) if isinstance(n, ast.FunctionDef)}
+        assert nombre in definidos, f"`{fichero}` ya no define `{nombre}`: ¿lo renombraron?"
+        assert fichero in colectados, f"`{fichero}` está declarado y no se colecta"
 
 
 def test_el_desglose_de_los_que_quedan_fuera_es_el_que_publica_limits() -> None:

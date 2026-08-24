@@ -424,6 +424,7 @@ Una por fichero en `docs/adr/`. Aquí el resumen con su alternativa descartada y
 1. `special_categories = True` → el adaptador **no se registra**.
 2. `redaction_required` → la redacción corre **antes** de cualquier salida de red, y se registra la tasa por documento.
 3. `may_send_to_third_party = False` → el motor **rechaza** cualquier extractor o modelo de respuesta que no sea local. La campaña no arranca.
+   **Ojo: este campo mezcla dos preguntas** —si la *fuente* permite retransmitir, y si el *operador* tiene base legal para ese tratamiento— y sólo la primera la contesta la licencia. Sin respuesta a la segunda, el valor por defecto es el restrictivo: ver ADR-0037 y el límite 61.
 4. `may_redistribute_content = False` → `publish` se niega a empaquetar contenido y publica en su lugar el manifiesto de hashes y el script de descarga.
 
 **Trade-off.** Fricción al añadir adaptadores. A cambio, es utilizable por una entidad sin que su departamento jurídico tenga que auditar nada, que es la barrera real que hunde a la mayoría de proyectos de este tipo.
@@ -910,6 +911,28 @@ class EntityAdapter(Protocol):
 - `strata` es determinista para el mismo documento.
 - Todos los errores son de los tipos declarados en §6.9.
 
+**Quién lo registra, y por qué no `benchcore`.** `EntityAdapter` es un `Protocol`
+nativo de `docbench`: `benchcore.contracts.Plugin` exige `capabilities()` y
+`probe()`, y su `Capabilities.axis` es un literal cerrado sin `entidad` — pero la
+razón de fondo es que **un eje de entidad tendría exactamente un consumidor, y
+siempre**, y un contrato compartido con un solo consumidor está mal colocado
+(ADR-0035). `sources/` sí son `DataSource`, que es un eje con dos consumidores
+posibles.
+
+Así que el descubrimiento es de este repo (ADR-0036): grupo de entry points propio
+**`docbench.entity`**, la mecánica de `benchcore.registry` reusada tal cual —el
+eje no se comparte, el apretón de manos de `benchcore_api` sí—, y **fallo cerrado
+en carga**. Dos consecuencias que son contrato:
+
+- **Descubrir no construye:** el registro devuelve la clase, no una instancia, así
+  que `benchcore_api` tiene que ser **atributo de clase**. Un adaptador que lo
+  asigne en `__init__` **no llega a cargarse**: el registro no ve versión y lo
+  rechaza por «no declara `benchcore_api`».
+- *«El registro rechaza»* un adaptador con `special_categories: true` (§14 y §19)
+  **se implementa en L8**, en el punto donde el adaptador se construye con su
+  perfil: que es donde existe la `PrivacyDecl`, porque vive en el perfil y no en
+  la clase.
+
 ### 7.2 `Extractor`
 
 ```python
@@ -1010,8 +1033,10 @@ docbench-es/
 │   │   └── driftsig.py          las tres señales de deriva, como funciones puras
 │   │
 │   ├── entity/
-│   │   ├── base.py              el Protocol y el registro
+│   │   ├── base.py              el Protocol y el perfil declarativo
+│   │   ├── registry.py          el registro: grupo propio y rechazo en carga
 │   │   ├── conformance.py       la suite que todo adaptador debe pasar
+│   │   ├── _comprobaciones.py   sus aros, uno por método de §7.1
 │   │   ├── boe.py               el de referencia, modo DERIVED
 │   │   ├── boe_xml.py           el parseo del XML del BOE a forma canónica
 │   │   ├── diputacion.py        plantilla para diputación o ayuntamiento

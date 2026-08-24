@@ -395,12 +395,23 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 162 de 185 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 164 de 290 tests.** Los
     **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **23 tests restantes** —`types_invariantes` (7),
-    `ancla` (5), `types` (5), `errors` (3) y `sin_consumidor` (3)— **no tienen
-    ningún mutante escrito contra su código**, así que «los 18 mueren» no dice
-    nada sobre si esos tests cazarían un bug. Algunos matan mutantes de rebote
+    árbol de TEDS y el lote. Los **126 tests restantes** —`verificar_corpus` (14), `boe` (12), `harvest` (12),
+    `boe_api` (10), `entity_conformance` (9), `entity_registry` (9),
+    `barreras` (8), `manifest` (8), `pairing` (8), `policy` (7),
+    `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
+    `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
+    así que «los 21 mueren» no dice
+    nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
+    12,4% al cerrar L2, **43,4% hoy**.
+
+    **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
+    *el arnés*, no la protección: **287 de 290 tests protegidos por algo** —un
+    mutante o un control negativo en su propio fichero— y **3 tests sin ningún
+    control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
+    distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
+    en el límite 60. Algunos matan mutantes de rebote
     cuando `--tabla` recorre la suite entera, y eso es daño colateral, no
     cobertura diseñada.
 
@@ -450,22 +461,47 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     reconoce **no se comprueba**, y eso no se puede cerrar del todo porque el
     español no se enumera.
 
-    **Está medido, en las dos direcciones**, con un corpus de 30 frases que alguien
+    **Está medido, en las dos direcciones**, con un corpus de 35 frases que alguien
     escribiría en este repo, sacado de un escrutinio adversarial con un agente por
     familia de patrón: `uv run python scripts/cobertura_patrones.py --detalle`.
 
     | | |
     |---|---|
-    | **falsos positivos** — prosa correcta leída como recuento | **0 de 12** |
-    | **escapes** — recuento real que ningún patrón ve | **7 de 18** |
+    | **falsos positivos** — prosa correcta leída como recuento | **0 de 13** |
+    | **escapes** — recuento real que ningún patrón ve | **10 de 22** |
+
+    Y el desglose, sin el cual las tasas de dos fechas no se pueden comparar: **8
+    de 19** en el subcorpus anterior a la familia `reglas`, **2 de 3** en la
+    familia nueva.
+
+    **El precio de haber estrechado los patrones en `6ebf592` está medido y es
+    cero.** `uv run python scripts/cobertura_patrones.py --anchos` revierte los
+    nueve y da **4 falsos positivos de 13** y **9 escapes de 19** en ese mismo
+    subcorpus, contra 0 y 8 hoy. Estrechar quitó cuatro rojos falsos sin costar
+    cobertura.
 
     Las dos direcciones no pesan igual, y por eso el criterio es **estrechar el
     patrón ante la duda**: un falso positivo pone rojo un documento que no miente,
     y un candado que da rojos falsos deja de leerse —el argumento del límite 25—;
-    un escape deja un hueco, que es lo que este límite declara. Los siete que se
-    escapan son formas que ningún documento usa hoy: «el PLAN tiene 21 mutantes»,
-    «mueren los 21 mutantes», «21/21», una fila de tabla, «cubre 160 de los 183
-    tests», «quedan 23 tests fuera» y «la suite tiene 183 tests en total».
+    un escape deja un hueco, que es lo que este límite declara. Los diez que se
+    escapan son formas que ningún documento usa hoy: «el PLAN tiene N mutantes»,
+    «mueren los N mutantes», «N/N», una fila de tabla, «cubre N de los M tests»,
+    «quedan N tests fuera», «la suite tiene N tests en total», «hay N reglas en
+    .claude/rules/», «las N reglas se cargan solas» y la que se cobró su pieza:
+    **«Son N, y las cuatro casillas…»**, donde el sustantivo vive en el encabezado
+    de la sección y no en la frase. Ésa **no la caza ningún juego de patrones**,
+    ancho o estrecho: sin adyacencia no hay nada que mirar. Es una sub-familia
+    distinta del resto y por eso se nombra aparte.
+
+    **Y este límite dejó de ser teórico: tiene su primer caso REAL, medido.**
+    `CLAUDE.md` decía que en `.claude/rules/` había **tres** ficheros, con
+    **cuatro en el disco** desde el commit anterior —`entidad-corpus.md` entró con L3 y la frase
+    no se tocó—. Ningún patrón hablaba de reglas, así que el guardián no lo vio; y
+    **`CLAUDE.md` ni siquiera estaba en la lista de documentos que miraba**, que es
+    el peor sitio posible para una cifra falsa: lo lee toda sesión antes que nada.
+    Las dos mitades arregladas —el patrón y el documento— y con su control
+    negativo en `test_claude_md_declara_cuantas_reglas_hay_de_verdad`, que exige
+    que el patrón case en vez de conformarse con que el número cuadre.
 
     **Y está medido cómo se llegó ahí**: desincronizando a propósito una cifra en
     cada uno de los cuatro documentos, la primera versión cazó **2 de 4**, la
@@ -475,7 +511,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Lo que sí está cerrado es la forma peligrosa**: que un patrón deje de casar
     en todas partes y el test siga verde sin comparar nada.
     `test_cada_recuento_lo_caza_algun_patron_en_al_menos_dos_documentos` exige que
-    cada recuento aparezca cazado en dos documentos como mínimo.
+    cada recuento aparezca cazado en dos documentos como mínimo — salvo el de las
+    reglas, que vive **sólo** en `CLAUDE.md` porque escribirlo en un segundo sitio
+    crearía justo la copia que todo esto existe para evitar. Ése lleva su propio
+    candado, que es más estrecho: exige el fichero concreto.
 
     **Lo que queda como procedimiento y no como código**: el control negativo a
     mano —desincronizar una cifra por documento y comprobar que se caza— es un
@@ -597,6 +636,115 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     sobre n=50 aplicada a una distribución sobre n=600— y se publica con esa
     palabra. Cabe de sobra en cualquier caso, y `data/` ya está en `.gitignore`.
     El tamaño real se publica cuando el corpus exista, y entonces será un recuento.
+
+58. **La conformidad de entidad NO comprueba que `discover` no descargue.**
+    §7.1 lo pide con esas palabras —*«no descarga: se mide el tráfico y debe ser el
+    mínimo»*— y **medir tráfico exige red**, que es justo lo que la suite no tiene
+    para poder vivir en la puerta (ADR-0032). Lo que sí comprueba es la condición
+    observable sin red: que `discover` **sea perezoso**, o sea que no devuelva la
+    ventana entera ya materializada.
+
+    **Lo que se escapa:** un adaptador cuyo generador baje cada documento conforme
+    va emitiendo su referencia **pasa la suite**. Es perezoso y descarga, y las dos
+    cosas a la vez son posibles.
+
+    **Dónde se cierra y a qué precio:** con un contador de tráfico alrededor del
+    adaptador real, en `tests/e2e` —que es donde vive lo que necesita red—, con
+    `entity.boe` delante. **~1 h**, y va con L3 o con L7. Hasta entonces la
+    afirmación que este repo puede sostener es *«`discover` es perezoso»*, no
+    *«`discover` no descarga»*, y así está escrita en el módulo.
+
+59. **El barrido de referencias NO recorre `MANUAL.md` ni `HITOS.md`, y se salta
+    un tipo de ruta.** `scripts/referencias.py` comprueba 103 referencias en los
+    ficheros **operativos** —`pyproject.toml`, `Makefile`, `CLAUDE.md`,
+    `ESTADO.md`, los workflows y las skills—. Dos huecos, los dos a propósito:
+
+    - **`MANUAL.md` y `HITOS.md` quedan fuera.** Describen el proyecto terminado:
+      su árbol está lleno de módulos que llegan en L5, L13 o L17 y que hoy están
+      «rotos» todos. Meterlos daría **cien falsos positivos**, y un informe con
+      cien falsos positivos no se lee — el argumento del límite 25.
+    - **Una referencia sin extensión sólo se comprueba si su primer segmento
+      existe en la raíz.** Sin esa regla, `actions/checkout` de un workflow entra
+      como fichero roto. Lo que se paga: un directorio inventado bajo otro que
+      tampoco existe se salta en silencio. **Con extensión sí se caza**, que es el
+      caso común.
+
+    Y una tercera cosa, que no es hueco sino peaje: **una ruta abreviada cuenta
+    como rota**. `entity/base.py` en prosa —cuando el fichero vive en
+    `src/docbench_es/entity/base.py`— sale en rojo, porque el barrido no adivina
+    desde dónde es relativa. La respuesta por defecto es **escribir la ruta
+    entera**, no declararla: es el mismo criterio que con los patrones del
+    guardián de recuentos, se corrige la redacción antes que el instrumento.
+
+    Y lo que el barrido no puede ver de ninguna forma: que una referencia apunte a
+    un fichero que **existe pero no hace lo que el texto dice**. Comprobar que algo
+    existe no es comprobar que la afirmación sobre ello sea cierta.
+
+60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
+    contabilidad —287 de 290— cuenta como protegido el test cuyo fichero es suite
+    objetivo de un mutante **o** declara un control negativo en
+    `CONTROLES_NEGATIVOS`. De esa declaración,
+    `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
+    **el test nombrado existe y que el fichero se colecta**. Si alguien lo renombra
+    o lo borra, la puerta se pone roja.
+
+    **Lo que ninguna comprobación puede decidir es si ese control es fuerte.** Que
+    un test ejercite una entrada mala no demuestra que cazaría un cambio en el
+    sujeto: eso lo demuestra un mutante, que es literalmente la definición del
+    arnés. Por eso la cobertura del arnés **se sigue publicando al lado como
+    submedida** en vez de sustituirse por ésta: la de arriba dice «hay algo», la de
+    abajo dice «ese algo se ha probado contra una rotura real».
+
+    Y las dos cuentan **tests** pero miden **ficheros**: un mutante al que mata un
+    solo test «protege» en el recuento a los dieciocho de su suite, y un control
+    negativo cuenta para todo su fichero. Es la misma unidad que usa el arnés desde
+    L1, y por eso las dos series son comparables entre sí — pero ninguna de las dos
+    dice «cada test está probado».
+
+61. **`may_send_to_third_party` MEZCLA DOS PREGUNTAS, y el contrato no las
+    separa.** El campo es un solo booleano de `benchcore.types.PrivacyDecl`, y
+    dentro caben dos cosas distintas:
+
+    | | La pregunta | Quién la contesta |
+    |---|---|---|
+    | **(a)** | ¿permite **la fuente** que se retransmita el documento? | el organismo, en su licencia |
+    | **(b)** | ¿tiene **el operador** base legal para *ese* tratamiento —datos personales a un tercero, quizá fuera de la UE—? | el responsable del tratamiento, y depende de quién y desde dónde |
+
+    Con un solo campo, **un `true` afirma las dos** y un `false` niega las dos. En
+    el BOE la (a) es un sí documentado y la (b) no la ha contestado nadie: por eso
+    ADR-0037 pone el campo en `false` — el valor restrictivo es el único que no
+    afirma lo que no se sabe.
+
+    **Por qué no se arregla partiéndolo en dos**, que es lo correcto: `PrivacyDecl`
+    vive en `benchcore`, o sea otro repo y otro contrato, y ampliarlo con un solo
+    consumidor es justo lo que ADR-0035 decide no hacer. **Precio estimado: ~1 h**
+    —dos campos, la subida del menor de `API_VERSION`, y los dos perfiles— y **no
+    se promete**: se declara con su tamaño. El momento natural es L12, cuando la
+    pregunta (b) haya que contestarla de verdad.
+
+    Mientras tanto, lo que el repo puede afirmar es *«la fuente lo permite y el
+    operador no lo ha evaluado»*, y eso **no cabe en el campo**. Cabe aquí.
+
+62. **El manifiesto pone hash al PDF y NO al XML: la mitad del par no está
+    fijada.** `Procedencia.sha256` es el `sha256` del `primary` de §7.1 —el PDF—,
+    y el XML viaja en `companions` sin hash propio, así que
+    `scripts/verificar_corpus.py` puede comprobar byte a byte el PDF y del XML
+    sólo puede decir **que está y que no está vacío**.
+
+    **Qué se escapa exactamente:** un XML sustituido por otro XML válido no
+    cambiaría el manifiesto, y el XML es *la verdad de referencia* contra la que
+    se puntúa a todos los extractores. O sea que la mitad menos protegida del par
+    es la mitad que decide quién gana.
+
+    **Por qué no se arregló antes de cosechar**, que era el momento natural:
+    añadir el campo toca `Procedencia`, el esquema del manifiesto,
+    `corpus.harvest` y la reanudación, y la reanudación tendría que rellenar el
+    hueco de los 25 documentos del piloto. Se descubrió con la cosecha ya
+    aprobada. **No es irreversible**: los XML quedan en disco, así que el hash se
+    puede añadir después recorriéndolos, y lo único que se pierde es que el hash
+    se tome de los bytes que salieron por el cable en vez de los que hay en disco.
+    **Precio estimado: ~40 min**, y el sitio natural es L4, que es el primero que
+    lee esos XML como verdad.
 
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están

@@ -62,6 +62,50 @@ recomendar sobre una carpeta ajena.
 `pagina_final` en `url_pdf`, así que no hay que abrir un PDF para calcularla. En
 una carpeta ajena sale del propio PDF, que es una lectura de metadatos.
 
+## El dominio de validez, que hay que declarar antes de que alguien consulte
+
+**Estas bandas están calibradas sobre documentos tipo BOE, con mediana de 6
+páginas.** No son universales, y compararlas con las de fuera lo deja claro.
+ExtractBench parte por **≤10 / 11–50 / >50**. Medido sobre las tres ventanas del
+sondeo (n=600):
+
+| Banda de ExtractBench | Qué proporción del BOE cae ahí |
+|---|---|
+| **corto (≤10)** | **80,2%** |
+| medio (11–50) | 17,7% |
+| largo (>50) | 2,2% |
+
+**Cuatro de cada cinco documentos del BOE son «cortos» para ellos**, y el p90 del
+BOE son 15 páginas. O sea que **mis tres bandas viven casi enteras dentro de su
+primera**: la escala no es la misma porque la población no es la misma.
+
+**La consecuencia, que es sobre lo único que hace usable la herramienta:** si
+alguien apunta `docbench` a una carpeta de documentos empresariales —contratos,
+pólizas, expedientes—, **el 100% le cae en la banda `largo`**, que es la que menos
+documentos tiene aquí (15,2%) y cuyo extremo superior no está medido. Devolverle
+una recomendación sería **extrapolar muy fuera del rango medido y presentarlo con
+cara de medición**.
+
+**Por eso `route` avisa, no extrapola.** Es la misma regla de declarar la
+precondición que se aplicó a `teds()` —que asume tablas válidas y no lo comprueba—
+sólo que aquí la precondición es del corpus del usuario, no de un argumento:
+
+- `route` compara la distribución de páginas de la carpeta del usuario con el
+  rango medido de la banda que le tocaría;
+- si la mediana del usuario cae fuera, **lo dice y no recomienda como si midiera**;
+- y el aviso lleva el número: *«tus documentos tienen mediana N páginas; esta banda
+  se calibró sobre documentos de mediana 6»*.
+
+**Requisito para L17**, que es donde vive `route.recommend` —el hito que emite
+`routing.yaml` ejecutable, §16—. Sin esto, la herramienta da su respuesta más
+segura justo donde menos sabe.
+
+> **Corrección de hito, 23 ago 2026, el mismo día.** Este párrafo decía «L15».
+> L15 es `sources` de plataforma; `route.recommend` es **L17**. El requisito no
+> cambia y sigue siendo de **quien consulte la tabla por banda**: sólo cambia a
+> qué hito se le exige. Se anota en vez de sobrescribirse porque un requisito
+> colgado del hito equivocado es un requisito que nadie recoge.
+
 ## Alternativas descartadas
 
 **Publicar sólo por estrato.** Es lo que dice §12 hoy y es lo que deja la

@@ -129,13 +129,15 @@ toca la verdad de referencia para que salgan los números.
 
 ## Reglas que se cargan solas
 
-En `.claude/rules/` hay 3 ficheros con `paths:` en el frontmatter. **No hace falta
+En `.claude/rules/` hay 4 ficheros con `paths:` en el frontmatter. **No hace falta
 importarlos**: Claude Code los mete en contexto solo cuando se leen ficheros que casan
 con sus globs, y salen del contexto cuando no hacen falta.
 
 - `.claude/rules/extractores.md`
 - `.claude/rules/nucleo-puro.md`
 - `.claude/rules/tests.md`
+- `.claude/rules/entidad-corpus.md` — entró con L3 y esta lista decía «3» hasta que
+  se leyó el primer fichero de `entity/`
 
 Si cambias la estructura de directorios, **revisa esos globs**: una regla cuyo `paths:`
 no casa con nada es una regla que no existe, y no avisa de ello.

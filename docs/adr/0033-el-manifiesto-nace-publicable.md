@@ -50,8 +50,17 @@ propiedad del corpus.
 **Publicar el manifiesto mínimo de §10.4 y ampliarlo cuando se decida publicar el
 corpus.** Es lo que parece más barato y es lo que cuesta un hito: la fecha de
 última actualización y la sección **no se pueden reconstruir sin volver al
-origen**, y volver al origen seis meses después no devuelve lo mismo — es
-justamente lo que ADR-0029 dice que el manifiesto existe para evitar.
+origen**, y volver al origen seis meses después no devuelve lo mismo — y evitar
+exactamente eso es para lo que el manifiesto existe: §19 del manual lo dice en su
+tabla de riesgos, *«el manifiesto con hashes permite reproducir campañas viejas
+aunque la fuente desaparezca»*.
+
+> **Corrección, 24 ago 2026.** Esta frase citaba **la decisión número 0029, que
+> no existe** —
+> comprobado con `git log --all`: nunca estuvo en ningún commit—. La cita se
+> sustituye por la fuente que sí dice eso, el manual. Se anota en vez de borrarse
+> porque el hueco tenía dos citas colgando y la otra, a `ADR-0030`, obligó a
+> escribir el ADR que faltaba.
 
 **Publicar el corpus en L3.** Descartada: no está en el criterio de §16 y mete
 decisiones de distribución en un hito que no las necesita. Lo que sí entra es que

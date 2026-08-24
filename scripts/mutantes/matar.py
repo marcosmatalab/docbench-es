@@ -24,6 +24,9 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 
+sys.path.insert(0, str(RAIZ / "scripts"))
+from sello import sello  # noqa: E402
+
 # mutante -> suite que tiene que caerse contra él
 PLAN = [
     ("ok", "tests/unit/test_canonical_invariantes.py tests/unit/test_canonical_huecos.py"),
@@ -190,6 +193,9 @@ def main() -> int:
     # CONTROL NEGATIVO primero: el arnés tiene que saber NO matar.
     suites = " ".join(sorted({s for _, s in PLAN}))
     fallan, pasan = _corre_sin_mutar(suites)
+    # El sello va PRIMERO y sale del propio instrumento: toda cifra de aquí abajo
+    # lleva denominador de suite, o sea que caduca sola cuando la suite crece.
+    print(f"sello: {sello(fallan + pasan)}")
     print(f"control negativo (sin mutar): {fallan} muertes de {fallan + pasan} tests")
     if fallan:
         print("EL ÁRBOL SIN MUTAR YA FALLA. La tabla de mutantes no vale nada hasta arreglarlo.")
