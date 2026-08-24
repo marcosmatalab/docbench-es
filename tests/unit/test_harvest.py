@@ -23,7 +23,7 @@ from docbench_es.entity.base import cargar_perfil
 from docbench_es.entity.boe import BoeAdapter
 from docbench_es.entity.boe_api import BoeApi
 from docbench_es.entity.boe_xml import texto_plano
-from docbench_es.errors import ContractViolation
+from docbench_es.errors import AdapterError, ContractViolation
 from docbench_es.types import DocRef, RawDoc
 
 RAIZ = Path(__file__).resolve().parents[2]
@@ -54,7 +54,7 @@ def _cosechar(origen: Origen, **kw: object) -> Cosecha:
     opciones: dict[str, object] = {
         "textos": _textos,
         "umbral_coherencia": perfil.umbral_coherencia,
-        "actualizado_en": HOY,
+        "cosechado_en": HOY,
         "reloj": reloj.leer,
     }
     opciones.update(kw)
@@ -117,7 +117,7 @@ def test_los_dias_sin_boletin_salen_del_denominador_y_se_cuentan_aparte() -> Non
         hasta=date(2026, 8, 5),
         textos=_textos,
         umbral_coherencia=perfil.umbral_coherencia,
-        actualizado_en=HOY,
+        cosechado_en=HOY,
     )
 
     assert cosecha.intentados == 2, "los dos documentos del único día con boletín"
@@ -141,7 +141,7 @@ def test_lo_que_ya_esta_en_el_manifiesto_no_se_vuelve_a_bajar() -> None:
         n_pages=3,
         strata=frozenset({"celdas-combinadas"}),
         fetched_at=datetime(2026, 8, 3, tzinfo=UTC),
-        actualizado_en=HOY,
+        cosechado_en=HOY,
     )
 
     cosecha = _cosechar(origen, ya_en_manifiesto={previo.external_id: previo})
@@ -264,3 +264,132 @@ def test_los_bytes_solo_se_guardan_si_alguien_los_pide_y_solo_los_aceptados() ->
     _cosechar(Origen(), textos=_incoherente, guardar=anotar)
 
     assert guardados == [], "los descartados no se guardan"
+
+
+# ------------------------------------------------- los dos aros que faltaban
+# Los dos salieron del escrutinio adversarial del cierre de L3, y los dos son de
+# la misma familia: código que sostiene una afirmación publicada y que ningún test
+# ejercitaba **por el camino real**. Comprobado desconectando `vigila_parada()` en
+# `cosechar`: la suite entera seguía en verde.
+
+
+class _Falso:
+    """Un origen mínimo de `n` documentos, con `fallan` que siempre revientan.
+
+    No usa `_boe_falso` a propósito: aquél tiene dos documentos por día y aquí
+    hace falta pasar del suelo de 20 que exige la condición de parada. Cumple
+    `Adaptador` por tipado estructural, que es lo que `cosechar` pide.
+    """
+
+    def __init__(self, n: int, fallan: frozenset[str] = frozenset()) -> None:
+        self.n, self.fallan = n, fallan
+        self.bajados: list[str] = []
+
+    def discover(self, since: date, until: date) -> list[DocRef]:
+        del since, until
+        return [
+            DocRef(
+                entity="falso",
+                external_id=f"D-{i:03d}",
+                published_on=DIA,
+                url="https://www.boe.es/x.pdf",
+                kind="pdf",
+            )
+            for i in range(self.n)
+        ]
+
+    def fetch(self, ref: DocRef) -> RawDoc:
+        if ref.external_id in self.fallan:
+            raise AdapterError(f"{ref.external_id}: el origen no responde")
+        self.bajados.append(ref.external_id)
+        return RawDoc(
+            ref=ref,
+            primary=b"%PDF",
+            primary_mime="application/pdf",
+            companions={"xml": b"<d/>"},
+            sha256=f"{len(self.bajados):064d}",
+            fetched_at=datetime(2026, 8, 3, 9, 0, tzinfo=UTC),
+            n_pages=1,
+        )
+
+    def strata(self, ref: DocRef, doc: RawDoc) -> frozenset[str]:
+        del ref, doc
+        return frozenset({"tabla-simple"})
+
+
+def test_la_parada_del_cinco_por_ciento_salta_dentro_de_cosechar() -> None:
+    """**El control negativo que decía ejercer el sujeto y no lo ejercía.**
+
+    Los tres tests que había llamaban a `_Contador.vigila_parada()` a mano, así
+    que comprobaban el ADR y no el código. Desconectando la llamada en `cosechar`
+    —sustituyéndola por `pass`— la suite entera de 294 tests seguía verde, y con
+    ella los 12 de este fichero contaban como «protegidos» en la segunda
+    contabilidad. Un candado que nadie ha visto rojo por su camino real no es un
+    candado.
+
+    25 documentos y 3 que revientan: 12%, por encima del 5% y con el suelo de 20
+    superado.
+    """
+    origen = _Falso(25, frozenset({"D-005", "D-011", "D-017"}))
+
+    with pytest.raises(ParadaPorFallos) as capturado:
+        cosechar(
+            origen,
+            desde=DIA,
+            hasta=DIA,
+            textos=lambda _: ("igual", "igual"),
+            umbral_coherencia=0.85,
+            cosechado_en=HOY,
+            reintentos=0,
+        )
+
+    assert "PARA" in str(capturado.value)
+    assert len(origen.bajados) < 25, "para ANTES de terminar la ventana"
+
+
+def test_rehidratar_vuelve_a_bajar_lo_del_manifiesto_que_no_esta_en_disco() -> None:
+    """**«Está en el manifiesto» y «está en disco» no son lo mismo.**
+
+    El corpus se publica con su manifiesto y sin sus 362 MB, así que rehidratarlo
+    es la ÚNICA vía por la que alguien que clona llega al `CUMPLE`. Con la caché
+    mirando sólo el manifiesto, esa vía daba **cero descargas y un `docs/` vacío**,
+    y el verificador habría dicho 1.000 veces `NO ESTA EN DISCO`.
+
+    Y siguen contando como aceptados, no como intentos nuevos: son parte del
+    corpus. Si contaran aparte, rehidratar cambiaría el denominador de la tasa
+    publicada, que es lo que ADR-0030 punto 5 prohíbe.
+    """
+    origen = _Falso(4)
+    heredados = {
+        f"D-{i:03d}": Procedencia(
+            external_id=f"D-{i:03d}",
+            fecha_sumario=DIA,
+            seccion="1",
+            url_pdf="https://www.boe.es/x.pdf",
+            url_xml="https://www.boe.es/x.xml",
+            sha256=f"{i:064d}",
+            n_pages=1,
+            strata=frozenset({"tabla-simple"}),
+            fetched_at=datetime(2026, 8, 3, 9, 0, tzinfo=UTC),
+            cosechado_en=HOY,
+        )
+        for i in range(4)
+    }
+    guardados: list[str] = []
+
+    cosecha = cosechar(
+        origen,
+        desde=DIA,
+        hasta=DIA,
+        textos=lambda _: ("igual", "igual"),
+        umbral_coherencia=0.85,
+        cosechado_en=HOY,
+        ya_en_manifiesto=heredados,
+        ya_en_disco=lambda ident: ident in {"D-000", "D-001"},  # sólo dos están
+        guardar=lambda ref, _doc: guardados.append(ref.external_id),
+    )
+
+    assert origen.bajados == ["D-002", "D-003"], "sólo los que faltaban en disco"
+    assert guardados == ["D-002", "D-003"], "y se ESCRIBEN, que era el punto"
+    assert cosecha.intentados == 4
+    assert len(cosecha.aceptados) == 4, "los cuatro siguen siendo corpus"

@@ -61,6 +61,10 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from _contra_el_plan import _fallos_contra_el_plan
+
 RAIZ = Path(__file__).resolve().parents[1]
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ESQUEMA_ESPERADO = "docbench-es.manifiesto/1"
@@ -113,7 +117,26 @@ def _fallos_de_forma(m: Json) -> list[str]:
     if aceptados != len(_lista(m, "documentos")):
         fuera.append(f"dice {aceptados} aceptados y trae {len(_lista(m, 'documentos'))}")
 
-    # ADR-0030: la tasa nunca viaja sola.
+    # ADR-0030: la tasa nunca viaja sola. Y ANTES QUE ESO: que sea la tasa. Aquí
+    # sólo se comprobaban los acompañantes, así que un manifiesto que publicara
+    # `tasa_descarte: 0.005` con 43 descartes de 1.043 salía CUMPLE con 0 fallos:
+    # el número que da nombre al criterio de aceptación era el único sin comprobar.
+    tasa = _real(emp, "tasa_descarte")
+    if intentados > 0 and tasa is not None and abs(tasa - descartados / intentados) > 1e-9:
+        fuera.append(
+            f"la tasa publicada ({tasa:.4%}) NO es {descartados}/{intentados} "
+            f"({descartados / intentados:.4%}). El número del criterio, mal"
+        )
+    # Y el invariante contra el DESGLOSE, no contra el total declarado: con
+    # `por_causa: {}` los 43 descartes cuadraban igual y desaparecían de su causa,
+    # que es la mitad que exige la regla de oro 6.
+    por_causa = _mapa(emp, "por_causa")
+    suma = sum(v for v in por_causa.values() if isinstance(v, int))
+    if suma != descartados:
+        fuera.append(
+            f"{descartados} descartados pero `por_causa` suma {suma}: hay descartes "
+            "sin causa del enum cerrado, y la tasa por causa es un resultado"
+        )
     if _real(emp, "umbral_coherencia") is None:
         fuera.append("la tasa se publica sin `umbral_coherencia` (ADR-0030)")
     if intentados < 0:
@@ -142,7 +165,7 @@ def _fallos_de_documentos(m: Json, dominio: str) -> list[str]:
     vistos: dict[str, str] = {}
     for doc in _lista(m, "documentos"):
         ident = _texto(doc, "external_id") or "(sin id)"
-        for campo in ("fecha_sumario", "seccion", "url_pdf", "url_xml", "actualizado_en"):
+        for campo in ("fecha_sumario", "seccion", "url_pdf", "url_xml", "cosechado_en"):
             if not _texto(doc, campo).strip():
                 fuera.append(f"{ident}: sin `{campo}`, y no se reconstruye sin volver al origen")
         sha = _texto(doc, "sha256")
@@ -190,42 +213,12 @@ def _fallos_de_disco(m: Json, docs: Path) -> list[str]:
     return fuera
 
 
-def _fallos_contra_el_plan(m: Json, plan: Json) -> list[str]:
-    """El manifiesto contra el plan **congelado antes de cosechar**.
-
-    Es la comprobación que convierte el plan en algo más que un documento: si la
-    ventana o el filtro no coinciden, lo cosechado no es lo que se planeó, y un
-    plan que se ajusta después de ver los resultados no es un plan (§16).
-    """
-    fuera: list[str] = []
-    ventana, del_plan = _mapa(m, "ventana"), _mapa(plan, "ventana")
-    for extremo in ("desde", "hasta"):
-        if str(del_plan.get(extremo)) != str(ventana.get(extremo)):
-            fuera.append(
-                f"la ventana {extremo}={ventana.get(extremo)} no es la del plan "
-                f"({del_plan.get(extremo)})"
-            )
-    objetivo = _entero(plan, "objetivo_emparejados")
-    aceptados = _entero(_mapa(m, "emparejado"), "aceptados")
-    if aceptados < objetivo:
-        fuera.append(f"{aceptados} emparejados, por debajo del objetivo del plan ({objetivo})")
-    en_plan = plan.get("filtro_secciones")
-    secciones = {str(s) for s in en_plan} if isinstance(en_plan, list) else set()
-    if secciones:
-        ajenas = {_texto(d, "seccion") for d in _lista(m, "documentos")} - secciones
-        if ajenas:
-            fuera.append(f"documentos de secciones que el plan no pide: {sorted(ajenas)}")
-    minimo = _real(plan, "ritmo_minimo_s") or 0.0
-    medido = _real(_mapa(m, "ritmo"), "espaciado_mediano_s")
-    if minimo and medido is not None and medido < minimo:
-        fuera.append(
-            f"espaciado mediano {medido} s, por debajo del {minimo} s declarado: "
-            "se cosechó más rápido de lo prometido"
-        )
-    return fuera
-
-
-def verificar(manifiesto: Json, plan: Json | None = None, docs: Path | None = None) -> list[str]:
+def verificar(
+    manifiesto: Json,
+    plan: Json | None = None,
+    docs: Path | None = None,
+    ruta_plan: Path | None = None,
+) -> list[str]:
     """Todos los fallos, no el primero. Lista vacía = el corpus cumple.
 
     `docs` a `None` **salta la comprobación de disco**, y por eso `main` no la deja
@@ -240,7 +233,7 @@ def verificar(manifiesto: Json, plan: Json | None = None, docs: Path | None = No
     if docs is not None:
         fuera += _fallos_de_disco(manifiesto, docs)
     if plan is not None:
-        fuera += _fallos_contra_el_plan(manifiesto, plan)
+        fuera += _fallos_contra_el_plan(manifiesto, plan, ruta_plan)
     return fuera
 
 
@@ -287,12 +280,18 @@ def main() -> int:
         print("  se verifica contra sí mismo, y describiría igual un corpus vacío.")
         return 1
 
-    fallos = verificar(manifiesto, plan, docs)
+    fallos = verificar(manifiesto, plan, docs, args.plan)
     for f in fallos:
         print(f"    FALLA  {f}")
+    if plan is None:
+        # No es un fallo —verificar la forma sin el plan es legítimo— pero SÍ es una
+        # comprobación que no se ha hecho, y el resumen no puede sonar igual que
+        # cuando sí se hizo.
+        print("    NO EJECUTADA  el manifiesto contra el plan congelado: falta --plan")
     n_docs = len(_lista(manifiesto, "documentos"))
     print(f"  {n_docs} documentos comprobados byte a byte contra {docs}")
-    print(f"\n{'NO CUMPLE' if fallos else 'CUMPLE'} el criterio · {len(fallos)} fallos")
+    veredicto = "NO CUMPLE" if fallos else ("CUMPLE, sin el plan" if plan is None else "CUMPLE")
+    print(f"\n{veredicto} el criterio · {len(fallos)} fallos")
     return 1 if fallos else 0
 
 

@@ -1,8 +1,8 @@
 {
  "esquema": "docbench-es.desglose-ventana/1",
- "leido_en": "2026-08-24T13:26:10+00:00",
- "sello": "c8aba64+3",
- "reconstruido": "los `intentados` por día NO los guardó la cosecha (límite 63): se vuelven a leer los sumarios con `BoeAdapter.discover`, el código de producción. Supone que el origen entrega hoy los mismos ítems que entregó durante la cosecha; el cuadre exacto es lo que lo sostiene",
+ "leido_en": "2026-08-24T13:46:47+00:00",
+ "sello": "0717b70+2",
+ "reconstruido": "los `intentados` por día NO los guardó la cosecha (límite 63): se vuelven a leer los sumarios con `BoeAdapter.discover`, el código de producción. SUPONE que el origen entrega hoy los mismos ítems que entregó durante la cosecha. Lo que lo sostiene es que los 1.000 identificadores aceptados siguen apareciendo y que ningún día tiene más aceptados que intentados; que los trozos sumen el total es una identidad aritmética y no comprueba nada",
  "corte": "2026-03-20",
  "ventana": {
   "desde": "2026-03-09",

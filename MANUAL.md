@@ -1534,21 +1534,53 @@ Es lo que se publica cuando el contenido no se puede publicar.
 
 ```json
 {
-  "campaign": "2026-Q4", "entity": "boe", "plan_hash": "c3d80a17f42e",
-  "license": { "name": "Reutilización BOE", "may_redistribute_content": true,
-               "may_redistribute_derived": true,
-               "attribution": "Fuente de los datos: Agencia Estatal BOE",
-               "source_url": "https://www.boe.es/", "verified_on": "2026-10-01",
-               "notes": "Reutilización autorizada con atribución." },
-  "documents": [
-    { "external_id": "BOE-A-2026-4223", "sha256": "9c1f...", "n_pages": 34,
+  "esquema": "docbench-es.manifiesto/1", "entidad": "boe",
+  "plan_hash": "c3d80a17f42e…",
+  "ventana": { "desde": "2026-03-09", "hasta": "2026-04-11" },
+  "emparejado": { "intentados": 1043, "aceptados": 1000, "descartados": 43,
+                  "por_causa": { "incoherente": 43 },
+                  "tasa_descarte": 0.0412, "umbral_coherencia": 0.85 },
+  "dias_sin_boletin": ["2026-03-15", "…"],
+  "ritmo": { "espaciado_mediano_s": 1.0000851, "espaciado_minimo_s": 1.0000211,
+             "n_peticiones": 2064 },
+  "atribucion": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado",
+  "licencia_corpus": { "name": "Reutilización BOE", "may_redistribute_content": true,
+                       "may_redistribute_derived": true, "source_url": "…" },
+  "licencia_codigo": "Apache-2.0",
+  "documentos": [
+    { "external_id": "BOE-A-2026-4223", "sha256": "9c1f…", "n_pages": 34,
       "strata": ["celdas-combinadas", "multipagina"],
-      "url_pdf": "...", "url_xml": "...", "fetched_at": "2026-10-02T09:11:00Z" }
-  ],
-  "download_script": "scripts/download.py",
-  "n_documents": 460, "n_discarded_pairing": 12
+      "seccion": "1", "fecha_sumario": "2026-03-09",
+      "url_pdf": "…", "url_xml": "…", "fetched_at": "2026-10-02T09:11:00Z",
+      "actualizado_en": "2026-08-24" }
+  ]
 }
 ```
+
+> **Transcrito de [ADR-0033](docs/adr/0033-el-manifiesto-nace-publicable.md), en
+> L3.** Esta sección publicaba el manifiesto **mínimo**: suficiente para reproducir
+> una campaña, insuficiente para **publicar el corpus**, que es lo que ADR-0033
+> decide que tiene que poder hacerse sin re-cosechar. Lo que entra y por qué:
+>
+> | Añadido | Sin él |
+> |---|---|
+> | `seccion` y `fecha_sumario` por documento | la población del denominador **no se puede re-derivar sin volver al origen**, y volver seis meses después no devuelve lo mismo |
+> | `actualizado_en` por documento | el manifiesto **no cumple la licencia** del BOE, que exige la fecha junto a la atribución |
+> | `atribucion`, literal y dentro | una referencia a dónde leerla no es la atribución |
+> | `licencia_corpus` **separada** de `licencia_codigo` | confundirlas es lo que hace impublicable un dataset: el código puede ser Apache-2.0 y el corpus estar sujeto a las condiciones del BOE |
+> | `ventana`, `por_causa` y `umbral_coherencia` junto a la tasa | **ADR-0030**: una tasa sola es una propiedad del calendario disfrazada de propiedad del corpus, y está medido que entre ventanas va de 2,0% a 5,5% |
+> | `ritmo` con su espaciado **medido** | «1 rps» declarado no es «1 rps cumplido» |
+>
+> **Y lo que se renombra**: `n_documents`/`n_discarded_pairing` pasan al bloque
+> `emparejado` con su denominador `intentados` al lado, porque publicar los dos
+> primeros sin el tercero deja la tasa sin población. `download_script` se cae: el
+> comando de rehidratación vive en el README del corpus, que es donde alguien lo
+> busca, y una ruta dentro del JSON se queda vieja sin que nada avise.
+>
+> **`plan_hash` se queda, y ahora tiene función**: es el `sha256` del `plan.yaml`
+> congelado antes de cosechar, y `scripts/verificar_corpus.py --plan` lo comprueba.
+> Sin él, el verificador compara contra *el fichero que le pases*, y nada ata el
+> manifiesto a un plan concreto.
 
 ---
 
@@ -1672,6 +1704,28 @@ Todo esto vive también en `docs/metrics.md`. Es donde un examinador con formaci
 | **IC** | Bootstrap BCa sobre **documentos**, no sobre preguntas | Las preguntas de un documento están correlacionadas | Varianza cero: cae a percentil y se marca `degenerado` |
 
 **El detalle que un examinador bueno pregunta:** el bootstrap remuestrea documentos y arrastra sus preguntas. Remuestrear preguntas sueltas las trata como independientes e infla la precisión aparente.
+
+> **Transcrito de [ADR-0034](docs/adr/0034-los-resultados-se-publican-por-banda-de-longitud.md),
+> en L3.** **Además de por estrato, los resultados se publican por BANDA DE
+> LONGITUD**, y las bandas se definen aquí, no cuando toque:
+>
+> | Banda | Páginas | % del BOE (n=600) | En un corpus de 1.000 |
+> |---|---|---|---|
+> | **corto** | 1 – 4 | 37,0% | ~370 |
+> | **medio** | 5 – 12 | 47,8% | ~478 |
+> | **largo** | 13 o más | 15,2% | ~152 |
+>
+> **En páginas absolutas y no en terciles del corpus**: un tercil es una propiedad
+> del BOE, y «1 a 4 páginas» significa lo mismo en la carpeta de cualquiera. El eje
+> existe para ser portable, así que definirlo por cuantiles propios lo haría inútil
+> justo para el caso que lo justifica. Los cortes salen de las tres ventanas del
+> sondeo: 4 es el percentil 33 y 13 está cerca del 87, o sea **n suficiente en las
+> tres bandas para publicar con intervalo**.
+>
+> **Y la banda no sustituye al estrato**: lleva señal medida propia, porque la
+> longitud predice fallos que el estrato no ve —un documento largo agota contextos
+> y multiplica el coste— y el estrato predice fallos que la longitud no ve.
+> **Se publican los dos ejes, no uno.** Lo consume `route`, en **L17**.
 
 ### Nivel 3 · Vocabulario
 

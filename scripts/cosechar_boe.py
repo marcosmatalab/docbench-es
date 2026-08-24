@@ -23,6 +23,7 @@ de oro 1 sigue en pie: esto es preparacion de corpus, no un extractor del banco.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import sys
@@ -42,12 +43,19 @@ from docbench_es.entity.boe import BoeAdapter  # noqa: E402
 from docbench_es.entity.boe_xml import texto_plano  # noqa: E402
 from docbench_es.types import DocRef, RawDoc  # noqa: E402
 
+ILEGIBLES: list[str] = []
+"""Los identificadores cuyo PDF llego y `pypdf` no supo abrir. Lista y no
+contador: quien lo lea querra mirar UNO."""
+
 
 def _textos(doc: RawDoc) -> tuple[str | None, str | None]:
-    """`(texto_pdf, texto_xml)`. Un PDF ilegible devuelve `None`, no una cadena vacia.
+    """`(texto_pdf, texto_xml)`. Un PDF ilegible se ANOTA y devuelve cadena vacia.
 
-    La diferencia importa: `None` es «no se pudo leer» y `""` seria «no tiene
-    texto». Las dos son causas distintas del enum cerrado y se cuentan aparte.
+    **`None` aqui significaria «no habia PDF», y eso es falso**: el PDF llego, se
+    bajo y esta en disco; lo que fallo es abrirlo. Devolver `None` lo mandaba al
+    enum como `sin_pdf`, o sea a la causa que manda a mirar el origen cuando el
+    problema esta en el lector de texto. Ahora sale como `pdf_sin_texto` con su
+    identificador anotado aparte, que es lo que se puede afirmar sin mentir.
     """
     from pypdf import PdfReader
     from pypdf.errors import PyPdfError
@@ -56,7 +64,8 @@ def _textos(doc: RawDoc) -> tuple[str | None, str | None]:
         lector = PdfReader(io.BytesIO(doc.primary))
         pdf = "\n".join(p.extract_text() or "" for p in lector.pages)
     except (PyPdfError, ValueError, OSError):
-        pdf = None  # type: ignore[assignment]
+        ILEGIBLES.append(doc.ref.external_id)
+        pdf = ""
     xml = texto_plano(doc.companions.get("xml", b"").decode("utf-8", errors="replace"))
     return pdf, xml
 
@@ -100,7 +109,7 @@ def _procedencias(ruta: Path | None) -> dict[str, Procedencia]:
             n_pages=d["n_pages"],
             strata=frozenset(d["strata"]),
             fetched_at=datetime.fromisoformat(d["fetched_at"]),
-            actualizado_en=date.fromisoformat(d["actualizado_en"]),
+            cosechado_en=date.fromisoformat(d["cosechado_en"]),
         )
         for d in datos["documentos"]
     }
@@ -126,7 +135,27 @@ def main() -> int:
     )
     args = partes.parse_args()
 
-    plan = yaml.safe_load(args.plan.read_text(encoding="utf-8"))
+    if (
+        args.reanudar is not None
+        and args.salida is None
+        and args.reanudar.name
+        in {
+            "manifiesto.json",
+            "piloto.json",
+        }
+    ):
+        # Reanudar leyendo `manifiesto.json` y escribir en `manifiesto.json` PISA LA
+        # EVIDENCIA versionada con un manifiesto de otra corrida —otro ritmo, otros
+        # dias sin boletin—. Rehidratar no es re-cosechar: quien rehidrata comprueba
+        # contra el manifiesto publicado, no lo reescribe.
+        print(f"NO: --reanudar {args.reanudar.name} escribiria encima de si mismo.")
+        print("  Rehidratar NO reescribe el manifiesto publicado: comprueba contra el.")
+        print(f"  Usa --salida otra-ruta.json, o `verificar_corpus.py {args.reanudar}`")
+        print("  despues de bajar los bytes, que es lo que dice runs/l3/README.md.")
+        return 2
+
+    crudo_plan = args.plan.read_bytes()
+    plan = yaml.safe_load(crudo_plan.decode("utf-8"))
     perfil = cargar_perfil(RAIZ / "entities" / "boe.yaml")
     desde = plan["ventana"]["desde"]
     hasta = desde + timedelta(days=2) if args.piloto else plan["ventana"]["hasta"]
@@ -153,8 +182,14 @@ def main() -> int:
             hasta=hasta,
             textos=_textos,
             umbral_coherencia=perfil.umbral_coherencia,
-            actualizado_en=date.today(),
+            cosechado_en=date.today(),
             ya_en_manifiesto=_procedencias(args.reanudar),
+            # «Esta en el manifiesto» y «esta en disco» NO son lo mismo. Sin esto,
+            # rehidratar un corpus publicado —manifiesto si, bytes no— da cero
+            # descargas y un `docs/` vacio.
+            ya_en_disco=lambda ident: (
+                (docs / f"{ident}.pdf").is_file() and (docs / f"{ident}.xml").is_file()
+            ),
             objetivo=objetivo,
             guardar=_guardador(docs),
         )
@@ -164,6 +199,7 @@ def main() -> int:
 
     manifiesto = crear(
         entidad=adaptador.id,
+        plan_hash=hashlib.sha256(crudo_plan).hexdigest(),
         desde=desde,
         hasta=hasta,
         documentos=cosecha.aceptados,
@@ -177,6 +213,8 @@ def main() -> int:
     salida.parent.mkdir(parents=True, exist_ok=True)
     salida.write_text(manifiesto.a_texto(), encoding="utf-8")
 
+    if ILEGIBLES:
+        print(f"\n  PDF que `pypdf` no supo abrir: {len(ILEGIBLES)} · {ILEGIBLES[:5]}")
     print(
         f"\n  intentados {cosecha.intentados} · aceptados {len(cosecha.aceptados)} · "
         f"descartes {cosecha.por_causa or '{}'} · tasa {cosecha.tasa_descarte:.2%}"

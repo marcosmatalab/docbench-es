@@ -50,7 +50,7 @@ UNO = Procedencia(
     n_pages=3,
     strata=frozenset({"celdas-combinadas"}),
     fetched_at=datetime(2026, 8, 3, 9, 0, tzinfo=UTC),
-    actualizado_en=HOY,
+    cosechado_en=HOY,
 )
 
 
@@ -58,6 +58,7 @@ def _crear(*, licencia: LicenseDecl | None = None, intentados: int = 2) -> Manif
     """El manifiesto de ejemplo. Los dos parámetros son los que cada test mueve."""
     return crear(
         entidad="boe",
+        plan_hash="f" * 64,
         desde=DIA,
         hasta=DIA,
         documentos=[UNO],
@@ -81,7 +82,7 @@ def test_requisito_1_la_procedencia_es_por_documento_con_su_seccion_y_su_fecha()
 
     assert doc["seccion"] == "1"
     assert doc["fecha_sumario"] == "2026-08-03"
-    assert doc["actualizado_en"] == "2026-08-24", "la que exigen las condiciones del BOE"
+    assert doc["cosechado_en"] == "2026-08-24", "la que exigen las condiciones del BOE"
     assert doc["url_pdf"] and doc["url_xml"], "las dos, no una"
 
 
@@ -184,10 +185,11 @@ def test_una_cosecha_real_del_boe_produce_un_manifiesto_publicable() -> None:
         hasta=DIA,
         textos=textos,
         umbral_coherencia=PERFIL.umbral_coherencia,
-        actualizado_en=HOY,
+        cosechado_en=HOY,
     )
     manifiesto = crear(
         entidad=adaptador.id,
+        plan_hash="f" * 64,
         desde=DIA,
         hasta=DIA,
         documentos=cosecha.aceptados,

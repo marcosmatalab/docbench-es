@@ -51,13 +51,14 @@ from __future__ import annotations
 
 import statistics
 import time
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date
 from itertools import pairwise
-from typing import Protocol, runtime_checkable
 
 from docbench_es.corpus._cosecha import (
     UMBRAL_PARADA,
+    Adaptador,
+    AdaptadorConProcedencia,
     Cosecha,
     ParadaPorFallos,
     Ritmo,
@@ -77,42 +78,8 @@ __all__ = [
     "Ritmo",
     "cosechar",
 ]
-"""`Cosecha`, `Ritmo` y `ParadaPorFallos` viven en `_cosecha` y se reexportan aquí:
-son el resultado de cosechar, así que su sitio de import es éste."""
-
-
-class Adaptador(Protocol):
-    """Lo único que la cosecha usa de §7.1: tres de los siete métodos.
-
-    Es tipado estructural y **no un import de `entity`** a propósito: `corpus` y
-    `entity` son capas hermanas, y pedir aquí el `Protocol` entero ataría la
-    cosecha a la entidad para usar tres métodos. Lo que este módulo necesita, lo
-    declara.
-    """
-
-    def discover(self, since: date, until: date) -> Iterable[DocRef]: ...
-
-    def fetch(self, ref: DocRef) -> RawDoc: ...
-
-    def strata(self, ref: DocRef, doc: RawDoc) -> frozenset[str]: ...
-
-
-@runtime_checkable
-class AdaptadorConProcedencia(Protocol):
-    """Lo que el contrato de §7.1 **no** tiene y el manifiesto sí necesita.
-
-    Opcional a propósito: un adaptador que no lo cumpla se cosecha igual. Lo que no
-    vale es sacarlo con `getattr` y una cadena mágica, porque entonces el hueco del
-    contrato no se ve al leer el código.
-    """
-
-    dias_sin_boletin: list[date]
-
-    def seccion_de(self, ref: DocRef) -> str: ...
-
-    def urls_de(self, ref: DocRef) -> tuple[str, str]: ...
-
-    def espaciados_peticion(self) -> list[float]: ...
+"""Los tipos viven en `_cosecha` —los dos `Protocol` de entrada y los tres de
+salida— y se reexportan aquí: éste es el módulo que se importa para cosechar."""
 
 
 def _ritmo(de_peticion: Sequence[float] | None, inicios: Sequence[float]) -> Ritmo:
@@ -166,8 +133,9 @@ def cosechar(
     hasta: date,
     textos: Callable[[RawDoc], tuple[str | None, str | None]],
     umbral_coherencia: float,
-    actualizado_en: date,
+    cosechado_en: date,
     ya_en_manifiesto: Mapping[str, Procedencia] | None = None,
+    ya_en_disco: Callable[[str], bool] | None = None,
     objetivo: int | None = None,
     guardar: Callable[[DocRef, RawDoc], None] | None = None,
     reintentos: int = 2,
@@ -180,6 +148,14 @@ def cosechar(
     corpus**. Ésa es la diferencia entre una tasa del corpus y una tasa del
     proceso: si los heredados no contaran, reanudar cambiaría el denominador.
 
+    `ya_en_disco` dice **si los bytes están de verdad**, y sin él la caché miente:
+    «está en el manifiesto» y «está en disco» son cosas distintas, y confundirlas
+    convierte la rehidratación de un corpus publicado —manifiesto sí, bytes no— en
+    **cero descargas y un `docs/` vacío**. Por defecto asume que sí están, que es
+    lo correcto para una reanudación en la misma máquina; quien rehidrate pasa el
+    predicado. Un heredado que no esté en disco **se vuelve a bajar y se guarda**,
+    y sigue contando como aceptado: es parte del corpus, no un intento nuevo.
+
     `objetivo` corta **por documentos aceptados**, no por intentos. La ventana se
     dimensiona con margen y el corte garantiza el criterio aunque el descarte real
     no sea el proyectado.
@@ -189,6 +165,7 @@ def cosechar(
     que no existe.
     """
     heredados = dict(ya_en_manifiesto or {})
+    en_disco = ya_en_disco or (lambda _: True)
     tope = objetivo if objetivo is not None else -1
     cuenta = _Contador()
     aceptados: list[Procedencia] = []
@@ -200,28 +177,31 @@ def cosechar(
         if tope >= 0 and len(aceptados) >= tope:
             break
         cuenta.intentados += 1
-        previo = heredados.get(ref.external_id)
-        if previo is not None:
-            aceptados.append(previo)
-            continue
-
-        cuenta.inicios.append(reloj())
-        doc = _baja(adaptador, ref, reintentos)
-        if doc is None:
-            cuenta.agotados += 1
-            cuenta.anota("descarga")
-            cuenta.vigila_parada()
-            continue
-        cuenta.descargados += 1
-
-        texto_pdf, texto_xml = textos(doc)
-        veredicto = juzgar(texto_pdf, texto_xml, umbral=umbral_coherencia)
-        if not veredicto.acepta:
-            cuenta.anota(str(veredicto.causa))
-            continue
-        if guardar is not None:
-            guardar(ref, doc)
-        aceptados.append(_procedencia(adaptador, ref, doc, actualizado_en))
+        salida = _un_documento(
+            adaptador,
+            ref,
+            heredados,
+            en_disco,
+            cuenta,
+            textos,
+            umbral_coherencia,
+            reintentos,
+            reloj,
+        )
+        if salida is not None:
+            if guardar is not None and salida[1] is not None:
+                guardar(ref, salida[1])
+            aceptados.append(
+                salida[0]
+                if salida[0] is not None
+                else _procedencia(adaptador, ref, salida[1], cosechado_en)  # type: ignore[arg-type]
+            )
+        # DESPUÉS DE CADA DOCUMENTO, no sólo después de un fallo. Mirarla sólo tras
+        # un fallo deja un hueco real: con 3 caídas en los 18 primeros y 22 buenos
+        # después, la condición NUNCA se evalúa por encima del suelo de 20 y la
+        # cosecha termina con un 12% publicado como si nada. Medido escribiendo el
+        # test que faltaba.
+        cuenta.vigila_parada()
 
     return Cosecha(
         intentados=cuenta.intentados,
@@ -241,9 +221,46 @@ def cosechar(
     )
 
 
-def _procedencia(
-    adaptador: Adaptador, ref: DocRef, doc: RawDoc, actualizado_en: date
-) -> Procedencia:
+def _un_documento(
+    adaptador: Adaptador,
+    ref: DocRef,
+    heredados: Mapping[str, Procedencia],
+    en_disco: Callable[[str], bool],
+    cuenta: _Contador,
+    textos: Callable[[RawDoc], tuple[str | None, str | None]],
+    umbral: float,
+    reintentos: int,
+    reloj: Callable[[], float],
+) -> tuple[Procedencia | None, RawDoc | None] | None:
+    """Un documento: `None` si se descarta, y si no, de dónde sale su procedencia.
+
+    Extraído del bucle **para que la condición de parada se pueda mirar después de
+    CADA documento**: con los tres `continue` que había dentro, sólo se evaluaba en
+    la rama del fallo. Devuelve `(procedencia_heredada, None)` si venía del
+    manifiesto y `(None, doc)` si se acaba de bajar — el que llama guarda sólo en
+    el segundo caso, porque lo heredado ya está en disco.
+    """
+    previo = heredados.get(ref.external_id)
+    if previo is not None and en_disco(ref.external_id):
+        return previo, None
+
+    cuenta.inicios.append(reloj())
+    doc = _baja(adaptador, ref, reintentos)
+    if doc is None:
+        cuenta.agotados += 1
+        cuenta.anota("descarga")
+        return None
+    cuenta.descargados += 1
+
+    texto_pdf, texto_xml = textos(doc)
+    veredicto = juzgar(texto_pdf, texto_xml, umbral=umbral)
+    if not veredicto.acepta:
+        cuenta.anota(str(veredicto.causa))
+        return None
+    return None, doc
+
+
+def _procedencia(adaptador: Adaptador, ref: DocRef, doc: RawDoc, cosechado_en: date) -> Procedencia:
     """La fila del manifiesto de un documento aceptado (ADR-0033, requisito 1).
 
     La sección y las dos URLs salen de `AdaptadorConProcedencia`, porque el
@@ -257,7 +274,7 @@ def _procedencia(
         seccion, urls = "", (ref.url or "", "")
     return Procedencia(
         external_id=ref.external_id,
-        fecha_sumario=ref.published_on or actualizado_en,
+        fecha_sumario=ref.published_on or cosechado_en,
         seccion=seccion,
         url_pdf=urls[0],
         url_xml=urls[1],
@@ -265,5 +282,5 @@ def _procedencia(
         n_pages=doc.n_pages,
         strata=adaptador.strata(ref, doc),
         fetched_at=doc.fetched_at,
-        actualizado_en=actualizado_en,
+        cosechado_en=cosechado_en,
     )

@@ -67,9 +67,19 @@ class Procedencia:
     denominador**, y sin la fecha del sumario no se sabe de qué ventana salió cada
     documento — que es lo que ADR-0030 exige para publicar cualquier tasa.
 
-    `actualizado_en` es la **fecha de última actualización** que exigen las
-    condiciones de reutilización del BOE. Sin ella el manifiesto no cumple la
-    licencia, y no se puede reconstruir sin volver al origen.
+    `cosechado_en` es **la fecha en que ESTE proyecto bajó el documento**, y se
+    llama así desde el cierre de L3 porque antes se llamaba `actualizado_en` y
+    afirmaba ser *«la fecha de última actualización que exigen las condiciones de
+    reutilización, y que no se puede reconstruir sin volver al origen»*. **Era
+    falso**: lo rellenaba `date.today()`, y en los 1.000 documentos del corpus
+    coincide con `fetched_at[:10]` **1.000 de 1.000**, o sea que no llevaba ni un
+    bit del origen y era trivialmente reconstruible.
+
+    **La fecha que la licencia del BOE exige es `fecha_sumario`**, que sí viene del
+    origen: es el día en que el organismo publicó el documento, y para un boletín
+    —que no se reescribe, se corrige con otro documento— ésa es su fecha de última
+    actualización. Ese campo estaba y sigue estando.
+
     """
 
     external_id: str
@@ -81,7 +91,7 @@ class Procedencia:
     n_pages: int | None
     strata: frozenset[str]
     fetched_at: datetime
-    actualizado_en: date
+    cosechado_en: date
 
 
 @dataclass(frozen=True)
@@ -95,6 +105,7 @@ class Manifiesto:
     """
 
     entidad: str
+    plan_hash: str
     desde: date
     hasta: date
     documentos: tuple[Procedencia, ...]
@@ -131,6 +142,11 @@ class Manifiesto:
         return {
             "esquema": ESQUEMA,
             "entidad": self.entidad,
+            # §10.4: el `sha256` del plan congelado. Sin él, `verificar_corpus.py
+            # --plan` compara contra EL FICHERO QUE LE PASES y nada ata el
+            # manifiesto a un plan concreto: bastaría escribir otro plan que
+            # cuadrase con lo cosechado para que el manifiesto lo aprobara.
+            "plan_hash": self.plan_hash,
             "ventana": {"desde": self.desde.isoformat(), "hasta": self.hasta.isoformat()},
             "licencia_corpus": {
                 "name": self.licencia_corpus.name,
@@ -162,7 +178,7 @@ class Manifiesto:
                     "n_pages": d.n_pages,
                     "strata": sorted(d.strata),
                     "fetched_at": d.fetched_at.isoformat(),
-                    "actualizado_en": d.actualizado_en.isoformat(),
+                    "cosechado_en": d.cosechado_en.isoformat(),
                 }
                 for d in self.documentos
             ],
@@ -181,6 +197,7 @@ class Manifiesto:
 def crear(
     *,
     entidad: str,
+    plan_hash: str,
     desde: date,
     hasta: date,
     documentos: Sequence[Procedencia],
@@ -195,6 +212,8 @@ def crear(
 
     Las dos comprobaciones son puertas, no cortesías:
 
+    - **Sin `plan_hash` no hay manifiesto.** §16 congela el plan antes de medir; sin
+      su huella dentro, el verificador compara contra el fichero que le pasen.
     - **Sin atribución no hay manifiesto.** El requisito 2 pide el texto literal
       dentro, no una referencia a dónde leerlo. Un corpus publicado sin la
       atribución que su licencia exige incumple la licencia — y el momento de
@@ -203,6 +222,11 @@ def crear(
       salieron de la cosecha sin aparecer en ningún lado, y la tasa que este objeto
       publica estaría calculada sobre una población que nadie declaró.
     """
+    if not plan_hash.strip():
+        raise ContractViolation(
+            "sin `plan_hash` el manifiesto no queda atado a ningún plan, y §16 "
+            "congela el plan ANTES de medir precisamente para que se pueda comprobar"
+        )
     if not (licencia.attribution or "").strip():
         raise ContractViolation(
             f"la licencia de {entidad!r} no trae `attribution` y el manifiesto la exige "
@@ -218,6 +242,7 @@ def crear(
         )
     return Manifiesto(
         entidad=entidad,
+        plan_hash=plan_hash,
         desde=desde,
         hasta=hasta,
         documentos=tuple(documentos),

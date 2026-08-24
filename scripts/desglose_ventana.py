@@ -20,8 +20,15 @@ se aleje de la cosecha, menos vale, y eso hay que poder verlo sin preguntar.
 
 **Lo que esto NO es.** No es una medición nueva de la cosecha: es una lectura del
 origen posterior a ella. Si el BOE reordenara o retirara un ítem de un sumario
-viejo, la reconstrucción y la cosecha discreparían — y por eso el script comprueba
-que el total reconstruido cuadra con `intentados`, y se cae si no.
+viejo, la reconstrucción y la cosecha discreparían.
+
+**Y lo que NO sirve para detectarlo, aunque lo parezca:** que los trozos sumen el
+total. `462 + 581 = 1.043` es una **identidad aritmética** —se parte por fecha un
+conjunto y los trozos suman el conjunto— y cuadraría igual con un ítem movido de
+día. Lo que discrimina es **por identificador**: que cada documento aceptado siga
+estando entre los que el origen entrega hoy, y que ningún día tenga más aceptados
+que intentados. Eso es lo que se comprueba, y si falla **no se publica un desglose
+aproximado**: se cae.
 """
 
 from __future__ import annotations
@@ -92,9 +99,28 @@ def main() -> int:
     aceptados: Counter[date] = Counter(
         date.fromisoformat(str(d["fecha_sumario"])) for d in manifiesto["documentos"]
     )
-    ajenos = set(aceptados) - set(intentados)
-    if ajenos:
-        print(f"NO CUADRA: aceptados en días que no se intentaron: {sorted(ajenos)}")
+    # LO QUE DE VERDAD DISCRIMINA, y no las sumas por trozo: que cada documento
+    # aceptado esté ENTRE los refs reconstruidos, por identificador. Las sumas
+    # («462 + 581 = 1.043») son identidades aritméticas —se parte por fecha un
+    # conjunto y los trozos suman el conjunto— y cuadrarían igual con un origen
+    # que hubiera movido un ítem de día. Ésta no: si el BOE retirara o reordenara
+    # un documento entre sumarios, su identificador dejaría de aparecer.
+    ids_refs = {r.external_id for r in refs}
+    ausentes = {str(d["external_id"]) for d in manifiesto["documentos"]} - ids_refs
+    if ausentes:
+        print(f"NO CUADRA: {len(ausentes)} aceptados que el origen ya no entrega: ")
+        print(f"  {sorted(ausentes)[:5]}… El origen ha derivado desde la cosecha y")
+        print("  el reparto por día sería falso. NO se publica un desglose aproximado.")
+        return 1
+    # Y por DÍA, que es la unidad del reparto: un día con más aceptados que
+    # intentados daría descartes negativos y una tasa negativa sin protestar.
+    torcidos = {
+        d: (aceptados[d], intentados.get(d, 0))
+        for d in aceptados
+        if aceptados[d] > intentados.get(d, 0)
+    }
+    if torcidos:
+        print(f"NO CUADRA: días con más aceptados que intentados: {torcidos}")
         return 1
 
     inv_i = Counter({d: n for d, n in intentados.items() if d < EQUINOCCIO})
@@ -117,8 +143,11 @@ def main() -> int:
         "reconstruido": (
             "los `intentados` por día NO los guardó la cosecha (límite 63): se "
             "vuelven a leer los sumarios con `BoeAdapter.discover`, el código de "
-            "producción. Supone que el origen entrega hoy los mismos ítems que "
-            "entregó durante la cosecha; el cuadre exacto es lo que lo sostiene"
+            "producción. SUPONE que el origen entrega hoy los mismos ítems que "
+            "entregó durante la cosecha. Lo que lo sostiene es que los 1.000 "
+            "identificadores aceptados siguen apareciendo y que ningún día tiene "
+            "más aceptados que intentados; que los trozos sumen el total es una "
+            "identidad aritmética y no comprueba nada"
         ),
         "corte": EQUINOCCIO.isoformat(),
         "ventana": {k: str(v) for k, v in plan["ventana"].items()},

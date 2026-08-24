@@ -395,20 +395,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 164 de 294 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 164 de 298 tests.** Los
     **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **130 tests restantes** —`verificar_corpus` (14), `boe` (12), `harvest` (12),
-    `boe_api` (10), `entity_conformance` (9), `entity_registry` (9),
-    `sellar_xml` (4),
-    `barreras` (8), `manifest` (8), `pairing` (8), `policy` (7),
+    árbol de TEDS y el lote. Los **134 tests restantes** —`harvest` (14), `verificar_corpus` (14),
+    `boe` (12), `barreras` (10), `boe_api` (10), `entity_conformance` (9),
+    `entity_registry` (9), `sellar_xml` (4),
+    `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
     `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
     así que «los 21 mueren» no dice
     nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **44,2% hoy**.
+    12,4% al cerrar L2, **45,0% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **291 de 294 tests protegidos por algo** —un
+    *el arnés*, no la protección: **295 de 298 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -682,7 +682,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —291 de 294— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —295 de 298— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -782,12 +782,27 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Si un ítem se hubiera retirado o reordenado, la reconstrucción repartiría mal
     los descartes y el desglose sería falso sin avisar.
 
-    **Lo que sostiene el supuesto es el cuadre exacto**, en las tres columnas a la
-    vez: 462 + 581 = 1.043 intentados, 444 + 556 = 1.000 aceptados,
-    18 + 25 = 43 descartes. Que las tres cuadren a la vez con un origen que hubiera
-    derivado es tan improbable que el cuadre **es** la comprobación. Por eso el
-    script **se cae si no cuadra** en vez de publicar un desglose aproximado: la
-    alternativa sería un número que no sabe que está mal.
+    **Lo que NO sostiene el supuesto, aunque lo parezca:** que los trozos sumen el
+    total. `462 + 581 = 1.043`, `444 + 556 = 1.000`, `18 + 25 = 43`. **Las tres son
+    identidades aritméticas**: el script parte por fecha dos conjuntos y calcula los
+    descartes restando, así que los trozos suman el conjunto **pase lo que pase**.
+    Cuadrarían igual con un ítem movido de día, que es exactamente la deriva que
+    había que detectar.
+
+    > **Esta entrada afirmaba lo contrario el mismo día en que se escribió**:
+    > *«que las tres cuadren a la vez con un origen que hubiera derivado es tan
+    > improbable que el cuadre ES la comprobación»*. Es falso, y lo encontró el
+    > escrutinio adversarial del cierre. Se corrige en el acto y se anota en vez de
+    > borrarse: una afirmación falsa nunca es deuda, y **la evidencia que se cita
+    > para respaldar un supuesto es justo donde menos se mira**, porque llega ya
+    > envuelta en la conclusión.
+
+    **Lo que sí lo sostiene, y es lo que el script comprueba ahora:** que los
+    **1.000 identificadores** aceptados sigan apareciendo entre los que el origen
+    entrega hoy —un documento retirado o reordenado deja de estar—, y que **ningún
+    día tenga más aceptados que intentados**, que sin comprobarlo daría descartes
+    negativos y una tasa negativa sin protestar. Comprobado: **0 ausentes, 0 días
+    torcidos**. Si falla, el script **no publica un desglose aproximado**: se cae.
 
     **Y la fecha de la lectura va dentro del artefacto**, `leido_en` en
     `runs/l3/desglose.json`, porque el supuesto se debilita con el tiempo: pegada a

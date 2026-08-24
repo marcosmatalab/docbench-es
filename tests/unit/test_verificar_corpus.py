@@ -45,12 +45,13 @@ def _manifiesto(n: int = 2) -> dict[str, object]:
             n_pages=2,
             strata=frozenset({"tabla-simple"}),
             fetched_at=datetime(2026, 8, 3, 9, 0, tzinfo=UTC),
-            actualizado_en=date(2026, 8, 24),
+            cosechado_en=date(2026, 8, 24),
         )
         for i in range(n)
     ]
     return crear(
         entidad="boe",
+        plan_hash="f" * 64,
         desde=date(2026, 8, 3),
         hasta=date(2026, 8, 3),
         documentos=docs,
@@ -212,11 +213,12 @@ def _corpus_en_disco(tmp: Path, n: int = 2) -> tuple[dict[str, object], Path]:
                 n_pages=2,
                 strata=frozenset({"tabla-simple"}),
                 fetched_at=datetime(2026, 8, 3, 9, 0, tzinfo=UTC),
-                actualizado_en=date(2026, 8, 24),
+                cosechado_en=date(2026, 8, 24),
             )
         )
     manifiesto = crear(
         entidad="boe",
+        plan_hash="f" * 64,
         desde=date(2026, 8, 3),
         hasta=date(2026, 8, 3),
         documentos=procedencias,

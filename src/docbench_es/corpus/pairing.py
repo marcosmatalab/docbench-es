@@ -71,7 +71,15 @@ __all__ = [
     "normalizar",
 ]
 
-CausaDescarte = Literal["sin_xml", "sin_pdf", "xml_sin_texto", "pdf_sin_texto", "incoherente"]
+CausaDescarte = Literal[
+    "sin_xml", "sin_pdf", "pdf_ilegible", "xml_sin_texto", "pdf_sin_texto", "incoherente"
+]
+"""**`pdf_ilegible` no es `sin_pdf`, y confundirlos manda a mirar al sitio
+equivocado.** `sin_pdf` es que el fichero no llegó; `pdf_ilegible` es que llegó y
+la librería no pudo abrirlo — el primero se arregla mirando el origen y el
+segundo mirando el extractor de texto. Entró en el cierre de L3: quien inyecta los
+textos capturaba el error de `pypdf` y devolvía `None`, o sea que un PDF de 34
+páginas que `pypdf` no supiera abrir se publicaba como «no había PDF»."""
 """Enum CERRADO. Sin cajón de sastre a propósito: un `otro` dejaría que un
 documento que se cae desaparezca del informe con la mitad mala de su historia."""
 

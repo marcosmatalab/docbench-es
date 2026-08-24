@@ -151,48 +151,56 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 164 de 294 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 164 de 298 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
    | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
    |---|---|---|---|---|---|---|
    | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
-   | **L3**, en curso | 294 | 164 | 55,8% | 291 | 99,0% | 3 |
-   | delta | +100 | +2 | **−30,1 puntos** | +100 | **+0,5 puntos** | **0** |
+   | **L3**, en curso | 298 | 164 | 55,0% | 295 | 99,0% | 3 |
+   | delta | **+113** | +2 | **−32,6 puntos** | **+113** | **+0,6 puntos** | **0** |
 
    **Y las dos series van en direcciones distintas, que es exactamente lo que había
    que saber antes de L5. La divergencia es ESTRUCTURAL, no deterioro**, y hay que
    publicarla diciéndolo: el arnés cae **porque la regla de barreras funciona** —
    cada módulo nuevo trae su control negativo en su propio fichero, en el mismo
    hito, y el mutante que lo mediría por rotura va a plazos con su precio. Sin esa
-   frase al lado, un número que baja de 87,6% a 64,8% se lee como decadencia
-   cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha añadido veinticinco tests y **cero mutantes**: el
-   arnés no ha crecido, ha crecido la suite por debajo. Pero **los cien están
-   protegidos**: dos por el arnés —van a `test_recuentos.py`, que sí tiene
-   mutantes— y noventa y ocho por el control negativo de su propio fichero. Por
-   eso la protección no baja.
+   frase al lado, un número que baja de 87,6% a 55,0% se lee como decadencia
+   cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha
+   añadido **113 tests y cero mutantes**: el arnés no ha crecido, ha crecido la
+   suite por debajo. Pero **los 113 están protegidos**: 2 por el arnés —van a
+   `test_recuentos.py`, que sí tiene mutantes— y **111 por el control negativo de
+   su propio fichero**. Por eso la protección no baja.
    Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
    escondería.
 
    **Lo que sigue siendo verdad y hay que vigilar:** «los 21 mutantes mueren» dice
-   cada vez menos sobre el conjunto, y sólo el 78,1% está medido contra una rotura
-   real. Los mismos **3 tests sin ningún control** en las dos fechas son los de
+   cada vez menos sobre el conjunto — hoy habla del **55,0%** de la suite. Los
+   mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
+
+   > **Aquí ponía «sólo el 78,1% está medido contra una rotura real».** Ese 78,1%
+   > era 164/210, o sea el porcentaje del arnés **cuando la suite tenía 210
+   > tests**: una copia a mano de la columna «% arnés» que se quedó vieja mientras
+   > la columna se actualizaba sola. Es la quinta aparición del límite 55 en este
+   > cierre, y la más difícil de ver, porque el número no cuadraba con nada y por
+   > eso no se podía comprobar de un vistazo. **Cuando una cifra ya está en una
+   > columna, la prosa la cita, no la repite.**
 
    **Dos puntos son un delta, no una tendencia; el tercero lo pone L4.** Con esa
    reserva por delante, la proyección de una etapa: si L4 añadiera tests fuera del
-   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 55,8%
+   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 55,0%
    de hoy al entorno del 50%**, y L5 es un hito más grande (ocho extractores), así
    que su escalón sería mayor. Es una **proyección sobre dos puntos**, no una
    medición, y se publica con esa palabra.
 
-   **De los 130 de fuera, 127 llevan control negativo en su propio fichero.**
+   **De los 134 de fuera, 131 llevan control negativo en su propio fichero.**
    `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
    incumple cinco aros a propósito, y **afirma el conjunto exacto** de
    comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test
-   rojo, que es lo que hace un mutante. `test_entity_registry.py` (8) y
-   `test_barreras.py` (6) hacen lo mismo. El criterio está declarado en
+   rojo, que es lo que hace un mutante. `test_entity_registry.py` (9) y
+   `test_barreras.py` (10) hacen lo mismo. El criterio está declarado en
    `CONTROLES_NEGATIVOS` y verificado por AST; lo que no puede verificar —si el
    control es *fuerte*— está en el límite 60.
 

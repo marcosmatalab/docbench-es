@@ -2,20 +2,64 @@
 
 Separado de `harvest.py` por el límite de 300 líneas del repo, y la partición sale
 sola: allí está **cómo se cosecha** —el recorrido, los reintentos, la caché— y aquí
-**qué sale de la cosecha** y cuándo hay que parar. Lo de aquí no toca la red y se
-prueba con enteros.
+**qué entra y qué sale**: los dos `Protocol` del adaptador, el resultado y la
+condición de parada. Nada de aquí toca la red.
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import date
+from typing import Protocol, runtime_checkable
 
 from docbench_es.corpus.manifest import Procedencia
 from docbench_es.errors import AdapterError, ContractViolation
+from docbench_es.types import DocRef, RawDoc
 
-__all__ = ["MINIMO_PARA_PARAR", "UMBRAL_PARADA", "Cosecha", "ParadaPorFallos", "Ritmo"]
+__all__ = [
+    "MINIMO_PARA_PARAR",
+    "UMBRAL_PARADA",
+    "Adaptador",
+    "AdaptadorConProcedencia",
+    "Cosecha",
+    "ParadaPorFallos",
+    "Ritmo",
+]
+
+
+class Adaptador(Protocol):
+    """Lo único que la cosecha usa de §7.1: tres de los siete métodos.
+
+    Es tipado estructural y **no un import de `entity`** a propósito: `corpus` y
+    `entity` son capas hermanas, y pedir aquí el `Protocol` entero ataría la
+    cosecha a la entidad para usar tres métodos. Lo que este módulo necesita, lo
+    declara.
+    """
+
+    def discover(self, since: date, until: date) -> Iterable[DocRef]: ...
+
+    def fetch(self, ref: DocRef) -> RawDoc: ...
+
+    def strata(self, ref: DocRef, doc: RawDoc) -> frozenset[str]: ...
+
+
+@runtime_checkable
+class AdaptadorConProcedencia(Protocol):
+    """Lo que el contrato de §7.1 **no** tiene y el manifiesto sí necesita.
+
+    Opcional a propósito: un adaptador que no lo cumpla se cosecha igual. Lo que no
+    vale es sacarlo con `getattr` y una cadena mágica, porque entonces el hueco del
+    contrato no se ve al leer el código.
+    """
+
+    dias_sin_boletin: list[date]
+
+    def seccion_de(self, ref: DocRef) -> str: ...
+
+    def urls_de(self, ref: DocRef) -> tuple[str, str]: ...
+
+    def espaciados_peticion(self) -> list[float]: ...
 
 
 UMBRAL_PARADA = 0.05

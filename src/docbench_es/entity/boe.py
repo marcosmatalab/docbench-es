@@ -70,6 +70,14 @@ class BoeAdapter:
         self._secciones: dict[str, str] = {}
         self._ultimo: tuple[str, RawDoc] | None = None
         self.dias_sin_boletin: list[date] = []
+        self.sin_urls: list[str] = []
+        """Ítems del sumario que traían identificador pero **no las dos URLs**.
+
+        Se publican al lado de `intentados` porque si no **desaparecen del
+        denominador antes de existir**: no son un descarte —nunca se intentaron—
+        pero tampoco son nada, y un origen que empezara a servir el `url_pdf` con
+        otra forma vaciaría el corpus sin que ninguna cifra se moviera. Medido
+        sobre la ventana de L3: **0 de 1.043**."""
         """Los días del rango que no tienen boletín. **Se cuentan, no se tragan.**"""
 
     def discover(self, since: date, until: date, **filtros: object) -> Iterable[DocRef]:
@@ -108,11 +116,19 @@ class BoeAdapter:
             # `BOE-S-*` es el sumario del día, no un documento. Contarlo metería un
             # índice en el corpus y en el denominador de todas las tasas.
             if not ident or ident.startswith("BOE-S-"):
+                # `BOE-S-` es el sumario del propio día, no un documento: sale por
+                # definición del corpus y por eso no se cuenta como descartado.
                 continue
             if secciones and str(item.get("_seccion", "")) not in secciones:
                 continue
             pdf, xml = url_de(item, "url_pdf"), url_de(item, "url_xml")
             if pdf is None or xml is None:
+                # NO en silencio: un ítem que se cae aquí nunca es `intentado`,
+                # nunca tiene causa y nunca sale en el informe — o sea, desaparece
+                # del denominador antes de existir. Y la forma del sumario ya ha
+                # cambiado dos veces sobre el origen real (`_sumario.py`), así que
+                # esto no es hipotético.
+                self.sin_urls.append(ident)
                 continue
             self._urls[ident] = (pdf, xml)
             self._paginas[ident] = paginas_de(item)
