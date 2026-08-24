@@ -11,15 +11,24 @@ delegando. La alternativa —escribir la comprobación dos veces— dejaría dos
 fuentes de verdad sobre la misma tabla. Ver ADR-0019.
 
 **Fatal contra informativo.** No todo hallazgo invalida: `<tr></tr>` es HTML legal
-y una fila corta es cotidiana en el BOE. Lo que separa las dos listas no es el
-gusto, es **qué puede producir un formato de origen**: lo que ningún formato puede
-generar es un bug del conversor disfrazado de tabla plausible, y sale fatal.
+y una fila corta es cotidiana en el BOE. Lo que separa las dos listas es **qué
+DEBERÍA poder producir un formato de origen**: un fatal es lo que, saliendo de un
+conversor, es un bug del conversor o un documento roto — y en los dos casos la
+tabla se **cuenta**, no se repara.
+
+**Y «no puede» sería falso, medido dos veces.** Este párrafo decía *«lo que ningún
+formato PUEDE generar»*, y el HTML real lo desmintió dos veces: `SOLAPE` desde un
+*table model error* (límite 30, corregido en L1) y `SPAN_FUERA_DE_RANGO` desde XML
+del BOE con un `rowspan` mayor que sus `<tr>`. Lo que sí es cierto de un fatal es
+lo operativo: **invalida la tabla, la saca de la verdad y se cuenta.**
 """
 
 from __future__ import annotations
 
 from enum import StrEnum
 from typing import TYPE_CHECKING
+
+from docbench_es.types._area import TOPE_AREA
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para el tipado; en runtime sería circular
     from docbench_es.types._tabla import CanonicalCell, CanonicalTable
@@ -39,7 +48,9 @@ class HallazgoTabla(StrEnum):
     formadas por extractor es un resultado de L5, no un detalle de implementación.
     """
 
-    # ── Fatales: ningún formato de origen puede producirlos ──────────────
+    # ── Fatales: invalidan la tabla. NO «ninguno puede producirlos» —el XML
+    #    real del BOE produce SOLAPE y SPAN_FUERA_DE_RANGO, medido— sino que
+    #    saliendo de un conversor son un bug o un documento roto. Ver el docstring.
     SOLAPE = "SOLAPE"
     SPAN_FUERA_DE_RANGO = "SPAN_FUERA_DE_RANGO"
     SPAN_MENOR_QUE_UNO = "SPAN_MENOR_QUE_UNO"
@@ -49,6 +60,7 @@ class HallazgoTabla(StrEnum):
     COLUMNA_VACIA = "COLUMNA_VACIA"
     PAGE_SPAN_INVALIDO = "PAGE_SPAN_INVALIDO"
     EXPRESSES_SPANS_IMPOSIBLE = "EXPRESSES_SPANS_IMPOSIBLE"
+    AREA_EXCESIVA = "AREA_EXCESIVA"
     # ── Informativos: legales, pero se declaran siempre ──────────────────
     HUECO_COLA = "HUECO_COLA"
     FILA_VACIA = "FILA_VACIA"
@@ -258,6 +270,17 @@ def comprobar(t: CanonicalTable) -> tuple[bool, list[str]]:
     de fila y columna. Dos corridas sobre la misma tabla dan la misma lista.
     """
     problemas: list[str] = []
+    area = t.n_rows * t.n_cols
+    if area > TOPE_AREA:
+        # ANTES de `_colocar`, que es quien estampa posición a posición. Comprobarlo
+        # después sería declarar el tope y pagarlo igual.
+        return False, [
+            _di(
+                HallazgoTabla.AREA_EXCESIVA,
+                f"{t.n_rows}x{t.n_cols} = {area:,} posiciones, por encima del tope "
+                f"de {TOPE_AREA:,}. No se analiza: el coste es proporcional al área",
+            )
+        ]
     _cabecera(t, problemas)
     rejilla, ultimo_origen, descartadas = _colocar(t, problemas)
     _spans_declarados(t, problemas)

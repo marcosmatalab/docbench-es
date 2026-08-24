@@ -470,7 +470,7 @@ por familia sí, y el censo se pone rojo si alguna queda a cero.
 
 ### Los mutantes
 
-**Son 21 mutantes, no 18**: los tres de `recuentos` entraron con el guardián de
+**Son 22 mutantes, no 18**: los tres de `recuentos` entraron con el guardián de
 números y esta línea no se actualizó entonces. Las cuatro casillas de `siempre_ok`
 × `siempre_roto` están completas sobre las dos funciones que L2 construye.
 `siempre_roto` no es simetría decorativa: es el único que caza al test que sólo
@@ -512,7 +512,7 @@ Y los cuatro sutiles, que son los que justifican el hito:
 > exige es **«muere»**, no «muere en N tests»: estas cifras son un **suelo**, no
 > una constante.
 
-**Los veintiún mutantes del repo mueren**, con control negativo **0 de 164**.
+**Los veintidós mutantes del repo mueren**, con control negativo **0 de 166**.
 `uv run python scripts/mutantes/matar.py; echo $?`
 
 `teds_cuenta_la_raiz` es el que justifica el hito: mueve **todos** los TEDS un
@@ -524,23 +524,23 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 164 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 166 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 164 de 301 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 308 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **137 tests restantes** —`test_harvest` (14), `test_verificar_corpus` (14),
+Los **142 tests restantes** —`test_barreras` (14), `test_harvest` (14),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_verificar_corpus` (9), `test_barreras` (8), `test_manifest` (8),
 `test_pairing` (8), `test_policy` (7), `test_types_invariantes` (7),
 `test_boe_xml` (6), `test_ancla` (5), `test_types` (5), `test_errors` (3) y
 `test_sin_consumidor` (3)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
-invariantes de tipos y las barreras por AST. Así que «los 21 mutantes mueren» dice
+invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
 que **esos 21** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 137 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 142 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -554,7 +554,7 @@ diferencia es información: **SIEMPRE** es la intersección —muere en las tres
 **ALGUNA VEZ** es la unión. *Un asesino intermitente no es un asesino*: depende de
 que un sorteo de `hypothesis` salga bien.
 
-**Son 21 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
+**Son 22 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
 
 | De dónde salen | Cuáles |
 |---|---|
@@ -612,7 +612,7 @@ saber por qué. Aquí se ve que las tres diferencias tienen nombre y tasa.
 > [límite 50](LIMITS.md). Para afinar un caso concreto:
 > `uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE`.
 
-**La afirmación, recontada contra esta tabla:** sobre los 21 mutantes existentes,
+**La afirmación, recontada contra esta tabla:** sobre los 22 mutantes existentes,
 la propiedad de normalización **no es la única asesina de ninguno**; es asesina
 **determinista** de `normalizador_agresivo` —donde además hay otros ocho— y
 aparece **esporádicamente** sobre otros dos, `n3_incompleta` y
@@ -840,9 +840,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 298 de 301
+### Qué fracción de la suite está protegida por algo: 305 de 308
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 164 de 301» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 308» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -865,7 +865,7 @@ comprobación puede decidir es si es *fuerte* — límite 60.
 | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
 |---|---|---|---|---|---|---|
 | al cerrar **L2** (`099e452`) | 185 | 162 | 87,6% | 182 | **98,4%** | 3 |
-| **L3**, cerrado | 301 | 164 | 54,5% | 298 | **99,0%** | 3 |
+| **L3**, cerrado | 308 | 166 | 53,9% | 304 | **99,0%** | 3 |
 
 **Y van en direcciones distintas, que es justo lo que había que saber:** la
 cobertura del arnés **cae 30,1 puntos** y la protección real **sube 0,5**. Los
@@ -875,7 +875,7 @@ algo rechace una entrada mala— y su fracción baja del 1,6% al 1,1%.
 
 **Lo que esto NO autoriza a decir.** No dice que la suite esté bien probada: dice
 que casi todo tiene *algo*, y que ese algo sólo está medido contra una rotura real
-en el 54,5%. La cobertura del arnés sigue publicada al lado como submedida, y su
+en el 53,9%. La cobertura del arnés sigue publicada al lado como submedida, y su
 caída sigue siendo el número que hay que vigilar — deuda 7.
 
 **Reproducción:** `uv run pytest tests/unit -q` (los recuentos se calculan en cada
@@ -1290,14 +1290,130 @@ uv run python scripts/mutantes/matar.py; echo $?          # rc=0, todos mueren
 uv run python scripts/mutantes/matar.py --tabla; echo $?  # rc=0, 3 repeticiones
 ```
 
-**Control negativo primero: el árbol sin mutar da 0 muertes de 164 tests.** Sin ese
+**Control negativo primero: el árbol sin mutar da 0 muertes de 166 tests.** Sin ese
 cero la tabla no vale nada, porque cada «muerte» podría ser un fallo de fondo de la
 suite y no el mutante. El sello va **sin `+N`**: árbol limpio, o sea reproducible
 desde ese commit exacto.
 
-**Los 21 mutantes mueren, y los 21 matan SIEMPRE** — las tres repeticiones, no
+**Los 22 mutantes mueren, y los 22 matan SIEMPRE** — las tres repeticiones, no
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **164 de
-301 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
+308 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+
+---
+
+## L4 · Lo medido ANTES de escribir `truth.derived`
+
+`uv run python scripts/censo_corpus.py` · 1.000 documentos, 2.135 tablas, 3,8 s.
+Salida completa en `docs/censo-corpus-1000.json`.
+
+### El número que decidía el diseño de L4: `SOLAPE` en 0 documentos
+
+**Límite 30 contestado.** Preguntaba cuántos documentos del corpus producen tablas
+con `SOLAPE` al pasarlos por `from_html`, porque `SOLAPE` es fatal y esos
+documentos **no pueden tener verdad derivada**.
+
+| | |
+|---|---|
+| documentos con `SOLAPE` | **0** |
+| denominador | **338 documentos CON TABLA** · IC95 Wilson **[0,00 %, 1,12 %]** |
+| sobre los 1.000 del corpus | 0,00 % — **diluido**, 629 no tienen ni una tabla |
+
+**El denominador honesto son los 338**, no los 1.000: un documento sin tablas no
+puede tener `SOLAPE`, y meterlo en el denominador rebaja la tasa por construcción.
+Y lleva intervalo porque **es una estimación** —una ventana de 34 días leída como
+propiedad del BOE—, no un censo de la población que interesa.
+
+### `validate()` sobre las 2.135, con la unidad en el nombre
+
+| | |
+|---|---|
+| tablas evaluadas | 2.135 · **2.125 con celdas** · **327 con `rowspan`>1** |
+| FATALES, por tabla | **ninguno** |
+| informativos, por tabla | `HUECO_COLA` en **7 tablas** |
+| informativos, por **línea** | `HUECO_COLA` **195 líneas** |
+
+**Las dos unidades difieren en dos órdenes de magnitud y por eso van las dos.** Una
+sola tabla del corpus da 183 líneas de `HUECO_COLA`: publicar «7» sin decir de qué
+es una cifra desnuda, y publicar «195» sugiere 195 tablas con problema. Las claves
+del JSON llevan la unidad en el nombre —`informativos_por_TABLA`,
+`TODOS_por_LINEA`— para que no se pueda leer mal.
+
+### El detector de coherencia del `<colgroup>`: 1 discrepancia, y es la que faltaba
+
+El documento **declara** sus columnas en `<colgroup>` y `from_html` las **deriva**
+de la extensión de las celdas, sin mirar ese `<colgroup>` jamás. Dos caminos
+independientes sobre el mismo fichero: **cuando discrepan, una de las dos está
+mal**. Encontró un caso en su primera hora de vida:
+
+| Documento | declara | produce | qué es |
+|---|---|---|---|
+| `BOE-A-2026-7172` t13 | 2 | **3** | un `<td colspan="2">` en una tabla de 2 columnas, absorbido creciendo `n_cols` con `HUECO_COLA` informativo |
+
+**Y es justo la clase que nadie estaba mirando: ruidosa por un eje y silenciosa por
+el otro.** El mismo defecto —un span que se sale— sale **FATAL** por filas y
+**legal** por columnas, porque `n_cols` se deriva y `n_rows` se cuenta. Ver el
+límite 65.
+
+### Los tres que salían gratis en la misma pasada
+
+| | medido sobre 1.000 | antes, sobre 50 |
+|---|---|---|
+| **límite 45** · `<td>` dentro de `<thead>` | **0** de 1.978 `<thead>` | 0 de 68 |
+| `<th>` contra `is_header` | **8.082 = 8.082** | 323 = 323 |
+| **límite 33** · celdas cuyo único contenido es `<img>` | **6** | no medido |
+| CDATA · prefijos de namespace en tabla | **0 · 0** | 0 · 0 |
+| tablas en el crudo contra `from_html` | **2.135 = 2.135** | 75 = 75 |
+
+**El límite 45 se cierra con un denominador 29 veces mayor** y sigue en cero, y
+sigue medido **por conjuntos y no por totales**: los dos sumandos —`<td>` dentro de
+`<thead>` y `<th>` fuera— se cuentan por separado, así que la igualdad `8.082 =
+8.082` no puede estar escondiendo una compensación.
+
+**El límite 33 tiene por fin su número: 6 celdas** de 105.034. El sondeo contó 489
+`<img>` sobre el documento entero; dentro de una celda son 6. Es el tamaño real de
+la decisión que L4 tiene que tomar sobre marcarlas.
+
+### El tercer hallazgo sobre la métrica: divergimos de la referencia en un caso
+
+**Lo primero, porque es lo que sostiene todo lo demás: los 20 golden sobre los
+casos propios de PubTabNet siguen coincidiendo a cuatro decimales.** La afirmación
+«esto es TEDS» no se toca y su evidencia tampoco. Lo que diverge es **un caso
+límite que construimos nosotros**.
+
+| | valor |
+|---|---|
+| nuestro, sobre la rejilla | **−0,125** |
+| la referencia, sobre el árbol crudo | **−0,142857** |
+
+**El mecanismo, que es lo que importa y no el síntoma:** no es que demos otro
+número. Es que **modelamos la REJILLA y la referencia modela el ÁRBOL parseado**, y
+para una tabla con derrame de grupo de filas esos dos objetos **no son el mismo**.
+El estándar termina cada grupo avanzando hasta `yheight`, así que en la rejilla hay
+una fila implícita que en el árbol de etiquetas no existe: el gold del caso tiene
+**4 filas de rejilla y 3 `<tr>` escritos**. La referencia no la ve porque nunca
+construye una rejilla.
+
+**Y el objeto correcto para este banco es la rejilla.** Lo que se mide es si el
+extractor reprodujo la **estructura**, no el marcado: uno que acierta la rejilla
+tiene que puntuar 1,0 aunque escriba los `<tbody>` de otra forma. Ésa es la razón
+de existir de `CanonicalTable`, y la misma por la que `tbody_de_mas` da 1,0 aquí y
+0,666667 en la referencia.
+
+**El fichero congelado no se ha tocado.** Lo que cambió es la aserción: el test que
+fijaba una coincidencia ahora fija **la divergencia, con sus dos valores y su
+razón**, y comprueba el mecanismo (`gold.n_rows == 4` contra `3 <tr>`).
+
+**Los tres hallazgos sobre la métrica, juntos, porque ya son un patrón:**
+
+| # | Hallazgo | Los dos números |
+|---|---|---|
+| 1 | TEDS **no está acotado por cero** | −0,142857 en la referencia; el suelo es de publicación (ADR-0023) |
+| 2 | La forma canónica **borra el `<tbody>` de más**, a propósito | 1,0 aquí · 0,666667 en la referencia |
+| 3 | **Rejilla contra árbol** en el derrame de grupo de filas | −0,125 aquí · −0,142857 en la referencia |
+
+Los tres son del **mismo tipo**: la referencia trabaja sobre el marcado y nosotros
+sobre la tabla. Cuando las dos cosas coinciden, coincidimos; cuando el marcado dice
+algo que la tabla no dice, no.

@@ -12,8 +12,8 @@
 |---|---|---|---|---|
 | L0 esqueleto, canon, CI de tres trabajos, `types`, `errors`, contrato de capas | 8-10 | **CERRADO 2026-08-22** | `make fast` verde en < 90 s con el repo vacío de lógica | **4,43 s** en el runner de GitHub, corrida [`32572683716`](https://github.com/marcosmatalab/docbench-es/actions/runs/32572683716), commit `28186b9`. **20× de margen**. Rango observado, n=4 sobre código idéntico (no es un IC): mínimo 3,41 s, mediana **3,95 s**, máximo 4,43 s, corte 22 ago 2026. Local: 1742 ms en frío, rango 1715–1872, n=10, máquina en reposo (remedido el 22 ago tras arreglar `make clean`, que no borraba `.hypothesis`). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L1 `core.canonical` + invariantes + conversores de los cinco formatos | 12-16 | **CERRADO 2026-08-22** | Solapes, huecos y spans fuera de rango detectados al 100% | **8.525/8.525 detectadas y 0/45 falsos positivos**, censo determinista y exhaustivo, `uv run python scripts/censo_invariantes.py`. No es una estimación: es una tasa sobre el censo completo, así que no lleva intervalo (ADR-0015). Puerta: **3829 ms** en frío, rango 3713–3875, n=10, todas con `rc=0`, `load average` 0,93 — **24× de margen**. Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **21 mutantes**, todos mueren, control negativo **0 de 164**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
-| L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | ~~16-20~~ **18-23** | **CERRADO 2026-08-24** | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | **1.000 de 1.000 emparejados**, de 1.043 intentados, con **tasa de descarte 4,12%** —denominador 1.043, umbral 0,85, ventana 2026-03-09 a 2026-04-11, causa única `incoherente` (43)—, 0 reintentos agotados y 4 días sin boletín fuera del denominador. `uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml` → **CUMPLE, 0 fallos, rc=0**, y ese CUMPLE incluye **rehacer los 1.000 `sha256` contra los bytes**. No es una estimación: censo sobre la población completa de la ventana, sin intervalo (ADR-0015). **Desglose por estación**, que es para lo que la ventana cruza el equinoccio: invierno **3,90%** (462/444), primavera **4,30%** (581/556), reconstruido y declarado (límite 63). **La ventana se eligió sobre el tramo con MÁS descarte de los tres medidos** —agosto 2,0%, otoño 4,5%, primavera 5,5%— para que a la tasa no se le pueda acusar de estar elegida. Ritmo **1,0000851 s de espaciado mediano, mínimo 1,0000211, n=2.064**, contra 1 rps declarado. **361,9 MB** en disco contra tres proyecciones que fallaron las tres (−23,5%, **+47,3%**, −29,8%): la corrección empeoró la estimación por aplicar KB/página medido en documentos cortos a una población larga, y KB/página **cae un factor 5,6** con la longitud. Puerta al cerrar: **mediana 7400 ms, p90 7505**, n=40 en 10 tandas en frío, σ=100, cero descartadas, sello `1600137`, **margen 995 ms** bajo el techo de 8500. Desglose por paso con el **barrido de referencias medido por fin: 220 ms, el 3,0%** de la puerta. **21 mutantes, todos mueren y todos SIEMPRE**, control negativo 0 de 164, sello `0717b70 · 164 tests`. El escrutinio adversarial del cierre sacó **12 hallazgos y 4 eran afirmaciones falsas**, todas corregidas en el acto. Números en [`RESULTS.md`](RESULTS.md) |
+| L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,6 ms por test**, contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **22 mutantes**, todos mueren, control negativo **0 de 166**. Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
+| L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | ~~16-20~~ **18-23** | **CERRADO 2026-08-24** | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | **1.000 de 1.000 emparejados**, de 1.043 intentados, con **tasa de descarte 4,12%** —denominador 1.043, umbral 0,85, ventana 2026-03-09 a 2026-04-11, causa única `incoherente` (43)—, 0 reintentos agotados y 4 días sin boletín fuera del denominador. `uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml` → **CUMPLE, 0 fallos, rc=0**, y ese CUMPLE incluye **rehacer los 1.000 `sha256` contra los bytes**. No es una estimación: censo sobre la población completa de la ventana, sin intervalo (ADR-0015). **Desglose por estación**, que es para lo que la ventana cruza el equinoccio: invierno **3,90%** (462/444), primavera **4,30%** (581/556), reconstruido y declarado (límite 63). **La ventana se eligió sobre el tramo con MÁS descarte de los tres medidos** —agosto 2,0%, otoño 4,5%, primavera 5,5%— para que a la tasa no se le pueda acusar de estar elegida. Ritmo **1,0000851 s de espaciado mediano, mínimo 1,0000211, n=2.064**, contra 1 rps declarado. **361,9 MB** en disco contra tres proyecciones que fallaron las tres (−23,5%, **+47,3%**, −29,8%): la corrección empeoró la estimación por aplicar KB/página medido en documentos cortos a una población larga, y KB/página **cae un factor 5,6** con la longitud. Puerta al cerrar: **mediana 7400 ms, p90 7505**, n=40 en 10 tandas en frío, σ=100, cero descartadas, sello `1600137`, **margen 995 ms** bajo el techo de 8500. Desglose por paso con el **barrido de referencias medido por fin: 220 ms, el 3,0%** de la puerta. **22 mutantes, todos mueren y todos SIEMPRE**, control negativo 0 de 166, sello `0717b70 · 164 tests` (re-medido al arreglar el grupo de filas). El escrutinio adversarial del cierre sacó **12 hallazgos y 4 eran afirmaciones falsas**, todas corregidas en el acto. Números en [`RESULTS.md`](RESULTS.md) |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | **PENDIENTE, el siguiente** | La verdad derivada reproduce las tablas a mano | Entra con **el corpus ya bajado**: 1.000 XML del BOE en `runs/l3/docs`, con su hash capturado. **Alcance heredado de L3, con precio:** plegar `runs/l3/xml_sha256.json` dentro del esquema del manifiesto —**no recalcularlo**, límite 62, ~40 min— y guardar la fecha de cada descarte —límite 63, ~30 min, el mismo cambio de esquema— |
 | L5 `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | 14-18 | PENDIENTE | Primera tabla de estructura con coste y cobertura evaluable | — |
 | L6 `sample` con McNemar + bootstrap agrupado | 8-10 | PENDIENTE | Plan congelado y publicado antes de la primera campaña seria | — |
@@ -151,32 +151,31 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 164 de 301 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 308 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
    | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
    |---|---|---|---|---|---|---|
    | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
-   | **L3**, cerrado | 301 | 164 | 54,5% | 298 | 99,0% | 3 |
-   | delta | **+116** | +2 | **−33,1 puntos** | **+116** | **+0,6 puntos** | **0** |
+   | **L3**, cerrado | 308 | 166 | 53,9% | 304 | 99,0% | 3 |
+   | delta | **+123** | +4 | **−33,9 puntos** | **+123** | **+0,6 puntos** | **0** |
 
    **Y las dos series van en direcciones distintas, que es exactamente lo que había
    que saber antes de L5. La divergencia es ESTRUCTURAL, no deterioro**, y hay que
    publicarla diciéndolo: el arnés cae **porque la regla de barreras funciona** —
    cada módulo nuevo trae su control negativo en su propio fichero, en el mismo
    hito, y el mutante que lo mediría por rotura va a plazos con su precio. Sin esa
-   frase al lado, un número que baja de 87,6% a 54,5% se lee como decadencia
+   frase al lado, un número que baja de 87,6% a 53,9% se lee como decadencia
    cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha
-   añadido **116 tests y cero mutantes**: el arnés no ha crecido, ha crecido la
-   suite por debajo. Pero **los 116 están protegidos**: 2 por el arnés —van a
-   `test_recuentos.py`, que sí tiene mutantes— y **114 por el control negativo de
-   su propio fichero**. Por eso la protección no baja.
+   añadido **122 tests y UN mutante**, el del grupo de filas: el arnés casi no ha
+   crecido, ha crecido la suite por debajo. Pero **los 122 están protegidos**: 3
+   por el arnés y **119 por el control negativo de su propio fichero**. Por eso la protección no baja.
    Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
    escondería.
 
-   **Lo que sigue siendo verdad y hay que vigilar:** «los 21 mutantes mueren» dice
-   cada vez menos sobre el conjunto — hoy habla del **54,5%** de la suite. Los
+   **Lo que sigue siendo verdad y hay que vigilar:** «los 22 mutantes mueren» dice
+   cada vez menos sobre el conjunto — hoy habla del **53,9%** de la suite. Los
    mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
 
@@ -190,17 +189,17 @@ nota. Ver LIMITS 49.
 
    **Dos puntos son un delta, no una tendencia; el tercero lo pone L4.** Con esa
    reserva por delante, la proyección de una etapa: si L4 añadiera tests fuera del
-   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 54,5%
+   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 53,9%
    de hoy al entorno del 50%**, y L5 es un hito más grande (ocho extractores), así
    que su escalón sería mayor. Es una **proyección sobre dos puntos**, no una
    medición, y se publica con esa palabra.
 
-   **De los 137 de fuera, 134 llevan control negativo en su propio fichero.**
+   **De los 142 de fuera, 139 llevan control negativo en su propio fichero.**
    `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
    incumple cinco aros a propósito, y **afirma el conjunto exacto** de
    comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test
    rojo, que es lo que hace un mutante. `test_entity_registry.py` (9) y
-   `test_barreras.py` (11) hacen lo mismo. El criterio está declarado en
+   `test_barreras.py` (14) hacen lo mismo. El criterio está declarado en
    `CONTROLES_NEGATIVOS` y verificado por AST; lo que no puede verificar —si el
    control es *fuerte*— está en el límite 60.
 
@@ -289,7 +288,7 @@ nota. Ver LIMITS 49.
    9 escapes de 19 contra 0 y 8 hoy.
 
    **Dos de esos puntos ciegos ya se cobraron su pieza**, y por eso la cifra no es
-   teórica: la forma de `ESTADO.md`:15 —«21 mutantes, todos mueren»— se escapaba
+   teórica: la forma de `ESTADO.md`:15 —«22 mutantes, todos mueren»— se escapaba
    entera, en el documento que el hook `SessionStart` inyecta en cada sesión; y el
    mensaje de error enumeraba sólo lo que veía, así que **corregir lo enumerado
    dejaba `ESTADO.md` en verde mintiendo**. Los dos están tapados; los siete de

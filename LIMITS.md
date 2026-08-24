@@ -237,12 +237,89 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     sus cabeceras a entero perdería la fila de cabecera sin avisar. No medido: en
     L5, con salida real de camelot.
 38. **El coste de `validate` y `holes` es proporcional al ÁREA de la rejilla, no
-    al tamaño de la entrada.** Un HTML de 30 KB con mil `<td colspan="1000">`
-    declara un millón de columnas y cuesta el millón. El caso desproporcionado
-    —60 bytes que costaban 28 s y 7,5 GB, con `rowspan="65534" colspan="1000"`—
-    está cerrado recortando a la tabla, pero la proporcionalidad con el área se
-    mantiene y **no hay tope declarado**. Los adaptadores hostiles de L8 son el
-    sitio donde esto se prueba a propósito.
+    al tamaño de la entrada — y ahora hay TOPE DECLARADO.** Un HTML de 30 KB con
+    mil `<td colspan="1000">` declara un millón de columnas y cuesta el millón.
+
+    **Lo que L1 dio por cerrado se cerraba POR ACCIDENTE.** El caso de 60 bytes
+    —`rowspan="65534" colspan="1000"`— no costaba nada porque el `rowspan` se
+    salía de la tabla, `validate` lo declaraba `SPAN_FUERA_DE_RANGO` **fatal** y
+    cortaba antes de recorrer la rejilla. O sea que la cota de coste era **un
+    efecto colateral de un hallazgo**, no una decisión.
+
+    **Implementar el estándar lo reabrió, y está medido.** Al terminar los grupos
+    de filas (límite 65), esa celda pasa a estar *en rango* y la rejilla se
+    materializa:
+
+    | | `n_rows` x `n_cols` | `ok` | tiempo | memoria |
+    |---|---|---|---|---|
+    | `rowspan=4000 colspan=500` **sin** `<tbody>` | 1x500 | `False` | 0,000 s | 42 MB |
+    | igual **con** `<tbody>` | 4000x500 | `True` | **0,507 s** | **287 MB** |
+
+    Extrapolando linealmente a 65.534 x 1.000 = 65,5 M posiciones: **~16 s y ~9 GB
+    desde 65 bytes de HTML**.
+
+    **Ahora se cierra a propósito**, con `TOPE_AREA = 1.000.000` y el hallazgo
+    fatal `AREA_EXCESIVA`. El número sale del corpus: la tabla más grande de las
+    2.135 mide **3.309** posiciones (1103 x 3), o sea **302x de holgura**, y el
+    tope queda **65x por debajo** del caso hostil. Coste en el tope, medido:
+    **0,212 s y 151 MB**. Con sus dos controles: la tabla más grande del corpus
+    pasa, y una que se pase sale fatal **nombrando el área**.
+
+    **No es endurecimiento de seguridad: es la precondición para que la métrica se
+    pueda calcular.** En L5 son ocho extractores sobre mil documentos, y un
+    extractor es justo lo que produce spans basura. Se declara aquí y no se aplaza
+    a los adaptadores hostiles de L8 porque **esta entrada llega por el adaptador
+    de entidad, desde una fuente que no controlamos**.
+
+    **Lo que sigue sin tope:** el número de tablas por documento y el número de
+    documentos por campaña. El área de UNA tabla está acotada; el total de una
+    campaña no.
+
+65. **`n_rows` se CUENTA y `n_cols` se DERIVA, y esa asimetría se queda — medida y
+    con la razón de no arreglarla.** El mismo defecto —un span que se sale de la
+    tabla— tiene veredictos opuestos según el eje:
+
+    | | qué pasa | `validate` |
+    |---|---|---|
+    | `colspan` que se sale | `n_cols` **crece** a la extensión | `HUECO_COLA`, **legal** |
+    | `rowspan` que se sale | `n_rows` se queda en las `<tr>` vistas | `SPAN_FUERA_DE_RANGO`, **FATAL** |
+
+    Reproducido con las dos formas, y con testigo en el corpus real:
+    `BOE-A-2026-7172` t13 lleva un `<td colspan="2">` en una tabla cuyo
+    `<colgroup>` declara 2 columnas, y sale legal creciendo a 3.
+
+    **Y se decide NO derivar `n_rows`, con dos razones medidas:**
+
+    1. **Reabre el límite 38**: derivarlo pone la celda desbordada en rango y
+       cuesta **~9 GB desde 65 bytes**.
+    2. **El estándar no la absuelve.** Su paso final dice *«if there exists a row
+       or column in the table containing only slots that do not have a cell
+       anchored to them, then this is a table model error»*. Aplicando la regla
+       ENTERA, las dos tablas del BOE que disparaban el fatal siguen siendo *table
+       model error*: crecen **y además** se condenan. El repo y el estándar
+       coinciden en el veredicto y discrepan en la geometría y en el nombre.
+
+    **Medir y decidir que no es un resultado, no una omisión.** Lo que queda es que
+    el lado permisivo es el horizontal: el repo perdona por columnas lo que el
+    estándar condena, y `COLUMNA_VACIA` no dispara nunca porque está definido sobre
+    «posición cubierta» y no sobre «celda anclada». Convertir el paso final del
+    estándar en hallazgo cerraría la asimetría **detectando más**, no perdonando
+    más. **Precio estimado: ~2 h**, y el sitio natural es L5, que es donde los
+    extractores empiezan a producir tablas raras.
+
+66. **La coincidencia con la referencia de PubTabNet vale sobre SUS casos, no sobre
+    los nuestros.** A partir del cierre de L3, la regla es:
+
+    - **sobre los 20 casos propios de PubTabNet: coincidencia exacta**, a cuatro
+      decimales, y eso es el criterio de aceptación de L2 y no se toca;
+    - **sobre casos construidos por nosotros: coincidencia sólo donde los dos
+      modelos coincidan**, porque la referencia trabaja sobre el árbol parseado y
+      nosotros sobre la rejilla.
+
+    Los **tres hallazgos sobre la métrica** son del mismo tipo y por eso van
+    juntos: TEDS no acotado por cero, el `<tbody>` de más que la forma canónica
+    borra a propósito, y el derrame de grupo de filas. **Ninguno es un fallo de
+    esta implementación**, y ninguno toca los 20 golden.
 
 ### L2 · 22 de agosto de 2026
 
@@ -395,20 +472,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 164 de 301 tests.** Los
-    **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **137 tests restantes** —`harvest` (14), `verificar_corpus` (14),
-    `boe` (12), `barreras` (11), `boe_api` (10), `entity_conformance` (9),
-    `entity_registry` (9), `sellar_xml` (4), `limite_lineas` (2),
+51. **La suite no está medida por mutación: el arnés cubre 166 de 308 tests.** Los
+    **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
+    árbol de TEDS y el lote. Los **142 tests restantes** —`barreras` (14), `harvest` (14),
+    `verificar_corpus` (14), `boe` (12), `boe_api` (10), `entity_conformance` (9),
+    `entity_registry` (9), `sellar_xml` (4), `limite_lineas` (2), `tope_area` (2),
     `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
     `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
     así que «los 21 mueren» no dice
     nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **45,5% hoy**.
+    12,4% al cerrar L2, **46,3% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **298 de 301 tests protegidos por algo** —un
+    *el arnés*, no la protección: **305 de 308 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -554,7 +631,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     1. **Cuando el guardián obligue a cambiar una cifra, se relee la frase entera,
        no sólo el dígito.** Es un paso de `/cerrar`.
     2. **Preferir enumeraciones exhaustivas a sumas y a restas.** Una tabla que
-       lista los 21 mutantes por origen se ve incompleta de un vistazo; un
+       lista los 22 mutantes por origen se ve incompleta de un vistazo; un
        «12 + 6» o un «bajó de 38 a 23» obliga al lector a una aritmética que no
        puede comprobar, y se queda viejo en silencio. Las tres frases se
        reescribieron así.
@@ -682,7 +759,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —298 de 301— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —305 de 308— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que

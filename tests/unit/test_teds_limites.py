@@ -28,7 +28,12 @@ LIMITE: dict[str, dict[str, str | float]] = json.loads(
     (FIXTURES / "casos_limite.json").read_text(encoding="utf-8")
 )
 VACIA = CanonicalTable((), 0, 0, (1, 1), None, True, "html")
-CON_VALOR = sorted(k for k, v in LIMITE.items() if "teds" in v)
+DIVERGENTE = "teds_negativo"
+"""El único caso donde NO coincidimos con la referencia, y por un mecanismo
+nombrado: ver `test_el_caso_del_derrame_de_grupo_diverge_de_la_referencia`. Sale
+de la lista de coincidencias para que ésta siga significando lo que dice."""
+
+CON_VALOR = sorted(k for k, v in LIMITE.items() if "teds" in v and k != DIVERGENTE)
 
 
 @pytest.mark.parametrize("nombre", CON_VALOR)
@@ -79,18 +84,58 @@ def test_teds_puede_ser_negativo_y_esta_medido() -> None:
 
     TEDS no está acotado por cero. La distancia se calcula sobre los árboles con
     su raíz y el denominador cuenta sólo los descendientes, así que entre dos
-    tablas suficientemente distintas la distancia se pasa del denominador. La
-    referencia devuelve el mismo -0,142857.
+    tablas suficientemente distintas la distancia se pasa del denominador.
 
     Importa porque §12 publica TEDS como nota y una nota negativa no se pondera
     igual que una entre 0 y 1: **L5 tiene que decidir si se recorta a cero al
     publicar, y decirlo**. Está en `LIMITS.md` 44. Recortarlo aquí sería apartarse
     de la referencia en silencio.
+
+    **Lo que este test NO afirma ya es que coincidamos con la referencia en este
+    caso.** Eso lo fija, con su valor y su mecanismo, el test de abajo.
     """
-    caso = LIMITE["teds_negativo"]
+    caso = LIMITE[DIVERGENTE]
     assert float(caso["teds"]) < 0, "el fixture tiene que traer el caso negativo"
     pred, gold = from_html(str(caso["pred"]))[0], from_html(str(caso["gold"]))[0]
-    assert round(teds(pred, gold), 6) == -0.142857
+    assert teds(pred, gold) < 0, "sigue siendo negativo: el hallazgo aguanta"
+
+
+def test_el_caso_del_derrame_de_grupo_diverge_de_la_referencia() -> None:
+    """**Tercer hallazgo sobre la métrica, y el que fija una diferencia conocida.**
+
+    Lo primero, porque es lo que sostiene todo lo demás: **los 20 golden sobre los
+    casos propios de PubTabNet siguen coincidiendo a cuatro decimales.** La
+    afirmación «esto es TEDS» no se toca y su evidencia tampoco. Lo que diverge es
+    **un caso límite que construimos nosotros**.
+
+    **El mecanismo, que es lo que hay que nombrar y no el síntoma:** no es que
+    demos otro número. Es que **modelamos la REJILLA y la referencia modela el
+    ÁRBOL parseado**, y para una tabla con derrame de grupo de filas —un `rowspan`
+    de la última fila del `<thead>` que se mete en el `<tbody>`— esos dos objetos
+    **no son el mismo**. El estándar termina el grupo avanzando hasta `yheight`,
+    así que en la rejilla hay una fila implícita que en el árbol de etiquetas no
+    existe. La referencia no la ve porque nunca construye una rejilla.
+
+    **Y el objeto correcto PARA ESTE BANCO es la rejilla.** Lo que se mide es si
+    el extractor reprodujo la ESTRUCTURA de la tabla, no su marcado: un extractor
+    que acierta la rejilla tiene que puntuar 1,0 aunque escriba los `<tbody>` de
+    otra forma. Ésa es la razón de existir de `CanonicalTable`, y es la misma por
+    la que `tbody_de_mas` da 1,0 aquí y 0,666667 en la referencia.
+
+    **El golden NO se toca**: el orden de sospecha es código, test, nunca el
+    fichero congelado — y aquí el código está bien. Lo que cambia es la aserción.
+    """
+    caso = LIMITE[DIVERGENTE]
+    pred, gold = from_html(str(caso["pred"]))[0], from_html(str(caso["gold"]))[0]
+
+    nuestro = round(teds(pred, gold), 6)
+
+    assert nuestro == -0.125, "la rejilla, con la fila implícita del derrame"
+    assert float(caso["referencia_sobre_el_crudo"]) == pytest.approx(-0.142857, abs=1e-6)
+    assert nuestro != round(float(caso["teds"]), 6), "diferencia CONOCIDA y explicada"
+    # Y la razón, comprobable: el gold tiene una fila más en la rejilla que <tr>
+    # escritos, que es exactamente la fila implícita que la referencia no ve.
+    assert gold.n_rows == 4 and str(caso["gold"]).count("<tr") == 3
 
 
 def test_dos_tablas_vacias_dan_uno_donde_la_referencia_revienta() -> None:
@@ -125,12 +170,12 @@ def test_el_suelo_es_de_presentacion_y_el_calculo_no_se_toca() -> None:
     ediciones que nodos tiene la mayor de las dos, o sea que **la predicción es
     peor que no haber predicho nada** —la predicción vacía puntúa 0—.
     """
-    caso = LIMITE["teds_negativo"]
+    caso = LIMITE[DIVERGENTE]
     pred, gold = from_html(str(caso["pred"]))[0], from_html(str(caso["gold"]))[0]
     crudo = teds(pred, gold)
 
     assert crudo < 0, "el cálculo NO se recorta"
-    assert round(crudo, 6) == -0.142857
+    assert round(crudo, 6) == -0.125, "el nuestro, sobre la rejilla (ver la divergencia)"
     assert para_publicar(crudo) == 0.0, "al publicar sí"
     assert para_publicar(0.75) == 0.75, "y no toca nada más"
     assert SUELO_DE_PUBLICACION == 0.0

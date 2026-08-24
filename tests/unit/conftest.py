@@ -100,6 +100,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_verificar_corpus.py": "test_un_descarte_que_desaparece_del_denominador_pone_rojo",
     "test_sellar_xml.py": "test_un_xml_que_falta_no_se_salta_en_silencio",
     "test_types_invariantes.py": "test_un_fallo_sin_causa_no_se_puede_construir",
+    "test_tope_area.py": "test_una_tabla_que_se_pasa_del_tope_sale_fatal_nombrando_el_area",
     "test_ancla.py": "test_un_ancla_que_no_existe_aborta_en_vez_de_borrar_hasta_el_final",
     "test_types.py": "test_todo_el_modelo_de_datos_es_inmutable",
     "test_sin_consumidor.py": "test_from_html_si_tiene_consumidor_y_por_eso_no_esta_en_la_lista",

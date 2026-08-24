@@ -31,6 +31,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
+from censo_corpus import columnas_declaradas  # noqa: E402
 from medir_puerta import _huella_arbol, _lo_que_se_movio, movimiento  # noqa: E402
 from referencias import analizar  # noqa: E402
 
@@ -238,3 +239,45 @@ def test_un_artefacto_declarado_y_ausente_de_git_pasa(tmp_path: Path) -> None:
 
     assert [r.valor for r in rotas] == ["runs/l3/docs"], "rota sí: un clon no la tiene"
     assert sin_excusa == [], "pero declarada, y con su razón"
+
+
+# ----------------------------------------- el detector de coherencia del colgroup
+# La tercera barrera de esta sesión, y la que habría cazado sola el fallo del grupo
+# de filas: el documento DECLARA sus columnas en `<colgroup>` y `from_html` las
+# DERIVA de la extensión de las celdas, sin mirar ese `<colgroup>` jamás. Dos
+# caminos independientes sobre el mismo fichero, así que cuando discrepan una de
+# las dos está mal — y no hace falta mirar una rejilla a mano para verlo.
+
+
+def test_el_detector_del_colgroup_caza_la_discrepancia() -> None:
+    """**El fallo de `BOE-A-2026-7193`, en cinco líneas.**
+
+    La tabla declaraba 4 columnas y `from_html` producía 5 porque no terminaba el
+    grupo de filas, y `validate` la daba por buena: los importes de la primera
+    fila de tarifas caían en columnas distintas que los de las demás. Un `ok=True`
+    sobre datos en la celda equivocada es la peor forma de fallar de este repo, y
+    esto lo convierte en una cifra.
+    """
+    declara_cuatro = "<colgroup><col/><col/><col/><col/></colgroup>"
+
+    assert columnas_declaradas(f"<table>{declara_cuatro}<tr><td>a</td></tr></table>") == 4
+
+
+def test_col_span_cuenta_lo_que_declara_y_no_uno() -> None:
+    """`<col span="3">` son tres columnas, no una.
+
+    Contarlo como una daría una discrepancia en toda tabla que use la forma corta:
+    un detector con falsos positivos deja de leerse, que es el mismo argumento por
+    el que el barrido de referencias exige cero.
+    """
+    assert columnas_declaradas('<table><colgroup><col/><col span="3"/></colgroup></table>') == 4
+
+
+def test_sin_colgroup_es_none_y_no_cero() -> None:
+    """El aro que evita que el detector grite contra media tabla del mundo.
+
+    Sin `<colgroup>` el documento **no ha declarado nada**, y eso no es «declara
+    cero columnas»: confundirlos convertiría toda tabla sin `<colgroup>` en una
+    discrepancia. Es la misma distinción que `None` contra `""` en el emparejado.
+    """
+    assert columnas_declaradas("<table><tr><td>a</td><td>b</td></tr></table>") is None

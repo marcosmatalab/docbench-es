@@ -82,14 +82,39 @@ class Colocador:
         hasta = self._ocupada_hasta.get(col, 0)
         return hasta != _SIN_CERRAR and hasta <= fila
 
-    def cerrar_seccion(self) -> None:
-        """`<thead>`, `<tbody>`, `<tfoot>`: resuelve los `rowspan="0"` abiertos."""
+    def _resolver_pendientes(self) -> None:
+        """Los `rowspan="0"`: ocupan hasta el final de su sección, que ya se conoce."""
         for pendiente in self._pendientes:
             registro = self._registros[pendiente.indice]
             registro.rowspan = self._fila - registro.fila + 1
             for col in range(pendiente.col, pendiente.col + pendiente.colspan):
                 self._ocupada_hasta[col] = self._fila + 1
         self._pendientes.clear()
+
+    def _yheight(self) -> int:
+        """La primera fila que no ocupa ninguna celda. Es `yheight` del estándar."""
+        return max((h for h in self._ocupada_hasta.values() if h != _SIN_CERRAR), default=0)
+
+    def cerrar_seccion(self) -> None:
+        """El paso **«ending a row group»** del estándar, entero.
+
+        No es sólo resolver los `rowspan="0"`: el estándar dice *«while ycurrent is
+        less than yheight … increase ycurrent by 1»* y luego vacía la lista de
+        celdas que crecen hacia abajo. O sea que **el grupo siguiente empieza
+        DESPUÉS de lo que se derrame del anterior**.
+
+        **Sin este avance, un `rowspan` de la última fila del `<thead>` se metía en
+        el `<tbody>` y DESPLAZABA los datos.** Medido sobre el corpus de L3, en
+        `BOE-A-2026-7193`: un `<th rowspan="2">` empujaba los dos importes de la
+        primera fila de tarifas a las columnas 3 y 4 mientras los de todas las
+        demás filas caían en la 2 y la 3. La tabla salía 13x5 en vez de 14x4 —su
+        propio `<colgroup>` declaraba 4— y **`validate` la daba por buena**: un
+        `ok=True` sobre una tabla con los números en la celda equivocada, que es la
+        peor forma posible de fallar aquí. En L4 esa habría sido la verdad de
+        referencia contra la que se puntúa a todos los extractores.
+        """
+        self._resolver_pendientes()
+        self._fila = max(self._fila, self._yheight() - 1)
 
     def nueva_fila(self) -> None:
         self._fila += 1
@@ -131,8 +156,18 @@ class Colocador:
         Derivar `n_cols` en vez de creerse un `<colgroup>` es lo que hace
         imposible una `COLUMNA_VACIA`: no hay forma de declarar más columnas de
         las que se usan.
+
+        **Y aquí NO se avanza hasta `yheight`, a diferencia de `cerrar_seccion`.**
+        El avance existe para que el grupo SIGUIENTE no colisione con lo que se
+        derrame; al final de la tabla no hay grupo siguiente, así que lo único que
+        haría es inflar `n_rows` — y derivar `n_rows` de la extensión de las celdas
+        está **medido y descartado**: un `rowspan="65534" colspan="1000"` en 65
+        bytes pasaría a estar *en rango*, `_colocar` estamparía 65,5 M posiciones y
+        `validate` costaría ~9 GB. Hoy el fatal lo corta en 0,0001 s. Ver el
+        límite 65: la asimetría entre `n_rows` y `n_cols` se queda **declarada**,
+        con su coste medido y con la razón de no arreglarla.
         """
-        self.cerrar_seccion()
+        self._resolver_pendientes()
         celdas = tuple(
             CanonicalCell(
                 row=r.fila,

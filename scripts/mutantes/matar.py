@@ -71,6 +71,9 @@ PLAN = [
     # de `ESTADO.md`: «un candado que no se ha probado contra su propia rotura no
     # es un candado», y éste es una barrera, o sea código cuyo único trabajo es
     # ponerse rojo.
+    # El paso del estandar que faltaba en `cerrar_seccion`. Su suite es la del
+    # conversor de HTML: es donde vive la geometria que el fallo desplazaba.
+    ("seccion_sin_cerrar", "tests/unit/test_grupo_de_filas.py"),
     ("recuentos_todo_vale", "tests/unit/test_recuentos.py"),
     ("recuentos_sin_claude", "tests/unit/test_recuentos.py"),
     ("recuentos_plano_flojo", "tests/unit/test_recuentos.py"),

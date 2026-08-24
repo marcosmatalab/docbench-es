@@ -225,6 +225,17 @@ HISTORICOS: dict[str, str] = {
     "nueve mutantes se versionan": (
         "Los nueve mutantes se versionan en scripts/mutantes/, con matar.py"
     ),
+    # Y las CITAS DE UNA CORRECCIÓN: el texto viejo, dentro del bloque que explica
+    # por qué era falso. Actualizarlas para que el guardián pase sería reescribir
+    # la historia para que cuadre el presente — exactamente el fallo que este
+    # fichero existe para impedir, una capa más adentro.
+    # El discriminador es la COMILLA ANGULAR: una cita del texto viejo va entre
+    # «», y un uso vivo del número no. Así la excepción no puede tapar un recuento
+    # de verdad desincronizado, que es lo que la haría inútil.
+    "Son 21 mutantes, no 12": "«Son 21 mutantes, no 12",
+    "21 mutantes mueren": "«los 21 mutantes mueren»",
+    "21 mutantes, todos mueren": "«21 mutantes, todos mueren»",
+    "los 21 mutantes por": "la tabla de los 21 mutantes por",
 }
 """Citas de un número **superado**, en la sección del hito que lo midió.
 

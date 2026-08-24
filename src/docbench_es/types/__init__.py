@@ -23,6 +23,7 @@ from benchcore.types import (
     TokenUsage,
 )
 
+from docbench_es.types._area import TOPE_AREA
 from docbench_es.types._campana import (
     AnswerMetrics,
     CampaignResult,
@@ -60,6 +61,7 @@ from docbench_es.types._verdad import (
 __all__ = [
     "FORMATOS_CANONICOS",
     "FORMATOS_SIN_SPANS",
+    "TOPE_AREA",
     "AnswerMetrics",
     "AnswerResult",
     "CampaignResult",
