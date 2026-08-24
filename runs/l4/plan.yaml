@@ -153,4 +153,8 @@ medir_cruza_pagina: true
 
 # Y las 30 se transcriben de una sentada y se congelan con hash ANTES de la primera
 # comparacion. El sello de esa congelacion se escribe aqui cuando ocurra.
-sello_de_la_congelacion: null
+sello_de_la_congelacion: be6f5e0
+congelacion: runs/l4/congelacion.json
+congelado_en: 2026-08-24T22:45:00Z
+# 30 transcritas, 1.213 celdas, 27 completas y 3 con ventana. NINGUNA se habia
+# comparado contra truth.derived cuando se congelaron: ese es el punto entero.
