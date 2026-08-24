@@ -63,7 +63,7 @@ jobs:
       # enseña a ignorar el color. Bloquear se reserva para la promesa publicada.
       - name: la puerta, cronometrada contra su techo
         env:
-          TECHO_MS: 20000
+          TECHO_MS: 21000
         run: |
           inicio=$(date +%s%N)
           make fast

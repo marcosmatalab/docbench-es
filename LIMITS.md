@@ -307,6 +307,26 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     más. **Precio estimado: ~2 h**, y el sitio natural es L5, que es donde los
     extractores empiezan a producir tablas raras.
 
+67. **`truth.derived` NO genera los `Fact`, y §9.4 dice que sí.** Literal del
+    manual: *«`truth` parsea el XML a `CanonicalTable` y **genera los `Fact` con
+    plantillas sobre la matriz**»*. L4 entrega `Truth` con sus tablas y
+    **`facts=()`**.
+
+    **Se aplaza a L9, y la razón no es la prisa.** Un `Fact` lleva un `path` como
+    `"tabla[2].fila[grupo 3].col[salario base].2026"` (§6.4), o sea que hay que
+    saber **qué significa cada columna** — y eso sale del vocabulario y las
+    plantillas de §9.6, que **son L9**. Generarlos ahora sería decidir el formato
+    del `path` sin su consumidor y engordar la lista del límite 49: cosas escritas
+    que nadie ha usado para producir nada.
+
+    **Lo que hace que la desviación no sea silenciosa:** `facts` es una tupla
+    **vacía**, no un valor inventado, así que quien la lea ve que no hay hechos en
+    vez de creerse unos falsos. Y `ask.templates` (§9.6) es el único consumidor, o
+    sea que hasta L9 **no hay nadie a quien le falte**.
+
+    **Precio: ~3-4 h**, y va con L9 porque ahí están las plantillas. Si en L9 se
+    decide otra cosa, esta entrada sobra y el barrido lo dirá.
+
 66. **La coincidencia con la referencia de PubTabNet vale sobre SUS casos, no sobre
     los nuestros.** A partir del cierre de L3, la regla es:
 
@@ -472,11 +492,12 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 308 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 316 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **142 tests restantes** —`barreras` (14), `harvest` (14),
+    árbol de TEDS y el lote. Los **150 tests restantes** —`barreras` (14), `harvest` (14),
     `verificar_corpus` (14), `boe` (12), `boe_api` (10), `entity_conformance` (9),
-    `entity_registry` (9), `sellar_xml` (4), `limite_lineas` (2), `tope_area` (2),
+    `entity_registry` (9), `capas_permitidas` (8), `sellar_xml` (4),
+    `limite_lineas` (2), `tope_area` (2), `grupo_de_filas` (2),
     `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
     `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
@@ -485,7 +506,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     12,4% al cerrar L2, **46,3% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **305 de 308 tests protegidos por algo** —un
+    *el arnés*, no la protección: **313 de 316 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -759,7 +780,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —305 de 308— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —313 de 316— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que

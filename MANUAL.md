@@ -1868,6 +1868,30 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 | **L2** | `core.teds` + validación contra PubTabNet | Coincide a cuatro decimales con la referencia | 10-14 |
 | **L3** | `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus.harvest`/`pairing` | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | 16-20 |
 | **L4** | `truth.derived` + fixtures de tabla | La verdad derivada reproduce las tablas a mano | 8-10 |
+
+> **Transcrito de [ADR-0039](docs/adr/0039-la-adjudicacion-de-discrepancias-de-la-verdad.md),
+> en L4.** El criterio de L4 **no tiene umbral y no dice qué pasa cuando la verdad
+> derivada y la transcripción a mano discrepen** — y van a discrepar, porque las
+> transcripciones las hace una persona y su tasa de error no es cero. Sin regla
+> escrita, la salida cómoda es **ajustar el fixture hasta que pase**, que es la
+> regla del fichero congelado del revés y aquí es peor: **el fixture ES el
+> instrumento de medida del hito**. Las cuatro reglas, escritas antes de transcribir
+> la primera tabla:
+>
+> 1. **Orden de sospecha: primero el código, segundo la transcripción.** Nunca
+>    «ajusto el fixture y sigo».
+> 2. **Cada discrepancia se adjudica una a una y su causa se publica**, con dos
+>    valores posibles: *fallo del código* o *error de transcripción*. **Sólo el
+>    primero habla del producto.**
+> 3. **El número separa las dos**: «N de 30 coinciden; de las M discrepancias, X
+>    eran del código y Y errores de transcripción». Un 30/30 obtenido corrigiendo
+>    fixtures vale cero; un 27/30 con las tres explicadas vale mucho.
+> 4. **Si el código se arregla, se re-comparan LAS 30**, no sólo la que falló.
+>
+> Y lo que sostiene que las transcripciones sean independientes: **se transcriben
+> del PDF y no del XML** —del XML sería comparar el XML consigo mismo—, **se
+> congelan con hash antes de la primera comparación**, y **se declara cuáles ya se
+> habían inspeccionado** en vez de excluirlas, porque excluirlas sesgaría la muestra.
 | **L5** | `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | Primera tabla de estructura con coste y cobertura evaluable. Ocho, no trece: los otros cinco entran después con `/extractor`, una tarde cada uno | 14-18 |
 | **L6** | `sample` con McNemar + bootstrap agrupado | Plan congelado y publicado antes de la primera campaña seria | 8-10 |
 | **L7** | Quickstart: 20 documentos versionados + `make quickstart` | De clone a tabla en menos de 3 minutos, sin red y sin gastar | 6-8 |

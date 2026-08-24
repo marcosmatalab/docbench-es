@@ -168,10 +168,62 @@ razones: es **conservador** —nunca subestima el techo— y cambiarlo ahora har
 incomparables L0, L1 y L2, que es justo lo que este protocolo existe para evitar.
 Lo que no vale es llamarlo p90 sin decir cuál de las convenciones es.
 
+### EL TECHO ES SOBRE EL p90, NO SOBRE EL MÁXIMO
+
+**Y eso significa que por construcción habrá corridas individuales por encima del
+techo.** No es un fallo del protocolo: es lo que hace un percentil. `medir_puerta.py`
+devuelve 1 si **el p90** pasa del techo, y no mira el máximo.
+
+**El caso medido, para que no haya que imaginárselo.** Al preparar L4, con el techo
+en 8500:
+
+| | |
+|---|---|
+| n | 40 en 10 tandas, cero descartadas |
+| mediana | 7628 |
+| **p90** | **7787** — dentro |
+| **máximo** | **8621** — **por encima del techo** |
+| σ | 195 · carga mediana 1,27 |
+
+`rc = 0`. Correcto: una corrida suelta a 8621 con σ=195 es la cola de una
+distribución ruidosa, no un cambio en el código. **Fijar el techo sobre el máximo
+haría que el rojo dependiera de si alguien abrió el navegador durante la tanda**,
+que es exactamente el ruido que este protocolo existe para separar de la señal.
+
+**Pero «el techo son 8500» se lee como «ninguna corrida pasa de 8500», y es falso.**
+De ahí la regla de publicación: **el máximo se publica SIEMPRE al lado del p90**, que
+es lo único que hace visible la diferencia entre las dos lecturas. Un p90 con su
+máximo al lado no se puede malinterpretar; un p90 solo, sí.
+
 **El supuesto que puede tumbar la proyección**, y va escrito para que se compruebe
 en vez de creerse: que el reparto entre `fast` y `full` de L3 sea el que se supone
 aquí. Si `entity.conformance` acaba siendo pura y grande, el incremento se parece
 al escenario de arriba y el techo de 8500 se queda corto en el propio L3.
+
+### El techo de L4: 9000 local, 21 000 en CI
+
+Aplicada la misma fórmula al cerrar L3 y con el protocolo de las 40 corridas:
+
+    techo = p90 medido (7787) + incremento proyectado + una desviación (195)
+
+L2 → L3 fueron **+1807 ms** de mediana (5593 → 7400), con **+123 tests** y **+13
+módulos** en 18-23 h. L4 son 8-10 h. Tres analogías sobre ese único delta:
+
+| Escenario | Cuenta | Incremento | Techo que da la fórmula |
+|---|---|---|---|
+| Por pasos | `mypy` x5/13 + `pytest` x45/123 | 644 | 8626 |
+| Por tests | 14,7 ms/test x ~45 | 660 | 8642 |
+| **Por horas, el adverso** | 1807/20,5 h x 9 h | **790** | **8772** |
+
+**El techo local es 9000**, el adverso redondeado hacia arriba. El de CI, **21 000**
+(9000 x 2,3 = 20 700, redondeado). **Es una proyección sobre UN delta**, no sobre una
+tendencia, y se publica con esa palabra.
+
+**Lo que este número ya anticipa:** el margen que quedaba bajo 8500 eran 713 ms y el
+escalón proyectado de L4 son 640-790, o sea que **se lo come entero**. Y la condición
+que disparará primero no es el techo sino la **número 2**: `pytest` en proceso ha
+pasado de 3,2 s a **4,52 s** (n=3, medido al cerrar L3), y a ese ritmo llega a los
+10 s hacia L8.
 
 ### Cuándo se deja de subir el techo, que es la parte que faltaba
 

@@ -18,6 +18,10 @@ layers =
     publish : drift
     report
     reference
+    # OCHO HERMANOS EN UNA SOLA CAPA PLANA. `:` NO ordena: dice que si pueden
+    # importarse, en cualquier direccion. `|` seria «independientes, no pueden».
+    # Lo que ordena son las LINEAS. Leido mal dos veces en direcciones opuestas;
+    # lo fija tests/unit/test_capas_permitidas.py con el grafo real.
     ask : truth : extract : corpus : entity : sources : glossary : sample
     core
     types : errors

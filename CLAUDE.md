@@ -74,9 +74,26 @@ make fix          # ruff format + ruff check --fix
 ## El contrato de capas
 
 Está en **`.importlinter`** —con ese nombre exacto: import-linter no lee un fichero
-llamado `importlinter.ini`— y lo verifica el CI. Además del orden de capas, con
-`exhaustive = true` para que un paquete nuevo sin ubicar ponga el CI rojo, hay tres
-prohibiciones, y cada una hace cumplir una afirmación del README:
+llamado `importlinter.ini`— y lo verifica el CI.
+
+**LO QUE ORDENA SON LAS LÍNEAS, NO LOS DOS PUNTOS.** Dentro de una línea, `|`
+significa **independientes** —no pueden importarse— y `:` significa que **sí
+pueden**, en cualquier dirección. Así que esta línea
+
+    ask : truth : extract : corpus : entity : sources : glossary : sample
+
+son **ocho hermanos en una sola capa plana**: `entity` puede importar `truth`,
+`corpus` puede importar `entity` y `sample` puede importar `ask`. **Está escrito
+aquí porque se ha leído mal dos veces, en direcciones opuestas** —«los hermanos no
+pueden importarse» y «`truth` está por encima de `entity`»—, las dos veces
+rediseñando algo que no hacía falta, y las dos veces se descubrió **ejecutando**.
+Lo fija `tests/unit/test_capas_permitidas.py`, que evalúa el contrato real sobre el
+grafo real en las **dos** direcciones: lo permitido sigue permitido y lo prohibido
+sigue prohibido.
+
+Además del orden de capas, con `exhaustive = true` para que un paquete nuevo sin
+ubicar ponga el CI rojo, hay tres prohibiciones, y cada una hace cumplir una
+afirmación del README:
 
 | Prohibición | La afirmación que protege |
 |---|---|
