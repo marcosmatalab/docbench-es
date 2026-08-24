@@ -1,7 +1,7 @@
 {
  "condiciones": {
-  "ejecutado": "2026-08-24T17:24:41Z",
-  "sello": "9db1be9+19",
+  "ejecutado": "2026-08-24T18:29:44Z",
+  "sello": "525c71d",
   "comando": "uv run python scripts/censo_corpus.py",
   "manifiesto": "runs/l3/manifiesto.json",
   "documentos_en_manifiesto": 1000,
