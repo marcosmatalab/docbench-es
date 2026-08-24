@@ -97,6 +97,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_harvest.py": "test_la_cosecha_para_si_mas_del_cinco_por_ciento_agota_reintentos",
     "test_manifest.py": "test_requisito_2_sin_atribucion_no_hay_manifiesto",
     "test_verificar_corpus.py": "test_un_descarte_que_desaparece_del_denominador_pone_rojo",
+    "test_sellar_xml.py": "test_un_xml_que_falta_no_se_salta_en_silencio",
     "test_types_invariantes.py": "test_un_fallo_sin_causa_no_se_puede_construir",
     "test_ancla.py": "test_un_ancla_que_no_existe_aborta_en_vez_de_borrar_hasta_el_final",
     "test_types.py": "test_todo_el_modelo_de_datos_es_inmutable",

@@ -151,14 +151,14 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 164 de 290 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 164 de 294 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
    | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
    |---|---|---|---|---|---|---|
    | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
-   | **L3**, en curso | 290 | 164 | 56,6% | 287 | 99,0% | 3 |
+   | **L3**, en curso | 294 | 164 | 55,8% | 291 | 99,0% | 3 |
    | delta | +100 | +2 | **−30,1 puntos** | +100 | **+0,5 puntos** | **0** |
 
    **Y las dos series van en direcciones distintas, que es exactamente lo que había
@@ -182,12 +182,12 @@ nota. Ver LIMITS 49.
 
    **Dos puntos son un delta, no una tendencia; el tercero lo pone L4.** Con esa
    reserva por delante, la proyección de una etapa: si L4 añadiera tests fuera del
-   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 56,6%
+   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 55,8%
    de hoy al entorno del 50%**, y L5 es un hito más grande (ocho extractores), así
    que su escalón sería mayor. Es una **proyección sobre dos puntos**, no una
    medición, y se publica con esa palabra.
 
-   **De los 126 de fuera, 123 llevan control negativo en su propio fichero.**
+   **De los 130 de fuera, 127 llevan control negativo en su propio fichero.**
    `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
    incumple cinco aros a propósito, y **afirma el conjunto exacto** de
    comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test

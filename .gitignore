@@ -22,6 +22,11 @@ runs/
 !runs/*/plan.yaml
 runs/*/*
 !runs/*/plan.yaml
+# Y los sellos de los XML tampoco son datos: son EVIDENCIA, y su valor entero
+# está en CUÁNDO se tomaron. En git, su fecha se puede comprobar contra el
+# historial; fuera de git, «lo capturé al terminar la cosecha» es una afirmación
+# de palabra. Son ~100 KB de JSON. Ver límite 62.
+!runs/*/xml_sha256.json
 .claude/.ultima-puerta
 .env
 

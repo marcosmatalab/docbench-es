@@ -395,19 +395,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 164 de 290 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 164 de 294 tests.** Los
     **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **126 tests restantes** —`verificar_corpus` (14), `boe` (12), `harvest` (12),
+    árbol de TEDS y el lote. Los **130 tests restantes** —`verificar_corpus` (14), `boe` (12), `harvest` (12),
     `boe_api` (10), `entity_conformance` (9), `entity_registry` (9),
+    `sellar_xml` (4),
     `barreras` (8), `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
     `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
     así que «los 21 mueren» no dice
     nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **43,4% hoy**.
+    12,4% al cerrar L2, **44,2% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **287 de 290 tests protegidos por algo** —un
+    *el arnés*, no la protección: **291 de 294 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -681,7 +682,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —287 de 290— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —291 de 294— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -736,15 +737,51 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     se puntúa a todos los extractores. O sea que la mitad menos protegida del par
     es la mitad que decide quién gana.
 
-    **Por qué no se arregló antes de cosechar**, que era el momento natural:
-    añadir el campo toca `Procedencia`, el esquema del manifiesto,
-    `corpus.harvest` y la reanudación, y la reanudación tendría que rellenar el
-    hueco de los 25 documentos del piloto. Se descubrió con la cosecha ya
-    aprobada. **No es irreversible**: los XML quedan en disco, así que el hash se
-    puede añadir después recorriéndolos, y lo único que se pierde es que el hash
-    se tome de los bytes que salieron por el cable en vez de los que hay en disco.
-    **Precio estimado: ~40 min**, y el sitio natural es L4, que es el primero que
-    lee esos XML como verdad.
+    **LO APLAZADO ES EL ESQUEMA, NO LA CAPTURA.** Son dos cosas distintas y sólo
+    una corría prisa:
+
+    | | Qué es | Cuándo | Por qué |
+    |---|---|---|---|
+    | **Cambiar el esquema** | `Procedencia`, el manifiesto, `corpus.harvest` y la reanudación —que tendría que rellenar el hueco de los 25 del piloto— | **L4, ~40 min** | Toca cuatro sitios y no gana nada por hacerse hoy |
+    | **Capturar el hash** | un script que recorre el directorio y escribe `runs/l3/xml_sha256.json` | **HECHO, al terminar la cosecha** | Lo que separa una captura buena de una mala es **el hueco entre la descarga y el hash** |
+
+    Ese hueco es todo el argumento. Tomado al terminar la cosecha son **minutos**,
+    sobre ficheros que acababa de escribir el propio código en la propia máquina.
+    Tomado en L4 serían **días**, y un hash calculado sobre un fichero ya
+    sustituido **lo bendice para siempre**: peor que no tenerlo, porque a partir de
+    ahí la comprobación diría que todo cuadra.
+
+    **La captura está hecha y fechada**: `runs/l3/xml_sha256.json`, 1.000 de 1.000,
+    `tomado_en 2026-08-24T12:59:52Z`, sello `352a6f2+2` —los dos ficheros sucios
+    son el propio script de captura y el `.gitignore`, ninguno toca el corpus—,
+    `uv run python scripts/sellar_xml.py runs/l3/manifiesto.json`. Va **versionada**:
+    su valor entero está en cuándo se tomó, y fuera de git eso es una afirmación de
+    palabra.
+
+    **En L4 ese fichero SE PLIEGA dentro del esquema, no se recalcula.** Si se
+    recalcula, el hueco vuelve a ser de días y la captura de hoy no habrá servido
+    de nada. Y no es una intención: `sellar_xml.py` **se niega a sobrescribir** una
+    captura existente sin un `--refijar RAZON` que queda escrito dentro, con su
+    control negativo en `test_sellar_xml.py`.
+
+63. **La cosecha no guarda LA FECHA de un descarte, así que la ventana no se puede
+    partir con lo que se guardó.** Los 1.000 aceptados llevan su `fecha_sumario` y
+    los 43 descartes viven en un contador sin fecha, `Cosecha.por_causa`. La
+    ventana de L3 **se eligió cruzando el equinoccio a propósito** para que la tasa
+    no fuera de una sola época — y con lo que el manifiesto guarda, ese propósito
+    no se podía cumplir.
+
+    **El número existe igual, reconstruido y se dice cómo:**
+    `scripts/desglose_ventana.py` vuelve a leer los sumarios con
+    `BoeAdapter.discover` —el código de producción, no una copia— y reparte los
+    `intentados` por día. Cuadra exacto: 462 + 581 = 1.043 intentados,
+    444 + 556 = 1.000 aceptados, 18 + 25 = 43 descartes. **Pero es una lectura del
+    origen POSTERIOR a la cosecha**, no una medición de la cosecha: si el BOE
+    reordenara o retirara un ítem de un sumario viejo, la reconstrucción
+    discreparía. El script lo comprueba y se cae si no cuadra.
+
+    **El arreglo es el mismo cambio de esquema del límite 62**, así que van juntos:
+    L4, **~30 min más**. Mientras tanto, cualquier cosecha futura hereda el hueco.
 
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están

@@ -63,13 +63,13 @@ disable-model-invocation: true
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 21 mutantes mueren» habla de esos 21 huecos, no de la
-   suite: hoy el arnés cubre 164 de 290 tests, o sea que los 126 tests que quedan
+   suite: hoy el arnés cubre 164 de 294 tests, o sea que los 130 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **287 de 290 tests protegidos por algo** y **3 tests sin ningún control**.
+   **291 de 294 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
