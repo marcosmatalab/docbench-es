@@ -75,6 +75,47 @@ ya_inspeccionadas:
 #   4. si el codigo se arregla, se RE-COMPARAN LAS 30
 adjudicacion: docs/adr/0039-la-adjudicacion-de-discrepancias-de-la-verdad.md
 
+# --------------------------------------------------------------- EL ALCANCE
+# Las 30 tablas suman 2.283 celdas y TRES son el 54% del trabajo. Se transcriben
+# COMPLETAS todas menos las que pasen del umbral; esas llevan ventana.
+#
+# LA VENTANA ES LA CABEZA, FIJA, NO SORTEADA. Razon: la estructura vive en los
+# BORDES —cabeceras, spans que cruzan secciones, fronteras de <thead>/<tbody>—, y el
+# fallo que este hito caza ocurre EN una frontera de seccion. Una ventana sorteada
+# cae en el medio, que es donde las tablas son regulares, y submuestrea justo donde
+# estan los bugs. La objecion obvia —«eliges la parte facil»— se contesta sola: la
+# cabeza es la parte DIFICIL, asi que el sesgo va hacia la region dura, que es la
+# direccion segura para un banco.
+#
+# Y TAMBIEN LA ULTIMA FILA, que son 21 celdas en total —gratis— y cubre la otra
+# region donde vive la estructura: hueco de cola, fila de totales, cierre de <tbody>.
+alcance:
+  umbral_celdas: 100          # por encima, ventana; por debajo, completa
+  ventana_filas_de_cuerpo: 6  # mas las filas de cabecera que tenga
+  incluye_ultima_fila: true
+  # Con el umbral de 100 sobre esta seleccion: 27 completas y 3 con ventana.
+  ventaneadas: [BOE-A-2026-5975, BOE-A-2026-6732, BOE-A-2026-6388]
+
+# LA DIMENSION COMPLETA SE COMPRUEBA EN LAS 30, ventaneadas incluidas: n_rows x
+# n_cols contadas a ojo sobre el PDF. Es lo que recupera lo que la ventana no ve, y
+# es exactamente donde estaba el fallo del grupo de filas —13x5 contra 14x4—.
+dimension_completa_en_las_30: true
+
+# ------------------------------------------------------------- LA VELOCIDAD MEDIDA
+# Punto 6: medir antes de comprometer la estimacion, que es el metodo del piloto de
+# L3 aplicado a mi. Dos tablas cronometradas de reloj, localizacion incluida:
+#   BOE-A-2026-7560 t12 · 36 celdas · 37 s   (sin spans, 1 pagina de 175)
+#   BOE-A-2026-6204 t3  · 42 celdas · 30 s   (1 pagina de 12)
+# ~33 s por tabla, DOMINADO POR EL COSTE FIJO de localizar y leer la pagina, no por
+# las celdas. Extrapolado a 30: ~20-30 min. O sea que CABE en las 8-10 h del hito.
+#
+# LO QUE ESO NO DICE, y es lo que de verdad ata: se ha medido VELOCIDAD, no
+# EXACTITUD. En una tabla de 600 celdas leidas de una imagen la restriccion no es el
+# reloj sino MI TASA DE ERROR, que sube en la cola larga, y cada error mio gasta una
+# discrepancia que no habla del producto. Por eso la ventana se queda aunque el
+# tiempo sobre. **Mi tasa de error transcribiendo NO esta medida** — haria falta una
+# segunda pasada ciega, que es lo que ADR-0039 descarta por coste.
+
 # Y las 30 se transcriben de una sentada y se congelan con hash ANTES de la primera
 # comparacion. El sello de esa congelacion se escribe aqui cuando ocurra.
 sello_de_la_congelacion: null
