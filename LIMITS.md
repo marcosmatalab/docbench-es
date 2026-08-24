@@ -395,20 +395,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 164 de 298 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 164 de 301 tests.** Los
     **21 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **134 tests restantes** —`harvest` (14), `verificar_corpus` (14),
-    `boe` (12), `barreras` (10), `boe_api` (10), `entity_conformance` (9),
-    `entity_registry` (9), `sellar_xml` (4),
+    árbol de TEDS y el lote. Los **137 tests restantes** —`harvest` (14), `verificar_corpus` (14),
+    `boe` (12), `barreras` (11), `boe_api` (10), `entity_conformance` (9),
+    `entity_registry` (9), `sellar_xml` (4), `limite_lineas` (2),
     `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
     `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
     así que «los 21 mueren» no dice
     nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **45,0% hoy**.
+    12,4% al cerrar L2, **45,5% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **295 de 298 tests protegidos por algo** —un
+    *el arnés*, no la protección: **298 de 301 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -682,7 +682,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —295 de 298— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —298 de 301— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -817,6 +817,34 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **El arreglo es el mismo cambio de esquema del límite 62**, así que van juntos:
     L4, **~30 min más**. Mientras tanto, cualquier cosecha futura hereda el hueco.
 
+
+64. **El barrido de referencias medía LA MÁQUINA, no el repositorio — y su control
+    negativo no podía verlo.** `scripts/referencias.py` comprobaba cada ruta con
+    `Path.exists()`, o sea contra el árbol de trabajo de quien lo corre. Tres
+    referencias existían en la máquina que lo escribió y en ningún clon:
+    `.claude/.ultima-puerta` y `.claude/.congelados.sha256`, que crean los hooks al
+    correr, y `runs/l3/docs`, que son los 362 MB ignorados. **La puerta estaba
+    verde en local y roja en CI**, y se empujó así el commit de cierre de L3.
+
+    **Lo que hace este caso distinto de un bug cualquiera es que la barrera tenía
+    su control negativo y era bueno.** Probaba las dos direcciones —dice «no» ante
+    una referencia rota, «sí» ante una que existe— y las dos pasaban. Lo que ningún
+    control de veredicto puede ver es **de qué depende la respuesta**: una barrera
+    con la lógica perfecta puede estar midiendo el disco de su autor.
+
+    **Arreglado, no declarado:** las rutas se comprueban contra `git ls-files`, que
+    es lo que recibe un clon; los artefactos de ejecución van en una tabla propia,
+    `ARTEFACTOS`, con la **dirección de fallo contraria** —una entrada de ahí que
+    aparezca en git también pone rojo—; y el control negativo nuevo inyecta el
+    conjunto de lo versionado, así que no depende del disco de nadie.
+
+    **Lo que queda como límite:** el barrido comprueba **rutas** contra git, pero
+    los **módulos** siguen comprobándose con `importlib` y las **herramientas**
+    mirando `.venv/bin`, o sea contra el entorno instalado. Un módulo que sólo
+    exista en el entorno de quien lo corre —instalado a mano, no en `pyproject`—
+    pasaría. No ha pasado, y el arreglo es correr el barrido en un entorno limpio,
+    que es lo que hace CI. **Se declara en vez de arreglarse porque CI ya lo cubre**
+    y duplicar la comprobación en local costaría un `uv sync` por barrido.
 49. **NO VALIDADOS: cuatro conversores y dos campos, con barrera de código.**
     `from_markdown`, `from_dataframe`, `from_tei` y `from_text_heuristic` están
     escritos y tienen tests propios, pero **nadie los ha usado para producir

@@ -63,13 +63,13 @@ disable-model-invocation: true
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 21 mutantes mueren» habla de esos 21 huecos, no de la
-   suite: hoy el arnés cubre 164 de 298 tests, o sea que los 134 tests que quedan
+   suite: hoy el arnés cubre 164 de 301 tests, o sea que los 137 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **295 de 298 tests protegidos por algo** y **3 tests sin ningún control**.
+   **298 de 301 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -306,6 +306,61 @@ disable-model-invocation: true
      contra líneas, documentos contra tablas, celdas contra etiquetas. Los tres
      errores grandes de este repo han sido de unidad o de origen, ninguno de
      aritmética.
+
+   **SU HERMANA, Y ES LA MÁS FINA DE TODAS:**
+
+   > **COMPROBAR EN UN ENTORNO QUE NO ES EL QUE VA A LEER EL RESULTADO.**
+
+   La familia de arriba publica como observado lo que no se observó. Ésta observa
+   de verdad — **pero en el sitio equivocado**, y por eso es más difícil de ver: hay
+   una medición, hay un verde, y el verde es real. Lo que no es real es que
+   signifique lo que se cree.
+
+   *El caso, del cierre de L3 y en el peor momento posible.* `scripts/referencias.py`
+   comprobaba cada ruta con `Path.exists()`, o sea **contra el árbol de trabajo de
+   quien lo corre**. Tres referencias —`.claude/.ultima-puerta`,
+   `.claude/.congelados.sha256` y `runs/l3/docs`— existían en mi máquina porque las
+   crean los hooks al correr y porque el corpus está ignorado. En un clon no
+   existen. **La puerta estaba verde en local y roja en CI y en cualquier clon**, y
+   se empujó así.
+
+   **Lo que hace este caso instructivo es que la barrera TENÍA su control negativo,
+   y era bueno.** Probaba las dos direcciones: que dice «no» ante una referencia
+   rota y «sí» ante una que existe. Los dos pasaban. Lo que ninguno de los dos
+   probaba es **de qué depende esa respuesta**:
+
+   | | Qué prueba | Qué NO prueba |
+   |---|---|---|
+   | control negativo de veredicto | que la lógica distingue bien | que mide lo que dice medir |
+   | control negativo de **entorno** | que el resultado no cambia según quién lo corra | — |
+
+   **Un candado puede tener la lógica perfecta y aun así estar midiendo la máquina
+   de quien lo escribió.** Y entonces su verde es una propiedad de esa máquina.
+
+   **Las preguntas, antes de cerrar:**
+
+   - **¿Contra qué compara esta comprobación?** Si la respuesta es «el disco», «el
+     entorno», «lo que hay instalado» o «el directorio actual», entonces mide la
+     máquina. Lo que hay que comparar es **lo que recibe quien va a leer el
+     resultado**: para un repo, `git ls-files`; para un paquete, lo que instala;
+     para un despliegue, lo que se copia.
+   - **¿Existe algo que esté en local y no en el artefacto?** Cachés, huellas,
+     ficheros que crean los hooks, datos ignorados, `.venv`, salidas de corridas
+     anteriores. Cada uno es una forma de que el verde sea tuyo y de nadie más.
+   - **Y el control negativo que lo prueba** no es «¿dice no ante algo malo?» sino
+     **«¿dice no ante algo que existe aquí y no allí?»**. En `referencias.py` eso se
+     hizo inyectando el conjunto de lo versionado, para que el test no dependa de
+     qué haya en el disco de nadie.
+
+   **La comprobación barata que lo cierra todo: CLÓNATE EN `/tmp` Y CORRE LA PUERTA
+   AHÍ**, antes de decir que está verde. No `git status` limpio: un clon de verdad.
+   Un `git clone . /tmp/x && cd /tmp/x && uv sync --only-group dev && make fast`
+   cuesta un minuto y es el único sitio donde la respuesta significa lo que parece.
+
+   **Y mira CI antes de cantar victoria.** El badge de `82a55f9` estaba en rojo
+   mientras se escribía el informe de cierre. Si el badge hubiera estado **verde**
+   con el clon rojo, el problema habría sido mucho mayor que este bug — y ésa es la
+   primera pregunta que hay que hacerse, antes de arreglar nada.
 
    **Y la forma más fuerte de un guardia: METERLO EN UN TIPO.**
 

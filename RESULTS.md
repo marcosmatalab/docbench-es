@@ -529,9 +529,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 164 de 298 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 164 de 301 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **134 tests restantes** —`test_harvest` (14), `test_verificar_corpus` (14),
+Los **137 tests restantes** —`test_harvest` (14), `test_verificar_corpus` (14),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_verificar_corpus` (9), `test_barreras` (8), `test_manifest` (8),
 `test_pairing` (8), `test_policy` (7), `test_types_invariantes` (7),
@@ -540,7 +540,7 @@ Los **134 tests restantes** —`test_harvest` (14), `test_verificar_corpus` (14)
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 21 mutantes mueren» dice
 que **esos 21** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 134 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 137 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -840,9 +840,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 295 de 298
+### Qué fracción de la suite está protegida por algo: 298 de 301
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 164 de 298» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 164 de 301» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -865,7 +865,7 @@ comprobación puede decidir es si es *fuerte* — límite 60.
 | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
 |---|---|---|---|---|---|---|
 | al cerrar **L2** (`099e452`) | 185 | 162 | 87,6% | 182 | **98,4%** | 3 |
-| **L3**, en curso | 298 | 164 | 55,0% | 295 | **99,0%** | 3 |
+| **L3**, cerrado | 301 | 164 | 54,5% | 298 | **99,0%** | 3 |
 
 **Y van en direcciones distintas, que es justo lo que había que saber:** la
 cobertura del arnés **cae 30,1 puntos** y la protección real **sube 0,5**. Los
@@ -875,7 +875,7 @@ algo rechace una entrada mala— y su fracción baja del 1,6% al 1,1%.
 
 **Lo que esto NO autoriza a decir.** No dice que la suite esté bien probada: dice
 que casi todo tiene *algo*, y que ese algo sólo está medido contra una rotura real
-en el 55,0%. La cobertura del arnés sigue publicada al lado como submedida, y su
+en el 54,5%. La cobertura del arnés sigue publicada al lado como submedida, y su
 caída sigue siendo el número que hay que vigilar — deuda 7.
 
 **Reproducción:** `uv run pytest tests/unit -q` (los recuentos se calculan en cada
@@ -1300,4 +1300,4 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **164 de
-298 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+301 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.

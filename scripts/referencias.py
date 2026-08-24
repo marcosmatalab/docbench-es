@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import pathlib
 import re
 import subprocess
 import sys
@@ -83,6 +84,22 @@ Las ocho marcadas `PENDIENTE de L3` son un caso aparte y conviene verlo: son el
 excusa — las convierte en una lista de tareas que **el propio barrido tacha**: el
 día que el fichero exista, su línea sobra y `referencias.py` se pone rojo pidiendo
 que la quites."""
+
+ARTEFACTOS: dict[str, str] = {
+    ".claude/.ultima-puerta": "lo escribe `medir_puerta.py` al correr; en un clon no está",
+    ".claude/.congelados.sha256": "manifiesto de huellas que crea el hook `stop-gate.sh`",
+    "runs/l3/docs": "los 362 MB del corpus. Versionado va el manifiesto, no los bytes (ADR-0038)",
+}
+"""Ruta -> por qué **NO debe estar en git**. Es la tabla contraria a `DECLARADAS`.
+
+**Y la dirección de su fallo también es la contraria.** Una entrada de aquí que
+apareciera en `git ls-files` pone rojo el barrido: un artefacto de ejecución
+commiteado por descuido —una caché, una huella, 362 MB de PDF— es un problema, no
+una tranquilidad. `DECLARADAS` excusa lo que **todavía** no existe; esto declara lo
+que **nunca** debe estar versionado.
+
+Las tres de dentro son el fallo que estrenó la tabla: existían en la máquina de
+quien escribió el barrido y en ningún clon."""
 
 EXTENSIONES = "py|md|toml|yaml|yml|sh|json|cfg|ini|txt|lock|sha256"
 
@@ -212,8 +229,38 @@ def _referencias(
     return salida
 
 
-def _existe_ruta(valor: str) -> bool:
-    return (RAIZ / valor.rstrip("/")).exists()
+def versionadas() -> frozenset[str]:
+    """Lo que un CLON recibe: `git ls-files`, más los directorios que lo contienen.
+
+    **Ésta es la corrección de fondo del barrido.** Comprobar contra el disco medía
+    *la máquina de quien lo corre*, no el repositorio: cualquier cosa que exista en
+    local y no esté versionada le salía bien a su autor y mal a todo el mundo.
+    Pasó, y lo cazó CI con la puerta ya empujada — tres artefactos que los hooks
+    crean al correr y el corpus ignorado.
+    """
+    salida = subprocess.run(
+        ["git", "ls-files"], cwd=RAIZ, capture_output=True, text=True, check=False
+    )
+    if salida.returncode != 0:  # pragma: no cover - sin git no hay barrido que valga
+        raise RuntimeError("`git ls-files` falló: el barrido no puede saber qué recibe un clon")
+    ficheros = [f for f in salida.stdout.splitlines() if f]
+    directorios = {
+        str(padre)
+        for f in ficheros
+        for padre in pathlib.PurePosixPath(f).parents
+        if str(padre) != "."
+    }
+    return frozenset(ficheros) | frozenset(directorios)
+
+
+def _existe_ruta(valor: str, en_git: frozenset[str]) -> bool:
+    """Contra `git ls-files`, y **normalizando**: `src/.` es `src`.
+
+    El `.` final sale de una frase —«el layout `src/`.»— y el sistema de ficheros
+    lo colapsaba solo. Un conjunto de cadenas no, así que hay que hacerlo aquí o el
+    barrido inventa una referencia rota.
+    """
+    return str(pathlib.PurePosixPath(valor.rstrip("/"))) in en_git
 
 
 def _existe_modulo(valor: str) -> bool:
@@ -248,11 +295,11 @@ def _existe_adr(numero: str) -> bool:
     return any((RAIZ / "docs" / "adr").glob(f"{numero}-*.md"))
 
 
-def _comprueba(ref: Referencia, objetivos: set[str]) -> bool:
+def _comprueba(ref: Referencia, objetivos: set[str], en_git: frozenset[str]) -> bool:
     if ref.tipo == "adr":
         return _existe_adr(ref.valor)
     if ref.tipo == "ruta":
-        return _existe_ruta(ref.valor)
+        return _existe_ruta(ref.valor, en_git)
     if ref.tipo == "modulo":
         return _existe_modulo(ref.valor)
     if ref.tipo == "objetivo":
@@ -269,7 +316,10 @@ def _make_responde(objetivo: str) -> bool:
 
 
 def analizar(
-    fuentes: list[Path] | None = None, declaradas: dict[str, str] | None = None
+    fuentes: list[Path] | None = None,
+    declaradas: dict[str, str] | None = None,
+    artefactos: dict[str, str] | None = None,
+    en_git: frozenset[str] | None = None,
 ) -> tuple[list[Referencia], list[Referencia], list[Referencia], list[str]]:
     """(todas, rotas, sin excusa, declaraciones que sobran). **La decisión, sin imprimir.**
 
@@ -279,13 +329,23 @@ def analizar(
     separa un candado de un adorno.
     """
     dec = DECLARADAS if declaradas is None else declaradas
+    art = ARTEFACTOS if artefactos is None else artefactos
+    en_git = versionadas() if en_git is None else en_git
     objetivos = _objetivos_de_make()
     referencias = _referencias(fuentes)
     if fuentes is None:
         referencias += _referencias(_fuentes_de_citas(), SOLO_CITAS)
-    rotas = [r for r in referencias if not _comprueba(r, objetivos)]
-    sin_excusa = [r for r in rotas if r.valor not in dec]
-    sobran = [v for v in sorted(dec) if v not in {r.valor for r in rotas}]
+    rotas = [r for r in referencias if not _comprueba(r, objetivos, en_git)]
+    # Un artefacto excusa NO estar en git. Lo que no excusa es estarlo: esa es la
+    # dirección contraria, y va a `sin_excusa` igual que una referencia rota.
+    sin_excusa = [r for r in rotas if r.valor not in dec and r.valor not in art]
+    sin_excusa += [
+        r
+        for r in referencias
+        if r.tipo == "ruta" and r.valor.rstrip("/") in art and r.valor.rstrip("/") in en_git
+    ]
+    apuntadas = {r.valor for r in rotas}
+    sobran = [v for v in sorted(dec) if v not in apuntadas]
     return referencias, rotas, sin_excusa, sobran
 
 
