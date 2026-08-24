@@ -88,7 +88,10 @@ class Ritmo:
 
     espaciado_mediano_s: float | None
     espaciado_minimo_s: float | None
-    n_peticiones: int
+    n_espaciados: int
+    """**Espaciados, no peticiones**: con N peticiones hay N-1 huecos, y llamarlo
+    `n_peticiones` hacía que el mismo campo significara una cosa u otra según de
+    qué rama saliera."""
 
 
 @dataclass(frozen=True)

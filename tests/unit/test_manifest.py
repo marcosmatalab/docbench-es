@@ -68,6 +68,8 @@ def _crear(*, licencia: LicenseDecl | None = None, intentados: int = 2) -> Manif
         por_causa={"incoherente": 1},
         dias_sin_boletin=[date(2026, 8, 4)],
         espaciado_mediano_s=1.0,
+        espaciado_minimo_s=1.0,
+        n_espaciados=3,
     )
 
 
@@ -199,6 +201,8 @@ def test_una_cosecha_real_del_boe_produce_un_manifiesto_publicable() -> None:
         por_causa=cosecha.por_causa,
         dias_sin_boletin=cosecha.dias_sin_boletin,
         espaciado_mediano_s=cosecha.ritmo.espaciado_mediano_s,
+        espaciado_minimo_s=cosecha.ritmo.espaciado_minimo_s,
+        n_espaciados=cosecha.ritmo.n_espaciados,
     )
 
     datos = json.loads(manifiesto.a_texto())

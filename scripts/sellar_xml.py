@@ -62,6 +62,10 @@ def capturar(manifiesto: dict[str, object], docs: Path) -> dict[str, object]:
     for fila in filas:
         ident = fila.get("external_id")
         if not isinstance(ident, str):
+            # Ni `sellado` ni `falta`: desaparecía, y entonces
+            # `sellados + faltan != documentos_en_manifiesto` y `main` devolvía 0
+            # sobre una captura incompleta. Cuenta como falta, que es lo que es.
+            faltan.append(f"(fila sin `external_id`: {fila!r:.60})")
             continue
         xml = docs / f"{ident}.xml"
         if not xml.is_file():

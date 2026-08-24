@@ -16,16 +16,24 @@ instrucciones para rehidratarla; el corpus se vuelve a bajar del origen.
 
 ```bash
 # 1. Baja los 1.000 documentos. ~2.065 peticiones a 1 rps: unos 35 minutos.
-uv run python scripts/cosechar_boe.py --reanudar runs/l3/manifiesto.json
+uv run python scripts/cosechar_boe.py \
+    --reanudar runs/l3/manifiesto.json \
+    --salida   runs/l3/rehidratado.json
 
-# 2. Comprueba que lo que has bajado es lo que este manifiesto publica.
+# 2. Comprueba que lo que has bajado es lo que ESTE manifiesto publica.
 uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml
 ```
 
-El paso 1 lee el manifiesto como caché (ADR-0031, condición 4) y **no vuelve a
-pedir lo que ya tengas en disco**, así que una descarga interrumpida se retoma sin
-gastar peticiones de más. El paso 2 rehace los 1.000 `sha256` contra los bytes: si
-el BOE hubiera cambiado un documento, sale ahí con su identificador.
+El paso 1 usa el manifiesto como caché (ADR-0031, condición 4) **y mira el disco**:
+sólo pide lo que no tengas, así que una descarga interrumpida se retoma sin gastar
+peticiones de más. **`--salida` es obligatorio aquí y no es un detalle**: sin él
+escribiría encima del manifiesto publicado, o sea que la evidencia contra la que se
+compara sería la que produjo la comparación. El script se niega, pero conviene
+saber por qué.
+
+El paso 2 rehace los 1.000 `sha256` **contra los bytes** y comprueba que el
+`plan.yaml` que le pasas es el congelado, por su `plan_hash`. Si el BOE hubiera
+cambiado un documento, sale ahí con su identificador.
 
 ## Qué pasa si clonas y NO rehidratas
 

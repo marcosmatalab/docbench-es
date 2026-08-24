@@ -117,6 +117,8 @@ class Manifiesto:
     por_causa: Mapping[str, int]
     dias_sin_boletin: tuple[date, ...]
     espaciado_mediano_s: float | None
+    espaciado_minimo_s: float | None
+    n_espaciados: int
 
     @property
     def n_descartados(self) -> int:
@@ -166,7 +168,16 @@ class Manifiesto:
                 "por_causa": dict(self.por_causa),
             },
             "dias_sin_boletin": [d.isoformat() for d in self.dias_sin_boletin],
-            "ritmo": {"espaciado_mediano_s": self.espaciado_mediano_s},
+            # Los TRES, no sólo la mediana. **El mínimo es el que dice que no hubo
+            # ráfaga**: una mediana de 1 s es compatible con diez peticiones
+            # seguidas y una pausa larga, y sólo una de las dos cosas es cosechar
+            # de forma responsable (ADR-0031, condición 2). Y sin `n` no se sabe
+            # sobre cuántos huecos se calculó la mediana.
+            "ritmo": {
+                "espaciado_mediano_s": self.espaciado_mediano_s,
+                "espaciado_minimo_s": self.espaciado_minimo_s,
+                "n_espaciados": self.n_espaciados,
+            },
             "documentos": [
                 {
                     "external_id": d.external_id,
@@ -207,6 +218,8 @@ def crear(
     por_causa: Mapping[str, int],
     dias_sin_boletin: Sequence[date],
     espaciado_mediano_s: float | None,
+    espaciado_minimo_s: float | None,
+    n_espaciados: int,
 ) -> Manifiesto:
     """Construye el manifiesto **exigiendo lo que ADR-0033 pide**, o no construye.
 
@@ -254,4 +267,6 @@ def crear(
         por_causa=dict(por_causa),
         dias_sin_boletin=tuple(dias_sin_boletin),
         espaciado_mediano_s=espaciado_mediano_s,
+        espaciado_minimo_s=espaciado_minimo_s,
+        n_espaciados=n_espaciados,
     )

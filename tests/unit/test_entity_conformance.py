@@ -25,6 +25,13 @@ from conftest import Registrar
 from docbench_es.entity.conformance import comprobar
 from docbench_es.entity.registry import cargar
 
+ETIQUETAS = frozenset(
+    {"nacido-digital", "escaneado", "sin-tabla", "tabla-simple", "celdas-combinadas", "multipagina"}
+)
+"""Lo que declararía un perfil. **Se pasa siempre y explícitamente**: desde el
+cierre de L3 `comprobar` ya no tiene valor por defecto, porque `None` dejaba
+`pasa` en True habiendo omitido el aro del subconjunto sin decirlo."""
+
 DESDE = date(2026, 1, 1)
 HASTA = date(2026, 12, 31)
 """La ventana que cubre los tres documentos de la carpeta falsa."""
@@ -45,7 +52,7 @@ def test_los_tres_adaptadores_bien_escritos_pasan_sin_un_solo_hallazgo(
     exactamente lo que §14 pide demostrar — que el contrato es uniforme y no una
     plantilla escrita alrededor del BOE.
     """
-    informe = comprobar(adaptador, desde=DESDE, hasta=HASTA)
+    informe = comprobar(adaptador, desde=DESDE, hasta=HASTA, etiquetas_perfil=ETIQUETAS)
 
     assert informe.hallazgos == (), informe.resumen()
     assert informe.pasa
@@ -59,7 +66,7 @@ def test_el_adaptador_roto_se_cae_por_los_cinco_aros_que_rompe() -> None:
     una comprobación por descuido, este test dice **cuál** falta en vez de pasar
     en verde con una suite más floja.
     """
-    informe = comprobar(AdaptadorRoto(), desde=DESDE, hasta=HASTA)
+    informe = comprobar(AdaptadorRoto(), desde=DESDE, hasta=HASTA, etiquetas_perfil=ETIQUETAS)
 
     fallos = {h.comprobacion for h in informe.hallazgos if h.severidad == "FALLA"}
 
@@ -81,7 +88,12 @@ def test_una_ventana_sin_documentos_no_cuenta_como_aprobado() -> None:
     ejercitado, así que el informe lo dice y `pasa` es `False` — un aro por el que
     no se ha pasado no está superado.
     """
-    informe = comprobar(AdaptadorCarpeta(), desde=date(2030, 1, 1), hasta=date(2030, 12, 31))
+    informe = comprobar(
+        AdaptadorCarpeta(),
+        desde=date(2030, 1, 1),
+        hasta=date(2030, 12, 31),
+        etiquetas_perfil=ETIQUETAS,
+    )
 
     (sin_ejecutar,) = [h for h in informe.hallazgos if h.severidad == "NO_EJECUTADA"]
 
@@ -98,7 +110,9 @@ def test_la_version_declarada_solo_en_la_instancia_la_caza_la_suite() -> None:
     escribió está mirando la línea donde lo declara. La suite sí tiene instancia
     con la que comparar, así que puede decir qué pasa de verdad.
     """
-    informe = comprobar(VersionSoloEnInstancia(), desde=DESDE, hasta=HASTA)
+    informe = comprobar(
+        VersionSoloEnInstancia(), desde=DESDE, hasta=HASTA, etiquetas_perfil=ETIQUETAS
+    )
 
     (hallazgo,) = [h for h in informe.hallazgos if h.comprobacion == "benchcore_api"]
 
@@ -114,7 +128,7 @@ def test_lo_que_ni_siquiera_tiene_la_forma_dice_que_le_falta() -> None:
     vez —que es por lo que la suite devuelve hallazgos en vez de lanzar en el
     primero—, y no descubrir un método por corrida.
     """
-    informe = comprobar(SinVersion(), desde=DESDE, hasta=HASTA)
+    informe = comprobar(SinVersion(), desde=DESDE, hasta=HASTA, etiquetas_perfil=ETIQUETAS)
 
     (hallazgo,) = informe.hallazgos
 
@@ -167,6 +181,6 @@ def test_un_adaptador_registrado_por_entry_point_pasa_la_suite(registrar: Regist
     # Lo que se descubre es la CLASE, no una instancia (ADR-0036): construirla es
     # de quien monta la campaña, porque es quien tiene el perfil.
     assert isinstance(clase, type)
-    informe = comprobar(clase(), desde=DESDE, hasta=HASTA)
+    informe = comprobar(clase(), desde=DESDE, hasta=HASTA, etiquetas_perfil=ETIQUETAS)
 
     assert informe.pasa, informe.resumen()

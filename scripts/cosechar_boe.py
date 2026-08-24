@@ -209,6 +209,8 @@ def main() -> int:
         por_causa=cosecha.por_causa,
         dias_sin_boletin=cosecha.dias_sin_boletin,
         espaciado_mediano_s=cosecha.ritmo.espaciado_mediano_s,
+        espaciado_minimo_s=cosecha.ritmo.espaciado_minimo_s,
+        n_espaciados=cosecha.ritmo.n_espaciados,
     )
     salida.parent.mkdir(parents=True, exist_ok=True)
     salida.write_text(manifiesto.a_texto(), encoding="utf-8")
@@ -225,7 +227,7 @@ def main() -> int:
     )
     print(
         f"  espaciado mediano {cosecha.ritmo.espaciado_mediano_s} s · minimo "
-        f"{cosecha.ritmo.espaciado_minimo_s} s · n={cosecha.ritmo.n_peticiones}"
+        f"{cosecha.ritmo.espaciado_minimo_s} s · n={cosecha.ritmo.n_espaciados} espaciados"
     )
     ficheros = list(docs.glob("*"))
     en_disco = sum(f.stat().st_size for f in ficheros)

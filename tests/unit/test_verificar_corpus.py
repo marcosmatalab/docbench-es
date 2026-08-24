@@ -61,6 +61,8 @@ def _manifiesto(n: int = 2) -> dict[str, object]:
         por_causa={"incoherente": 1},
         dias_sin_boletin=[date(2026, 8, 4)],
         espaciado_mediano_s=1.0,
+        espaciado_minimo_s=1.0,
+        n_espaciados=3,
     ).a_json()
 
 
@@ -228,6 +230,8 @@ def _corpus_en_disco(tmp: Path, n: int = 2) -> tuple[dict[str, object], Path]:
         por_causa={"incoherente": 1},
         dias_sin_boletin=[date(2026, 8, 4)],
         espaciado_mediano_s=1.0,
+        espaciado_minimo_s=1.0,
+        n_espaciados=3,
     ).a_json()
     return manifiesto, docs
 

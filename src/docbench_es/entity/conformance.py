@@ -80,7 +80,7 @@ def comprobar(
     desde: date,
     hasta: date,
     maximo: int = 3,
-    etiquetas_perfil: frozenset[str] | None = None,
+    etiquetas_perfil: frozenset[str] | None,
 ) -> InformeConformidad:
     """Corre la suite entera contra un adaptador **ya construido con su perfil**.
 

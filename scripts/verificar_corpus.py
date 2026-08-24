@@ -6,11 +6,9 @@ miraba el JSON y se declaraba cumplido a ojo. La regla de oro 2 dice que todo
 número publicado lleva su comando, y un criterio de aceptación es el número más
 importante del hito.
 
-    uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json
     uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml
 
-Devuelve **1 si algo falla** y lista **todos** los fallos, no el primero: quien
-acaba de gastar cuarenta minutos de cosecha quiere verlo todo de una vez.
+Devuelve **1 si algo falla** y lista **todos** los fallos, no el primero.
 
 ## Qué comprueba, y por qué cada cosa
 
@@ -28,25 +26,23 @@ acaba de gastar cuarenta minutos de cosecha quiere verlo todo de una vez.
 
 ## Por qué la última es la que hace que esto pruebe algo
 
-Las ocho primeras miran **el manifiesto**, y un manifiesto se escribe entero sin
-que exista ni un fichero. El bug del 24 ago 2026 —`corpus.harvest` bajaba,
-comprobaba coherencia y **tiraba los bytes**— habría pasado las ocho, y se cazó
-mirando el disco a mano, que no es un método. La novena no pregunta si el fichero
-está: **pregunta si es el que dice ser**.
+Las demás miran **el manifiesto**, y un manifiesto se escribe entero sin que
+exista ni un fichero: el bug del 24 ago 2026 —`corpus.harvest` bajaba, comprobaba
+coherencia y **tiraba los bytes**— las habría pasado todas. La de disco no
+pregunta si el fichero está: **pregunta si es el que dice ser**.
 
 **Una comprobación que no se ejecuta no es una que pasa.** Sin el directorio esto
-no calla: `NO EJECUTADA` y rc=1, como la severidad homónima de `entity.conformance`.
+no calla: `NO EJECUTADA` y rc=1, como la severidad homónima de `entity`.
 
 ## Precondiciones declaradas
 
 - **El corpus en disco se nombra por identificador**: `<external_id>.pdf` y
-  `.xml`, que es lo que escribe `_guardador` de `scripts/cosechar_boe.py`. Es un
-  acoplamiento entre dos scripts y va escrito en los dos. Buscar «el fichero cuyo
-  hash cuadre» sería circular: no diría **de quién** es lo que falta.
-- **El manifiesto sólo pone hash al PDF.** `Procedencia.sha256` es el del
-  `primary` de §7.1 y el XML viaja como acompañante sin hash propio, así que del
-  XML se comprueba que **está y no está vacío** —la otra mitad del bug— pero no
-  que sea el que se bajó. Es el límite 62.
+  `.xml`, que es lo que escribe `_guardador` de `scripts/cosechar_boe.py`, y va
+  escrito en los dos. Buscar «el fichero cuyo hash cuadre» sería circular.
+- **El manifiesto sólo pone hash al PDF** (`Procedencia.sha256`, el `primary` de
+  §7.1), así que del XML se comprueba que **está y no está vacío** —la otra mitad
+  del bug— pero no que sea el que se bajó. Límite 62, y su captura aparte en
+  `runs/l3/xml_sha256.json`.
 - **Lo que NO comprueba**: que los documentos sean los correctos. Que el PDF y el
   XML digan lo mismo lo decidió `corpus.pairing`, y su tasa es lo que este script
   exige que esté publicada.
@@ -290,8 +286,13 @@ def main() -> int:
         print("    NO EJECUTADA  el manifiesto contra el plan congelado: falta --plan")
     n_docs = len(_lista(manifiesto, "documentos"))
     print(f"  {n_docs} documentos comprobados byte a byte contra {docs}")
-    veredicto = "NO CUMPLE" if fallos else ("CUMPLE, sin el plan" if plan is None else "CUMPLE")
-    print(f"\n{veredicto} el criterio · {len(fallos)} fallos")
+    if fallos:
+        veredicto = "NO CUMPLE el criterio"
+    elif plan is None:
+        veredicto = "CUMPLE el criterio, SIN comprobarlo contra el plan"
+    else:
+        veredicto = "CUMPLE el criterio"
+    print(f"\n{veredicto} · {len(fallos)} fallos")
     return 1 if fallos else 0
 
 

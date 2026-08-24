@@ -14030,7 +14030,9 @@
   "verified_on": "2026-08-22"
  },
  "ritmo": {
-  "espaciado_mediano_s": 1.0000850654905662
+  "espaciado_mediano_s": 1.0000850654905662,
+  "espaciado_minimo_s": 1.000021062034648,
+  "n_espaciados": 2064
  },
  "ventana": {
   "desde": "2026-03-09",

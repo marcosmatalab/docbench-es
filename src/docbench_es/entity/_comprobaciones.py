@@ -230,6 +230,17 @@ def _estratos(
     puede importar. Un contrato que las pidiera sería incumplible por una carpeta
     de PDFs.
     """
+    if etiquetas_perfil is None:
+        # NO_EJECUTADA y no un `skip` silencioso: sin las etiquetas del perfil, el
+        # subconjunto NO se comprueba, y `pasa` se quedaba en True habiendo omitido
+        # el aro que ADR-0032 llama «la fila más dura». Va ANTES del bucle porque
+        # con cero documentos el cuerpo no se ejecuta y el aviso no saldría nunca.
+        yield Hallazgo(
+            "estratos dentro del perfil",
+            "NO_EJECUTADA",
+            "sin `etiquetas_perfil` no se comprueba que lo que emite `strata` esté "
+            "declarado en el perfil. Pásalas, o el informe no puede decir que cumple",
+        )
     for ref, doc in zip(refs, docs, strict=True):
         etiquetas = adaptador.strata(ref, doc)
         if etiquetas != adaptador.strata(ref, doc):

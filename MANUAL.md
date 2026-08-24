@@ -1542,7 +1542,7 @@ Es lo que se publica cuando el contenido no se puede publicar.
                   "tasa_descarte": 0.0412, "umbral_coherencia": 0.85 },
   "dias_sin_boletin": ["2026-03-15", "…"],
   "ritmo": { "espaciado_mediano_s": 1.0000851, "espaciado_minimo_s": 1.0000211,
-             "n_peticiones": 2064 },
+             "n_espaciados": 2064 },
   "atribucion": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado",
   "licencia_corpus": { "name": "Reutilización BOE", "may_redistribute_content": true,
                        "may_redistribute_derived": true, "source_url": "…" },

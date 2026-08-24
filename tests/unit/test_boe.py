@@ -30,6 +30,11 @@ from docbench_es.errors import ContractViolation, PolicyViolation
 from docbench_es.types import DocRef, Truth
 
 RAIZ = Path(__file__).resolve().parents[2]
+ETIQUETAS = frozenset(
+    {"nacido-digital", "escaneado", "sin-tabla", "tabla-simple", "celdas-combinadas", "multipagina"}
+)
+"""Las del perfil del BOE. `comprobar` ya no las asume: sin ellas dice NO_EJECUTADA."""
+
 DIA = date(2026, 8, 3)
 
 
@@ -48,7 +53,7 @@ def test_el_adaptador_del_boe_pasa_la_suite_de_conformidad() -> None:
     demuestra que el contrato es el que hace falta. Si esto se cae, se cae la
     afirmación de que el motor no sabe nada del BOE.
     """
-    informe = comprobar(_adaptador(), desde=DIA, hasta=DIA)
+    informe = comprobar(_adaptador(), desde=DIA, hasta=DIA, etiquetas_perfil=ETIQUETAS)
 
     assert informe.hallazgos == (), informe.resumen()
     assert informe.pasa

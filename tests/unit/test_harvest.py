@@ -194,13 +194,17 @@ def test_el_ritmo_se_publica_como_espaciado_y_no_como_n_partido_por_t() -> None:
 
     # El reloj falso avanza un segundo por PETICIÓN, y cada documento son dos.
     assert cosecha.ritmo.espaciado_mediano_s == 1.0, "por petición, no por documento"
-    assert cosecha.ritmo.n_peticiones >= 4, "dos documentos, dos peticiones cada uno"
+    assert cosecha.ritmo.n_espaciados >= 4, "dos documentos, dos peticiones cada uno"
 
 
 def test_con_menos_de_dos_peticiones_el_espaciado_es_none_y_no_cero() -> None:
-    """Cero no es «no se pudo medir», y confundirlos publica un ritmo inventado."""
+    """Cero no es «no se pudo medir», y confundirlos publica un ritmo inventado.
+
+    Y `n` cuenta **espaciados, no muestras**: con una sola petición hay cero huecos,
+    no uno. El campo significaba una cosa u otra según de qué rama saliera.
+    """
     assert harvest._ritmo(None, []) == Ritmo(None, None, 0)
-    assert harvest._ritmo(None, [1.0]) == Ritmo(None, None, 1)
+    assert harvest._ritmo(None, [1.0]) == Ritmo(None, None, 0), "una petición, cero huecos"
 
 
 def test_la_cosecha_para_si_mas_del_cinco_por_ciento_agota_reintentos() -> None:

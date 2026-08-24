@@ -478,7 +478,7 @@ afirma la mitad tranquilizadora —«esto BAJA la nota»—, que un 0,0 constant
 satisface entero.
 
 **Sello de las dos tablas: `099e452+29 · 164 tests`**, que lo imprime la propia
-corrida de `uv run python scripts/mutantes/matar.py` (24 ago 2026). El `+28` son
+corrida de `uv run python scripts/mutantes/matar.py` (24 ago 2026). El `+29` son
 los ficheros sin commitear: **esta medición no es reproducible desde ningún
 commit**, y quien la lea tiene derecho a saberlo antes de compararla con la suya.
 
@@ -819,7 +819,7 @@ frío en 10 tandas, **cero descartadas**, `rc=0` leído en primer plano.
 
 **Lo que contesta:** la deuda 0 de `ESTADO.md` decía que *«el techo se queda corto
 si `entity.conformance` es puro y grande»* y que **el supuesto se comprueba, no se
-cree**. Es puro, está entero en la puerta, y el p90 se queda en 6262.
+cree**. Es puro, está entero en la puerta, y el p90 se queda en **6327** — que es el de la serie B, la de esta sección. Aquí ponía **6262**, que es el p90 de la serie A: **contestar la deuda con el p90 más bajo de las dos series** es elegir el número que conviene, y las dos están publicadas tres párrafos más arriba precisamente para que no se pueda.
 
 **Contra la línea base de L3** —6004 de mediana, medida antes de escribir `entity`—:
 la suite pasó de 185 a 203 tests y la mediana subió **204 ms**. Eso son **11,3 ms
@@ -1077,3 +1077,227 @@ normalización y la clave de documento, 60 en los invariantes, 50 y 30 en el res
 > «ruido» en vez de «bajar ejemplos caza más»: sin ellos, 0 contra 2 se lee como
 > una mejora del doble. Ver
 > [ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md).
+
+---
+
+## L3 · El corpus: 1.000 documentos emparejados PDF/XML
+
+### El número del criterio: 1.000 de 1.000, y la tasa con todo lo que exige ADR-0030
+
+```
+uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml
+boe · 2026-03-09 a 2026-04-11 · 1000 emparejados de 1043 intentados
+  descarte 4.12% con umbral 0.85 · por causa: {'incoherente': 43}
+  espaciado mediano 1.0000850654905662 s · dias sin boletin: 4
+  1000 documentos comprobados byte a byte contra runs/l3/docs
+CUMPLE el criterio · 0 fallos          # rc=0
+```
+
+| | |
+|---|---|
+| **tasa de descarte** | **4,12 %** · denominador **1.043 intentados** · umbral 0,85 · ventana 2026-03-09 → 2026-04-11 |
+| por causa | `incoherente` 43. **Cero** por descarga, cero reintentos agotados |
+| días sin boletín | **4**, contados aparte y **fuera del denominador** |
+| ítems que el sumario no sirvió con sus dos URLs | **0 de 1.206** |
+
+No lleva intervalo: es un **censo** sobre la población completa de la ventana, no
+una estimación (ADR-0015). Lo que sí lleva, porque ADR-0030 lo exige, es su
+ventana, su umbral y su denominador — y el desglose de abajo.
+
+### La tasa por estación, que es para lo que se eligió una ventana que cruza
+
+`uv run python scripts/desglose_ventana.py runs/l3/manifiesto.json` · corte en el
+equinoccio del 20 de marzo, escrito en el plan **antes** de cosechar.
+
+| | intentados | aceptados | descartes | **tasa** | días de publicación |
+|---|---|---|---|---|---|
+| invierno | 462 | 444 | 18 | **3,90 %** | 10 |
+| primavera | 581 | 556 | 25 | **4,30 %** | 15 |
+| **toda la ventana** | **1.043** | **1.000** | **43** | **4,12 %** | **25** |
+
+**La ventana se eligió a propósito sobre el tramo con MÁS descarte de los tres
+medidos.** El sondeo dio agosto 2,0 %, otoño 4,5 % y primavera 5,5 %: cosechar en
+agosto habría dado el mejor número posible por un factor de **2,75**, y ésa es la
+primera pregunta que hace cualquiera que lea el resultado. Un número al que no se
+le puede acusar de estar elegido vale más que uno mejor y sospechoso.
+
+**El desglose es RECONSTRUIDO y se dice cómo** (límite 63): la cosecha no guarda la
+fecha de un descarte, así que los `intentados` por día se releen del origen con
+`BoeAdapter.discover`, el código de producción. **Y lo que lo sostiene no es que
+los trozos sumen el total** —eso es una identidad aritmética— sino que los 1.000
+identificadores aceptados siguen apareciendo en lo que el origen entrega hoy:
+**0 ausentes, 0 días con más aceptados que intentados**. Leído el 24 ago 2026, el
+mismo día de la cosecha, y dos veces con el mismo resultado.
+
+### El ritmo, publicado como espaciado y no como `N/T`
+
+| | |
+|---|---|
+| espaciado **mediano** | **1,0000851 s** |
+| espaciado **mínimo** | **1,0000211 s** |
+| n | **2.064 espaciados** sobre 2.065 peticiones |
+| declarado en `entities/boe.yaml` | 1 rps (ADR-0031, condición 2) |
+
+Con `N/T`, diez peticiones seguidas y una pausa larga dan el mismo número que once
+bien espaciadas, y sólo una de las dos es cosechar de forma responsable. **El
+mínimo importa más que la mediana**: es la única cifra que dice que no hubo ráfaga.
+
+> **La unidad costó un error, y se cazó en el piloto.** La primera versión medía el
+> hueco entre **documentos** y publicaba 1,99 s con 1 rps declarado, porque un
+> documento del BOE son **dos** peticiones. Un umbral de 1 s lo habría dado por
+> bueno con un ritmo real la mitad de lento. La medida salió de `harvest`, que no
+> ve las peticiones sueltas, a `BoeApi`, que sí.
+
+### El tamaño: 361,9 MB medidos contra tres proyecciones, y las tres fallaron
+
+```
+uv run python -c "..."   # recuento sobre runs/l3/docs, 2.000 ficheros
+```
+
+| | proyección | error contra lo medido |
+|---|---|---|
+| **277 MB** · media de los 50 del censo en bruto × 1.000 | primera | **−23,5 %** |
+| **533 MB** · KB/página del censo × páginas por estrato del sondeo | corregida | **+47,3 %** |
+| **254 MB** · 254 KB/documento del piloto × 1.000 | piloto, n=25 | **−29,8 %** |
+| **361,9 MB** · 2.000 ficheros en disco | **MEDIDO** | — |
+
+| medido | |
+|---|---|
+| PDF | 317,5 MB · media 318 KB · mediana 224 KB |
+| XML | 44,4 MB · media 44 KB · mediana 22 KB |
+| por documento | **362 KB** |
+| páginas | media **10,30** · mediana 5 · máximo **309** |
+
+**Por qué falló la corrección, que es la que más se pasó y la que yo empujé.** La
+proyección de 533 se hizo en dos factores: **KB por página** (58,3 del censo, n=50)
+× **páginas por documento** (~8,6, del sondeo n=600). El factor de páginas se
+corrigió en la dirección correcta —el corpus tiene **10,30**, más aún de las 8,8
+supuestas—. El que no se tocó fue el otro, y es el que manda:
+
+| banda | n | **KB/página** (mediana) |
+|---|---|---|
+| 1 – 4 páginas | 463 | **104,7** |
+| 5 – 12 páginas | 386 | **32,5** |
+| 13 o más | 151 | **18,6** |
+
+**KB por página NO es constante: cae un factor 5,6 con la longitud**, porque el
+coste fijo por documento —fuentes, metadatos— se reparte entre más páginas. El
+censo lo midió sobre documentos de **6,1 páginas de media** y salió 58,3; sobre el
+corpus entero es **30,8**. O sea que la corrección aplicó una tasa medida en
+documentos cortos a una población de documentos largos, **como si la tasa no
+dependiera del eje sobre el que se estaba proyectando**.
+
+> **La lección, y es la del «285 ms» otra vez con otro traje:** descomponer una
+> proyección en dos factores **no la mejora** si uno de los dos no es constante en
+> el eje. Corregir el factor de páginas y dejar el de la tasa sesgado llevó el
+> error de **−23,5 % a +47,3 %**: la corrección empeoró la estimación, y lo hizo
+> pareciendo más rigurosa porque tenía dos etapas declaradas en vez de una.
+>
+> **Y las dos proyecciones «mejores» no lo fueron por acertar**, sino por
+> compensación: la primera tenía dos sesgos —pocas páginas × demasiados KB por
+> página— que se cancelaban en parte. Una estimación cuyo error es pequeño porque
+> dos errores se anulan no es más fiable que una cuyo error es grande; es más
+> difícil de auditar.
+
+**Comprobación lateral de [ADR-0034](docs/adr/0034-los-resultados-se-publican-por-banda-de-longitud.md),
+que definió las bandas sobre el sondeo (n=600) antes de que existiera el corpus:**
+
+| banda | predicho | **medido (n=1.000)** |
+|---|---|---|
+| corto (1–4) | 37,0 % | **46,3 %** |
+| medio (5–12) | 47,8 % | **38,6 %** |
+| largo (13+) | 15,2 % | **15,1 %** |
+
+La banda `largo` clava el pronóstico; `corto` y `medio` se intercambian ~9 puntos.
+**Las tres siguen teniendo n de sobra para publicar con intervalo**, que es la
+razón por la que se eligieron esos cortes, así que ADR-0034 no se toca. El desvío
+va aquí porque el ADR dijo un número y el corpus dice otro.
+
+### El manifiesto prueba el corpus, no lo describe
+
+`verificar_corpus.py` rehace los **1.000 `sha256` contra los bytes en disco**. Sin
+esa comprobación, el manifiesto pasaba entero describiendo un corpus vacío — que es
+literalmente lo que pasó: durante unas horas `corpus.harvest` bajaba los
+documentos, comprobaba la coherencia y **tiraba los bytes**.
+
+| Artefacto | Qué prueba |
+|---|---|
+| `runs/l3/manifiesto.json` | los 1.000, con procedencia, `plan_hash` y las dos licencias |
+| `runs/l3/xml_sha256.json` | el `sha256` de cada XML, **tomado el 24 ago 2026 a las 12:59:52Z**, sello `352a6f2+2`. 1.000 de 1.000, **1.000 hashes distintos** |
+| `runs/l3/desglose.json` | la tasa por estación, con la fecha de la relectura dentro |
+| `runs/l3/plan.yaml` | congelado en `4c9f8ae`, **antes** del primer documento |
+
+**Sin el directorio del corpus, el verificador NO dice `CUMPLE`**: dice
+`NO EJECUTADA` y devuelve 1. Comprobado sobre un clon limpio del repo, que es el
+escenario del lector externo. Una comprobación que no se ejecuta no es una que pasa.
+
+### La puerta al cerrar L3: n=40, árbol quieto, sello `1600137`
+
+```
+uv run python scripts/medir_puerta.py --techo 8500; echo $?     # rc=0
+```
+
+| | Línea base de L3 | **Al cerrar L3** |
+|---|---|---|
+| tests | 203 | **298** |
+| mínimo | 6114 | 7261 |
+| **mediana** | 6208 | **7400** |
+| **p90** | 6327 | **7505** |
+| máximo | 6512 | 7802 |
+| desviación típica | 89 | **100** |
+| medianas por tanda | 6169 – 6266 | 7373 – 7450 |
+| carga de la máquina | mediana 1,03 | mediana 1,00 · rango 0,12 – 1,24 |
+| **margen en el p90** sobre 8500 | 2173 ms | **995 ms** |
+
+n=40 en 10 tandas en frío, `.hypothesis` borrada antes de cada una, **0 descartadas
+por `rc != 0`**, y el guardia del árbol comprobando `HEAD` + `git status` antes de
+empezar y después de cada corrida.
+
+### El desglose por paso, con el barrido de referencias como uno más
+
+Cada paso aislado, en frío, n=5, mediana. Mismo árbol (`1600137`).
+
+| Paso | Mediana | % de la puerta |
+|---|---|---|
+| `pytest tests/unit` | **4636 ms** | 62,6 % |
+| `mypy --strict src tests` | **2493 ms** | 33,7 % |
+| `lint-imports` | **123 ms** | 1,7 % |
+| `ruff check` + `format --check` | **107 ms** | 1,4 % |
+| **suma de pasos** | **7359 ms** | |
+| **mediana medida de la puerta** | **7400 ms** | |
+| hueco de aditividad | **41 ms** | la mediana de una suma no es la suma de medianas |
+
+**Y el barrido de referencias, que hasta hoy corría en la puerta sin coste medido:**
+
+| Cómo se aísla | Valor |
+|---|---|
+| `pytest` entero **menos** `pytest` sin el test que lo lanza | **231 ms** |
+| el comando solo, `uv run python scripts/referencias.py` | **220 ms** (n=5, 209 – 225) |
+
+**Las dos estimaciones concuerdan: ~220 ms, el 3,0 % de la puerta.** La primera es
+una diferencia de medianas y la σ de la puerta es 100 ms, así que por sí sola no
+distinguiría 231 de 180; la segunda mide el comando directamente y es la que vale.
+
+**Hoy no se decide nada con esta cifra**, que es lo acordado: en **L5** se decide
+si el barrido se queda en la puerta o pasa a ser un paso del cierre, y ahora esa
+decisión tiene delante su precio en vez de una intuición. Con 995 ms de margen,
+220 ms es el 22 % de lo que queda.
+
+### Los mutantes al cerrar L3 · sello `0717b70 · 164 tests`
+
+```
+uv run python scripts/mutantes/matar.py; echo $?          # rc=0, todos mueren
+uv run python scripts/mutantes/matar.py --tabla; echo $?  # rc=0, 3 repeticiones
+```
+
+**Control negativo primero: el árbol sin mutar da 0 muertes de 164 tests.** Sin ese
+cero la tabla no vale nada, porque cada «muerte» podría ser un fallo de fondo de la
+suite y no el mutante. El sello va **sin `+N`**: árbol limpio, o sea reproducible
+desde ese commit exacto.
+
+**Los 21 mutantes mueren, y los 21 matan SIEMPRE** — las tres repeticiones, no
+«alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
+`n3_incompleta`, declarado y con su razón medida en la sección de L2.
+
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **164 de
+298 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.

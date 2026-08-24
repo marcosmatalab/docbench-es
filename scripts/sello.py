@@ -26,9 +26,14 @@ RAIZ = Path(__file__).resolve().parents[1]
 
 
 def _git(*orden: str) -> str:
-    return subprocess.run(
-        ["git", *orden], cwd=RAIZ, capture_output=True, text=True, check=False
-    ).stdout.strip()
+    """La salida de `git`, y **`?` si git falla**, nunca cadena vacía.
+
+    Con `check=False` y sin mirar el código, un `git status` que reventara devolvía
+    `""`, que se cuenta como cero ficheros sucios: **un árbol sucio con cara de
+    limpio**, que es justo lo que el sello existe para no dejar pasar.
+    """
+    salida = subprocess.run(["git", *orden], cwd=RAIZ, capture_output=True, text=True, check=False)
+    return salida.stdout.strip() if salida.returncode == 0 else "?"
 
 
 def sello(n_tests: int | None = None) -> str:
@@ -39,6 +44,9 @@ def sello(n_tests: int | None = None) -> str:
     antes de compararla con la suya.
     """
     corto = _git("rev-parse", "--short", "HEAD") or "(sin HEAD)"
-    sucios = len([x for x in _git("status", "--porcelain").splitlines() if x])
+    estado = _git("status", "--porcelain")
+    if estado == "?":
+        return f"{corto}+? · {n_tests} tests" if n_tests is not None else f"{corto}+?"
+    sucios = len([x for x in estado.splitlines() if x])
     marca = f"{corto}+{sucios}" if sucios else corto
     return f"{marca} · {n_tests} tests" if n_tests is not None else marca

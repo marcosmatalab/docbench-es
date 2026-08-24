@@ -103,10 +103,13 @@ def _ritmo(de_peticion: Sequence[float] | None, inicios: Sequence[float]) -> Rit
     elif len(muestras) >= 2:
         huecos = [b - a for a, b in pairwise(muestras)]
     else:
-        return Ritmo(None, None, len(muestras))
+        return Ritmo(None, None, max(0, len(muestras) - 1))
     if not huecos:
-        return Ritmo(None, None, len(muestras))
-    return Ritmo(statistics.median(huecos), min(huecos), len(huecos) + (0 if de_peticion else 1))
+        return Ritmo(None, None, max(0, len(muestras) - 1))
+    # `n` son SIEMPRE espaciados, no muestras. Antes devolvía huecos en una rama y
+    # muestras en la otra, o sea que el mismo campo significaba dos cosas y en
+    # producción iba uno corto. El nombre del campo lo dice ahora.
+    return Ritmo(statistics.median(huecos), min(huecos), len(huecos))
 
 
 def _baja(adaptador: Adaptador, ref: DocRef, reintentos: int) -> RawDoc | None:
