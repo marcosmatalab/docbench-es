@@ -14,6 +14,14 @@ build/
 # ficheros congelados de tests/fixtures y el plan de muestreo de cada campaña.
 data/
 runs/
+# ...pero el PLAN de una campaña NO son datos: es una decisión, y §16 la congela
+# ANTES de medir. Se versiona para que `verificar_corpus.py --plan` pueda comparar
+# el manifiesto contra lo que se planeó, y para que el `stop-gate` lo vigile.
+!runs/
+!runs/*/
+!runs/*/plan.yaml
+runs/*/*
+!runs/*/plan.yaml
 .claude/.ultima-puerta
 .env
 

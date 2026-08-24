@@ -1,0 +1,83 @@
+# PLAN DE COSECHA DE L3 · congelado ANTES de bajar el primer documento.
+#
+# Es el mismo argumento por el que §16 congela el plan de muestreo antes de medir:
+# un plan escrito despues de ver los resultados no es un plan. `scripts/
+# verificar_corpus.py --plan` compara el manifiesto contra este fichero, asi que
+# si la cosecha se desvia, se ve.
+
+entidad: boe
+dominio: https://www.boe.es
+
+# ---------------------------------------------------------------- LA VENTANA
+# Cruza el equinoccio del 20 de marzo: ~10 dias de publicacion en invierno y
+# ~19 en primavera.
+ventana:
+  desde: 2026-03-09
+  hasta: 2026-04-11
+
+# POR QUE ESTA VENTANA Y NO OTRA, que es lo que no es opcional:
+#
+# 1. NO ES AGOSTO, A PROPOSITO. El sondeo midio la tasa de descarte en tres
+#    ventanas y salio: agosto 2,0%, otono 4,5%, primavera 5,5%. Cosechar en
+#    agosto daria EL MEJOR NUMERO POSIBLE por un factor de 2,75, y esa es la
+#    primera pregunta que hace cualquiera que lea el resultado. Ademas agosto
+#    necesita ~35 dias de publicacion para 1.000 documentos contra 21-22 de una
+#    ventana normal.
+#
+# 2. CRUZA ESTACIONES, para que la tasa publicada no sea de una sola epoca. La
+#    ventana no es homogenea a proposito.
+#
+# 3. Y CAE DEL LADO MALO A SABIENDAS. La parte de primavera es la ventana con
+#    MAS descarte de las tres medidas (5,5%). Si la tasa sale cerca de ahi, es
+#    un numero al que no se le puede acusar de estar elegido — que vale mas que
+#    un numero mejor y sospechoso.
+
+# ------------------------------------------------------------- EL DIMENSIONADO
+objetivo_emparejados: 1000
+
+# El corte es POR DOCUMENTOS ACEPTADOS, no por intentos. Dimensionar por intentos
+# —«1.045 para 1.000 al 4%»— deja el corpus en 960 si el descarte sale al 8%, y
+# volver a pedirle mil documentos mas al BOE no es gratis.
+#
+# Con el descarte de primavera (5,5%) hacen falta ~1.058 intentos. La ventana son
+# 34 dias naturales, ~29 de publicacion, y a un rendimiento SUPUESTO de ~46
+# documentos/dia en las secciones I y III salen ~1.330 esperados: margen de sobra.
+#
+# ESE ~46/dia NO LO HE MEDIDO YO: sale de dividir 1.000 entre los 21-22 dias de
+# publicacion que se manejan para una ventana normal. Por eso la ventana lleva
+# margen y por eso el corte es por objetivo: si el rendimiento real es menor, la
+# cosecha usa mas dias; si es mayor, para antes.
+intentos_proyectados: 1058
+rendimiento_supuesto_docs_por_dia: 46
+
+# ------------------------------------------------------------------ EL FILTRO
+# Parte de la DEFINICION DEL CORPUS, no una optimizacion (§10.1). Sale del perfil
+# `entities/boe.yaml` y se repite aqui para que `verificar_corpus.py` lo compruebe
+# contra el manifiesto.
+filtro_secciones: ["1", "3"]   # I Disposiciones generales · III Otras disposiciones
+
+# ------------------------------------------------------------------- EL RITMO
+# ADR-0031, condicion 2. El manifiesto publica el espaciado MEDIDO y el
+# verificador exige que no baje de aqui: cosechar mas rapido de lo prometido
+# invalida el argumento con el que se baja el XML.
+ritmo_minimo_s: 1.0
+
+# --------------------------------------------------------------- LO QUE NO HAY
+# SEMILLA: declarada y NO USADA en L3. La cosecha recorre la ventana en orden y
+# corta al llegar al objetivo; no sortea nada. La usara L6 (`sample`), que es el
+# hito del muestreo estratificado. Se escribe para que no se confunda «no se
+# sorteo» con «se sorteo y no se anoto la semilla».
+semilla: 20260824
+
+# OBJETIVOS POR ESTRATO: NO HAY en L3, y no es un olvido. El muestreo
+# estratificado es L6; L3 cosecha la ventana tal cual y publica la distribucion
+# que salga. Poner aqui objetivos que nadie hace cumplir seria una afirmacion sin
+# codigo detras.
+#
+# Lo que SI se anota es la distribucion ESPERADA, medida en el sondeo (n=600),
+# para poder comparar contra ella cuando el corpus exista:
+distribucion_esperada:
+  sin-tabla: 0.670
+  celdas-combinadas: 0.155
+  tabla-simple: 0.138
+  anexo-png: 0.037
