@@ -1,0 +1,80 @@
+# PLAN DE FIXTURES DE L4 · congelado ANTES de ver ni una tabla.
+#
+# Mismo argumento que el plan de cosecha de L3: quien elige la muestra, quien
+# transcribe y quien escribe el codigo son LA MISMA PERSONA. La semilla es lo unico
+# que impide que la seleccion acabe siendo "las que salieron bien".
+
+hito: L4
+criterio: "La verdad derivada reproduce las tablas a mano"   # §16, literal
+
+# ------------------------------------------------------- DE DONDE SALE LA MUESTRA
+# El censo del corpus, con su sello. Si el sello no cuadra, la seleccion no es
+# reproducible: el corpus de tablas CAMBIO el 24 ago 2026 al arreglar el grupo de
+# filas —BOE-A-2026-7193 t0 paso de 13x5 a 14x4 y las tablas fatales de 2 a 0—, asi
+# que un fixture elegido del censo viejo no describe este corpus.
+censo: docs/censo-corpus-1000.json
+censo_sello: 525c71d
+
+# ------------------------------------------------------------- LA POBLACION
+# NO son los 1.000 documentos del corpus: 662 no tienen ni una tabla, y elegir
+# sobre 1.000 haria que dos de cada tres extracciones cayeran en un documento sin
+# tabla. La poblacion es la que tiene el objeto que se mide.
+poblacion:
+  documentos_con_tabla: 338
+  tablas: 2135
+  # LA UNIDAD ES EL DOCUMENTO (regla de oro 3: las preguntas de un mismo documento
+  # estan correlacionadas, asi que lo que se remuestrea son documentos). De cada
+  # documento elegido sale UNA tabla, tambien por semilla: si se tomaran todas, el
+  # documento de 332 tablas dominaria la muestra el solo.
+  unidad: documento
+  tablas_por_documento_elegido: 1
+
+# ------------------------------------------------------------- LA ESTRATIFICACION
+# Sobre lo ya medido, no sobre "40 tablas variadas". Los cuatro estratos se reducen
+# a DOS aqui y no es una simplificacion: `sin-tabla` (629) y `anexo-png` (33) son
+# exactamente los 662 documentos SIN tabla, asi que no pueden aportar una.
+# Proporcional a la poblacion, redondeado para que sume 30.
+objetivo: 30
+estratos:
+  - {estrato: tabla-simple,       banda: corto, poblacion: 80, n: 7}
+  - {estrato: celdas-combinadas,  banda: medio, poblacion: 65, n: 6}
+  - {estrato: celdas-combinadas,  banda: largo, poblacion: 65, n: 6}
+  - {estrato: celdas-combinadas,  banda: corto, poblacion: 47, n: 4}
+  - {estrato: tabla-simple,       banda: medio, poblacion: 45, n: 4}
+  - {estrato: tabla-simple,       banda: largo, poblacion: 36, n: 3}
+
+# Las bandas son las de ADR-0034, definidas antes de que el corpus existiera.
+bandas: {corto: [1, 4], medio: [5, 12], largo: [13, null]}
+
+# --------------------------------------------------------------------- LA SEMILLA
+# Congelada aqui y commiteada antes de correr `elegir_fixtures.py` ni una vez. Sin
+# esto, "no me gusta esta tabla, tiro otra vez" no deja rastro.
+semilla: 20260824
+
+# ------------------------------------------------------- DE DONDE SE TRANSCRIBE
+# DEL PDF, NO DEL XML. La verdad se DERIVA del XML, asi que transcribir del XML
+# seria comparar el XML consigo mismo y el criterio pasaria por construccion. Es la
+# decision que hace el hito no circular.
+fuente_de_la_transcripcion: pdf
+
+# --------------------------------------------------- LAS QUE YA SE HABIAN VISTO
+# Cuatro tablas del corpus se inspeccionaron a mano al arreglar el grupo de filas.
+# NO se excluyen —excluirlas sesgaria la estratificacion— pero se declaran, y si
+# alguna cae en la muestra se publica al lado del numero.
+ya_inspeccionadas:
+  - BOE-A-2026-7193   # el derrame de grupo de filas
+  - BOE-A-2026-7172   # el gemelo horizontal del colgroup
+  - BOE-A-2026-5542   # SPAN_FUERA_DE_RANGO, antes del arreglo
+  - BOE-A-2026-6080   # idem
+
+# ----------------------------------------------------------------- LA ADJUDICACION
+# ADR-0039, escrito antes que esto. Resumen operativo:
+#   1. orden de sospecha: primero el codigo, segundo la transcripcion
+#   2. cada discrepancia se adjudica una a una, con su causa publicada
+#   3. el numero separa "fallo del codigo" de "error de transcripcion"
+#   4. si el codigo se arregla, se RE-COMPARAN LAS 30
+adjudicacion: docs/adr/0039-la-adjudicacion-de-discrepancias-de-la-verdad.md
+
+# Y las 30 se transcriben de una sentada y se congelan con hash ANTES de la primera
+# comparacion. El sello de esa congelacion se escribe aqui cuando ocurra.
+sello_de_la_congelacion: null
