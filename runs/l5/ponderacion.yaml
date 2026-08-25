@@ -14,6 +14,26 @@
 hito: L5
 decide: cual es el TEDS agregado primario de la tabla de resultados
 
+# ------------------------------------------------------- EL CENSO DE TABLAS
+# Medido DESPUES de escribir la decision y ANTES de puntuar nada. No la cambia; la
+# refuerza, y anade un numero que hay que publicar al lado del agregado.
+#   comando: uv run python scripts/censo_tablas.py
+censo_de_tablas:
+  documentos_con_alguna_tabla: 338 de 1.000 (33,8%)
+  tablas_totales: 2.135
+  la_n_efectiva: >
+    EL TEDS AGREGADO SE PROMEDIA SOBRE 338 DOCUMENTOS, NO SOBRE 1.000. Los otros 662 no
+    tienen ni una tabla: salen NO_APLICABLE y no puntuan (decision B3). Publicar «el TEDS
+    medio del corpus» sin decir esto seria dar por medida una poblacion que no se midio.
+  por_banda: >
+    <=10: 192 de 776 con tabla, 516 tablas (24,2%) · 11-50: 114 de 186, 702 (32,9%) ·
+    >50: 32 de 38, 917 tablas (43,0%), a 28,7 tablas por documento con tabla.
+  lo_que_esto_le_hace_a_la_media_por_tabla: >
+    LA REMATA. 32 documentos —el 9,5% de los que puntuan— cargarian el 43% del peso, y
+    uno solo de ellos pesaria como 28 documentos cortos. La media por tabla ya estaba
+    descartada por contradecir la regla de oro 3; este censo dice ademas cuanto habria
+    distorsionado, que es lo que convierte un argumento en un numero.
+
 # ------------------------------------------------------------------- PRIMARIA
 primaria:
   cual: MEDIA POR DOCUMENTO, sin ponderar
@@ -58,7 +78,7 @@ descartada:
     40 veces mas que uno con una, sin que nadie lo haya decidido.
   cuando_si_aparece: >
     El recuento de tablas por documento SI se publica, como descriptivo del corpus. Lo
-    que no se hace es promediar TEDS sobre el.
+    que no se hace es promediar TEDS sobre el. Ver censo_de_tablas, arriba.
 
 # ------------------------------------------------------------------ EL LIMITE
 no_cubre: >

@@ -33,10 +33,50 @@ carga:
   # techo en 90 no hace falta dejar margen por miedo: lo acota la medicion.
   hilos_con_termometro: 8
   hilos_sin_termometro: 2     # a ciegas: se compensa con menos carga, no con promesas
-  descanso_base: 0.15         # pausa = trabajo x factor, adaptado por la media
+  # pausa ENTRE unidades = trabajo x factor, adaptada por la media de la sesion. Ya
+  # NO es la barrera de carga —lo es el ciclo—, asi que es la misma con y sin
+  # termometro: a ciegas valia 1,0 y duplicaba la sesion sin anadir seguridad.
+  descanso_base: 0.15
   descanso_tope_s: 120
   prioridad: nice -n 19
-  tope_unidad_min: 20         # RED DE SEGURIDAD, no metodo de muestreo. Ver censura.
+  afinidad: taskset -c 0-(hilos-1)
+  # RED DE SEGURIDAD, no metodo de muestreo. Ver censura. Esta definido A
+  # hilos_con_termometro y ESCALA con los hilos que se usen de verdad: es un tope de
+  # RELOJ sobre un trabajo paralelo, asi que a la mitad de hilos tarda el doble y un
+  # tope fijo censuraria por ir despacio en vez de por colgarse.
+  #     tope efectivo = tope_unidad_min x hilos_con_termometro / hilos_en_uso
+  tope_unidad_min: 20
+
+# ------------------------------------------- POR QUE HAY UN CICLO DE TRABAJO
+# NI LAS VARIABLES DE ENTORNO NI taskset ACOTAN ESTA CARGA. Medido con tres
+# instrumentos y no supuesto:
+#   · pymupdf4llm arrastra rapidocr, cuyo ONNX Runtime abre 45 HEBRAS.
+#   · Con taskset -c 0-1, /proc/PID/status dice Cpus_allowed_list: 0-1 —esa es la mascara
+#     de la hebra lider— y `top` marca 600% de CPU: las hebras trabajadoras se reescriben
+#     su propia afinidad una a una y se salen de la mascara del proceso.
+#   · os.wait4 y /usr/bin/time coinciden: 484% de CPU con 2 CPU en la mascara.
+#   · El control positivo descarta que sea el instrumento: 8 PROCESOS girando bajo
+#     taskset -c 0-1 dan 2,11 hilos efectivos, y sin taskset dan 8,38. taskset funciona;
+#     lo que no funciona es taskset CONTRA UNA BIBLIOTECA QUE SE REPONE LA AFINIDAD.
+# cgroup v2 con el controlador cpu existe en esta maquina, pero /sys/fs/cgroup no es
+# escribible sin root. Asi que el tope duro se hace con lo unico que si esta disponible.
+ciclo:
+  que_es: >
+    El gobernador para el proceso con SIGSTOP una fraccion de cada periodo y lo reanuda
+    con SIGCONT. Acota el consumo MEDIO de CPU pase lo que pase con las hebras, porque no
+    depende de cuantas haya sino de cuanto rato se les deja correr.
+  periodo_s: 2.0
+  fraccion_con_termometro: 0.60
+  fraccion_sin_termometro: 0.30
+  latido_s: 0.02              # resolucion del ciclo. Con periodo 2,0 el error es ~3%
+  no_distorsiona_el_numero: >
+    El tiempo parado se acumula en pausado_s y se resta: trabajo_s = reloj - pausado_s.
+    Asi que el s/pagina publicado es el que habria salido sin ciclo. Lo que el ciclo
+    alarga es la SESION, no la medida.
+  la_afirmacion_ES_FALSABLE: >
+    cpu_s / reloj_s <= fraccion x 8 nucleos. Se comprueba con los datos que el propio
+    gobernador guarda, en cada unidad. Si alguna unidad la incumple, el ciclo no esta
+    acotando y hay que decirlo en vez de suponerlo.
 
 # ------------------------------------------------------------- LA CENSURA
 # El documento mas largo del corpus son 309 paginas. docling sobre eso es UNA unidad

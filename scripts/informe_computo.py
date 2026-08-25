@@ -36,6 +36,40 @@ def numero(m: Registro, clave: str) -> float:
     return float(v)
 
 
+def _comprobar_el_ciclo(medidas: list[Registro]) -> None:
+    """La afirmación del ciclo de trabajo, comprobada **contra los datos de cada unidad**.
+
+    El ciclo promete `cpu_s / reloj_s <= fracción x núcleos`. Es la única barrera que
+    aguanta —ni `OMP_NUM_THREADS` ni `taskset` acotan a `pymupdf4llm`, que abre 45 hebras
+    que se reponen la afinidad— así que si dejara de cumplirse no habría ninguna otra, y
+    nadie se enteraría. Se comprueba aquí y se nombra la unidad que la incumpla.
+    """
+    rotas = [
+        m
+        for m in medidas
+        if "cpu_por_reloj" in m and numero(m, "cpu_por_reloj") > numero(m, "techo_del_ciclo")
+    ]
+    con_dato = [m for m in medidas if "cpu_por_reloj" in m]
+    if not con_dato:
+        print("\n  ciclo de trabajo: sin datos que comprobar")
+        return
+    peor = max(con_dato, key=lambda m: numero(m, "cpu_por_reloj"))
+    if rotas:
+        print(f"\n  EL CICLO NO ACOTÓ en {len(rotas)} de {len(con_dato)} unidades:")
+        for m in rotas[:5]:
+            print(
+                f"    {m.get('extractor')} · {m.get('documento')}: "
+                f"{numero(m, 'cpu_por_reloj'):.2f} núcleos sobre un tope de "
+                f"{numero(m, 'techo_del_ciclo'):.2f}"
+            )
+        return
+    print(
+        f"\n  ciclo de trabajo: las {len(con_dato)} unidades por debajo del tope. "
+        f"La peor, {peor.get('extractor')} con {numero(peor, 'cpu_por_reloj'):.2f} "
+        f"núcleos de media sobre {numero(peor, 'techo_del_ciclo'):.2f}"
+    )
+
+
 def informe(estado: ConMedidas) -> None:
     """Segundos de CPU por documento y por página, que es lo que hace sumable el total."""
     if not estado.medidas:
@@ -82,5 +116,6 @@ def informe(estado: ConMedidas) -> None:
             "\n  «≥» = hay unidades censuradas por tope: el s/pág de esa fila es una COTA\n"
             "  INFERIOR, no su valor. Ver runs/l5/termica.yaml, censura."
         )
+    _comprobar_el_ciclo(estado.medidas)
     print(f"\n  térmica de la sesión: {estado.termica or '—'}")
     print("\n  reproducir: uv run --extra extract-local python scripts/computo_l5.py")

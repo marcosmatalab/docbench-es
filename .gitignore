@@ -62,6 +62,7 @@ runs/*/*
 !runs/*/termica.yaml
 !runs/*/estimacion.yaml
 !runs/*/ponderacion.yaml
+!runs/*/censo_tablas.json
 !runs/*/computo.json
 !runs/*/humo.json
 !runs/*/resello_comparador.json

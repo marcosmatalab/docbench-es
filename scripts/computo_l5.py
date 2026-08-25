@@ -96,17 +96,29 @@ def sobre(vigilado: bool) -> tuple[Termica, dict[str, float]]:
     """El sobre térmico, LEÍDO de `runs/l5/termica.yaml`. Un número derivado no se teclea."""
     d = yaml.safe_load(SOBRE.read_text(encoding="utf-8"))
     lim, carga = d["limites"], d["carga"]
+    ciclo = d["ciclo"]
     t = Termica(
         hilos=int(carga["hilos_con_termometro" if vigilado else "hilos_sin_termometro"]),
         techo=float(lim["techo_c"]),
         reanudar=float(lim["reanudar_c"]),
         objetivo_media=float(lim["objetivo_media_c"]),
         vigilado=vigilado,
+        periodo=float(ciclo["periodo_s"]),
+        fraccion=float(ciclo["fraccion_con_termometro" if vigilado else "fraccion_sin_termometro"]),
+        latido=float(ciclo["latido_s"]),
     )
+    # El tope por unidad ESCALA con los hilos: es un tope de reloj sobre un trabajo
+    # paralelo, así que a 2 hilos el mismo trabajo tarda unas 4 veces más que a 8, y un
+    # tope fijo censuraría por ir despacio en vez de por colgarse. Y una censurada rompe
+    # la suma entera, no sólo su fila.
+    escala = float(carga["hilos_con_termometro"]) / t.hilos
     ritmo = {
-        "base": float(carga["descanso_base"]) if vigilado else 1.0,
+        # El descanso ENTRE unidades ya no es la barrera: lo es el ciclo de trabajo,
+        # que acota el consumo medio DENTRO de cada unidad. Antes, a ciegas, este
+        # factor valía 1,0 y duplicaba la sesión sin añadir ninguna seguridad.
+        "base": float(carga["descanso_base"]),
         "tope": float(carga["descanso_tope_s"]),
-        "unidad": float(carga["tope_unidad_min"]) * 60.0,
+        "unidad": float(carga["tope_unidad_min"]) * 60.0 * escala,
     }
     return t, ritmo
 
@@ -223,8 +235,11 @@ def main(argv: list[str]) -> int:
         estado.guardar()
         print(
             f"      {numero(registro, 'cpu_s'):.1f} s CPU · "
-            f"{numero(registro, 'reloj_s'):.1f} s reloj · {registro['pausas']} pausas · "
-            f"{unidad.resumen()}",
+            f"{numero(registro, 'trabajo_s'):.1f} s trabajo de "
+            f"{numero(registro, 'reloj_s'):.1f} s reloj · "
+            f"{numero(registro, 'cpu_por_reloj'):.2f} núcleos de media "
+            f"(tope {numero(registro, 'techo_del_ciclo'):.1f}) · "
+            f"{registro['pausas_termicas']} pausas térmicas · {unidad.resumen()}",
             flush=True,
         )
         pausa = descansa(trabajo, factor, sesion, ritmo["tope"])

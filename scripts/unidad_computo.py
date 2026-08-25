@@ -1,8 +1,19 @@
 """UNA unidad de B5-bis: un extractor sobre un documento, en su propio proceso.
 
-    python scripts/unidad_computo.py docling BOE-A-2024-12345
+    python scripts/unidad_computo.py docling BOE-A-2024-12345 /ruta/salida.json
 
-Imprime una línea JSON en `stdout` y nada más. **Quien mide el tiempo es el padre**,
+Escribe su resultado como JSON **en el fichero que le pasan**, y no en `stdout`.
+
+## Por qué no en `stdout`, que era lo natural
+
+Porque `stdout` no es suyo: lo comparte con todo lo que importe. `pymupdf4llm` arrastra
+`rapidocr`, que imprime `rapidocr_api using backend: rapidocr` y un bloque
+`=== Document parser messages ===` **antes** de que este programa llegue a escribir
+nada. El JSON quedaba precedido de basura, el padre no podía parsearlo y registraba
+`SALIDA_ILEGIBLE` en las **tres** unidades de `pymupdf4llm` — un fallo del arnés
+disfrazado de fallo del extractor. Con un fichero propio no hay nada que compartir.
+
+**Quien mide el tiempo es el padre**,
 con `os.wait4`, porque el `rusage` del hijo da segundos de CPU exactos y no lo altera
 ni que el gobernador térmico lo pare a mitad con `SIGSTOP`.
 
@@ -91,20 +102,27 @@ EXTRACTORES = {
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 2 or argv[0] not in EXTRACTORES:
-        print(f"uso: unidad_computo.py {{{'|'.join(EXTRACTORES)}}} <external_id>", file=sys.stderr)
+    if len(argv) != 3 or argv[0] not in EXTRACTORES:
+        print(
+            f"uso: unidad_computo.py {{{'|'.join(EXTRACTORES)}}} <external_id> <salida.json>",
+            file=sys.stderr,
+        )
         return 2
-    nombre, ident = argv
+    nombre, ident, destino = argv
     ruta = DOCS / f"{ident}.pdf"
+
+    def escribir(registro: dict[str, object]) -> None:
+        Path(destino).write_text(json.dumps(registro), encoding="utf-8")
+
     if not ruta.exists():
-        print(json.dumps({"ok": False, "causa": "PDF_AUSENTE", "detalle": str(ruta)}))
+        escribir({"ok": False, "causa": "PDF_AUSENTE", "detalle": str(ruta)})
         return 1
     try:
         salida = EXTRACTORES[nombre](ruta)
     except Exception as e:  # un extractor que revienta también cuesta, y se cuenta
-        print(json.dumps({"ok": False, "causa": type(e).__name__, "detalle": str(e)[:200]}))
+        escribir({"ok": False, "causa": type(e).__name__, "detalle": str(e)[:200]})
         return 1
-    print(json.dumps({"ok": True, "salida": salida}))
+    escribir({"ok": True, "salida": salida})
     return 0
 
 

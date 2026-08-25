@@ -1513,3 +1513,75 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     caso el cómputo se declara `vigilado: false`, baja a 2 hilos y **no afirma ningún
     grado**. Tampoco se toca la frecuencia de boost, así que menos hilos no baja la
     temperatura de forma lineal: con pocos hilos el boost sube el voltaje por núcleo.
+
+86. **NI `OMP_NUM_THREADS` NI `taskset` ACOTAN LA CARGA DE `pymupdf4llm`, Y EL PRIMER
+    SOBRE TÉRMICO DECÍA QUE SÍ.** El gobernador de B5-bis fijaba los hilos por entorno
+    y luego añadió `taskset -c 0-(n−1)` como «tope duro del sistema operativo». Las dos
+    cosas fallan contra esta biblioteca, y **la primera versión de este límite lo habría
+    dado por bueno sin mirarlo**.
+
+    **Lo delató un número que el propio gobernador guarda**: `hilos_efectivos =
+    cpu_s / trabajo_s` salió **4,2 y 5,3** con el entorno pidiendo 2. Sin ese campo,
+    nadie se habría enterado.
+
+    **Medido con tres instrumentos y con su control positivo**, porque «mi medida dice
+    algo imposible» tiene dos explicaciones y hay que separarlas:
+
+    | | |
+    |---|---|
+    | `os.wait4` | 12,89 s de CPU en 2,58 s de reloj = **4,99 núcleos**, con 2 en la máscara |
+    | `/usr/bin/time -v` | **484% de CPU**, mismo caso — instrumento independiente, misma respuesta |
+    | `top` | **600%** sobre el proceso, en vivo |
+    | `/proc/PID/status` | `Cpus_allowed_list: 0-1` — pero ésa es la máscara de la **hebra líder** |
+    | `/proc/PID/task/` | **45 hebras**. Las trabajadoras se reponen la afinidad una a una |
+    | control positivo | 8 **procesos** girando bajo `taskset -c 0-1` dan **2,11**; sin `taskset`, **8,38**. `taskset` funciona; lo que no funciona es `taskset` contra una biblioteca que se repone la afinidad |
+
+    **El arreglo, y es el único que aguanta**: `cgroup v2` con el controlador `cpu` existe
+    en esta máquina pero `/sys/fs/cgroup` no es escribible sin root, así que el tope se
+    hace con **ciclo de trabajo**: `SIGSTOP` una fracción de cada periodo, `SIGCONT` el
+    resto. **No depende de cuántas hebras abra la biblioteca sino de cuánto rato se les
+    deja correr.** Y no distorsiona el número publicado, porque el tiempo parado se resta
+    en `trabajo_s` — comprobado: con ciclo, `pymupdf4llm` sobre 6 páginas da 2,6 s de
+    trabajo; sin ciclo daba 2,6 s.
+
+    **Su afirmación es falsable y se comprueba en cada informe**: `cpu_s / reloj_s ≤
+    fracción × núcleos`, unidad por unidad, nombrando la que la incumpla.
+
+    Lo que queda sin cubrir: el ciclo acota la **media**, no el pico instantáneo. Entre
+    dos `SIGSTOP` la máquina puede ir a tope, y con `latido` de 20 ms y periodo de 2 s
+    eso son ráfagas de hasta 1,2 s. Y sigue sin haber termómetro: sin HWiNFO no se afirma
+    ningún grado. Ver `runs/l5/termica.yaml`.
+
+87. **`pymupdf4llm` HACE OCR POR DEFECTO, Y ESO ES LA MAYOR PARTE DE SU COSTE.** Arrastra
+    `rapidocr`, y en las corridas de B5-bis imprime `Using RapidOCR for OCR processing` y
+    `OCR on page.number=…` sobre documentos **nacidos digitales**, que tienen capa de
+    texto. De ahí sus 45 hebras y sus ~1,25 s de CPU por página, frente a los 0,045 de
+    `pdfplumber`.
+
+    **El coste que B5-bis publica de `pymupdf4llm` es el de su configuración por
+    defecto**, y eso es lo correcto —es lo que le pasa a quien lo instala y lo llama—,
+    pero **no es su coste mínimo**: quien desactive el OCR verá otro número. Se declara
+    aquí porque un s/página sin decir esto invitaría a comparar peras con manzanas.
+
+    No medido: cuánto baja el coste con el OCR desactivado, ni si la calidad de
+    extracción cae al desactivarlo. Las dos preguntas son de L5, no de B5-bis.
+
+88. **DOS TERCIOS DEL CORPUS NO TIENEN NI UNA TABLA, ASÍ QUE EL TEDS AGREGADO SE
+    PROMEDIA SOBRE 338 DOCUMENTOS Y NO SOBRE 1.000.** Censo sobre la verdad de
+    referencia, con su comando: `uv run python scripts/censo_tablas.py`. **338 de 1.000**
+    tienen alguna tabla (33,8%), y hay **2.135** tablas en total.
+
+    Y se concentran más que las páginas: los **38** documentos de más de 50 páginas son
+    el 3,8% de los documentos, el 36,6% de las páginas y **el 43,0% de las tablas**, a
+    **28,7 tablas por documento**. Un solo documento de esa banda tiene tantas tablas
+    como 28 documentos cortos.
+
+    **Lo que esto obliga a publicar**: el agregado va siempre con su n efectiva —338— y
+    con los 662 `NO_APLICABLE` al lado. «El TEDS medio del corpus» sin eso daría por
+    medida una población que no se midió. Y remata el descarte de la media por tabla:
+    32 documentos, el 9,5% de los que puntúan, cargarían el 43% del peso. Ver
+    `runs/l5/ponderacion.yaml`.
+
+    Lo que **no** afecta: la estimación de coste. El censo que hay que procesar es 66%
+    sin tablas, así que una muestra aleatoria del censo lo refleja bien — el coste de
+    procesar un documento sin tablas también es coste.

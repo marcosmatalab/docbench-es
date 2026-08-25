@@ -4,12 +4,21 @@
 
 Controla **la carga**, que es la única causa de calor que este proceso puede tocar:
 
+* **afinidad**: `taskset -c 0-(n-1)`, que es un tope **duro** del sistema operativo y
+  no depende de que la biblioteca haga caso. Hizo falta: `pymupdf4llm` arrastra
+  `rapidocr`, cuyo ONNX Runtime **ignora `OMP_NUM_THREADS`** y corrió a 4,2 y 5,3 hilos
+  efectivos con el entorno pidiendo 2. Medido, no supuesto — `hilos_efectivos` lo delató.
 * **hilos**: fija `OMP/MKL/OPENBLAS/TORCH_NUM_THREADS` en el entorno del hijo, ANTES
-  de que arranque. *torch* los lee al cargarse; ponerlos después no hace nada.
+  de que arranque. *torch* los lee al cargarse; ponerlos después no hace nada. Es el
+  cinturón; la afinidad son los tirantes, y son los tirantes los que aguantan.
 * **prioridad**: el hijo entero va con `nice -n 19`.
-* **pausa dura**: mientras el hijo corre, mide cada `INTERVALO` segundos. Si pasa del
-  techo, **para el grupo de procesos con `SIGSTOP`** y lo reanuda con `SIGCONT` al
-  bajar de la marca de reanudación. No aborta: espera, y lo dice.
+* **ciclo de trabajo**: para el grupo con `SIGSTOP` una fracción de cada periodo y lo
+  reanuda con `SIGCONT`. **Es el único tope que aguanta**, porque no depende de cuántas
+  hebras abra la biblioteca sino de cuánto rato se les deja correr. Hizo falta: con
+  `taskset -c 0-1`, `pymupdf4llm` abre 45 hebras que **se reponen la afinidad una a una**
+  y `top` marca 600%. Los detalles y el control positivo, en `runs/l5/termica.yaml`.
+* **pausa térmica**: si además hay termómetro y pasa del techo, la parada se **alarga**
+  hasta bajar de la marca de reanudación. Nunca la acorta. No aborta: espera, y lo dice.
 
 **Si no hay termómetro no hay pausa dura**, y esta función lo declara en el registro
 que devuelve (`vigilado: false`). No se afirma un grado que no se ha leído.
@@ -72,6 +81,9 @@ class Termica:
     reanudar: float
     objetivo_media: float
     vigilado: bool
+    periodo: float = 2.0
+    fraccion: float = 0.6
+    latido: float = 0.02
 
 
 @dataclass
@@ -118,7 +130,11 @@ def correr(
     # porque el padre no lee mientras el hijo corre y una tubería llena lo colgaría.
     error = RAIZ / "runs" / "l5" / ".unidad.err"
     salida.parent.mkdir(parents=True, exist_ok=True)
+    salida.unlink(missing_ok=True)  # o se leería el resultado de la unidad ANTERIOR
     orden = [
+        "taskset",
+        "-c",
+        f"0-{max(0, t.hilos - 1)}",
         "nice",
         "-n",
         "19",
@@ -126,47 +142,57 @@ def correr(
         str(RAIZ / "scripts" / "unidad_computo.py"),
         extractor,
         ident,
+        str(salida),
     ]
     t0 = time.perf_counter()
-    with salida.open("w") as fs, error.open("w") as fe:
+    trabajo_ventana = t.periodo * t.fraccion
+    descanso_ventana = t.periodo - trabajo_ventana
+    with Path(os.devnull).open("w") as fs, error.open("w") as fe:
         p = subprocess.Popen(
             orden, stdout=fs, stderr=fe, env=entorno(t.hilos), start_new_session=True
         )
         pausas, pausado, desde = 0, 0.0, 0.0
-        parado = censurada = False
-        proxima = 0.0
+        parado = censurada = caliente = False
+        cambio = t0 + trabajo_ventana
+        proxima_lectura = 0.0
         while True:
             pid, estado, ru = os.wait4(p.pid, os.WNOHANG)
             if pid == p.pid:
                 break
             ahora = time.perf_counter()
-            lectura = leer() if ahora >= proxima else Lectura(None, "", "entre lecturas")
-            if ahora >= proxima:
-                proxima = ahora + INTERVALO
+            if t.vigilado and ahora >= proxima_lectura:
+                proxima_lectura = ahora + INTERVALO
+                lectura = leer()
                 muestreo.anota(lectura)
-            if t.vigilado and lectura.grados is not None:
-                if not parado and lectura.grados >= t.techo:
-                    os.killpg(os.getpgid(p.pid), signal.SIGSTOP)
-                    parado, pausas, desde = True, pausas + 1, time.perf_counter()
-                    print(
-                        f"      ‖ {lectura.grados:.1f} °C ≥ techo {t.techo:.0f} · "
-                        f"parado, espera a {t.reanudar:.0f}",
-                        flush=True,
-                    )
-                elif parado and lectura.grados <= t.reanudar:
-                    os.killpg(os.getpgid(p.pid), signal.SIGCONT)
-                    parado = False
-                    pausado += time.perf_counter() - desde
-                    print(
-                        f"      ▸ {lectura.grados:.1f} °C · reanudado tras "
-                        f"{time.perf_counter() - desde:.0f} s",
-                        flush=True,
-                    )
-            if tope_s and not parado and (time.perf_counter() - t0 - pausado) > tope_s:
+                if lectura.grados is not None:
+                    if not caliente and lectura.grados >= t.techo:
+                        caliente = True
+                        pausas += 1
+                        print(
+                            f"      | {lectura.grados:.1f} C >= techo {t.techo:.0f} "
+                            f"· parado hasta {t.reanudar:.0f}",
+                            flush=True,
+                        )
+                    elif caliente and lectura.grados <= t.reanudar:
+                        caliente = False
+                        print(f"      > {lectura.grados:.1f} C · vuelve al ciclo", flush=True)
+            # El ciclo. `caliente` sólo puede ALARGAR la parada, nunca acortarla.
+            if not parado and (caliente or ahora >= cambio):
+                os.killpg(os.getpgid(p.pid), signal.SIGSTOP)
+                parado, desde = True, ahora
+                cambio = ahora + descanso_ventana
+            elif parado and not caliente and ahora >= cambio:
+                os.killpg(os.getpgid(p.pid), signal.SIGCONT)
+                parado = False
+                pausado += ahora - desde
+                cambio = ahora + trabajo_ventana
+            if tope_s and not parado and (ahora - t0 - pausado) > tope_s:
                 os.killpg(os.getpgid(p.pid), signal.SIGKILL)
                 censurada = True
-                print(f"      ✂ tope de {tope_s / 60:.0f} min · unidad CENSURADA", flush=True)
-            time.sleep(LATIDO)
+                print(f"      x tope de {tope_s / 60:.0f} min · unidad CENSURADA", flush=True)
+            time.sleep(t.latido)
+        if parado:  # que nadie herede un proceso parado
+            pausado += time.perf_counter() - desde
     reloj = time.perf_counter() - t0
     # TRABAJO EFECTIVO: el reloj menos lo que el gobernador tuvo parado el proceso. Es
     # el reloj que se publica, porque penalizar a un extractor por haber enfriado la
@@ -174,9 +200,15 @@ def correr(
     trabajo = max(reloj - pausado, 1e-9)
     p.returncode = os.waitstatus_to_exitcode(estado) if estado >= 0 else -1
     try:
-        registro = json.loads(salida.read_text(encoding="utf-8") or "{}")
-    except json.JSONDecodeError:
-        registro = {"ok": False, "causa": "SALIDA_ILEGIBLE"}
+        registro = json.loads(salida.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, FileNotFoundError):
+        # Ahora esto sí significa lo que dice: la unidad murió antes de escribir. Antes
+        # significaba «una biblioteca imprimió algo en stdout», que no es lo mismo.
+        registro = {
+            "ok": False,
+            "causa": "SIN_RESULTADO",
+            "detalle": error.read_text(encoding="utf-8", errors="replace")[-200:],
+        }
     return {
         "extractor": extractor,
         "documento": ident,
@@ -189,7 +221,13 @@ def correr(
         # distinto y sólo esto permite reescalar el reloj a otro número de trabajadores.
         #     reloj ~ segundos de CPU / hilos efectivos
         "hilos_efectivos": round((ru.ru_utime + ru.ru_stime) / trabajo, 3),
-        "pausas": pausas,
+        "pausas_termicas": pausas,
+        "ciclo_fraccion": t.fraccion,
+        # LA AFIRMACIÓN FALSABLE del ciclo: `cpu_s / reloj_s <= fracción x núcleos`.
+        # Se guarda calculada para poder comprobarla unidad por unidad en vez de
+        # creérsela. Ver `runs/l5/termica.yaml`, sección `ciclo`.
+        "cpu_por_reloj": round((ru.ru_utime + ru.ru_stime) / max(reloj, 1e-9), 3),
+        "techo_del_ciclo": round(t.fraccion * (os.cpu_count() or 1), 3),
         "max_rss_mb": round(ru.ru_maxrss / 1024, 1),
         "rc": p.returncode,
         "stderr": error.read_text(encoding="utf-8", errors="replace")[-400:].strip(),
