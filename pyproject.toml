@@ -20,6 +20,13 @@ dev = [
     "ruff>=0.6",
     "mypy>=1.11",
     "import-linter>=2",
+    # PARALELIZA LA PUERTA. Medido antes de adoptarlo, que es la regla: 1,88x sobre
+    # `pytest tests/unit` —mediana 5591 ms en serie contra 2973 en paralelo, n=5 cada
+    # una, 8 nucleos, `.hypothesis` borrada entre corridas—. El umbral escrito antes
+    # de medir era 1,5x. Ver ADR-0043 y la LINEA DE CORTE de docs/metrics.md: la serie
+    # longitudinal de la puerta tiene una discontinuidad aqui, y las dos medidas del
+    # MISMO arbol estan publicadas para que el salto sea atribuible al instrumento.
+    "pytest-xdist>=3",
     "types-pyyaml>=6.0.12.20260815",
     # Para SACAR TEXTO DE UN PDF en la comprobacion de coherencia del emparejado.
     # Va en dev y no en `dependencies` a proposito: `src/` no importa ninguna
@@ -109,7 +116,9 @@ warn_unreachable = true
 disallow_any_explicit = true
 
 [tool.pytest.ini_options]
-addopts = "-q --strict-markers --strict-config"
+# `-n auto` desde L5. Para medir en serie sobre el MISMO arbol, sin moverlo:
+#     PYTEST_ADDOPTS="-n 0" make fast
+addopts = "-q --strict-markers --strict-config -n auto"
 # `pytest` a secas NO debe recoger tests/e2e, que necesita red.
 # La puerta rapida nombra sus directorios explicitamente; ver el Makefile.
 testpaths = ["tests/unit"]

@@ -108,8 +108,10 @@ def main() -> int:
                 "error": error,
             }
         )
-        print(f"  {f.stem:<22} TEDS {mejor:.4f}  TEDS-S {mejor_s:.4f}  "
-              f"{len(candidatas):>3} tablas  {segundos:6.2f} s  {error[:40]}")
+        print(
+            f"  {f.stem:<22} TEDS {mejor:.4f}  TEDS-S {mejor_s:.4f}  "
+            f"{len(candidatas):>3} tablas  {segundos:6.2f} s  {error[:40]}"
+        )
 
     ts = [float(r["teds"]) for r in filas]
     seg = [float(r["segundos"]) for r in filas]
@@ -122,7 +124,7 @@ def main() -> int:
         "teds_mediana": round(statistics.median(ts), 6),
         "teds_min": round(min(ts), 6),
         "teds_max": round(max(ts), 6),
-        "teds_distintos": len(set(round(x, 4) for x in ts)),
+        "teds_distintos": len({round(x, 4) for x in ts}),
         "revientan": len(rotos),
         "errores": [r["error"] for r in rotos],
         "segundos_mediana_por_documento": round(statistics.median(seg), 3),
@@ -134,18 +136,26 @@ def main() -> int:
     (RAIZ / "runs" / "l5" / "humo.json").write_text(
         json.dumps(resumen, indent=1, ensure_ascii=False), encoding="utf-8"
     )
-    print(f"\n  n={len(filas)} · TEDS mediana {resumen['teds_mediana']:.4f} "
-          f"· rango {min(ts):.4f}-{max(ts):.4f} · {resumen['teds_distintos']} valores distintos")
+    print(
+        f"\n  n={len(filas)} · TEDS mediana {resumen['teds_mediana']:.4f} "
+        f"· rango {min(ts):.4f}-{max(ts):.4f} · {resumen['teds_distintos']} valores distintos"
+    )
     print(f"  revientan: {len(rotos)} de {len(filas)}")
-    print(f"  {resumen['segundos_mediana_por_documento']} s/documento mediana · "
-          f"{resumen['segundos_por_pagina']} s/pagina · {paginas} paginas")
+    print(
+        f"  {resumen['segundos_mediana_por_documento']} s/documento mediana · "
+        f"{resumen['segundos_por_pagina']} s/pagina · {paginas} paginas"
+    )
     print("\n  LAS TRES CONDICIONES DE PARADA (runs/l5/humo.yaml):")
-    print(f"    plana .... {'PARA' if resumen['teds_distintos'] <= 1 else 'pasa'}"
-          f"  ({resumen['teds_distintos']} valores distintos)")
+    print(
+        f"    plana .... {'PARA' if resumen['teds_distintos'] <= 1 else 'pasa'}"
+        f"  ({resumen['teds_distintos']} valores distintos)"
+    )
     print(f"    revienta . {'PARA' if len(rotos) > 3 else 'pasa'}  ({len(rotos)} de 30)")
     caro = float(resumen["segundos_mediana_por_documento"]) > 2.0
-    print(f"    caro ..... {'PARA' if caro else 'pasa'}"
-          f"  ({resumen['segundos_mediana_por_documento']} s/documento)")
+    print(
+        f"    caro ..... {'PARA' if caro else 'pasa'}"
+        f"  ({resumen['segundos_mediana_por_documento']} s/documento)"
+    )
     return 0
 
 
