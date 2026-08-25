@@ -7,9 +7,6 @@
 # `stop_hook_active` es obligatorio leerlo: sin ese guardia, un `decision:block`
 # con la puerta todavía roja provoca un bucle infinito.
 set -uo pipefail
-IN=$(cat 2>/dev/null || true)
-command -v jq >/dev/null 2>&1 || exit 0
-[ "$(printf '%s' "$IN" | jq -r '.stop_hook_active // false')" = "true" ] && exit 0
 
 DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 cd "$DIR" || exit 0
@@ -49,6 +46,30 @@ GLOBS=(tests/fixtures/pubtabnet tests/fixtures/tablas tests/fixtures/quickstart
        plan.yaml '*/plan.yaml' 'runs/*/fixtures/*'
        'runs/*/congelacion.json' 'runs/*/congelacion_comparador.json'
        'runs/*/recongelacion.json' 'runs/*/correcciones.json')
+
+# --- MODO INFORME: CUÁNTOS FICHEROS PROTEGE AHORA MISMO ---------------------
+#
+#   UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER NADA.
+#
+# Es el modo de fallo POR DEFECTO de cualquier guardián basado en patrones: el glob no
+# casa, el guardián NO SE QUEJA —no tiene de qué— y su verde significa «no hay nada
+# que vigilar» en vez de «todo está bien». Pasó en este mismo fichero:
+# `runs/*/fixtures` protegía CERO ficheros mientras `LIMITS.md` publicaba «arreglado
+# en los dos hooks».
+#
+# Por eso el guardián publica su conjunto, y `tests/unit/test_guardianes_por_glob.py`
+# afirma que es > 0 y que contiene lo que tiene que contener. El recuento solo no
+# arregla nada: el test es la mitad que lo hace cumplir.
+congelados() { git ls-files -o -c --exclude-standard -- "${GLOBS[@]}" 2>/dev/null | sort -u; }
+
+if [ "${1:-}" = "--cuantos" ]; then
+  congelados
+  exit 0
+fi
+
+IN=$(cat 2>/dev/null || true)
+command -v jq >/dev/null 2>&1 || exit 0
+[ "$(printf '%s' "$IN" | jq -r '.stop_hook_active // false')" = "true" ] && exit 0
 
 if git rev-parse --git-dir >/dev/null 2>&1; then
   # 1a. Congelados YA EN HEAD. `--diff-filter=MDRT`: modificado, borrado,

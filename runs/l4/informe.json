@@ -1,0 +1,298 @@
+{
+ "esquema": "docbench-es.informe-l4/1",
+ "comando": "uv run python scripts/comparar_verdad.py --informe",
+ "reglas": "docs/adr/0040-las-reglas-del-comparador-de-verdad.md",
+ "n": 30,
+ "coinciden": 25,
+ "discrepancias": 5,
+ "desglose_de_los_que_coinciden": {
+  "limpias": 21,
+  "contaminadas": 1,
+  "corregidas_tras_adjudicar": 3
+ },
+ "contaminadas_declaradas": [
+  "BOE-A-2026-5979-t15"
+ ],
+ "por_fixture": [
+  {
+   "fixture": "BOE-A-2026-5511-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5593-t1",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5851-t2",
+   "coincide": false,
+   "discrepancias": 1,
+   "clases": [
+    "TEXTO"
+   ],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5856-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5863-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5870-t12",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-5975-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "ventana"
+  },
+  {
+   "fixture": "BOE-A-2026-5979-t15",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": true,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6077-t4",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6204-t3",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": true,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6388-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "ventana"
+  },
+  {
+   "fixture": "BOE-A-2026-6626-t5",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6728-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6732-t0",
+   "coincide": false,
+   "discrepancias": 1,
+   "clases": [
+    "TEXTO"
+   ],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "ventana"
+  },
+  {
+   "fixture": "BOE-A-2026-6941-t1",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": true,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-6971-t3",
+   "coincide": false,
+   "discrepancias": 1,
+   "clases": [
+    "DIMENSION"
+   ],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7031-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7174-t12",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7189-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7191-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7330-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7342-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7438-t0",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7446-t0",
+   "coincide": false,
+   "discrepancias": 1,
+   "clases": [
+    "TEXTO"
+   ],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7527-t3",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7536-t1",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7559-t0",
+   "coincide": false,
+   "discrepancias": 1,
+   "clases": [
+    "DIMENSION"
+   ],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7560-t12",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": false,
+   "alcance": "completa"
+  },
+  {
+   "fixture": "BOE-A-2026-7623-t3",
+   "coincide": true,
+   "discrepancias": 0,
+   "clases": [],
+   "contaminada": false,
+   "corregido_tras_adjudicar": true,
+   "alcance": "completa"
+  }
+ ]
+}

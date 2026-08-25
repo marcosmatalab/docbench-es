@@ -179,5 +179,7 @@ def test_las_seis_correcciones_registradas_son_las_que_dice_el_manifiesto() -> N
     )
 
     assert correcciones["n"] == len(correcciones["correcciones"]) == 6
-    assert len(recongelacion["cambiados"]) == 3
-    assert recongelacion["intactos"] == 27
+    assert len(recongelacion["cambiados"]) == 4, "3 correcciones + 1 anotación"
+    assert len(recongelacion["por_correccion_con_evidencia"]) == 3
+    assert len(recongelacion["por_anotacion_sin_tocar_la_transcripcion"]) == 1
+    assert recongelacion["intactos"] == 26

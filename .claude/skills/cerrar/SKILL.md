@@ -63,13 +63,13 @@ disable-model-invocation: true
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 22 mutantes mueren» habla de esos 22 huecos, no de la
-   suite: hoy el arnés cubre 166 de 364 tests, o sea que los 198 tests que quedan
+   suite: hoy el arnés cubre 166 de 374 tests, o sea que los 208 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **361 de 364 tests protegidos por algo** y **3 tests sin ningún control**.
+   **371 de 374 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -378,6 +378,37 @@ disable-model-invocation: true
    **Cuando un guardia quepa en el tipo de retorno, en un `Protocol`, en un código
    de salida o en un `assert` de la puerta, ahí es donde va.** La skill se queda
    con lo que no cabe en ningún sitio ejecutable.
+
+   **Y LA TERCERA FAMILIA, que es la de las protecciones por RUTA:**
+
+   > **UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER
+   > NADA.**
+
+   Es el modo de fallo **por defecto** de cualquier guardián basado en patrones: el
+   glob no casa, el guardián **no se queja** —no tiene de qué— y su verde significa
+   *«no hay nada que vigilar»* en vez de *«todo está bien»*. Las dos cosas se leen
+   igual desde fuera.
+
+   *El caso, del cierre de L4.* `stop-gate.sh` llevaba `'runs/*/fixtures'`, que como
+   pathspec de git casa con el **directorio** y no con lo que hay dentro: protegía
+   **cero** ficheros mientras `LIMITS.md` publicaba «arreglado en los dos hooks». Y
+   fíjate en que es la hermana de la familia anterior —comprobar en el sitio
+   equivocado— pero peor: allí había una medición real mal ubicada; **aquí no hay
+   medición ninguna, y el hueco es exactamente lo que no se mide**.
+
+   **Para TODO guardián que proteja un conjunto, y no sólo los hooks:**
+
+   - **Publica cuántos ficheros protege AHORA MISMO**, en su propia salida, con los
+     mismos patrones con los que decide. Si hay dos sintaxis —pathspec y `case`—, se
+     compara el **conjunto resultante**, no las cadenas.
+   - **Un test afirma que ese número es > 0 y que la lista casa con lo esperado**, y
+     la lista se deriva del **disco**, no de una constante: «los fixtures que hay»,
+     no «los 30 que escribí en el test».
+   - **Con su control negativo: se rompe el glob y el test se cae nombrando el
+     patrón.** Sin esa tercera parte, las dos primeras son decorativas.
+
+   Está hecho en `tests/unit/test_guardianes_por_glob.py`. **El recuento solo no
+   arregla nada** —nadie lo mira—: el test es la mitad que lo hace cumplir.
 
    **La regla que decide qué es deuda y qué no, y no admite matices:**
 

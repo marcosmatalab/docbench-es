@@ -60,8 +60,40 @@ def sello_git() -> str:
     return f"{corto}{'+sucio' if sucio else ''}"
 
 
+CONTENIDO = ("filas", "ultima_fila", "spans", "dimension", "indice_de_la_ultima_fila")
+"""Las claves que SON la transcripción. Todo lo demás es procedencia y anotación."""
+
+
+def es_solo_anotacion(nombre: str) -> bool:
+    """¿El cambio deja la TRANSCRIPCIÓN byte a byte igual?
+
+    Una anotación —marcar un fixture como contaminado, por ejemplo— no es una
+    corrección: no toca ni una celda, así que no necesita evidencia del PDF. Pero
+    **sí mueve la huella**, y sin esta distinción el guardián obligaría a una de dos
+    cosas malas: o registrar una corrección falsa, o dejar el fixture sin marcar.
+
+    La versión anterior se lee de **git**, no de una copia: comparar contra algo que
+    esté en el árbol de trabajo permitiría cambiar las dos cosas a la vez.
+    """
+    hecho = subprocess.run(
+        ["git", "show", f"HEAD:runs/l4/fixtures/{nombre}"],
+        cwd=RAIZ,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if hecho.returncode != 0:
+        return False  # no está en HEAD: no hay contra qué comparar, no se asume nada
+    viejo = json.loads(hecho.stdout)
+    nuevo = json.loads((FIXTURES / nombre).read_text(encoding="utf-8"))
+    return all(viejo.get(k) == nuevo.get(k) for k in CONTENIDO)
+
+
 def sin_respaldo(
-    antes: dict[str, str], ahora: dict[str, str], con_evidencia: set[str]
+    antes: dict[str, str],
+    ahora: dict[str, str],
+    con_evidencia: set[str],
+    anotados: set[str] = frozenset(),  # type: ignore[assignment]
 ) -> tuple[list[str], list[str]]:
     """EL GUARDIÁN. Las huellas que se movieron sin explicación, y al revés.
 
@@ -69,12 +101,14 @@ def sin_respaldo(
     montar un árbol entero. Un guardián que sólo se puede ejercitar corriendo el
     script completo acaba sin ejercitar.
 
-    Devuelve `(cambiadas_sin_corrección, correcciones_que_no_cambiaron_nada)`. Las
-    dos son motivo de abortar, y por razones distintas: la primera es un cambio que
-    se cuela, la segunda un registro que miente sobre lo que hizo.
+    Devuelve `(cambiadas_sin_respaldo, correcciones_que_no_cambiaron_nada)`. Las dos
+    son motivo de abortar, y por razones distintas: la primera es un cambio que se
+    cuela, la segunda un registro que miente sobre lo que hizo. Un cambio respaldado
+    lo está por una **corrección con evidencia del PDF** o por ser **sólo anotación**
+    —la transcripción intacta—, y las dos se registran por separado.
     """
     cambiados = {n for n in ahora if ahora.get(n) != antes.get(n)}
-    return sorted(cambiados - con_evidencia), sorted(con_evidencia - cambiados)
+    return sorted(cambiados - con_evidencia - anotados), sorted(con_evidencia - cambiados)
 
 
 def main() -> int:
@@ -92,7 +126,9 @@ def main() -> int:
     correcciones = json.loads((L4 / "correcciones.json").read_text(encoding="utf-8"))
     con_evidencia = {f"{c['fixture']}.json" for c in correcciones["correcciones"]}
 
-    sin_registrar, registradas_sin_cambio = sin_respaldo(antes, ahora, con_evidencia)
+    cambiados_set = {n for n in ahora if ahora[n] != antes[n]}
+    anotados = {n for n in cambiados_set - con_evidencia if es_solo_anotacion(n)}
+    sin_registrar, registradas_sin_cambio = sin_respaldo(antes, ahora, con_evidencia, anotados)
     if sin_registrar:
         print(f"  ABORTA: huellas cambiadas SIN corrección registrada: {sin_registrar}")
         print("  Un cambio sin evidencia contra el PDF no se congela. No se escribe nada.")
@@ -102,7 +138,8 @@ def main() -> int:
         return 1
 
     for n in cambiados:
-        print(f"  cambiada, con evidencia: {n}")
+        clase = "SÓLO ANOTACIÓN" if n in anotados else "corrección con evidencia"
+        print(f"  cambiada, {clase}: {n}")
         print(f"    {antes[n][:16]}… → {ahora[n][:16]}…")
     print(f"  intactos: {len(ahora) - len(cambiados)} de {len(ahora)}")
 
@@ -121,6 +158,8 @@ def main() -> int:
                 ),
                 "n": len(ahora),
                 "cambiados": cambiados,
+                "por_correccion_con_evidencia": sorted(set(cambiados) - anotados),
+                "por_anotacion_sin_tocar_la_transcripcion": sorted(anotados),
                 "intactos": len(ahora) - len(cambiados),
                 "huellas": ahora,
             },

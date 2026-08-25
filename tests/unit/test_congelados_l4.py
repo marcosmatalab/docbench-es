@@ -62,25 +62,59 @@ def test_cada_fixture_coincide_con_su_huella(nombre: str) -> None:
     )
 
 
-def test_los_27_no_corregidos_conservan_la_huella_de_antes_de_comparar() -> None:
+def test_los_26_no_tocados_conservan_la_huella_de_antes_de_comparar() -> None:
     """El candado 2, que es el que sostiene que la transcripción fue ciega."""
     intactos = [n for n in ORIGINAL["huellas"] if n not in ACTUAL["cambiados"]]
 
-    assert len(intactos) == 27
+    assert len(intactos) == 26
     for nombre in intactos:
         assert _huella(nombre) == ORIGINAL["huellas"][nombre], (
-            f"{nombre} no se corrigió y aun así ha cambiado desde el congelado original"
+            f"{nombre} no se tocó y aun así ha cambiado desde el congelado original"
         )
 
 
-def test_los_3_cambiados_tienen_su_correccion_con_evidencia() -> None:
-    """El candado 3: ninguna huella se mueve sin una corrección que la explique."""
-    con_evidencia = {f"{c['fixture']}.json" for c in CORRECCIONES["correcciones"]}
+def test_los_4_cambiados_estan_respaldados_por_evidencia_o_son_solo_anotacion() -> None:
+    """El candado 3: ninguna huella se mueve sin algo que la explique, **y las dos
+    formas de explicarla son distintas y no se confunden**.
 
-    assert set(ACTUAL["cambiados"]) == con_evidencia
+    - **corrección**: cambia una celda transcrita → exige evidencia contra el PDF.
+    - **anotación**: la transcripción queda byte a byte igual → no la exige, porque
+      no hay nada que evidenciar. Es lo que permitió marcar el fixture contaminado
+      sin registrar una corrección falsa ni dejarlo sin marcar.
+    """
+    con_evidencia = {f"{c['fixture']}.json" for c in CORRECCIONES["correcciones"]}
+    anotados = set(ACTUAL["por_anotacion_sin_tocar_la_transcripcion"])
+
+    assert set(ACTUAL["por_correccion_con_evidencia"]) == con_evidencia
+    assert anotados == {"BOE-A-2026-5979-t15.json"}
+    assert set(ACTUAL["cambiados"]) == con_evidencia | anotados
+    assert not (con_evidencia & anotados), "una corrección NO puede contarse como anotación"
     for c in CORRECCIONES["correcciones"]:
         assert c["evidencia"]["el_pdf_contiene_el_corregido"] is True
         assert c["evidencia"]["el_pdf_contiene_lo_que_puse"] is False
+
+
+def test_la_anotacion_no_toco_ni_una_celda_de_la_transcripcion() -> None:
+    """Lo que hace legítima la categoría «anotación»: se comprueba, no se promete.
+
+    Si esto falla, alguien coló un cambio de contenido por la puerta de las
+    anotaciones — que es exactamente la puerta que esa categoría abre.
+    """
+    import subprocess
+
+    for nombre in ACTUAL["por_anotacion_sin_tocar_la_transcripcion"]:
+        hecho = subprocess.run(
+            ["git", "show", f"HEAD:runs/l4/fixtures/{nombre}"],
+            cwd=RAIZ,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        viejo = json.loads(hecho.stdout)
+        nuevo = json.loads((FIXTURES / nombre).read_text(encoding="utf-8"))
+
+        for clave in ("filas", "ultima_fila", "spans", "dimension"):
+            assert viejo.get(clave) == nuevo.get(clave), f"{nombre}: la anotación tocó {clave}"
 
 
 def test_la_celda_corregida_dice_hoy_lo_que_la_correccion_afirma() -> None:
@@ -113,15 +147,53 @@ def test_el_comparador_y_lo_que_mide_siguen_siendo_los_congelados() -> None:
     suite de controles. Si cualquiera de los cuatro cambia sin re-sellar, «los
     cuatro controles pasan» pasa a hablar de otro programa — y eso no se nota
     leyendo el número, que es lo peligroso.
-    """
-    sello = json.loads((L4 / "congelacion_comparador.json").read_text(encoding="utf-8"))
 
-    for fichero, esperado in sello["huellas"].items():
+    **Dos sellos, y el segundo no sustituye al primero.** `comparar_verdad.py` se
+    tocó después de medir, para que emitiera su informe; los otros tres NO. Así que
+    lo que se exige es lo fuerte: **los tres intactos siguen cuadrando con el sello
+    ORIGINAL** —o sea que las reglas, la verdad derivada y la suite de controles son
+    exactamente las de antes de la primera comparación— y el que cambió cuadra con
+    el re-sello, que lleva escrito qué cambió y la prueba de que el número no se
+    movió.
+    """
+    original = json.loads((L4 / "congelacion_comparador.json").read_text(encoding="utf-8"))
+    resello = json.loads((L4 / "resello_comparador.json").read_text(encoding="utf-8"))
+
+    assert resello["cambiados"] == ["scripts/comparar_verdad.py"], (
+        "si cambia otro de los cuatro, el re-sello tiene que decirlo aquí: un cambio"
+        " en ADR-0040, en truth.derived o en la suite de controles NO es «sólo salida»"
+    )
+    for fichero in resello["intactos"]:
         real = hashlib.sha256((RAIZ / fichero).read_bytes()).hexdigest()
-        assert real == esperado, (
-            f"{fichero} ha cambiado desde que se congeló el comparador."
-            " Los 4 controles negativos ya no hablan de lo que se midió"
+        assert real == original["huellas"][fichero], (
+            f"{fichero} está declarado INTACTO y no cuadra con el sello de antes de"
+            " la primera comparación"
         )
+    for fichero, esperado in resello["huellas"].items():
+        real = hashlib.sha256((RAIZ / fichero).read_bytes()).hexdigest()
+        assert real == esperado, f"{fichero} ha cambiado desde el re-sello"
+
+
+def test_el_desglose_publicado_sale_del_informe_y_no_de_atar_cabos() -> None:
+    """**21 limpias + 1 contaminada + 3 corregidas**, leído del artefacto.
+
+    Antes esto se deducía cruzando a mano la lista de fixtures con discrepancia
+    contra un `"contaminadas": 1` que no decía cuál era, y por eso se llegó a
+    publicar una horquilla —«21 o 22»— sobre algo **completamente determinado por
+    dos artefactos que ya existían**. La lección, que vale para cualquier cifra:
+    **antes de declarar algo NO MEDIBLE, comprueba si es DERIVABLE de lo que ya está
+    medido.**
+    """
+    informe = json.loads((L4 / "informe.json").read_text(encoding="utf-8"))
+    desglose = informe["desglose_de_los_que_coinciden"]
+
+    assert informe["coinciden"] == 25
+    assert desglose == {"limpias": 21, "contaminadas": 1, "corregidas_tras_adjudicar": 3}
+    assert sum(desglose.values()) == informe["coinciden"], "el desglose tiene que sumar"
+    assert informe["contaminadas_declaradas"] == ["BOE-A-2026-5979-t15"]
+    # Y la contaminada está entre las que COINCIDEN, que es lo que cierra la horquilla.
+    fila = next(r for r in informe["por_fixture"] if r["contaminada"])
+    assert fila["coincide"] is True
 
 
 def test_un_fixture_manipulado_no_cuadra_con_su_huella(tmp_path: Path) -> None:

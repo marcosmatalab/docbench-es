@@ -7,15 +7,30 @@
  "localizacion": "automatica_con_desambiguacion",
  "cruza_pagina": false,
  "nota_localizacion": "dos tablas de 2x4 en la página (Pluses y Dietas); es la 1.ª de 2 de su dimensión en el documento, o sea Pluses",
+ "contaminada": true,
+ "nota_contaminacion": "Para desambiguar cuál de las dos tablas de 2x4 era, se miró el texto del XML ANTES de transcribir. El método limpio da la misma respuesta, pero eso no deshace haber visto: su coincidencia con la verdad derivada NO es evidencia independiente. Marcada en el cierre de L4; hasta entonces `congelacion.json` decía «contaminadas: 1» sin decir cuál, y el desglose se publicaba con horquilla por no poder señalarla.",
  "CONTAMINADA": true,
  "razon_contaminacion": "para desambiguar se miró el TEXTO del XML antes de transcribir, así que esta transcripción NO es ciega y su coincidencia no prueba nada por sí sola. La herramienta se arregló después para desambiguar por dimensión y orden —estructura, no valores—; las demás usan ese método",
  "alcance": "completa",
- "dimension": {"n_rows": 2, "n_cols": 4},
+ "dimension": {
+  "n_rows": 2,
+  "n_cols": 4
+ },
  "filas_de_cabecera": 1,
  "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
  "spans": [],
  "filas": [
-  ["Noctur. – Euros/día", "Turno – Euros/mes", "Sábado Domingo – Euros/día", "Festivo – Euros/día"],
-  ["36,66", "73,34", "82,88", "89,97"]
+  [
+   "Noctur. – Euros/día",
+   "Turno – Euros/mes",
+   "Sábado Domingo – Euros/día",
+   "Festivo – Euros/día"
+  ],
+  [
+   "36,66",
+   "73,34",
+   "82,88",
+   "89,97"
+  ]
  ]
 }

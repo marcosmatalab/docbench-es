@@ -666,10 +666,15 @@ cifra:
 | un fixture **contaminado**: se miró el XML para desambiguar | 1 de 30 | límite 71 |
 | 3 fixtures **corregidos** tras adjudicar: coinciden, pero no son evidencia independiente | 3 de 30 | `runs/l4/correcciones.json` |
 
-Por eso el número se publica siempre desglosado, y **con horquilla**: **21 o 22
-limpias + 3 corregidas**, y la contaminada en algún sitio de las 30 sin que se sepa
-en cuál, porque el fixture **no lleva la marca** (límite 71). Nunca «25 de 30» a
-secas, y nunca un 21 exacto que no se puede comprobar.
+Por eso el número se publica siempre desglosado: **21 limpias + 1 contaminada + 3
+corregidas**, y nunca «25 de 30» a secas. **El desglose sale de `runs/l4/informe.json`,
+que emite el propio comparador** (`--informe`), no de cruzar artefactos a mano.
+
+**Se publicó primero como horquilla —«21 o 22»— y era un error de método, no de
+aritmética**: se declaró no medible algo que estaba **completamente determinado por
+dos artefactos que ya existían**. La regla que sale de ahí, y aplica a cualquier
+cifra: *antes de declarar algo NO MEDIBLE, comprueba si es DERIVABLE de lo que ya
+está medido.* Límite 71.
 
 ### Qué NO dice este número, y está medido
 

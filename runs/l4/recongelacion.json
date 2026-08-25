@@ -1,17 +1,26 @@
 {
  "esquema": "docbench-es.recongelacion-fixtures/1",
- "sello": "b0853f4+sucio",
- "motivo": "6 errores de transcripcion corregidos con evidencia del PDF (ADR-0039 regla 5). Las 5 de frontera, intactas",
+ "sello": "988a0fe+sucio",
+ "motivo": "6 errores de transcripcion con evidencia del PDF (ADR-0039 regla 5) y 1 anotacion: el fixture contaminado, marcado. Las 5 de frontera, intactas",
  "congelado_original": "runs/l4/congelacion.json",
  "correcciones": "runs/l4/correcciones.json",
  "DESPUES_DE": "la primera comparación y la adjudicación una a una. Las 6 correcciones son errores de transcripción evidenciados contra el PDF (ADR-0039 regla 5); las 5 discrepancias de frontera NO se han tocado",
  "n": 30,
  "cambiados": [
+  "BOE-A-2026-5979-t15.json",
   "BOE-A-2026-6204-t3.json",
   "BOE-A-2026-6957-t0.json",
   "BOE-A-2026-7623-t3.json"
  ],
- "intactos": 27,
+ "por_correccion_con_evidencia": [
+  "BOE-A-2026-6204-t3.json",
+  "BOE-A-2026-6957-t0.json",
+  "BOE-A-2026-7623-t3.json"
+ ],
+ "por_anotacion_sin_tocar_la_transcripcion": [
+  "BOE-A-2026-5979-t15.json"
+ ],
+ "intactos": 26,
  "huellas": {
   "BOE-A-2026-5511-t0.json": "da5cf16da85953dde5758e1a56d980e9b55710a774e7cc3c83709993ad42073e",
   "BOE-A-2026-5593-t1.json": "a1ef47876fef37bdcfd09e2daab15055a3b09ab0119cf5fd3222b4f155bb54cd",
@@ -20,7 +29,7 @@
   "BOE-A-2026-5863-t0.json": "ffbf8e18b6d130835cd39999b1dba849307dc5ca85489b740a484cef1c143a60",
   "BOE-A-2026-5870-t12.json": "fe92fd2b61f28cda81347736fd1ca017f279d07cff83b303ba31ff391a66bbf8",
   "BOE-A-2026-5975-t0.json": "4c5885681d4e1403da55fa856a2c2f388d84def1b1b57d6b8f9ce58ca3922b24",
-  "BOE-A-2026-5979-t15.json": "7d08ddd5794851c54545b6806a7d6641c472c49292d1efee7070757e77807e97",
+  "BOE-A-2026-5979-t15.json": "7516e7259fe63b14b8c59945dbb8178187e06060b57bd33d6ced33922f3c56ec",
   "BOE-A-2026-6077-t4.json": "fca9594c2d4c08fa945ab9d4bded4f3c7d759a80c6c83c4ace29acda390bb66e",
   "BOE-A-2026-6204-t3.json": "2a10f829e8f9003cadf268fbced7a93266d8a259ca6bbfb129d6904ee5d53ad0",
   "BOE-A-2026-6388-t0.json": "e0a37cf8991f88423cf22afdba2d9f292779cd397fdd935856965712d28f70f9",

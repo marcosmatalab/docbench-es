@@ -1,0 +1,32 @@
+{
+ "esquema": "docbench-es.resello-comparador/1",
+ "sello": "988a0fe",
+ "sello_original": "runs/l4/congelacion_comparador.json",
+ "DESPUES_DE": "la comparación, la adjudicación y el escrutinio adversarial",
+ "cambiados": [
+  "scripts/comparar_verdad.py"
+ ],
+ "intactos": [
+  "docs/adr/0040-las-reglas-del-comparador-de-verdad.md",
+  "src/docbench_es/truth/derived.py",
+  "tests/unit/test_comparar_verdad.py"
+ ],
+ "nuevos": [
+  "scripts/informe_l4.py"
+ ],
+ "motivo": "se añadió `--informe` a `comparar_verdad.py`: emite runs/l4/informe.json con una fila por fixture —coincide, discrepancias, contaminada, corregido—. Es SALIDA, no una regla: ADR-0040 sigue igual y no se ha tocado. La serialización vive en scripts/informe_l4.py porque el comparador llegó a 309 líneas y el repo no admite ficheros por encima de 300 sin razón escrita.",
+ "prueba_de_que_es_solo_salida": {
+  "numero_antes": "25 de 30 coinciden · 5 discrepancias",
+  "numero_despues": "25 de 30 coinciden · 5 discrepancias",
+  "controles_negativos": "5 de 5 pasan en tests/unit/test_comparar_verdad.py, que NO cambió",
+  "comando": "uv run python scripts/comparar_verdad.py --detalle"
+ },
+ "POR_QUE_NO_SE_SOBRESCRIBE_EL_ORIGINAL": "el sello original es lo que hace que «los 4 controles negativos hablan de lo que se midió» sea comprobable. Sobrescribirlo borraría esa propiedad; se añade al lado y el test exige que los 3 ficheros intactos SIGAN cuadrando con el original.",
+ "huellas": {
+  "scripts/comparar_verdad.py": "ac7a96c7f87d80c947b44ef690310b12d5f0c426b44b614744649b87358bdb3d",
+  "src/docbench_es/truth/derived.py": "356e450ecf229590db1aa0b19ae842f34f41bee1ee404388428c8c5bbc538497",
+  "docs/adr/0040-las-reglas-del-comparador-de-verdad.md": "8d1cb738b9e49cd23c5720efdf302a0c848977025a1a5fff1d10e1b32017e4c9",
+  "tests/unit/test_comparar_verdad.py": "3758d2e557b1d2cd445f56a2aaf7772feeda96f1a8e6338aa3184df1f6d1acd9",
+  "scripts/informe_l4.py": "f2c884ec1095edd8ea8bcf86321a4dcd16ecd896e2fc7464e23a710f6a1973ce"
+ }
+}

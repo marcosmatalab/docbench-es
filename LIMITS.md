@@ -492,25 +492,27 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 364 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 374 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **198 tests restantes** —`congelados_l4` (36), `barreras` (14),
+    árbol de TEDS y el lote. Los **208 tests restantes** —`congelados_l4` (38), `barreras` (14),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
-    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `policy` (7),
-    `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `comparar_verdad` (5),
-    `types` (5), `sellar_xml` (4), `errors` (3), `sin_consumidor` (3),
-    `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
+    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (8),
+    `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
+    `comparar_verdad` (5), `types` (5), `sellar_xml` (4), `errors` (3),
+    `sin_consumidor` (3), `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **54,4% hoy** — y 43 de los 198 entraron de golpe con
-    `congelados_l4` (36) y `guardianes_l4` (7), que son candados de fichero y de
-    proceso, no código con mutante posible: sus controles negativos viven dentro —se
-    manipula un fixture y se exige que la huella deje de cuadrar, y se le da al
-    guardián de la re-congelación una huella movida sin corrección—.
+    12,4% al cerrar L2, **55,6% hoy** — y 53 de los 208 entraron de golpe con
+    `congelados_l4` (38), `guardianes_l4` (7) y `guardianes_por_glob` (8), que son
+    candados de fichero, de proceso y de glob, no código con mutante posible: sus
+    controles negativos viven dentro —se manipula un fixture y se exige que la huella
+    deje de cuadrar, se le da al guardián de la re-congelación una huella movida sin
+    corrección, y **se rompe el glob de un hook y se exige que el recuento lo
+    delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **361 de 364 tests protegidos por algo** —un
+    *el arnés*, no la protección: **371 de 374 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -784,7 +786,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —361 de 364— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —371 de 374— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1108,25 +1110,38 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     no es tocar el fixture, es tocar el manifiesto — y ésos no los cubría ninguno de
     los dos hooks. Ahora sí, los dos, comprobado invocándolos.
 
-71. **Una de las 30 está CONTAMINADA, su coincidencia no prueba nada, y NO SE SABE
-    CUÁL ES.** Para desambiguar cuál de las tablas del documento era, se miró el
-    texto del XML antes de transcribir. La herramienta se arregló después para
-    desambiguar por dimensión y orden, y el método limpio da la misma respuesta,
-    **pero eso no deshace haber visto**.
+71. **Una de las 30 está CONTAMINADA y su coincidencia no prueba nada: es
+    `BOE-A-2026-5979-t15`, y coincide.** Para desambiguar cuál de las dos tablas de
+    2x4 del documento era, se miró el texto del XML **antes** de transcribir. El
+    método limpio da la misma respuesta, **pero eso no deshace haber visto**: su
+    coincidencia con la verdad derivada no es evidencia independiente.
 
-    **Lo que hace este límite peor de lo que parecía: el fixture no está marcado.**
-    `runs/l4/congelacion.json` dice `"contaminadas": 1`, pero ninguno de los 30
-    ficheros lleva la marca —sólo tienen `localizacion` ∈ {`automatica` (18),
-    `automatica_con_desambiguacion` (11), `a_ojo` (1)}— y las dos notas que mencionan
-    contaminación dicen que se hizo el esfuerzo de **no** contaminar. O sea que el
-    dato **no es recuperable de ningún artefacto**.
+    **El desglose exacto de los 25 que coinciden: 21 limpias + 1 contaminada + 3
+    corregidas**, y **lo emite el comparador**, no lo deduce nadie:
 
-    Consecuencia para el número publicado, y va con él: de los 25 que coinciden,
-    **21 o 22 son limpias, 3 son fixtures corregidos, y la contaminada puede estar
-    entre los 25 o entre los 5 que fallan**. El desglose se publica con esa
-    horquilla, no con un 21 exacto que no se puede comprobar. **Se cierra marcando el
-    fixture en su origen**, y eso sólo lo puede hacer quien recuerde cuál fue: si no
-    aparece, la muestra arrastra el rango.
+    ```bash
+    uv run python scripts/comparar_verdad.py --informe   # runs/l4/informe.json
+    ```
+
+    **Este límite se publicó primero con una horquilla —«21 o 22»— y eso era peor que
+    el propio límite.** El razonamiento fue: `congelacion.json` dice
+    `"contaminadas": 1` y ningún fixture llevaba la marca, luego no se puede saber si
+    la contaminada está entre las 25 que coinciden o entre las 5 que fallan, luego
+    horquilla. **Y estaba completamente determinado por dos artefactos que ya
+    existían**: basta cruzar la identidad del fixture con el informe de discrepancias
+    para ver que no aparece entre los 5, luego coincide, luego el 21 es exacto.
+
+    > **La lección, y vale para cualquier cifra de este repo: antes de declarar algo
+    > NO MEDIBLE, comprueba si es DERIVABLE de lo que ya está medido.** Una horquilla
+    > que se puede cerrar y se publica abierta dice menos de lo que se sabe, y eso
+    > también es una forma de no ser preciso.
+
+    Cerrado en las tres capas, para que no haya que volver a atar cabos: el fixture
+    lleva `contaminada: true` con su razón, `congelar_l4.py` distingue **anotación**
+    de **corrección** —la anotación no toca ni una celda, y eso se comprueba contra
+    `git show HEAD:`, no se promete— y el informe trae la columna. Lo que **sigue**
+    siendo cierto: esa coincidencia no cuenta como evidencia, y por eso el número se
+    publica siempre con los tres sumandos y nunca como «25 de 30» a secas.
 
 72. **La partición de línea sólo muerde DENTRO de un token, y su primera frecuencia
     está medida: 3 de 30.** El límite 31 predijo la asimetría y dijo que medirla
@@ -1202,3 +1217,42 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `normalizador_identidad` y `n3_incompleta` mueren los tres en
     `tests/unit/test_canonical_normalizar.py` —13, 5 y 1 tests respectivamente— por
     la vía del paquete, que es la que ese fichero usa.
+
+77. **UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER
+    NADA, y este repo tenía un guardián protegiendo cero ficheros.** Es el modo de
+    fallo **por defecto** de cualquier protección basada en patrones: el glob no
+    casa, el guardián **no se queja** —no tiene de qué— y su verde significa *«no hay
+    nada que vigilar»* en vez de *«todo está bien»*. Desde fuera se leen igual.
+
+    **El caso, medido.** `stop-gate.sh` llevaba `GLOBS=(… 'runs/*/fixtures')`, que
+    como pathspec de git casa con el **directorio** y no con lo que hay dentro:
+    `git ls-files -- 'runs/*/fixtures'` devuelve **0** y `'runs/*/fixtures/*'`
+    devuelve 30. O sea que durante todo el hito el hook protegía cero de los 30
+    fixtures mientras el límite 70 de este mismo fichero publicaba «arreglado en los
+    dos hooks». Y `guard-frozen.sh`, que sí casaba, **tampoco los vio**: su `matcher`
+    es `Write|Edit|NotebookEdit` y las correcciones se escribieron con `write_text`.
+
+    **Es la hermana de la familia «comprobar en el entorno equivocado» (skill
+    `cerrar`, paso 9), y es peor**: allí hay una medición real mal ubicada; aquí **no
+    hay medición ninguna**, y el hueco es exactamente lo que no se mide.
+
+    **El arreglo, aplicado a los dos hooks y obligatorio para cualquier barrera
+    futura que use rutas**, en tres partes que no valen sueltas:
+
+    | Parte | Qué aporta |
+    |---|---|
+    | el guardián **publica su conjunto** (`--cuantos`), con los mismos patrones con los que decide | hace visible el cero |
+    | un test afirma que es **> 0** y que la lista **casa con lo esperado**, derivada del disco y no de una constante | hace que alguien lo mire, en cada `make fast` |
+    | su **control negativo**: se rompe el glob y el test se cae **nombrando el patrón** | prueba que las dos primeras miden algo |
+
+    En `tests/unit/test_guardianes_por_glob.py`, 8 tests. Y una cuarta comprobación
+    que salió de escribirlo: **los dos hooks tienen que proteger el MISMO conjunto**.
+    El límite 27 dice que son complementarios en las **vías** que cubren —uno ve
+    Write/Edit, el otro el resultado al cerrar el turno—, no en el conjunto de
+    ficheros; si divergen ahí hay una familia protegida a medias, que es esta misma
+    clase de fallo un nivel más abajo. Hoy los dos protegen **41**.
+
+    **Lo que sigue sin cubrirse:** que un congelado nuevo entre en el repo sin que
+    nadie añada su glob. El test exige lo que hay, no lo que debería haber, así que
+    una familia nueva **no ponría nada rojo** — la lista de obligatorios se deriva del
+    disco para las familias ya declaradas, no para las que no existen todavía.

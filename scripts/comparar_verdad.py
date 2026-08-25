@@ -5,6 +5,7 @@ congeladas **antes de correr esto ni una vez**, porque quien escribió los fixtu
 quien escribió el código medido y quien escribe el comparador son la misma persona.
 
     uv run python scripts/comparar_verdad.py --detalle
+    uv run python scripts/comparar_verdad.py --informe   # runs/l4/informe.json
 
 ## El colocador de aquí es INDEPENDIENTE, y es lo más importante del fichero
 
@@ -17,6 +18,19 @@ estaba mal y ninguna suite lo veía.
 
 Son veinte líneas escritas a mano con la regla del estándar. **Si discrepan de
 `_rejilla`, eso es un hallazgo, no un fallo de aquí.**
+
+## El INFORME, y por qué el desglose sale de aquí y no de atar cabos
+
+`--informe` emite `runs/l4/informe.json` con **una fila por fixture**: si coincide,
+cuántas discrepancias tiene y de qué clase, si está **contaminado** y si se
+**corrigió** tras adjudicar. Con eso, el desglose publicado —«21 coincidencias
+limpias + 1 contaminada + 3 corregidas»— **se lee del artefacto**.
+
+**Antes se deducía**, cruzando a mano la lista de fixtures con discrepancia contra un
+`"contaminadas": 1` que ni siquiera decía cuál era, y por eso se llegó a publicar una
+horquilla —«21 o 22»— sobre algo que estaba **completamente determinado por dos
+artefactos que ya existían**. Una cifra derivable publicada como no medible dice
+menos de lo que se sabe.
 
 ## Qué se compara, y con qué alcance
 
@@ -39,6 +53,9 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import informe_l4  # noqa: E402
 
 from docbench_es.core.canonical import normalize_cell_text  # noqa: E402
 from docbench_es.entity import boe_xml  # noqa: E402
@@ -197,11 +214,14 @@ def _tabla_de(fx: dict[str, object]) -> tuple[CanonicalTable, bool]:
 def main() -> int:
     partes = argparse.ArgumentParser(description=__doc__)
     partes.add_argument("--detalle", action="store_true")
+    partes.add_argument("--informe", action="store_true", help="escribe runs/l4/informe.json")
     args = partes.parse_args()
 
     fixtures = sorted((RAIZ / "runs" / "l4" / "fixtures").glob("*.json"))
+    corregidos = informe_l4.corregidos(RAIZ)
     coinciden, con_discrepancia = 0, []
     todas: list[Discrepancia] = []
+    filas_informe: list[dict[str, object]] = []
     for f in fixtures:
         fx = json.loads(f.read_text(encoding="utf-8"))
         tabla, en_la_verdad = _tabla_de(fx)
@@ -213,6 +233,11 @@ def main() -> int:
             todas += ds
         else:
             coinciden += 1
+        filas_informe.append(
+            informe_l4.fila(
+                fx, f.stem, len(ds), sorted({d.clase for d in ds}), f.stem in corregidos
+            )
+        )
 
     print(f"\n  {coinciden} de {len(fixtures)} coinciden · {len(todas)} discrepancias")
     por_clase: dict[str, int] = {}
@@ -223,6 +248,15 @@ def main() -> int:
     if args.detalle:
         for d in todas:
             print(f"    [{d.clase:<9}] {d.fixture}: {d.detalle}")
+    cuentas = informe_l4.desglose(filas_informe)
+    print(
+        f"  de los {coinciden} que coinciden: {cuentas['limpias']} limpias"
+        f" + {cuentas['contaminadas']} contaminada"
+        f" + {cuentas['corregidas_tras_adjudicar']} corregidas"
+    )
+    if args.informe:
+        destino = informe_l4.escribir(RAIZ, filas_informe, len(todas))
+        print(f"  informe en {destino.relative_to(RAIZ)}")
     print("\n  SIN ADJUDICAR. La causa de cada una la decide una persona (ADR-0039).")
     return 0
 

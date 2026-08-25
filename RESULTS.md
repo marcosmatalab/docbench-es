@@ -529,20 +529,21 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 364 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 374 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **198 tests restantes** —`test_congelados_l4` (36), `test_barreras` (14),
+Los **208 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
-`test_guardianes_l4` (7), `test_policy` (7), `test_types_invariantes` (7),
-`test_boe_xml` (6), `test_ancla` (5), `test_comparar_verdad` (5), `test_types` (5),
-`test_sellar_xml` (4), `test_errors` (3), `test_sin_consumidor` (3),
-`test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
+`test_guardianes_l4` (7), `test_guardianes_por_glob` (8), `test_policy` (7),
+`test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
+`test_comparar_verdad` (5), `test_types` (5), `test_sellar_xml` (4),
+`test_errors` (3), `test_sin_consumidor` (3), `test_limite_lineas` (2)
+y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
 que **esos 22** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 198 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 208 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -842,9 +843,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 361 de 364
+### Qué fracción de la suite está protegida por algo: 371 de 374
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 364» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 374» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -1302,7 +1303,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-364 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+374 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -1424,6 +1425,7 @@ algo que la tabla no dice, no.
 
 ```bash
 uv run python scripts/comparar_verdad.py --detalle      # el número
+uv run python scripts/comparar_verdad.py --informe      # runs/l4/informe.json: el desglose
 uv run python scripts/evidencia_pdf.py                  # la evidencia de cada discrepancia
 uv run python scripts/corregir_fixtures_l4.py           # las 6 correcciones, sin --aplicar: sólo comprueba
 uv run python scripts/mutar_el_instrumento.py           # el ataque al cero
@@ -1469,9 +1471,18 @@ del comparador y no en este documento; ahora está aquí.
 
 | | n | Qué vale |
 |---|---|---|
-| coincidencias limpias | **21 o 22** | transcrito ciego del PDF, congelado, nunca tocado |
-| el fixture **contaminado** | 1, **y no se sabe cuál** | se miró el XML para desambiguar. **Su coincidencia no prueba nada** — y como no está marcado, tampoco se sabe si está entre los 25 que coinciden o entre los 5 que fallan. Límite 75 |
-| fixtures **corregidos** tras adjudicar | 3 | coinciden porque se corrigió el fixture, con evidencia del PDF. No son evidencia independiente |
+| coincidencias limpias | **21** | transcrito ciego del PDF, congelado, nunca tocado |
+| el fixture **contaminado** | **1** · `BOE-A-2026-5979-t15` | se miró el XML para desambiguar. **Su coincidencia no prueba nada**. Límite 71 |
+| fixtures **corregidos** tras adjudicar | **3** | coinciden porque se corrigió el fixture, con evidencia del PDF. No son evidencia independiente |
+
+**Este desglose lo emite el comparador, no lo deduce nadie**: `--informe` escribe
+`runs/l4/informe.json` con una fila por fixture —coincide, discrepancias, clases,
+contaminada, corregido— y el agregado. **Se publicó primero como horquilla, «21 o
+22»**, porque el fixture contaminado no estaba marcado y parecía imposible saber si
+caía entre los que coinciden o entre los que fallan. **Estaba determinado por dos
+artefactos que ya existían**: cruzar su identidad con el informe de discrepancias lo
+cierra. La lección va en el límite 71: *antes de declarar algo NO MEDIBLE, comprueba
+si es DERIVABLE de lo que ya está medido.*
 
 **La adjudicación, una a una y con su causa** (ADR-0039 reglas 2 y 3):
 
@@ -1579,6 +1590,16 @@ dos. **Un colocador mal es la misma familia del bug del grupo de filas.**
 
 | | n | |
 |---|---|---|
-| fixtures con la huella de **antes de la primera comparación** | **27** de 30 | `runs/l4/congelacion.json`, sello `be6f5e0` |
-| fixtures re-congelados tras corregir | **3** de 30 | `runs/l4/recongelacion.json`, y `congelar_l4.py` **aborta** si una huella cambia sin corrección registrada |
+| fixtures con la huella de **antes de la primera comparación** | **26** de 30 | `runs/l4/congelacion.json`, sello `be6f5e0` |
+| cambiados por **corrección con evidencia del PDF** | **3** de 30 | `runs/l4/correcciones.json` |
+| cambiado por **anotación**, sin tocar una sola celda | **1** de 30 | el fixture contaminado, marcado. `congelar_l4.py` comprueba contra `git show HEAD:` que `filas`, `spans` y `dimension` no se movieron — no lo promete |
 | celdas transcritas, antes y después | **1.213** = 1.213 | corregir texto no puede mover el denominador. Lo fija un test |
+
+**Y el comparador se re-selló, porque se tocó después de medir.** `--informe` es
+salida, no una regla: `runs/l4/resello_comparador.json` declara que **el único
+fichero que cambió es `scripts/comparar_verdad.py`** y que los otros tres —ADR-0040,
+`truth.derived` y la propia suite de controles negativos— **siguen cuadrando con el
+sello de antes de la primera comparación**. La prueba de que es sólo salida: el
+número es idéntico (25 de 30, 5 discrepancias) y los 5 controles siguen pasando. El
+sello original **no se sobrescribe**: es lo que hace comprobable que los controles
+hablan de lo que se midió.
