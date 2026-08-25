@@ -16,12 +16,40 @@ por_que_va_aparte_de_computo_yaml: >
   ahora para meterle condiciones de ejecucion ensuciaria un pre-registro. Las condiciones
   van en su propio fichero, con su propia fecha.
 
+# --------------------------------------------------- QUIEN DECIDE, Y CUANDO
+# SON DOS COSAS Y ESTABAN JUNTAS:
+#   · NO HAY TERMOMETRO        -> no se afirma ni un grado. Esto NO se toca nunca.
+#   · NO HAY SOBRE QUE VIGILAR -> se corre a todos los hilos.
+# La segunda se deducia de la primera, y no se sigue. Un guardian apagado sin razon
+# escrita es peor que uno que nunca existio: dentro de tres dias nadie se acuerda de por
+# que esto corre sin freno. Asi que la razon vive aqui, con su fecha y su firma.
+vigilancia:
+  modo: ninguna              # ninguna | termometro
+  lo_decidio: Marcos, el 2026-08-25
+  por_que: >
+    AMD publica que el procesador esta disenado para funcionar a TJMax —~95 grados— de
+    forma continua sin riesgo de dano ni deterioro, y el silicio se frena solo en
+    hardware antes de sufrir. Con eso, el sobre no protege de nada real y lo unico que
+    hace es alargar la sesion. Y alargar la sesion es lo contrario de lo que conviene
+    termicamente en total: mismo trabajo, mas horas caliente, mas horas de ventilador.
+  lo_que_esto_NO_cambia: >
+    SIGUE SIN AFIRMARSE NI UN GRADO. Los informes dicen «sin medicion termica», no
+    «temperatura correcta». Los limites de abajo se quedan escritos y sin efecto: son lo
+    que se aplicaria si alguien pusiera modo: termometro, no una descripcion de lo que
+    esta pasando.
+  como_se_vuelve_a_encender: >
+    modo: termometro. Entonces hace falta que HWiNFO publique un sensor en
+    HKCU\Software\HWiNFO64\VSB, y si no lo hace el comando se niega a arrancar salvo
+    que se le pida a sabiendas con --sin-termometro.
+
 # ------------------------------------------------------------------ EL SOBRE
 # 2026-08-25, revision 2. El primer sobre era 80/72, y ese numero no tenia dato
 # detras: era una precaucion. AMD documenta que el procesador esta disenado para
 # funcionar a TJMax —~95 grados— de forma CONTINUA sin deterioro, y el silicio se
 # frena solo antes de sufrir. 90/82 deja 5 grados de colchon sobre el punto donde el
 # fabricante dice que puede vivir permanentemente.
+# SIN EFECTO mientras vigilancia.modo sea `ninguna`. Es lo que se aplicaria, no lo
+# que esta pasando.
 limites:
   techo_c: 90          # a partir de aqui el gobernador manda SIGSTOP al hijo
   reanudar_c: 84       # y SIGCONT al bajar de aqui

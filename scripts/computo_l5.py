@@ -49,14 +49,14 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 sys.path.insert(0, str(RAIZ / "src"))
 
-from gobernador import Muestreo, Registro, Termica, correr, descansa  # noqa: E402
+from gobernador import Muestreo, Registro, correr, descansa  # noqa: E402
 from informe_computo import informe, numero  # noqa: E402
 from muestra_l5 import muestra, unidades  # noqa: E402
 from sello import cpus_visibles, sello  # noqa: E402
+from sobre_termico import SOBRE, factor_de_descanso, modo_de_vigilancia, sobre  # noqa: E402
 from termometro import leer  # noqa: E402
 
 DOCS = RAIZ / "runs" / "l3" / "docs"
-SOBRE = RAIZ / "runs" / "l5" / "termica.yaml"
 PUNTO = RAIZ / "runs" / "l5" / "computo.json"
 
 
@@ -100,55 +100,6 @@ class Estado:
         )
 
 
-def _hilos(valor: object) -> int:
-    """`todos` se resuelve al correr. Un número derivado no se teclea: así, subir
-    `processors` en `.wslconfig` basta y no hay que editar el sobre."""
-    if isinstance(valor, str) and valor.strip().lower() == "todos":
-        return os.cpu_count() or 1
-    return int(str(valor))
-
-
-def sobre(vigilado: bool) -> tuple[Termica, dict[str, float]]:
-    """El sobre térmico, LEÍDO de `runs/l5/termica.yaml`. Un número derivado no se teclea."""
-    d = yaml.safe_load(SOBRE.read_text(encoding="utf-8"))
-    lim, carga = d["limites"], d["carga"]
-    ciclo = d["ciclo"]
-    t = Termica(
-        hilos=_hilos(carga["hilos_con_termometro" if vigilado else "hilos_sin_termometro"]),
-        techo=float(lim["techo_c"]),
-        reanudar=float(lim["reanudar_c"]),
-        objetivo_media=float(lim["objetivo_media_c"]),
-        vigilado=vigilado,
-        periodo=float(ciclo["periodo_s"]),
-        fraccion=float(ciclo["fraccion_con_termometro" if vigilado else "fraccion_sin_termometro"]),
-        latido=float(ciclo["latido_s"]),
-    )
-    # El tope por unidad ya no escala con los hilos: con «todos» siempre se corre a la
-    # máxima velocidad de la máquina, así que no hay configuración lenta contra la que un
-    # tope fijo fuera injusto. Sigue siendo red de seguridad contra un extractor colgado.
-    ritmo = {
-        # El descanso ENTRE unidades ya no es la barrera: lo es el ciclo de trabajo,
-        # que acota el consumo medio DENTRO de cada unidad. Antes, a ciegas, este
-        # factor valía 1,0 y duplicaba la sesión sin añadir ninguna seguridad.
-        "base": float(carga["descanso_base"]),
-        "tope": float(carga["descanso_tope_s"]),
-        "unidad": float(carga["tope_unidad_min"]) * 60.0,
-    }
-    return t, ritmo
-
-
-def factor_de_descanso(base: float, actual: float, media: float | None, objetivo: float) -> float:
-    """La pausa se alarga si la media de la sesión pasa del objetivo y se acorta si va
-    holgada. Es el único lazo que controla la MEDIA; el pico lo controla el `SIGSTOP`."""
-    if media is None:
-        return actual
-    if media > objetivo:
-        return min(actual * 1.4, 4.0)
-    if media < objetivo - 6.0:
-        return max(base, actual / 1.3)
-    return actual
-
-
 def _sin_termometro(motivo: str) -> int:
     print(f"\n  SIN TERMÓMETRO · {motivo}\n")
     print("  No voy a correr un guardián de 80 °C que no puede leer 80 °C.")
@@ -175,11 +126,19 @@ def main(argv: list[str]) -> int:
         informe(estado)
         return 0
 
+    modo = modo_de_vigilancia()
     lectura = leer()
-    if not lectura and not args.sin_termometro:
+    if modo == "termometro" and not lectura and not args.sin_termometro:
         return _sin_termometro(lectura.motivo)
 
-    t, ritmo = sobre(vigilado=bool(lectura))
+    t, ritmo = sobre(vigilado=modo == "termometro" and bool(lectura))
+    if modo == "ninguna":
+        d = yaml.safe_load(SOBRE.read_text(encoding="utf-8"))["vigilancia"]
+        print(
+            f"\n  SIN MEDICIÓN TÉRMICA · vigilancia: ninguna. Lo decidió "
+            f"{d['lo_decidio']}.\n  No es «temperatura correcta»: es que no se mide. "
+            f"La razón, en {SOBRE.relative_to(RAIZ)}."
+        )
     base = factor = ritmo["base"]
 
     # DOS CORRIDAS DISTINTAS NO SE PRESENTAN COMO UNA. El coste depende de los hilos
@@ -202,22 +161,31 @@ def main(argv: list[str]) -> int:
         f"\n  {len(docs)} documentos, {sum(p for _, p, _ in docs)} páginas · "
         f"{len(hechas)} unidades hechas, {len(pendientes)} pendientes"
     )
-    print(
-        f"  térmica: {t.hilos} hilos · techo {t.techo:.0f} °C · reanudar "
-        f"{t.reanudar:.0f} °C · media objetivo {t.objetivo_media:.0f} °C · "
-        f"vigilado {'SÍ' if t.vigilado else 'NO'} · tope {ritmo['unidad'] / 60:.0f} min"
-    )
+    if t.vigilado:
+        print(
+            f"  térmica: techo {t.techo:.0f} °C · reanudar {t.reanudar:.0f} °C · "
+            f"media objetivo {t.objetivo_media:.0f} °C · tope {ritmo['unidad'] / 60:.0f} min"
+        )
+    else:
+        # No se anuncian los límites cuando no rigen: leerlos aquí invitaría a creer
+        # que algo los está haciendo cumplir. Sólo rige el tope por unidad.
+        print(
+            f"  térmica: sin vigilancia · el único tope activo es el de "
+            f"{ritmo['unidad'] / 60:.0f} min por unidad, contra un extractor colgado"
+        )
     print(
         f"  trabajadores: {t.hilos} de los {os.cpu_count()} que ve WSL · "
         f"ciclo {'apagado' if t.fraccion >= 1.0 else f'{t.fraccion:.0%} de cada {t.periodo:.0f} s'}"
     )
     print(
         f"  ahora mismo: {lectura.etiqueta} {lectura.grados:.1f} °C\n"
-        if lectura
-        else "  a ciegas: no se afirma ningún grado en el informe\n"
+        if t.vigilado and lectura
+        else "  sin medición térmica: no se afirma ningún grado en el informe\n"
     )
 
-    firma = f"{sello(len(pendientes))} · {t.hilos}w de {cpus_visibles()} CPU"
+    # `sello()` sin n: su parámetro se llama `n_tests` y aquí no hay tests. Y ya
+    # incluye `trabajadores()`, que son los de `pytest`; los de aquí son otros.
+    firma = f"{sello()} · {t.hilos} trabajadores de {cpus_visibles()} CPU"
     if firma not in estado.sellos:
         estado.sellos.append(firma)
     print(f"  sello: {firma}\n")

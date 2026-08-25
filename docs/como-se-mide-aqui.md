@@ -9,7 +9,7 @@ No hace falta conocer el proyecto para leerlo.
 
 ---
 
-## Las cinco reglas
+## Las seis reglas
 
 **1 · Todo lo que se congela, se congela ANTES, y el orden se puede comprobar.**
 Los casos de referencia, los planes de muestreo y las tablas transcritas a mano se
@@ -30,7 +30,7 @@ suma escritos a mano se quedan viejos en silencio mientras el número del que sa
 se actualiza. Hay un comando que los recalcula y está en la puerta.
 
 **4 · Lo que NO se mide se publica igual de fuerte que lo que sí.**
-Hay 82 límites numerados, cada uno con su fecha y el hito en que se descubrió. No son
+Hay 88 límites numerados, cada uno con su fecha y el hito en que se descubrió. No son
 una lista de disculpas: varias veces han sido la parte más útil del resultado. Un
 banco que sólo publica lo que le sale bien mide su propia suerte.
 
@@ -39,6 +39,14 @@ Se arregla el día que se detecta. Lo que sí puede esperar es la **cobertura qu
 falta**, y entonces se declara con su tamaño medido y sin prometer fecha: *«esto no
 lo vigila nadie, son 7 de 18, costaría ~1 h 10 min»* es una frase cierta y
 comprobable.
+
+**6 · No se publica con el nombre que no se ha ganado.**
+El nombre de una medida es parte de la medida. *«Tasa de alucinación»* afirma que el
+error es del extractor — y eso es justo lo que la medición tenía que averiguar, no
+suponer: la referencia dice «cero tablas» **en el XML**, no en el documento, así que la
+cifra mezcla lo que el extractor inventa con lo que la fuente no marcó. Mientras esa
+separación no esté hecha se publica como *«tasa de tabla no presente en la
+referencia»*: más larga, más fea y cierta.
 
 ---
 

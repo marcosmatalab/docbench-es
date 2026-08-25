@@ -62,7 +62,23 @@ from dataclasses import dataclass
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
-DOCS = ("RESULTS.md", "ESTADO.md", "LIMITS.md", "docs/metrics.md")
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+from huerfanos import reparto  # noqa: E402
+
+# Los que ACUMULAN: un diario que discute con su propio pasado.
+ACUMULAN = ("RESULTS.md", "ESTADO.md", "LIMITS.md", "CHANGELOG.md", "MANUAL.md")
+# Los que SOSTIENEN: la primera pantalla de alguien que no va a volver. Estos NO
+# estaban en la lista, así que las reglas de este fichero protegían **cero** líneas de
+# ellos — y ahí es donde apareció «hay 82 límites numerados» cuando ya eran 88.
+SOSTIENEN = (
+    "README.md",
+    "docs/reading-order.md",
+    "docs/como-se-mide-aqui.md",
+    "docs/las-cinco-cosas.md",
+    "docs/quien-publica-los-bancos.md",
+)
+DOCS = ("RESULTS.md", "ESTADO.md", "LIMITS.md", "docs/metrics.md", *SOSTIENEN)
 
 # Las formas que un lector con calculadora reconoce como derivadas. Sirven para el
 # CENSO —cuántas hay— no para comprobarlas: comprobar exige saber de dónde sale cada
@@ -188,7 +204,65 @@ def sellos_contra_los_recuentos(texto: str, documento: str) -> list[Rota]:
     return fuera
 
 
-REGLAS = (porcentajes_de_una_fila, enumeracion_de_mutantes, sellos_contra_los_recuentos)
+def limites_declarados(texto: str, documento: str) -> list[Rota]:
+    """**R4 · «hay N límites numerados» contra los que LIMITS.md tiene de verdad.**
+
+    `docs/como-se-mide-aqui.md` publicaba **82** cuando ya eran **88**. Es el modo de
+    fallo de la regla 3 en su forma más pura: un número derivado tecleado en un
+    documento que **sostiene**, mientras su fuente crece sola por debajo. Y estaba
+    justo en la regla que dice *«lo que NO se mide se publica igual de fuerte»* — o
+    sea, la frase que vende el rigor llevaba dentro el número equivocado.
+
+    **No se comprueban los ADR**, y es deliberado: un ADR registra el estado en el
+    momento de decidir. Actualizarle una cifra sería reescribir la historia, que es lo
+    contrario de para lo que existe. Los documentos que ACUMULAN tampoco. Sólo los que
+    SOSTIENEN, que son los que alguien lee esperando el estado de hoy.
+    """
+    if documento.startswith("docs/adr/") or documento in ACUMULAN:
+        return []
+    reales = len(
+        set(
+            re.findall(
+                r"^(\d+)\. ", (RAIZ / "LIMITS.md").read_text(encoding="utf-8"), flags=re.MULTILINE
+            )
+        )
+    )
+    fuera: list[Rota] = []
+    for m in re.finditer(r"[Hh]ay (\d+) l[íi]mites numerados", texto):
+        linea = texto[: m.start()].count("\n") + 1
+        if int(m.group(1)) != reales:
+            fuera.append(Rota(documento, linea, "entradas en LIMITS.md", m.group(1), str(reales)))
+    return fuera
+
+
+def huerfanos_declarados(texto: str, documento: str) -> list[Rota]:
+    """**R5 · «huérfanos: N de M» contra lo que el censo de scripts dice hoy.**
+
+    La primera versión de LIMITS 84 publicó «22 de 36» y estaba vieja **seis días
+    después de escribirla**: el propio trabajo de B5-bis añadió scripts, y ninguno de
+    ellos lo alcanza un test. Es la regla 3 aplicada a un número que vive **dentro de un
+    límite que habla de otra cosa** — el sitio donde nadie va a mirarlo.
+    """
+    alcanzables, huerfanos, _mutantes = reparto()
+    # El denominador son los NO mutantes: tipar un mutante no querría decir nada, así
+    # que meterlos en el total inflaría el denominador y haría parecer menor el hueco.
+    real = f"{len(huerfanos)} de {len(huerfanos) + len(alcanzables)}"
+    fuera: list[Rota] = []
+    for m in re.finditer(r"hu[ée]rfanos: \*?\*?(\d+) de (\d+)", texto):
+        publicado = f"{m.group(1)} de {m.group(2)}"
+        if publicado != real:
+            linea = texto[: m.start()].count("\n") + 1
+            fuera.append(Rota(documento, linea, "scripts/huerfanos.py", publicado, real))
+    return fuera
+
+
+REGLAS = (
+    porcentajes_de_una_fila,
+    enumeracion_de_mutantes,
+    sellos_contra_los_recuentos,
+    limites_declarados,
+    huerfanos_declarados,
+)
 
 
 def main() -> int:

@@ -1456,7 +1456,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     comprueba que `runs/l5/computo.yaml` tenga una clave `regla:`, ni que la regla
     que contiene sea la que se aplicó. Eso lo sostiene el cierre del hito, a mano.
 
-84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 22 DE 36.** `make fast` corre
+84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 25 de 42.** `make fast` corre
     `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, así que se tipa
     **lo que un test alcance** —directa o transitivamente— y nada más.
 
@@ -1471,11 +1471,16 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **59** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **65** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, **14 los alcanza algún test** y **22 no**. Entre los 22 están `derivadas.py`
+    nada—, y de los **42** que quedan, **huérfanos: 25 de 42**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
-    se publican**. Y este mismo censo es uno de los 22: se cuenta a sí mismo.
+    se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
+
+    La cifra la vigila `scripts/derivadas.py`, porque la primera versión de este límite
+    publicó **22 de 36** y estaba vieja **seis días después de escribirla** — el propio
+    trabajo de B5-bis añadió scripts. Un número derivado no se teclea, ni siquiera
+    dentro de un límite que habla de otra cosa.
 
     **No está arreglado a propósito**: meter `scripts` entero en la puerta hoy la pondría
     roja por programas de un solo uso de hitos ya cerrados, y ésa es una tarde que no

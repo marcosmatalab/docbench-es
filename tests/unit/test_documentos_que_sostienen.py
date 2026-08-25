@@ -39,9 +39,21 @@ RAIZ = Path(__file__).resolve().parents[2]
 SOSTIENEN = {
     "README.md": 80,
     "docs/reading-order.md": 80,
-    "docs/como-se-mide-aqui.md": 140,
+    "docs/como-se-mide-aqui.md": 150,
 }
-"""Documento -> tope de líneas. Medidos el 25 ago 2026 en 57, 52 y 108."""
+"""Documento -> tope de líneas. Medidos el 25 ago 2026 en 57, 52 y 108.
+
+**`como-se-mide-aqui.md` pasó de 140 a 150 el 25 ago 2026, y con su razón**, porque
+subir el tope es la respuesta NO por defecto y sólo vale después de haber sacado algo:
+
+1. Primero se sacó lo que ACUMULA. El repaso de quién publica los ocho bancos crece
+   cada vez que aparece uno nuevo, así que se fue a `docs/quien-publica-los-bancos.md`
+   —28 líneas—. Eso es la regla funcionando.
+2. Lo que quedó dentro y lo empujó son una **sexta regla** y un **cuarto caso**, los
+   dos de la misma semana y los dos sostienen: no hay nada más ahí que acumule.
+
+Si vuelve a pasarse, la respuesta por defecto sigue siendo sacar, no subir.
+"""
 
 ACUMULAN = ("RESULTS.md", "LIMITS.md", "ESTADO.md", "CHANGELOG.md", "MANUAL.md")
 
