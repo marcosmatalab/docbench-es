@@ -1740,3 +1740,36 @@ el número que cuadra.
 > de L5**: `pytest -n auto` con `pytest-xdist`, **medido antes de escribir una sola
 > línea de código del hito**. Medirlo después sería medirlo cuando ya no hay margen
 > para decidir.
+
+### LA LÍNEA DE CORTE de la serie de la puerta · las dos medidas del MISMO árbol
+
+La puerta pasó a `-n auto` en L5 (ADR-0043). **Comparar lo que salga a partir de ahora
+con los 8006 de L4 es comparar dos instrumentos**, así que aquí están las dos, sobre el
+mismo commit y el mismo día:
+
+```bash
+uv run python scripts/medir_puerta.py --techo 8500              # paralelo
+PYTEST_ADDOPTS="-n 0" uv run python scripts/medir_puerta.py --techo 8500   # serie
+```
+
+| sobre `1cc8ce8` | mediana | **p90** | σ | carga (mediana · rango) | margen |
+|---|---|---|---|---|---|
+| **en serie** | 7962 | **8170** | 127 | 1,18 · 0,94–2,96 | +330 |
+| **en paralelo** | 4643 | **4905** | 186 | 2,12 · 0,82–3,65 | **+3595** |
+
+n=40 en 10 tandas en frío cada una, `.hypothesis` borrada, **0 descartadas por
+`rc != 0`**, sello sin `+N` en las dos: el árbol no se movió.
+
+**El factor sobre la puerta entera es 1,67× en el p90** —1,71× en la mediana—, menor que
+el 1,88× medido sobre `pytest` solo, y tiene que serlo: `ruff`, `mypy` y `lint-imports`
+no se paralelizan y son ~360 ms que no bajan.
+
+**Y una predicción escrita ANTES de medir que se cumplió:** ADR-0043 dice que *«el rango
+se ensancha porque el reparto entre trabajadores varía, y eso hace el p90 más
+ruidoso»*. **σ pasa de 127 a 186.** El margen crece de 330 a 3595 ms, así que el ruido
+extra no compra nada malo hoy; queda anotado para cuando el margen vuelva a ser
+estrecho.
+
+**Lo que esto NO dice:** que el código haya mejorado. Los 8170 en serie sobre este árbol
+son **peores** que los 8006 de `f89c5b6`, y es lo esperado — la suite creció. Lo único
+que cambia es el instrumento, y por eso van las dos.

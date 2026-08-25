@@ -416,6 +416,7 @@ sino **la pendiente**.
 | L2 | **5604 ms** (n=40, p90 5728, σ=76) | 5140 – 6048 | 185 | TEDS y su validación contra los 20 casos de PubTabNet, `cellmatch`, y el presupuesto de ejemplos declarado en las ocho suites |
 | L3 | **7400 ms** (n=40, p90 7505, σ=100) | — | 321 | `entity`, `corpus`, los tres adaptadores y el barrido de referencias. Sello `1600137` |
 | L4 | **7842 ms** (n=40, p90 8006, σ=124) | 7529 – 8051 | 374 | `truth.derived`, los 30 fixtures, los candados de congelado y de glob. Sello `f89c5b6` |
+| — | **LÍNEA DE CORTE · la puerta pasa a `-n auto` (ADR-0043)** | | | **A partir de aquí la serie mide OTRO INSTRUMENTO.** Las dos medidas del mismo árbol `1cc8ce8`: **en serie p90 8170**, **en paralelo p90 4905**. Factor 1,67× sobre la puerta entera, contra 1,88× sobre `pytest` solo — `ruff`, `mypy` y `lint-imports` no se paralelizan. σ sube de 127 a 186, como ADR-0043 predijo antes de medir |
 
 **El techo es 8500 ms local / 20 000 en CI** (ADR-0022), y no aparecía en esta tabla
 pese a ser el número contra el que se lee la última columna.

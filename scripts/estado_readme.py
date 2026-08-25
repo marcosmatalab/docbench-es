@@ -71,7 +71,8 @@ def bloque(prefijo: str = "") -> str:
     ]
     if puerta and sello:
         lineas.append(
-            f"| La puerta | `make fast` en verde. **p90 {puerta.group(1)} ms** local"
+            f"| La puerta | `make fast` en verde. **p90 {puerta.group(1)} ms** al cerrar"
+            f" {cerrados[-1]}, en serie —desde L5 corre en paralelo, ADR-0043—, local"
             f" sobre `{sello.group(1)}`, techo {puerta.group(2)} (ADR-0022),"
             f" margen {puerta.group(3)} ms, n=40 en frío. El presupuesto del manual son"
             f" 90 s y es del runner. Procedencia en [`RESULTS.md`]({prefijo}RESULTS.md) |"
