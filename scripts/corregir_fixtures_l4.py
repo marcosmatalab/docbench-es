@@ -34,6 +34,7 @@ La re-congelación va a un fichero nuevo.
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import html
 import json
@@ -140,19 +141,26 @@ def _pos(c: dict[str, object]) -> tuple[int, int]:
     return int(bruto[0]), int(bruto[1])
 
 
+@functools.cache
 def _pdf(ident: str, modo: str) -> str:
+    """**Cacheado**: las 6 correcciones tocan 3 documentos y este script llegaba a
+    invocar `pdftotext` ocho veces sobre los mismos bytes. Se notaba en la puerta —
+    el test del guardián costaba 0,69 s, el más caro de la suite."""
     salida = subprocess.run(
         ["pdftotext", modo, str(DOCS / f"{ident}.pdf"), "-"], capture_output=True, check=True
     )
     return re.sub(r"\s+", " ", salida.stdout.decode("utf-8", errors="replace"))
 
 
-def _palabras(ident: str) -> set[str]:
+@functools.cache
+def _palabras(ident: str) -> frozenset[str]:
     salida = subprocess.run(
         ["pdftotext", "-bbox", str(DOCS / f"{ident}.pdf"), "-"], capture_output=True, check=True
     )
     xml = salida.stdout.decode("utf-8", errors="replace")
-    return {html.unescape(w) for w in re.findall(r"<word[^>]*>(.*?)</word>", xml, re.DOTALL)}
+    return frozenset(
+        html.unescape(w) for w in re.findall(r"<word[^>]*>(.*?)</word>", xml, re.DOTALL)
+    )
 
 
 def respalda_el_pdf(ident: str, puse: str, corregido: str) -> tuple[bool, str]:
