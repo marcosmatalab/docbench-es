@@ -530,13 +530,13 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 393 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 394 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **227 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **228 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
-`test_guardianes_l4` (7), `test_guardianes_por_glob` (8), `test_documentos_que_sostienen` (8), `test_policy` (7),
+`test_guardianes_l4` (7), `test_guardianes_por_glob` (9), `test_documentos_que_sostienen` (8), `test_policy` (7),
 `test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
 `test_comparar_verdad` (5), `test_types` (5), `test_sellar_xml` (4),
 `test_estimador_computo` (6), `test_errors` (3), `test_sin_consumidor` (3),
@@ -861,9 +861,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 390 de 393
+### Qué fracción de la suite está protegida por algo: 391 de 394
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 393» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 394» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -1349,7 +1349,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-393 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+394 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 

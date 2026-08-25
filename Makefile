@@ -1,3 +1,9 @@
+# Un `|` dentro de una receta se traga el codigo de salida del comando de la
+# izquierda: `make fast | tail` devuelve el de `tail`, que siempre es 0. Asi entro
+# 05ddcdc con la puerta en rojo. `pipefail` cierra la clase entera, no el caso.
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -o pipefail -c
+
 .PHONY: help quickstart fast full test bench report arch types lint fix cov clean
 .DEFAULT_GOAL := help
 
@@ -14,6 +20,14 @@ fast:  ## LA PUERTA: lint + tipos + arquitectura + nucleo puro. < 90 s, sin red,
 	uv run mypy --strict src tests
 	uv run lint-imports
 	uv run pytest tests/unit -q --no-header
+# El instrumento registra SU PROPIO verde. Antes lo escribia solo el hook `Stop`,
+# asi que un `make fast` a mano dejaba la marca vieja y el aro de `guard-commit.sh`
+# bloqueaba un commit con la puerta perfectamente verde. Como esta linea va DESPUES
+# de pytest en la misma receta, este paso solo se alcanza si todo lo anterior paso:
+# la receta se detiene en el primer comando que devuelve distinto de cero. (Y este
+# comentario no puede decir «make <palabra>»: scripts/referencias.py lo leeria como
+# un objetivo del Makefile y lo daria por roto. Cazado por el propio barrido.)
+	@.claude/hooks/huella-puerta.sh > .claude/.ultima-puerta && echo "  puerta verde registrada"
 
 full: fast quickstart  ## + contratos, hostiles, secretos, degradacion, deriva y e2e. Con Docker
 	uv run pytest tests/contract tests/hostile tests/security tests/degradation tests/drift -q

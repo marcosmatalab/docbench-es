@@ -34,6 +34,7 @@ que se rompe igual en las dos sintaxis.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -163,3 +164,68 @@ def test_si_el_glob_se_rompe_el_recuento_lo_delata(
         " este control negativo no está probando lo que dice probar"
     )
     assert protegidos, "y el resto sí se sigue protegiendo: la rotura es del glob, no del hook"
+
+
+def test_todo_hook_registrado_publica_su_denominador() -> None:
+    """**La regla, generalizada: TODO GUARDIÁN IMPRIME SU DENOMINADOR.**
+
+    No «verde», sino «verde sobre N de M». Los dos guardianes de arriba lo hacen porque
+    ya fallaron; éste afirma que **cualquier hook que se registre en el futuro** lo hará
+    también, sin que haya que acordarse.
+
+    La correlación que lo motiva es perfecta y no es casualidad. Los que publican su
+    alcance —`referencias.py` dice «157 referencias comprobadas», `matar.py` dice «0 de
+    166»— nunca han tenido alcance cero sin que se viera. Los tres que fallaron
+    —`stop-gate.sh` con `runs/*/fixtures`, `/cerrar` sin README, `derivadas.py` sobre
+    cuatro documentos— no lo publicaban. **Un guardián que publica su alcance no puede
+    tener alcance cero sin que se note.**
+
+    Lo que este test NO comprueba: que el número publicado sea *correcto*. Eso lo hacen
+    los tests de arriba, hook por hook, y hay que escribirlos uno a uno.
+    """
+    # `session-start.sh` NO es un guardián: inyecta contexto y no protege nada, así que
+    # exigirle un denominador no querría decir nada. Se excluye A MANO y con la razón
+    # escrita, porque además **pasaba por casualidad**: ignora `--cuantos` y emite su
+    # JSON de siempre, que es salida no vacía con código 0. Un falso verde dentro del
+    # test que existe para cazar falsos verdes.
+    registrados = _hooks_registrados() - {"session-start.sh"}
+    assert registrados, "no se leyó ningún hook de .claude/settings.json"
+    sin_denominador = []
+    for nombre in sorted(registrados):
+        hook = HOOKS / nombre
+        if not hook.exists():
+            continue
+        hecho = subprocess.run(
+            ["bash", str(hook), "--cuantos"],
+            cwd=RAIZ,
+            capture_output=True,
+            text=True,
+            env={**os.environ, "CLAUDE_PROJECT_DIR": str(RAIZ)},
+            check=False,
+        )
+        if hecho.returncode != 0 or not hecho.stdout.strip():
+            sin_denominador.append(nombre)
+    assert not sin_denominador, (
+        f"estos hooks no publican su denominador con `--cuantos`: {sin_denominador}. "
+        "UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER "
+        "NADA, y este repo lleva tres casos. Añádele un modo `--cuantos` que diga qué "
+        "vigila ahora mismo"
+    )
+
+
+def _hooks_registrados() -> set[str]:
+    """Los `.sh` que `settings.json` engancha de verdad.
+
+    **De `settings.json` y no de un `glob` del directorio**: un hook que esté en la
+    carpeta y no registrado no protege nada, y exigirle un denominador sería exigírselo
+    a un fichero muerto. Lo que hay que cubrir es lo que corre.
+    """
+    config = json.loads((RAIZ / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    fuera: set[str] = set()
+    for entradas in config.get("hooks", {}).values():
+        for entrada in entradas:
+            for h in entrada.get("hooks", []):
+                orden = str(h.get("command", ""))
+                if orden.endswith(".sh"):
+                    fuera.add(Path(orden).name)
+    return fuera

@@ -129,13 +129,10 @@ command -v make >/dev/null 2>&1 || exit 0
 # filtro `'*.py'` a secas dejaba fuera la configuración, así que romper
 # `.importlinter` o `pyproject.toml` tampoco invalidaba la marca.
 MARCA=".claude/.ultima-puerta"
-AHORA=$( {
-  git diff HEAD -- '*.py' 2>/dev/null || true
-  git ls-files -o --exclude-standard -- '*.py' 2>/dev/null | sort | while IFS= read -r f; do
-    [ -f "$f" ] && { printf '### %s\n' "$f"; cat -- "$f"; }
-  done
-  cat -- pyproject.toml .importlinter Makefile uv.lock 2>/dev/null || true
-} | md5sum | cut -d' ' -f1)
+# La huella vive en su propio fichero desde que la necesitó un SEGUNDO guardián
+# (`guard-commit.sh`). Copiarla habría creado dos definiciones de «el árbol no ha
+# cambiado» que se irían por su lado al primer retoque.
+AHORA=$("$DIR/.claude/hooks/huella-puerta.sh")
 [ -f "$MARCA" ] && [ "$(cat "$MARCA")" = "$AHORA" ] && exit 0
 
 LOG=$(mktemp)

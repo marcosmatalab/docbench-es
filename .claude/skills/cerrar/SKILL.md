@@ -61,15 +61,32 @@ disable-model-invocation: true
    uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE
    ```
 
+**Y antes de nada: TODO GUARDIÁN IMPRIME SU DENOMINADOR.** No «verde», sino «verde
+sobre N de M». Corre `--cuantos` en cada hook registrado y mira que el conjunto no sea
+cero ni una lista que no reconozcas:
+
+```bash
+for h in .claude/hooks/*.sh; do echo "── $h"; bash "$h" --cuantos 2>&1 | head -4; done
+uv run python scripts/derivadas.py | head -3     # cuántos documentos y expresiones
+uv run python scripts/referencias.py | tail -2   # cuántas referencias
+```
+
+**Un guardián sin denominador no pasa revisión.** La correlación es perfecta: los que
+publican su alcance nunca han tenido alcance cero sin que se viera; los tres que
+fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
+`derivadas.py` sobre cuatro documentos— no lo publicaban. Lo hace cumplir
+`tests/unit/test_guardianes_por_glob.py::test_todo_hook_registrado_publica_su_denominador`.
+
+
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 22 mutantes mueren» habla de esos 22 huecos, no de la
-   suite: hoy el arnés cubre 166 de 393 tests, o sea que los 227 tests que quedan
+   suite: hoy el arnés cubre 166 de 394 tests, o sea que los 228 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **390 de 393 tests protegidos por algo** y **3 tests sin ningún control**.
+   **391 de 394 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 

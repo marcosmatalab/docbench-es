@@ -225,7 +225,15 @@ def main() -> int:
         print("\n  Lo que estas reglas comprueban es la ARITMÉTICA INTERNA, no todas.")
         print("  El hueco es real y está declarado: ver el docstring y LIMITS.\n")
 
-    print(f"\n  {len(rotas)} derivadas que no salen de su fuente\n")
+    # TODO GUARDIÁN IMPRIME SU DENOMINADOR. No «verde», sino «verde sobre N de M».
+    # Este fichero miraba CUATRO documentos y ninguno de los que SOSTIENEN, así que su
+    # verde significaba «no hay nada que vigilar» en `como-se-mide-aqui.md» y no «está
+    # bien». Con el denominador delante, un alcance de cero no puede pasar por verde.
+    print(
+        f"\n  {len(DOCS)} documentos · {sum(censo.values())} expresiones con forma "
+        f"derivada · {len(REGLAS)} reglas"
+    )
+    print(f"  {len(rotas)} derivadas que no salen de su fuente\n")
     if args.detalle or rotas:
         for r in rotas:
             print(

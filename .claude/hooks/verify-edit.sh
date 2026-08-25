@@ -4,6 +4,23 @@
 # están en el PATH: invocarlas peladas devolvía "command not found" disfrazado
 # de error de lint en CADA edición.
 set -uo pipefail
+
+#   UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER NADA.
+# Este guardián no va por globs de contenido sino por extensión, así que su forma de
+# tener alcance cero es otra: que `uv` o `.venv` no estén y se salga en silencio. Eso
+# es exactamente lo que `--cuantos` tiene que delatar.
+if [ "${1:-}" = "--cuantos" ]; then
+  cd "${CLAUDE_PROJECT_DIR:-$(pwd)}" || exit 0
+  N=$(git ls-files -o -c --exclude-standard -- '*.py' 2>/dev/null | wc -l)
+  echo "vigila: los *.py que se editen con Write|Edit|NotebookEdit ($N en el árbol)"
+  echo "corre sobre el fichero tocado: ruff check + ruff format --check + mypy"
+  command -v uv >/dev/null 2>&1 || { echo "AHORA MISMO NO VIGILA NADA: falta uv"; exit 0; }
+  [ -d .venv ] || { echo "AHORA MISMO NO VIGILA NADA: falta .venv"; exit 0; }
+  command -v jq >/dev/null 2>&1 || { echo "AHORA MISMO NO VIGILA NADA: falta jq"; exit 0; }
+  echo "ahora mismo: activo"
+  exit 0
+fi
+
 IN=$(cat 2>/dev/null || true)
 command -v jq >/dev/null 2>&1 || exit 0
 F=$(printf '%s' "$IN" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty')
