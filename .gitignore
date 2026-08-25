@@ -59,6 +59,7 @@ runs/*/*
 !runs/*/informe.json
 !runs/*/humo.yaml
 !runs/*/computo.yaml
+!runs/*/termica.yaml
 !runs/*/computo.json
 !runs/*/humo.json
 !runs/*/resello_comparador.json

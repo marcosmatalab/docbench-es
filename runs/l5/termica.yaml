@@ -1,0 +1,73 @@
+# EL SOBRE TERMICO DE B5-bis · escrito ANTES de volver a medir
+#
+# 2026-08-25. La primera version de scripts/computo_l5.py corrio los cuatro
+# extractores en UN solo proceso, sin limite de hilos: docling carga torch, torch cogio
+# los 8 procesadores que WSL ve, y la CPU del usuario llego a 85 grados. Dentro de
+# especificacion para un 9950X3D (Tjmax 95, corte termico 115) pero por encima de lo
+# que el usuario quiere que su maquina haga.
+#
+# ESTO CAMBIA EL NUMERO QUE B5-bis MIDE, y por eso se declara aqui y no se calla:
+# segundos de RELOJ con 6 hilos y pausas NO son el coste minimo de esta maquina.
+
+hito: L5
+mide: B5-bis
+por_que_va_aparte_de_computo_yaml: >
+  runs/l5/computo.yaml es la REGLA DE DECISION, commiteada sola antes de medir. Editarla
+  ahora para meterle condiciones de ejecucion ensuciaria un pre-registro. Las condiciones
+  van en su propio fichero, con su propia fecha.
+
+# ------------------------------------------------------------------ EL SOBRE
+limites:
+  techo_c: 80          # a partir de aqui el gobernador manda SIGSTOP al hijo
+  reanudar_c: 70       # y SIGCONT al bajar de aqui
+  objetivo_media_c: 72 # la media de la sesion, descansos incluidos
+  resolucion_s: 2.0    # cada cuanto se lee el termometro. Es la resolucion del control.
+
+carga:
+  hilos_con_termometro: 6     # el gobernador acota el pico por MEDICION
+  hilos_sin_termometro: 2     # a ciegas: se compensa con menos carga, no con promesas
+  descanso_base: 0.35         # pausa = trabajo x factor, adaptado por la media
+  descanso_tope_s: 180
+  prioridad: nice -n 19
+  tope_unidad_min: 45         # una unidad que pase de aqui se MATA y se censura
+
+# ------------------------------------------------------------- LA CENSURA
+# El documento mas largo del corpus son 309 paginas. docling sobre eso es UNA unidad
+# indivisible de posiblemente una hora: la carga sostenida que hay que evitar, y lo
+# contrario de estar partido. No se esconde: se CENSURA POR LA DERECHA.
+censura:
+  regla: >
+    Una unidad que pase de tope_unidad_min se mata y se registra ok=false,
+    causa=TOPE_MINUTOS, censurada=true. Su cpu_s es una COTA INFERIOR, no una medida.
+  por_que_basta: >
+    B5-bis no pregunta cuanto cuesta exactamente: pregunta SI CABE. Una cota inferior
+    contesta que no cabe en cuanto cota x 1.000 pasa del presupuesto. Contesta la
+    pregunta sin terminar la medida.
+  como_se_publica: >
+    Las censuradas NO entran en la mediana. Se cuentan aparte y se dice cuantas son.
+    Una mediana que se come una censurada como si fuera una medida es una mentira.
+  el_tiempo_pausado_no_cuenta: >
+    El tope se mide sobre reloj MENOS pausado_s. Un proceso parado por el gobernador no
+    estaba trabajando, y penalizarlo por enfriar la maquina seria medir la refrigeracion.
+
+# ------------------------------------------------- LA MONEDA, Y POR QUE CAMBIA
+moneda:
+  primaria: segundos de CPU (ru_utime + ru_stime del hijo, via os.wait4)
+  por_que: >
+    El gobernador para el proceso con SIGSTOP. Eso corrompe el reloj y NO corrompe los
+    segundos de CPU. Ademas los segundos de CPU son lo que se factura en la nube, que es
+    la pregunta que B5-bis contesta: cuanto cuesta correr los ocho sobre los mil.
+  secundaria: segundos de reloj, publicados SIEMPRE con hilos, pausas y pausado_s al lado
+  no_publicable: >
+    Un s/pagina de reloj sin decir con cuantos hilos se midio. Seria una cifra desnuda.
+
+# ------------------------------------------------------------ LO QUE NO ACOTA
+no_acota:
+  - >
+    La temperatura cuando NO hay termometro. Si HKCU\Software\HWiNFO64\VSB no existe,
+    el gobernador se declara «vigilado: false», baja a 2 hilos y NO afirma ningun grado.
+  - >
+    La frecuencia de boost. Desde WSL no se toca; con pocos hilos el boost sube el
+    voltaje por nucleo, asi que menos hilos NO baja la temperatura de forma lineal.
+  - >
+    Lo que hagan otros procesos de la maquina. La carga se anota, no se controla.

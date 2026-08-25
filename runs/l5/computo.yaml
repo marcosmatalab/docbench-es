@@ -44,10 +44,18 @@ las_dos_salidas:
 # --------------------------------------------------------- QUE SE MIDE ANTES
 # El total sale de SUMAR, no de extrapolar desde el suelo.
 se_mide:
-  - los DOS O TRES MAS CAROS (docling, marker, tesseract si esta) sobre ~10 documentos
-  - cubriendo LAS TRES BANDAS de longitud: el coste de OCR y de deteccion escala con
+  - >
+    los DOS O TRES MAS CAROS (docling, marker, tesseract si esta) sobre ~10 documentos
+  # 2026-08-25: SOLO se le han puesto los marcadores «- >». Este fichero es un
+  # pre-registro y no se le toca una palabra; lo que se corrige es que la linea de abajo
+  # lleva «longitud: el coste», y un «: » dentro de un escalar plano hacia que este
+  # fichero NO PARSEARA. Una regla congelada que ninguna maquina puede leer no es una
+  # regla: lo fija tests/unit/test_reglas_parseables.py.
+  - >
+    cubriendo LAS TRES BANDAS de longitud: el coste de OCR y de deteccion escala con
     PAGINAS, no con documentos, asi que medirlo solo en cortos daria un techo falso
-  - y se publica segundos por DOCUMENTO y por PAGINA, que es lo que hace sumable el total
+  - >
+    y se publica segundos por DOCUMENTO y por PAGINA, que es lo que hace sumable el total
 
 presupuesto_de_referencia: >
   Una tarde. Si los ocho sobre los 1.000 pasan de ~4 h de reloj, no cabe y se aplica la

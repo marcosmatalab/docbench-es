@@ -492,27 +492,28 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 384 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 387 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **218 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **221 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (8), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (5), `sellar_xml` (4), `errors` (3),
-    `sin_consumidor` (3), `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
+    `sin_consumidor` (3), `reglas_parseables` (3), `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **56,8% hoy** — y 61 de los 218 entraron de golpe con
-    `congelados_l4` (38), `guardianes_l4` (7) y `guardianes_por_glob` (8), `documentos_que_sostienen` (8), que son
-    candados de fichero, de proceso y de glob, no código con mutante posible: sus
+    12,4% al cerrar L2, **57,1% hoy** — y 64 de los 221 entraron de golpe con
+    `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (8),
+    `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
+    fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
     controles negativos viven dentro —se manipula un fixture y se exige que la huella
     deje de cuadrar, se le da al guardián de la re-congelación una huella movida sin
     corrección, y **se rompe el glob de un hook y se exige que el recuento lo
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **381 de 384 tests protegidos por algo** —un
+    *el arnés*, no la protección: **384 de 387 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -786,7 +787,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —381 de 384— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —384 de 387— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1426,3 +1427,68 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Lo que sí queda sin cubrir: el barrido de referencias **no ve esa cita** —no
     recorre los `plan.yaml`— así que nadie se pondría rojo si mañana el sello
     también dejara de resolver. Declarado, no arreglado.
+
+83. **UNA REGLA CONGELADA QUE NINGUNA MÁQUINA PODÍA LEER, Y SIETE MESES SIN QUE
+    NADIE LO NOTARA.** `runs/l5/computo.yaml` —la regla de decisión de B5-bis,
+    commiteada sola y **antes** de medir, que es lo único que la hace un
+    pre-registro— **no parseaba como YAML**. Llevaba `de longitud: el coste de OCR`
+    dentro de un escalar plano de una lista, y un `: ` ahí es un error de sintaxis.
+
+    **Lo que esto convierte en falso**: nada de lo publicado, porque todavía no se
+    había medido nada contra él. Lo que sí destruía es su función: un pre-registro
+    vale porque **algo puede confrontarlo después**, y contra un fichero que no
+    parsea ese algo no existe. Lo que quedaba era un comentario largo con extensión
+    `.yaml`.
+
+    **Cómo se descubrió**: no lo descubrió nadie leyéndolo. Lo descubrió el primer
+    script que intentó abrir con un parser un fichero **hermano** suyo.
+
+    **Arreglado, y el arreglo es el que se hace en un pre-registro**: se le han
+    puesto tres marcadores `- >` y **no se le ha tocado una palabra** —comprobado
+    comparando el texto parseado con el original—. Lo hace cumplir
+    `tests/unit/test_reglas_parseables.py`, sobre **todo YAML versionado** y no sólo
+    sobre `runs/`, con su control negativo dentro que reproduce **esta misma forma**
+    de fallo: la primera versión del control usaba `- clave: valor` en UNA línea, que
+    es un mapeo perfectamente válido, y **pasaba en verde contra un YAML sano**.
+
+    Lo que queda sin cubrir: que un YAML parsee no dice que diga lo que debe. Nadie
+    comprueba que `runs/l5/computo.yaml` tenga una clave `regla:`, ni que la regla
+    que contiene sea la que se aplicó. Eso lo sostiene el cierre del hito, a mano.
+
+84. **LA PUERTA NO COMPRUEBA TIPOS EN `scripts/`, Y ALLÍ ES DONDE SE MIDE.** `make
+    fast` corre `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, o
+    sea que se tipa lo que un test importe y nada más. Y `scripts/` es exactamente
+    donde viven `comparar_verdad.py`, `derivadas.py`, `computo_l5.py` y los demás
+    programas **que producen los números que se publican**.
+
+    Medido, no supuesto: al escribir B5-bis, `uv run mypy scripts/*.py` sacó errores
+    reales en ficheros que la puerta daba por buenos. Se corrigieron a mano.
+
+    **No está arreglado a propósito**: meter `scripts` en la puerta hoy la pondría
+    roja por ficheros de un solo uso de hitos ya cerrados, y ésa es una tarde de
+    trabajo que no toca ahora. Precio y fecha: con L5, cuando `scripts/` deje de ser
+    un cajón y los que sobrevivan tengan consumidor.
+
+85. **EL COSTE DE B5-bis SE MIDE DENTRO DE UN SOBRE TÉRMICO, ASÍ QUE EL RELOJ NO ES
+    EL SUELO DE LA MÁQUINA.** La primera versión del cómputo corrió los cuatro
+    extractores en un solo proceso sin límite de hilos: `docling` carga *torch*,
+    *torch* cogió los 8 procesadores que WSL ve, y la CPU llegó a **85 °C** —dentro
+    de especificación para un 9950X3D, Tjmax 95 y corte térmico 115, pero por encima
+    de lo que el dueño de la máquina quiere—. Desde entonces se mide con los hilos
+    fijados, con `nice -n 19`, con pausas entre unidades y, cuando hay termómetro,
+    con el proceso **parado por `SIGSTOP`** al pasar del techo. El sobre está
+    declarado en `runs/l5/termica.yaml`.
+
+    **La consecuencia sobre los números**: los segundos de **reloj** de B5-bis no son
+    el coste mínimo alcanzable en esta máquina, y **no se publican sin decir con
+    cuántos hilos y con cuántas pausas se midieron**. Por eso la moneda primaria son
+    los **segundos de CPU** —`ru_utime + ru_stime` del hijo vía `os.wait4`—, que no
+    los altera ni el `SIGSTOP` ni el ciclo de trabajo.
+
+    **Lo que NO acota, y es la mitad honesta**: sin HWiNFO publicando un sensor en
+    `HKCU\Software\HWiNFO64\VSB`, desde WSL2 **no hay de dónde leer la temperatura**
+    —`/sys/class/thermal/*/temp` vacío, `lm-sensors` ausente,
+    `MSAcpi_ThermalZoneTemperature` sin respuesta: comprobado, no supuesto—. En ese
+    caso el cómputo se declara `vigilado: false`, baja a 2 hilos y **no afirma ningún
+    grado**. Tampoco se toca la frecuencia de boost, así que menos hilos no baja la
+    temperatura de forma lineal: con pocos hilos el boost sube el voltaje por núcleo.
