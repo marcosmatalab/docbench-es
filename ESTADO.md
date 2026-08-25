@@ -165,22 +165,22 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 316 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 321 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
    | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
    |---|---|---|---|---|---|---|
    | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
-   | **L3**, cerrado | 316 | 166 | 52,5% | 304 | 99,0% | 3 |
-   | delta | **+131** | +4 | **−33,9 puntos** | **+131** | **+0,6 puntos** | **0** |
+   | **L3**, cerrado | 321 | 166 | 51,7% | 304 | 99,0% | 3 |
+   | delta | **+136** | +4 | **−33,9 puntos** | **+136** | **+0,6 puntos** | **0** |
 
    **Y las dos series van en direcciones distintas, que es exactamente lo que había
    que saber antes de L5. La divergencia es ESTRUCTURAL, no deterioro**, y hay que
    publicarla diciéndolo: el arnés cae **porque la regla de barreras funciona** —
    cada módulo nuevo trae su control negativo en su propio fichero, en el mismo
    hito, y el mutante que lo mediría por rotura va a plazos con su precio. Sin esa
-   frase al lado, un número que baja de 87,6% a 52,5% se lee como decadencia
+   frase al lado, un número que baja de 87,6% a 51,7% se lee como decadencia
    cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha
    añadido **122 tests y UN mutante**, el del grupo de filas: el arnés casi no ha
    crecido, ha crecido la suite por debajo. Pero **los 122 están protegidos**: 3
@@ -189,7 +189,7 @@ nota. Ver LIMITS 49.
    escondería.
 
    **Lo que sigue siendo verdad y hay que vigilar:** «los 22 mutantes mueren» dice
-   cada vez menos sobre el conjunto — hoy habla del **52,5%** de la suite. Los
+   cada vez menos sobre el conjunto — hoy habla del **51,7%** de la suite. Los
    mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
 
@@ -203,7 +203,7 @@ nota. Ver LIMITS 49.
 
    **Dos puntos son un delta, no una tendencia; el tercero lo pone L4.** Con esa
    reserva por delante, la proyección de una etapa: si L4 añadiera tests fuera del
-   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 52,5%
+   arnés al ritmo de L3 y ni un mutante, la cobertura del arnés bajaría **del 51,7%
    de hoy al entorno del 50%**, y L5 es un hito más grande (ocho extractores), así
    que su escalón sería mayor. Es una **proyección sobre dos puntos**, no una
    medición, y se publica con esa palabra.

@@ -492,11 +492,11 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 316 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 321 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **150 tests restantes** —`barreras` (14), `harvest` (14),
+    árbol de TEDS y el lote. Los **155 tests restantes** —`barreras` (14), `harvest` (14),
     `verificar_corpus` (14), `boe` (12), `boe_api` (10), `entity_conformance` (9),
-    `entity_registry` (9), `capas_permitidas` (8), `sellar_xml` (4),
+    `entity_registry` (9), `capas_permitidas` (8), `comparar_verdad` (5), `sellar_xml` (4),
     `limite_lineas` (2), `tope_area` (2), `grupo_de_filas` (2),
     `manifest` (8), `pairing` (8), `policy` (7),
     `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
@@ -506,7 +506,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     12,4% al cerrar L2, **46,3% hoy**.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **313 de 316 tests protegidos por algo** —un
+    *el arnés*, no la protección: **318 de 321 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -780,7 +780,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —313 de 316— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —318 de 321— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que

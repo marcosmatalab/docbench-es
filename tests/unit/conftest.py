@@ -101,6 +101,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_sellar_xml.py": "test_un_xml_que_falta_no_se_salta_en_silencio",
     "test_types_invariantes.py": "test_un_fallo_sin_causa_no_se_puede_construir",
     "test_capas_permitidas.py": "test_una_direccion_prohibida_sigue_estando_prohibida",
+    "test_comparar_verdad.py": "test_una_celda_movida_de_columna_se_detecta",
     "test_tope_area.py": "test_una_tabla_que_se_pasa_del_tope_sale_fatal_nombrando_el_area",
     "test_ancla.py": "test_un_ancla_que_no_existe_aborta_en_vez_de_borrar_hasta_el_final",
     "test_types.py": "test_todo_el_modelo_de_datos_es_inmutable",
