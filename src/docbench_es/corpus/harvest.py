@@ -104,8 +104,10 @@ def _ritmo(de_peticion: Sequence[float] | None, inicios: Sequence[float]) -> Rit
         huecos = [b - a for a, b in pairwise(muestras)]
     else:
         return Ritmo(None, None, max(0, len(muestras) - 1))
-    if not huecos:
-        return Ritmo(None, None, max(0, len(muestras) - 1))
+    # Aquí `huecos` NO puede estar vacío: la rama de arriba exige `len(muestras) >= 2`
+    # y `pairwise` de dos elementos da uno. Había un `if not huecos: return ...` que
+    # era inalcanzable —encontrado en la auditoría en frío de `a0d85ed`— y una rama
+    # que no se ejecuta nunca es una rama que nadie ha visto funcionar.
     # `n` son SIEMPRE espaciados, no muestras. Antes devolvía huecos en una rama y
     # muestras en la otra, o sea que el mismo campo significaba dos cosas y en
     # producción iba uno corto. El nombre del campo lo dice ahora.

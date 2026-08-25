@@ -50,6 +50,23 @@ def fila(
     }
 
 
+def cobertura(celdas_comparadas: int, celdas_ancladas: int) -> dict[str, object]:
+    """El denominador del «53,1% de cobertura», **emitido en vez de tecleado**.
+
+    Se publicó como *«1.213 de 2.283 celdas»* **sin que ningún script emitiera el
+    2.283 ni ningún JSON lo guardara**. Reconstruirlo desde los fixtures da 2.301 o
+    2.281 según cómo se cuente, y los 3 de alcance `ventana` no registran los spans
+    del tramo no transcrito, así que **un lector no podía derivarlo**. Un porcentaje
+    cuyo denominador nadie puede recomputar es exactamente lo que prohíbe la regla de
+    oro 2.
+    """
+    return {
+        "celdas_comparadas": celdas_comparadas,
+        "celdas_ancladas_en_las_30_tablas": celdas_ancladas,
+        "porcentaje": round(100 * celdas_comparadas / celdas_ancladas, 1),
+    }
+
+
 def desglose(filas: list[dict[str, object]]) -> dict[str, int]:
     """Los tres sumandos de los que coinciden. **Tienen que sumar el total.**"""
     coinciden = [r for r in filas if r["coincide"]]
@@ -62,7 +79,13 @@ def desglose(filas: list[dict[str, object]]) -> dict[str, int]:
     }
 
 
-def escribir(raiz: Path, filas: list[dict[str, object]], discrepancias: int) -> Path:
+def escribir(
+    raiz: Path,
+    filas: list[dict[str, object]],
+    discrepancias: int,
+    celdas_comparadas: int,
+    celdas_ancladas: int,
+) -> Path:
     """Escribe `runs/l4/informe.json` y devuelve su ruta."""
     cuentas = desglose(filas)
     destino = raiz / "runs" / "l4" / "informe.json"
@@ -76,6 +99,7 @@ def escribir(raiz: Path, filas: list[dict[str, object]], discrepancias: int) -> 
                 "coinciden": sum(1 for r in filas if r["coincide"]),
                 "discrepancias": discrepancias,
                 "desglose_de_los_que_coinciden": cuentas,
+                "cobertura": cobertura(celdas_comparadas, celdas_ancladas),
                 "contaminadas_declaradas": [str(r["fixture"]) for r in filas if r["contaminada"]],
                 "por_fixture": filas,
             },

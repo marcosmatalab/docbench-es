@@ -1,11 +1,15 @@
 # docbench-es
 
-> **Hito L0 de 10 de la `v0.1.0`. Todavía no hay número.** Lo que existe hoy es
-> el esqueleto, el modelo de datos y la puerta de CI: **ni corpus, ni verdad de
-> referencia, ni extractores, ni CLI**. Aquí no va a aparecer una cifra de
-> exactitud hasta que existan. Cuando la haya, esta primera línea será el número
-> y no el badge. Lo que hay medido hoy está en [`RESULTS.md`](RESULTS.md); lo que
-> este proyecto **no** mide, en [`LIMITS.md`](LIMITS.md).
+<!-- TITULAR:inicio -->
+> **5 de 10 hitos de la `v0.1.0` cerrados** — L0, L1, L2, L3, L4 — y el siguiente es **L5**. El último número medido: **25 de 30 coinciden sobre 30 documentos y 1.213 celdas transcritas del PDF** (L4).
+>
+> Lo que hay medido está en [`RESULTS.md`](RESULTS.md); lo que este proyecto **no** mide, en [`LIMITS.md`](LIMITS.md). **Esta línea se genera desde [`ESTADO.md`](ESTADO.md)**: no se teclea.
+<!-- TITULAR:fin -->
+>
+> Aquí no va a aparecer una cifra de **exactitud** hasta que existan los extractores
+> y las preguntas: eso es L10, y el número que irá arriba es *«con extracción
+> perfecta X; con el mejor extractor real Y; el hueco atribuible es Z puntos,
+> IC [a, b]»*.
 >
 > El número que irá aquí, en L10: *"con extracción perfecta X; con el mejor
 > extractor real Y; el hueco atribuible a la extracción es Z puntos, IC [a, b]"*.
@@ -37,15 +41,19 @@ posible, más grave que un bug.
 1. ✅ **El juez no es concursante.** Este repo no construye ni construirá un
    extractor propio. Si lo hiciera, el ranking valdría cero. Es una regla, no
    código, y se cumple desde el primer día.
-2. 🕓 **L3-L4 · Verdad de referencia gratis y auditable.** El BOE publica el mismo
-   documento como PDF firmado y como XML con marcado de tabla real, así que va a
-   haber miles de documentos con verdad derivada sin anotar una celda a mano. El
-   emparejado llega en L3 y la verdad derivada en L4. **Su error frente a
-   auditoría humana se mide en L8b**, y hasta entonces nadie sabe cuánto vale.
-3. 🕓 **L3 · El motor no sabrá qué es el BOE.** Cualquier entidad entrará por un
+2. ✅🕓 **L3-L4 · Verdad de referencia gratis y auditable.** El BOE publica el mismo
+   documento como PDF firmado y como XML con marcado de tabla real. **Ya está: 1.000
+   documentos emparejados (L3) y la verdad derivada reproduciendo 25 de 30 tablas
+   transcritas a mano, con cero discrepancias atribuibles al código (L4).** Lo que
+   sigue 🕓 es lo que de verdad la valida: **su error frente a auditoría humana se
+   mide en L8b**, y hasta entonces nadie sabe cuánto vale. Y L4 dejó medido que su
+   propia muestra **no puede ver** una clase de fallo del código (límites 65-66).
+3. ✅🕓 **L3 · El motor no sabe qué es el BOE.** Cualquier entidad entra por un
    adaptador de siete métodos, con su fuente, su modo de verdad, su licencia, su
-   privacidad y su vocabulario. Hoy el `Protocol` ni siquiera está escrito: se
-   escribe en L3, antes que su primera implementación.
+   privacidad y su vocabulario: el `Protocol` y su suite de conformidad **están
+   escritos, y antes que su primera implementación**. Lo que sigue 🕓 es la única
+   prueba de verdad de que la interfaz aguanta: **una segunda entidad real, en
+   L13**. Con un solo adaptador, «es genérico» es una intención.
 4. 🕓 **L8 · La licencia y la privacidad serán código.** Cuando un adaptador
    declare `may_send_to_third_party: false`, el motor **rechazará** los
    extractores por API y la campaña no arrancará, con código de salida 2. No será
@@ -80,9 +88,11 @@ poder cambiarlo.
 
 | | |
 |---|---|
-| Release en curso | `v0.1.0` · L0 cerrado el 22 ago 2026, L1 a L8b pendientes |
-| La puerta | `make fast` en verde, **4,43 s** en el runner de GitHub sobre `28186b9`, presupuesto 90 s. Rango observado sobre código idéntico: 3,41 – 4,43 s (n=4, corte 22 ago 2026). Procedencia y matices en [`RESULTS.md`](RESULTS.md) |
-| Dónde va el checkpoint | [`ESTADO.md`](ESTADO.md), que se actualiza al cerrar cada hito |
+<!-- ESTADO:inicio -->
+| Release en curso | `v0.1.0` · **5 hitos cerrados** (L0, L1, L2, L3, L4), el último el 2026-08-25. Siguiente: **L5** |
+| La puerta | `make fast` en verde. **p90 8006 ms** local sobre `f89c5b6`, techo 8500 (ADR-0022), margen 494 ms, n=40 en frío. El presupuesto del manual son 90 s y es del runner. Procedencia en [`RESULTS.md`](RESULTS.md) |
+| Dónde va el checkpoint | [`ESTADO.md`](ESTADO.md), que se actualiza al cerrar cada hito. **Esta tabla se genera desde ahí** con `uv run python scripts/estado_readme.py --escribir` |
+<!-- ESTADO:fin -->
 
 ## Documentos
 

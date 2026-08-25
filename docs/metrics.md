@@ -414,6 +414,22 @@ sino **la pendiente**.
 | L0 | 1742 ms | 1715 – 1872 | 15 | Modelo de datos y errores |
 | L1 | 3829 ms | 3713 – 3875 | 82 | Invariantes, cinco conversores, 17 propiedades de `hypothesis` y `mypy --strict` sobre `tests/` |
 | L2 | **5604 ms** (n=40, p90 5728, σ=76) | 5140 – 6048 | 185 | TEDS y su validación contra los 20 casos de PubTabNet, `cellmatch`, y el presupuesto de ejemplos declarado en las ocho suites |
+| L3 | **7400 ms** (n=40, p90 7505, σ=100) | — | 321 | `entity`, `corpus`, los tres adaptadores y el barrido de referencias. Sello `1600137` |
+| L4 | **7842 ms** (n=40, p90 8006, σ=124) | 7529 – 8051 | 374 | `truth.derived`, los 30 fixtures, los candados de congelado y de glob. Sello `f89c5b6` |
+
+**El techo es 8500 ms local / 20 000 en CI** (ADR-0022), y no aparecía en esta tabla
+pese a ser el número contra el que se lee la última columna.
+
+> **CORREGIDO en la auditoría en frío de `a0d85ed`, y son dos cosas.** Primera: la
+> tabla **decía en presente** que la serie *«se sigue de hito en hito»* y **se paró
+> en L2**, con L3 y L4 cerrados. Segunda, y peor: **la fila de L2 mezcla dos
+> series** — la mediana y el p90 vienen de una corrida de n=40 y el rango está
+> rotulado `n=10`, y ninguno de los dos cuadra con el `mediana 5593, p90 5933, σ=286`
+> que publica `ESTADO.md` para el mismo hito, ni con el `5920 ms` del remedido
+> posterior. **Son tres mediciones distintas de L2 repartidas entre dos documentos**,
+> y cuál describe qué no se puede reconstruir desde los artefactos: la fila se deja
+> como está, marcada, en vez de elegir la combinación que cuadre. **Lo que lo cierra
+> es el sello**, que L3 y L4 sí llevan.
 
 **+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
 `mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de

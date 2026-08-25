@@ -512,7 +512,8 @@ Y los cuatro sutiles, que son los que justifican el hito:
 > exige es **«muere»**, no «muere en N tests»: estas cifras son un **suelo**, no
 > una constante.
 
-**Los veintidós mutantes del repo mueren**, con control negativo **0 de 166**.
+**Los veintiún mutantes de esa corrida mueren**, con control negativo **0 de 164** —
+mismo sello, misma línea, ver la corrección de más abajo—.
 `uv run python scripts/mutantes/matar.py; echo $?`
 
 `teds_cuenta_la_raiz` es el que justifica el hito: mueve **todos** los TEDS un
@@ -529,9 +530,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 374 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 376 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **208 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14),
+Los **210 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -543,7 +544,7 @@ y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
 que **esos 22** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 208 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 210 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -566,6 +567,7 @@ que un sorteo de `hypothesis` salga bien.
 | **El escrutinio adversarial** (3) | `arbol_orden_invertido`, `arbol_thead_solo_la_primera`, `batch_sobrescribe` |
 | **El paso 2 de `/cerrar`** (3) | `teds_siempre_cero`, `cellmatch_siempre_ok`, `cellmatch_siempre_roto` |
 | **La auditoría en frío del guardián** (3) | `recuentos_todo_vale`, `recuentos_sin_claude`, `recuentos_plano_flojo` |
+| **El arreglo del grupo de filas** (1) | `seccion_sin_cerrar` |
 
 > **Aquí ponía «Son 21 mutantes, no 12: … añadieron seis», y 12 + 6 = 18.** El
 > guardián de recuentos había actualizado el dígito de 18 a 21 —porque el patrón
@@ -649,7 +651,7 @@ esta tabla habría vuelto a tener dos columnas distintas sin decir por qué.
 Alguien va a comparar las tres versiones, así que van las tres, con las columnas
 puestas siempre en el mismo orden **SIEMPRE / ALGUNA VEZ**:
 
-| Mutante | A · primera | B · con el bug de recuento | C · buena, la de arriba |
+| Mutante | A · primera | B · con el bug de recuento | C · buena, **de aquel día** |
 |---|---|---|---|
 | `sin_tablas` | 37 / 37 | 36 / 38 | **39 / 39** |
 | `roto` | 24 / 24 | 23 / 24 | **24 / 24** |
@@ -668,6 +670,22 @@ no era otra pregunta. A y C coinciden en todo salvo en los tests añadidos entre
 una y otra —+2 en `sin_tablas`, +1 en `ok`, `teds_siempre_uno` y
 `teds_cuenta_la_raiz`, y el segundo asesino de `cellmatch`—. **B queda superada
 por C.**
+
+> **CORREGIDO en la auditoría en frío de `a0d85ed`: la columna C decía «la de
+> arriba» y NO es la de arriba.** `sin_tablas` sale **39** aquí y **41** en la tabla
+> de asesinos de más arriba; `teds_siempre_uno` **10** contra 12;
+> `normalizador_agresivo` **9/9** contra 8/9. Son **tres corridas** sobre suites de
+> tamaños distintos, y las dos tablas se escribieron en el **mismo commit** con una
+> rotulada como si fuera la otra. La prosa de este párrafo sólo cuadra con C, que es
+> la de **aquel día**; la de arriba es posterior y más grande.
+>
+> **Es la misma clase que el sello de L3 y que la fila de L2**: dos mediciones de
+> momentos distintos presentadas como una. El sello existe justo para esto —`sello:
+> <commit> · N tests`— y estas tablas no lo llevan. **Que lo lleven es trabajo de
+> L5**, y va con su precio: re-correr `--tabla` con `--reps 3` sobre el árbol actual
+> son ~10 minutos de máquina, más el sello. No se hace hoy porque re-correrlo ahora
+> daría una cuarta columna sin resolver cuál de las tres describía qué, que es
+> exactamente el lío que hay que deshacer.
 
 **Y el 8 de B tiene nombre y aritmética**: de los nueve asesinos de
 `normalizador_agresivo`, `test_r4_los_numeros_llegan_intactos` está parametrizado
@@ -843,9 +861,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 371 de 374
+### Qué fracción de la suite está protegida por algo: 373 de 376
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 374» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 376» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -868,13 +886,27 @@ comprobación puede decidir es si es *fuerte* — límite 60.
 | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
 |---|---|---|---|---|---|---|
 | al cerrar **L2** (`099e452`) | 185 | 162 | 87,6% | 182 | **98,4%** | 3 |
-| **L3**, cerrado | 321 | 166 | 51,7% | 304 | **99,0%** | 3 |
+| **L3**, cerrado | 321 | 166 | 51,7% | 318 | **99,1%** | 3 |
 
 **Y van en direcciones distintas, que es justo lo que había que saber:** la
-cobertura del arnés **cae 30,1 puntos** y la protección real **sube 0,5**. Los
+cobertura del arnés **cae 35,9 puntos** y la protección real **sube 0,7**. Los
 tests sin nada son los mismos **3 tests sin ningún control** en las dos fechas
 —los de `test_errors.py`, que afirman la forma de la jerarquía y del enum, no que
-algo rechace una entrada mala— y su fracción baja del 1,6% al 1,1%.
+algo rechace una entrada mala— y su fracción baja **del 1,62% al 0,93%**.
+
+> **CORREGIDO en la auditoría en frío de `a0d85ed`, y son cuatro derivadas de una
+> tabla de seis columnas.** La fila de L3 publicaba **304** protegidos, que no sale
+> de sus vecinos: 304/321 es **94,70%**, no 99,0%, y 321−304 son **17**, no 3. El
+> valor coherente con las otras dos columnas —y con el «318 de 321» que publicaban
+> `LIMITS.md` y la skill `cerrar`— es **318**, con su porcentaje bien redondeado en
+> **99,1%**: 318/321 son 99,07, que a un decimal es 99,1 y no 99,0. Entró como 304 en `b0853f4`,
+> subiendo un 298 sin recalcular nada de su alrededor. Y las tres derivadas de la
+> prosa de al lado tampoco salían: 87,6−51,7 son **35,9** puntos y no 30,1;
+> 98,4→99,1 es **+0,7** y no 0,5; y 3/321 es **0,93%**, no 1,1%.
+>
+> **Es la clase entera del límite 55 en un párrafo:** un dígito se sincroniza y la
+> resta, el porcentaje y la fracción que lo acompañaban se quedan detrás. Lo caza
+> ahora `uv run python scripts/derivadas.py`.
 
 **Lo que esto NO autoriza a decir.** No dice que la suite esté bien probada: dice
 que casi todo tiene *algo*, y que ese algo sólo está medido contra una rotura real
@@ -943,7 +975,7 @@ Los 6.290 que publiqué antes salían de un n=12 y no eran una línea base.
 | Paso | L2 cierre | hoy | delta |
 |---|---|---|---|
 | `pytest tests/unit` | 3800 ms | 4043 ms | **+243** |
-| `mypy --strict src tests` | 1614 ms | 1745 ms | **+136** |
+| `mypy --strict src tests` | 1614 ms | 1745 ms | **+131** |
 | `lint-imports` | 132 ms | 130 ms | −2 |
 | `ruff check` + `format --check` | 102 ms | 117 ms | +15 |
 | **suma** | 5648 ms | 6035 ms | **+387** |
@@ -1043,7 +1075,7 @@ suite la bajada de σ de 134 a 76. Aislar los dos lados en la misma corrida es l
 
 **El p90 consumía el 97% del techo de 6000**: 199 ms de margen, o sea 1,5
 desviaciones típicas. Eso no es margen, es estar dentro por suerte. El techo pasa
-a **8000 ms local / 20 000 ms en CI** por [ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md),
+a **8500 ms local / 20 000 ms en CI** por [ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md),
 que además fija **qué pasa al romperse**: el techo **avisa**, y lo que **bloquea**
 es el presupuesto de 90 s del manual. Proyección escrita allí: **6000 no aguanta
 L3 en ningún escenario**, ni siquiera en el más optimista.
@@ -1286,24 +1318,38 @@ si el barrido se queda en la puerta o pasa a ser un paso del cierre, y ahora esa
 decisión tiene delante su precio en vez de una intuición. Con 995 ms de margen,
 220 ms es el 22 % de lo que queda.
 
-### Los mutantes al cerrar L3 · sello `0717b70 · 164 tests`
+### Los mutantes al cerrar L3 · **21** mutantes · sello `0717b70 · 164 tests`
 
 ```
 uv run python scripts/mutantes/matar.py; echo $?          # rc=0, todos mueren
 uv run python scripts/mutantes/matar.py --tabla; echo $?  # rc=0, 3 repeticiones
 ```
 
-**Control negativo primero: el árbol sin mutar da 0 muertes de 166 tests.** Sin ese
+**Control negativo primero: el árbol sin mutar da 0 muertes de 164 tests.** Sin ese
 cero la tabla no vale nada, porque cada «muerte» podría ser un fallo de fondo de la
 suite y no el mutante. El sello va **sin `+N`**: árbol limpio, o sea reproducible
 desde ese commit exacto.
 
-**Los 22 mutantes mueren, y los 22 matan SIEMPRE** — las tres repeticiones, no
+> **CORREGIDO en la auditoría en frío de `a0d85ed`, y no era un dígito mal copiado:
+> eran DOS CORRIDAS presentadas como una.** `matar.py` imprime el sello y el control
+> negativo **desde la misma expresión** —`fallan + pasan`—, así que **no pueden
+> diferir en una corrida**, y aquí se publicaron `164 tests` junto a `0 de 166`.
+> Reconciliado por ejecución: `seccion_sin_cerrar` entró en el `PLAN` en `525c71d`
+> (24 ago, 17:34) y `0717b70` es de las **13:27**; su suite objetivo,
+> `test_grupo_de_filas.py`, tiene **2 tests**. **164 + 2 = 166.** O sea que el sello
+> `0717b70 · 164 tests` pertenece a una corrida de **21 mutantes** y el `0 de 166` a
+> otra posterior, de 22.
+>
+> **Arreglado en origen para que no pueda repetirse:** `matar.py` imprime ahora los
+> dos campos en **una sola línea**, que es la que se pega entera. Dos campos de un
+> mismo `print` no pueden divergir si nadie los separa.
+
+**Los 21 mutantes de esa corrida mueren, y los 21 matan SIEMPRE** — las tres repeticiones, no
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-374 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+376 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -1625,8 +1671,34 @@ uv run python scripts/medir_puerta.py --techo 8500; echo $?
 `rc != 0`**, carga de la máquina mediana 1,05 (rango 0,60–1,25). El árbol no se movió:
 el sello va sin `+N`.
 
-**El p90 BAJA con 53 tests más que al empezar el hito** —8238 antes de L4, 8006
-ahora— y eso no es suerte: es el arreglo de las ocho invocaciones de `pdftotext`.
+**Las tres series de L4, con sus seis campos cada una**, porque una cifra de puerta
+sin ellos no se puede comparar con otra:
+
+| | sello | n | mediana | p90 | σ | carga (mediana · rango) | techo | margen |
+|---|---|---|---|---|---|---|---|---|
+| antes del hito | `988a0fe` | 40 | 8136 | **8238** | 86 | 1,07 · 0,66–2,04 | 8500 | +262 |
+| con el hito puesto | `98a2df1` | 40 | 8298 | **8558** | 183 | 0,98 · 0,40–1,66 | 8500 | **−58** |
+| tras cachear `pdftotext` | `f89c5b6` | 40 | 7842 | **8006** | 124 | 1,05 · 0,60–1,25 | 8500 | +494 |
+
+Las tres con `uv run python scripts/medir_puerta.py --techo 8500`, 10 tandas en frío,
+`.hypothesis` borrada, **0 descartadas por `rc != 0`** y el árbol quieto —ninguno de
+los tres sellos lleva `+N`—. La primera fila se publicó antes **sin ninguno de los
+seis campos**, en un documento donde todas las demás los llevan; corregido en la
+auditoría en frío de `a0d85ed`.
+
+**El p90 baja con 55 tests más que al empezar el hito. Lo que NO se puede afirmar es
+por qué, y la frase anterior lo afirmaba.** Decía *«es el arreglo de las ocho
+invocaciones de `pdftotext`»*, y esa atribución **no está aislada**: entre la primera
+y la tercera fila entraron **55 tests** además del arreglo, y las cifras no encajan
+—el ahorro medido sobre el test son **330 ms**, el delta de la primera a la tercera
+son **232 ms**, y el de la segunda a la tercera **552 ms**—. Lo único aislado es el
+`--durations`: **0,69 s → 0,36 s en ese test**. El resto es un delta con dos causas
+mezcladas, y este mismo documento prohíbe atribuir sin aislar unas líneas más arriba.
+
+**Aislarlo cuesta una serie más** —`git stash` del cacheo, 40 corridas, restaurar— y
+**no se hace**: la pregunta que importa ya está contestada (el p90 está bajo el techo
+con su margen medido) y una cuarta serie sólo compraría la atribución, que no decide
+nada. Queda declarado como lo que es: **una correlación, no una causa medida.**
 La serie intermedia se publica igual, porque existió: con el árbol en `98a2df1` el
 p90 dio **8558, o sea 58 ms POR ENCIMA del techo**, y de ahí salió el paso nuevo de
 ADR-0022.

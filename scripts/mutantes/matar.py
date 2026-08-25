@@ -198,8 +198,13 @@ def main() -> int:
     fallan, pasan = _corre_sin_mutar(suites)
     # El sello va PRIMERO y sale del propio instrumento: toda cifra de aquí abajo
     # lleva denominador de suite, o sea que caduca sola cuando la suite crece.
-    print(f"sello: {sello(fallan + pasan)}")
-    print(f"control negativo (sin mutar): {fallan} muertes de {fallan + pasan} tests")
+    # UNA SOLA LÍNEA, y es a propósito. El sello y el control negativo salen de la
+    # MISMA expresión —`fallan + pasan`— así que no pueden diferir en una corrida; y
+    # sin embargo se publicaron divergentes tres veces («164 tests» junto a «0 de
+    # 166»), porque al pegarlos en el documento iban en dos líneas y una se
+    # actualizaba sin la otra. **Dos campos de un mismo `print` no pueden divergir si
+    # nadie los separa**: ésta es la línea que se pega, entera.
+    print(f"sello: {sello(fallan + pasan)} · control negativo: {fallan} muertes")
     if fallan:
         print("EL ÁRBOL SIN MUTAR YA FALLA. La tabla de mutantes no vale nada hasta arreglarlo.")
         return 1

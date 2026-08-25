@@ -11,6 +11,101 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### L4 · La verdad derivada contra 30 tablas transcritas a mano · cerrado el 2026-08-25
+
+#### Añadido
+
+- **`truth.derived`**, que **ensambla** la verdad en vez de dejárselo al adaptador.
+  No lo obliga el contrato de capas —son hermanos, comprobado—: lo obliga L13, para
+  que la segunda entidad herede el ensamblado en vez de reimplementarlo.
+- **`runs/l4/fixtures/`, 30 tablas transcritas del PDF**, 1.213 celdas, 27 completas
+  y 3 con ventana de cabecera más última fila. **Entran en el repo** —46 KB, y
+  `entities/boe.yaml` declara `may_redistribute_content: true`—: sin ellas, el
+  número sólo lo podía comprobar quien transcribió.
+- **`scripts/comparar_verdad.py`** con su colocador **independiente** a propósito
+  (ADR-0040), sus 4 controles negativos más el aro en la dirección buena, y
+  `--informe`, que emite `runs/l4/informe.json` con una fila por fixture.
+- **`scripts/evidencia_pdf.py`**: la evidencia de cada discrepancia sacada del PDF y
+  **nunca del XML** (ADR-0039 regla 5).
+- **`scripts/corregir_fixtures_l4.py`** y **`scripts/congelar_l4.py`**: el guardián
+  del PDF —se niega a escribir una corrección que el PDF no respalde— y el de la
+  re-congelación —aborta si una huella cambió sin corrección registrada—.
+- **`scripts/mutar_el_instrumento.py`**: el arnés de mutantes **contra el instrumento
+  de L4**, no contra la suite. Es lo único que convierte un «cero fallos del código»
+  en evidencia.
+- **`scripts/derivadas.py`** y **`scripts/estado_readme.py`**, de la auditoría en
+  frío: el primero recalcula los números derivados de los documentos publicados, el
+  segundo deriva el estado del README desde `ESTADO.md`.
+- **55 tests nuevos** (321 → 376), todos en candados de fichero, de proceso y de
+  glob: `test_congelados_l4`, `test_guardianes_l4`, `test_guardianes_por_glob`.
+
+#### Decidido
+
+- **ADR-0039 regla 5**: la evidencia de una adjudicación viene del **PDF**, nunca del
+  XML. Comprobar contra el XML da por supuesto que el XML acierta, que es lo que se
+  mide.
+- **ADR-0040**: qué cuenta como «reproduce», una regla a una y congelado **antes** de
+  la primera comparación.
+- **ADR-0041**: al congelar, lo que va a git es el **digest**, no el puntero. Escrito
+  y **sin construir**; se aplica en L8b.
+- **ADR-0022 gana un paso**: cuando el p90 se pase, lo primero es `--durations`, no
+  elegir entre las tres concesiones.
+
+#### Corregido
+
+- **Seis errores de transcripción**, evidenciados uno a uno contra el PDF. El más
+  instructivo: el BOE escribe `Catauña` **en el PDF y en el XML** y la transcripción
+  lo auto-corrigió a `Cataluña` — de haberse adjudicado al revés, habría entrado en
+  la verdad y todo extractor fiel habría perdido un punto por acertar.
+- **Los 30 fixtures no los protegía ninguno de los dos hooks** y estaban en
+  `.gitignore`. Arreglado en las tres capas, y el candado de verdad es un test de la
+  puerta contra un manifiesto versionado, que es lo que pedía el límite 27.
+- **`runs/*/fixtures` protegía CERO ficheros**: como pathspec de git casa con el
+  directorio, no con lo que hay dentro. De ahí sale el límite 77 y
+  `test_guardianes_por_glob.py`.
+- **Doce números rotos** en los documentos publicados, encontrados por la auditoría
+  en frío de `a0d85ed`, tres de ellos imposibles por construcción. Entre otros: un
+  `304 de 321` publicado como 99,0% (es 94,70%), una enumeración de 21 rotulada «son
+  22», y un sello de 164 tests junto a un control negativo de 166 — que resultaron
+  ser **dos corridas distintas presentadas como una**.
+
+#### Retirado
+
+- El **techo de 8000 ms** que aún citaba `RESULTS.md`: es 8500 desde ADR-0022.
+- La atribución *«el p90 baja por el arreglo de `pdftotext`»*: es una **correlación
+  no aislada** y se publica como tal.
+
+### L3 · El corpus: 1.000 documentos emparejados PDF/XML · cerrado el 2026-08-24
+
+#### Añadido
+
+- **`entity.base`** con su suite de conformidad, **`entity.boe`** y **`boe_xml`**:
+  los siete métodos del contrato de entidad, con la licencia y la privacidad como
+  código.
+- **`corpus.harvest`** y **`corpus.pairing`**: la cosecha con su ritmo declarado y
+  el emparejado PDF/XML con su umbral.
+- **`runs/l3/`**: el manifiesto de los 1.000 documentos con su `sha256`, los sellos
+  de los XML y el desglose de la ventana. **La evidencia entra en el repo; los 362 MB
+  de bytes, no.**
+- **136 tests nuevos** (185 → 321).
+
+#### Decidido
+
+- **ADR-0030 a ADR-0038**: la tasa de descarte con su ventana, la URL del XML, la
+  carpeta de PDFs, el manifiesto publicable, las bandas de longitud, `EntityAdapter`
+  nativo, el descubrimiento de adaptadores, la privacidad del BOE y el manifiesto
+  versionado sin los bytes.
+
+#### Corregido
+
+- **El grupo de filas**: un `rowspan` del `<thead>` se derramaba en el `<tbody>` y
+  **desplazaba los datos una columna** con `validate` diciendo `ok=True`. De ahí sale
+  el mutante `seccion_sin_cerrar`.
+- **El barrido de referencias medía la máquina, no el repositorio**: comprobaba con
+  `Path.exists()` contra el árbol de trabajo, así que estaba verde en local y rojo en
+  cualquier clon.
+
+
 ### L2 · TEDS validado contra PubTabNet · medido el 2026-08-22, cerrado el 2026-08-23
 
 #### Añadido

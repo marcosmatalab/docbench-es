@@ -10,6 +10,11 @@
   "contaminadas": 1,
   "corregidas_tras_adjudicar": 3
  },
+ "cobertura": {
+  "celdas_comparadas": 1213,
+  "celdas_ancladas_en_las_30_tablas": 2283,
+  "porcentaje": 53.1
+ },
  "contaminadas_declaradas": [
   "BOE-A-2026-5979-t15"
  ],

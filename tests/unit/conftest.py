@@ -89,6 +89,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_entity_conformance.py": "test_el_adaptador_roto_se_cae_por_los_cinco_aros_que_rompe",
     "test_entity_registry.py": "test_el_rechazo_por_version_ocurre_al_cargar",
     "test_barreras.py": "test_el_barrido_dice_que_no_ante_una_referencia_rota",
+    "test_barreras_documentos.py": "test_las_derivadas_publicadas_salen_de_su_fuente",
     "test_limite_lineas.py": "test_ningun_fichero_de_codigo_pasa_de_300_lineas",
     "test_boe_api.py": "test_bajar_una_url_que_ningun_sumario_ha_dado_es_violacion_de_politica",
     "test_boe.py": "test_fetch_de_una_ref_inventada_es_violacion_de_politica",

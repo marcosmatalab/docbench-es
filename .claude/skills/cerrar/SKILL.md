@@ -63,13 +63,13 @@ disable-model-invocation: true
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 22 mutantes mueren» habla de esos 22 huecos, no de la
-   suite: hoy el arnés cubre 166 de 374 tests, o sea que los 208 tests que quedan
+   suite: hoy el arnés cubre 166 de 376 tests, o sea que los 210 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **371 de 374 tests protegidos por algo** y **3 tests sin ningún control**.
+   **373 de 376 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -271,7 +271,33 @@ disable-model-invocation: true
    sin que nadie lo note. `unica(texto, ancla)` aborta si no aparece exactamente
    una vez.
 
-8. **El barrido de referencias.** Ejecuta y pega la salida:
+8. **Las DERIVADAS publicadas.** Ejecuta y pega la salida:
+
+   ```bash
+   uv run python scripts/derivadas.py --detalle; echo $?
+   ```
+
+   > **UN NÚMERO DERIVADO NO SE TECLEA. O lo emite el script que lo mide, o no se
+   > publica.**
+
+   El guardián de recuentos sincroniza **una** de las cinco clases de número que
+   producen estos documentos. Las otras cuatro —porcentajes, deltas y restas, sumas
+   de una enumeración, y sellos— **no las vigilaba nadie**, y la auditoría en frío de
+   `a0d85ed` encontró **doce números rotos, once de esas cuatro clases y tres
+   imposibles por construcción**: un porcentaje que no salía de su propia fracción
+   (304/321 publicado como 99,0%), una enumeración de 21 rotulada «son 22», y dos
+   campos de un mismo `print` publicados divergentes.
+
+   **El censo dijo el tamaño antes de decidir el arreglo: 285 expresiones con forma
+   derivada** en los cuatro documentos (`--censo`). A ese tamaño no se arregla a mano.
+
+   **Y la regla que decide si un número está bien puesto**, con el caso de L4 al
+   lado: el `1.213` estaba bien porque vive en `runs/l4/congelacion.json`; el `2.283`
+   del mismo párrafo estaba mal porque **no vivía en ninguna parte** y ningún lector
+   podía recomputarlo. Se arregló haciendo que el comparador lo emitiera, no
+   tecleándolo mejor.
+
+9. **El barrido de referencias.** Ejecuta y pega la salida:
 
    ```bash
    uv run python scripts/referencias.py --detalle; echo $?
@@ -287,7 +313,7 @@ disable-model-invocation: true
    aparecido **cinco veces**, y las cinco se encontraron tropezándose con ellas.
    Un hito que estrena módulos es exactamente cuando se crean referencias nuevas.
 
-9. **Límites.** Si has descubierto algo que el proyecto NO mide o dónde se rompe,
+10. **Límites.** Si has descubierto algo que el proyecto NO mide o dónde se rompe,
    añádelo a `LIMITS.md` numerado.
 
    **LA FAMILIA QUE MÁS VECES SE HA COLADO AQUÍ, y ya van cuatro:**
@@ -493,13 +519,42 @@ disable-model-invocation: true
    **Y una deuda con tamaño medido vale más que una promesa**: se puede priorizar
    contra otras, y no caduca en silencio.
 
-10. **ADR.** Si has tomado una decisión de diseño no prevista, escríbela en
+11. **ADR.** Si has tomado una decisión de diseño no prevista, escríbela en
    `docs/adr/` con su alternativa descartada y su trade-off.
 
-11. **ESTADO.md.** Marca $hito como CERRADO con su fecha y su número. Marca el
+12. **ESTADO.md.** Marca $hito como CERRADO con su fecha y su número. Marca el
    siguiente como PENDIENTE. No inventes hitos que no estén en el manual.
 
-12. **Commit.** Prepara el mensaje: qué cierra, **el número medido en el asunto** si lo
+13. **CHANGELOG y README, y se COMPRUEBA que se hicieron.**
+
+   Los dos ficheros que lee un extraño, y los dos que nadie recalculaba. **No es que
+   se olvidaran: es que nunca estuvieron en este guion** — `grep -i "readme\|changelog"`
+   sobre esta skill daba **cero** hasta el cierre de L4.
+
+   *El caso.* Con cuatro hitos más cerrados, `README.md` seguía en un commit de L0
+   —**33 commits atrás**— diciendo «Hito L0 de 10 de la `v0.1.0`. Todavía no hay
+   número» y publicando la puerta sobre `28186b9`. Y el propio README contiene la
+   frase *«en un repo que vende rigor, escribir en presente lo que no existe es el
+   peor fallo posible, más grave que un bug»*. `CHANGELOG.md` se había quedado en L2,
+   con su cabecera diciendo que cada entrada «se escribe al cerrarlo con `/cerrar`».
+
+   - **La entrada de CHANGELOG del hito.** Qué cambió, qué se decidió y qué se
+     retiró. Los números van en `RESULTS.md`, no aquí.
+   - **El estado del README no se escribe: se REGENERA.**
+
+     ```bash
+     uv run python scripts/estado_readme.py --escribir
+     ```
+
+     El titular y la tabla de estado salen de `ESTADO.md`, entre marcas HTML. **Un
+     fichero que hay que acordarse de tocar se queda rancio otra vez**, y ya sabemos
+     cuántos commits tarda. Lo hace cumplir `test_barreras.py` en la puerta.
+   - **Y los ticks ✅/🕓 de «Las cinco cosas que lo hacen distinto» llevan hito.** Ese
+     mecanismo es bueno y se conserva, pero **hay que moverlos**: un 🕓 sobre un hito
+     ya cerrado es la misma clase de mentira en presente. Eso no se puede derivar, así
+     que se mira a mano, aquí, una vez por cierre.
+
+14. **Commit.** Prepara el mensaje: qué cierra, **el número medido en el asunto** si lo
    hay, y los ficheros. No hagas push.
 
 Ejemplo de asunto bueno: `L2: TEDS validado contra PubTabNet, coincidencia a 4 decimales`

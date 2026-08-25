@@ -36,7 +36,14 @@ dev = [
 benchcore = { git = "https://github.com/marcosmatalab/benchcore", branch = "main" }
 
 [project.scripts]
-docbench = "docbench_es.cli.main:app"
+# EL ENTRY POINT SE RETIRA HASTA L5, que es quien escribe la CLI.
+# El ejecutable estaba declarado apuntando a un modulo de CLI que no existe, y
+# lanzarlo reventaba con ModuleNotFoundError: un ejecutable prometido que no existe es
+# exactamente lo que la regla que gobierna este repo llama el fallo más grave.
+# Las dos salidas eran retirarlo o crear un `main.py` con un `--help` que dijera
+# «todavía no»; se elige retirarlo porque este repo tiene una sección entera de
+# «Construido y NO VALIDADO» por adelantarse, y un stub es exactamente eso.
+# Encontrado en la auditoría en frío de `a0d85ed`. Vuelve con L5 y con su CLI.
 
 # Los adaptadores propios entran por el MISMO mecanismo que los de un cliente.
 # Los dos grupos de entry points nacen VACIOS a proposito, y cada linea vuelve

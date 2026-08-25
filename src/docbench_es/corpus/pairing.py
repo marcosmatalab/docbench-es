@@ -79,8 +79,9 @@ equivocado.** `sin_pdf` es que el fichero no llegó; `pdf_ilegible` es que lleg�
 la librería no pudo abrirlo — el primero se arregla mirando el origen y el
 segundo mirando el extractor de texto. Entró en el cierre de L3: quien inyecta los
 textos capturaba el error de `pypdf` y devolvía `None`, o sea que un PDF de 34
-páginas que `pypdf` no supiera abrir se publicaba como «no había PDF»."""
-"""Enum CERRADO. Sin cajón de sastre a propósito: un `otro` dejaría que un
+páginas que `pypdf` no supiera abrir se publicaba como «no había PDF».
+
+Es un enum CERRADO. Sin cajón de sastre a propósito: un `otro` dejaría que un
 documento que se cae desaparezca del informe con la mitad mala de su historia."""
 
 TOPE_TOKENS = 12_000

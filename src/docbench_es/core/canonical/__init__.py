@@ -76,9 +76,16 @@ def holes(t: CanonicalTable) -> tuple[tuple[int, int], ...]:
     **Corregido en L2:** `core.teds` NO llama a esta función. Construye su árbol
     recorriendo las celdas que originan en cada fila, así que el hueco no es un
     nodo que haya que omitir sino uno que nunca existió, y la distinción se
-    respeta por construcción. Quien la usa es `validate`, que declara los huecos,
-    y la usarán L4 y L5 para el informe. La justificación de L1 decía «lo que L2
-    usa» y era optimista.
+    respeta por construcción. **NADIE la usa en `src/` todavía, y aquí ponía que `validate`.**
+    `validate` no llama a `holes()`: pasa por `_invariantes._cobertura`, que es una
+    **segunda implementación** de «posición cubierta», y **las dos difieren para
+    tablas mal formadas** —`holes` recorta con `max`/`min`, el colocador descarta la
+    celda—. Encontrado en la auditoría en frío de `a0d85ed`; la justificación de L1
+    ya decía «lo que L2 usa» y también era optimista. Su primer consumidor real es el
+    informe de L5. **Que las dos implementaciones converjan o que una llame a la otra
+    es trabajo de L5**, con su precio en `ESTADO.md`: hoy lo que se arregla es la
+    afirmación, no el código, porque tocar `_cobertura` sin un consumidor que lo pida
+    es cambiar el comportamiento de `validate` a ciegas.
 
     Misma definición de «cubrir» que `cell_at`, calculada de una pasada sobre las
     celdas en vez de una consulta por posición: L2 la llama una vez por tabla y

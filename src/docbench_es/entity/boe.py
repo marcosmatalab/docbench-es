@@ -73,12 +73,21 @@ class BoeAdapter:
         self.sin_urls: list[str] = []
         """Ítems del sumario que traían identificador pero **no las dos URLs**.
 
-        Se publican al lado de `intentados` porque si no **desaparecen del
+        **SE RECOGEN Y TODAVÍA NO SE PUBLICAN, y esto decía que sí.** Nadie lee este
+        campo —ni en `src`, ni en `tests`, ni en `scripts`—, así que la frase «se
+        publican al lado de `intentados`» era falsa: encontrada en la auditoría en
+        frío de `a0d85ed`. Se conserva la recolección porque es gratis y el dato hace
+        falta el día que el informe lo lleve; lo que se quita es la afirmación. Va
+        como deuda en `ESTADO.md`, no como promesa aquí.
+
+        Cuando se publiquen, el argumento es el de siempre: si no, **desaparecen del
         denominador antes de existir**: no son un descarte —nunca se intentaron—
         pero tampoco son nada, y un origen que empezara a servir el `url_pdf` con
         otra forma vaciaría el corpus sin que ninguna cifra se moviera. Medido
-        sobre la ventana de L3: **0 de 1.043**."""
-        """Los días del rango que no tienen boletín. **Se cuentan, no se tragan.**"""
+        sobre la ventana de L3: **0 de 1.043**.
+
+        Y `dias_sin_boletin` son los días del rango sin boletín: **se cuentan, no se
+        tragan.**"""
 
     def discover(self, since: date, until: date, **filtros: object) -> Iterable[DocRef]:
         """Los documentos del rango, día a día y **perezosamente**.

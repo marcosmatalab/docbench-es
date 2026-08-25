@@ -304,12 +304,38 @@ def desacuerdos(documentos: list[tuple[str, str]], esperado: dict[str, int]) -> 
                 frase = m.group(0)
                 if HISTORICOS.get(frase, "\0") in plano:
                     continue
+                if _lleva_sello(plano, m.start(), m.end()):
+                    continue
                 if _es_nombre_propio(plano, m.start(), m.end()):
                     continue
                 valor = _valor(m.group(1))
                 if valor is not None and valor != esperado[clave]:
                     fallos.append(f"{nombre}: «{frase}» pero {clave} es {esperado[clave]}")
     return fallos
+
+
+def _lleva_sello(plano: str, ini: int, fin: int) -> bool:
+    """¿La cifra va acompañada de un SELLO? Entonces es una MEDICIÓN, no un recuento.
+
+    **La distinción que faltaba, y que este guardián violaba.** Un recuento
+    —«166 de 374»— lo recalcula `conftest.py` en cada colección, así que no puede
+    quedarse viejo y **tiene** que coincidir con el de hoy. Una **medición** con
+    sello —«sello `0717b70` · 164 tests, control negativo 0 de 164»— describe una
+    corrida concreta sobre un árbol concreto: **forzarla al valor de hoy la
+    falsifica**, y es exactamente lo que produjo tres pares divergentes en
+    `RESULTS.md` y `ESTADO.md`.
+
+    `scripts/sello.py` lo dice desde L3 con todas las letras: los recuentos «no
+    pueden quedarse viejos» y las mediciones «se hacen una vez y su denominador se
+    mueve solo por debajo». El guardián no distinguía las dos cosas y trataba a
+    todas como recuentos.
+
+    La ventana es **estrecha a propósito** —±240 caracteres sobre el texto
+    aplanado—: ante la duda se comprueba, que es la dirección segura para un
+    guardián. Un sello a media página no exime a nadie.
+    """
+    ventana = plano[max(0, ini - 240) : fin + 240]
+    return "sello" in ventana.lower()
 
 
 def _leidos() -> list[tuple[str, str]]:

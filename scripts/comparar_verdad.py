@@ -220,6 +220,7 @@ def main() -> int:
     fixtures = sorted((RAIZ / "runs" / "l4" / "fixtures").glob("*.json"))
     corregidos = informe_l4.corregidos(RAIZ)
     coinciden, con_discrepancia = 0, []
+    celdas_comparadas = celdas_ancladas = 0
     todas: list[Discrepancia] = []
     filas_informe: list[dict[str, object]] = []
     for f in fixtures:
@@ -238,6 +239,15 @@ def main() -> int:
                 fx, f.stem, len(ds), sorted({d.clase for d in ds}), f.stem in corregidos
             )
         )
+        # El denominador de la COBERTURA, contado aquí y no a ojo: las celdas
+        # transcritas frente a las que la tabla ENTERA tiene ancladas. El «53,1%» se
+        # publicó con un 2.283 que no emitía ningún script. Ver `informe_l4.cobertura`.
+        crudas, ultima = fx.get("filas"), fx.get("ultima_fila")
+        if isinstance(crudas, list):
+            celdas_comparadas += sum(len(x) for x in crudas if isinstance(x, list))
+        if isinstance(ultima, list):
+            celdas_comparadas += len(ultima)
+        celdas_ancladas += len(tabla.cells)
 
     print(f"\n  {coinciden} de {len(fixtures)} coinciden · {len(todas)} discrepancias")
     por_clase: dict[str, int] = {}
@@ -255,7 +265,9 @@ def main() -> int:
         f" + {cuentas['corregidas_tras_adjudicar']} corregidas"
     )
     if args.informe:
-        destino = informe_l4.escribir(RAIZ, filas_informe, len(todas))
+        destino = informe_l4.escribir(
+            RAIZ, filas_informe, len(todas), celdas_comparadas, celdas_ancladas
+        )
         print(f"  informe en {destino.relative_to(RAIZ)}")
     print("\n  SIN ADJUDICAR. La causa de cada una la decide una persona (ADR-0039).")
     return 0

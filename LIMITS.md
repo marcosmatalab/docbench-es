@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 374 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 376 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **208 tests restantes** —`congelados_l4` (38), `barreras` (14),
+    árbol de TEDS y el lote. Los **210 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (8),
@@ -503,7 +503,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `sin_consumidor` (3), `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **55,6% hoy** — y 53 de los 208 entraron de golpe con
+    12,4% al cerrar L2, **55,9% hoy** — y 53 de los 210 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7) y `guardianes_por_glob` (8), que son
     candados de fichero, de proceso y de glob, no código con mutante posible: sus
     controles negativos viven dentro —se manipula un fixture y se exige que la huella
@@ -512,7 +512,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **371 de 374 tests protegidos por algo** —un
+    *el arnés*, no la protección: **373 de 376 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -786,7 +786,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —371 de 374— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —373 de 376— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1315,3 +1315,96 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     cierra `v0.1.0`**. Es el mismo modo de fallo con cuatro veces la muestra y con
     anotadores de por medio; si ahí el orden tampoco está atestiguado, **el número
     que cierra el release depende otra vez de la buena fe de quien lo produce**.
+
+79. **EL GUARDIÁN DE RECUENTOS CUBRE UNA CLASE DE CINCO, Y NO DECÍA CUÁL.** Es el
+    límite 77 aplicado al propio guardián: una protección que vigila un quinto del
+    problema y no lo declara **se lee igual que una que lo vigila entero**. Los
+    documentos publicados producen cinco clases de número y `test_recuentos.py`
+    sincronizaba **una**:
+
+    | Clase | Quién la vigilaba |
+    |---|---|
+    | recuentos (`166 de 376`) | el guardián |
+    | porcentajes (`51,7%`) | **nadie** |
+    | deltas y restas (`+136`, `-7,3 puntos`) | **nadie** |
+    | sumas de una enumeración | **nadie** |
+    | sellos (`0717b70 · 164 tests`) | **nadie**, y salían de una variable ya impresa |
+
+    La auditoría en frío de `a0d85ed` encontró **doce números rotos**, once de esas
+    cuatro clases, y **tres imposibles por construcción**: `304 de 321` publicado
+    como 99,0% —es 94,70%, y 321−304 son 17, no 3—; una enumeración de **21**
+    rotulada *«Son 22 mutantes, y ésta es su composición completa, sin sumas que
+    cuadrar»*, tres líneas encima del recuadro que presume de haber arreglado ese
+    mismo fallo; y un sello de **164 tests** junto a un control negativo de **166**,
+    que salen de la **misma expresión** en `matar.py` y no pueden diferir.
+
+    **Y el tercero no era un dígito mal copiado: eran dos corridas presentadas como
+    una.** Reconciliado por ejecución: `seccion_sin_cerrar` entró en el `PLAN` en
+    `525c71d` (17:34), `0717b70` es de las 13:27, y su suite objetivo tiene 2 tests.
+    **164 + 2 = 166.** O sea que la corrida de `0717b70` midió **21** mutantes, no 22.
+    La misma clase apareció en la fila de L2 de `ESTADO.md` y en dos tablas de
+    `RESULTS.md` rotuladas «la de arriba» que no son la de arriba.
+
+    **El censo dijo el tamaño antes de decidir el arreglo: 285 expresiones con forma
+    derivada** en los cuatro documentos. A ese tamaño no se arregla a mano.
+
+    **La regla que sale, y es toda la regla:**
+
+    > **UN NÚMERO DERIVADO NO SE TECLEA. O lo emite el script que lo mide, o no se
+    > publica.**
+
+    El `1.213` de L4 estaba bien porque vive en `runs/l4/congelacion.json`. El
+    `2.283` del mismo párrafo estaba mal porque **no vivía en ninguna parte**:
+    reconstruirlo desde los fixtures da 2.301 o 2.281 según cómo se cuente. Se
+    arregló haciendo que el comparador lo emitiera, no tecleándolo mejor.
+
+    Lo cierra `scripts/derivadas.py`, en la puerta por `test_barreras_documentos.py`
+    y como paso 8 de `/cerrar`. **Y su hueco va declarado, como el del límite 54:**
+    comprueba la **aritmética interna** de lo publicado —que un porcentaje salga de
+    su fracción, que una enumeración sume lo que dice— y **no** que los operandos
+    sean ciertos. Un `304 de 321` con los dos números mal y el 94,7% bien pasa.
+
+80. **README y CHANGELOG nunca estuvieron en el guion de `/cerrar`, y se notó a los
+    33 commits.** `grep -i "readme\|changelog"` sobre la skill daba **cero**. Con
+    cuatro hitos más cerrados, `README.md` seguía en el commit `645ccfe` —de L0—
+    diciendo *«Hito L0 de 10 de la `v0.1.0`. Todavía no hay número»*, *«L1 a L8b
+    pendientes»*, y publicando la puerta sobre `28186b9`. `CHANGELOG.md` se había
+    quedado en L2, faltándole 22 commits, con su propia cabecera diciendo que cada
+    entrada «se escribe al cerrarlo con `/cerrar`».
+
+    **Y la ironía es el argumento:** el README contiene la frase *«en un repo que
+    vende rigor, escribir en presente lo que no existe es el peor fallo posible, más
+    grave que un bug»*, y hacía el reflejo exacto de esa frase.
+
+    **El arreglo no fue actualizarlo**, porque un fichero que hay que acordarse de
+    tocar se queda rancio otra vez y ya sabemos cuántos commits tarda: el titular y
+    la tabla de estado del README **se derivan de `ESTADO.md`** entre marcas HTML
+    (`scripts/estado_readme.py`), y lo hace cumplir la puerta. Lo que **no** se puede
+    derivar son los ticks ✅/🕓 de «las cinco cosas»: eso es un paso a mano en
+    `/cerrar`, dicho como tal.
+
+81. **Entre el 12 y el 15% de `src/` no tiene productor ni consumidor, y está
+    medido.** **14 de los 23 tipos declarados en `types/` no se construyen en ningún
+    punto de `src/`** —`Stratum`, `SamplingPlan`, `StructureMetrics`, `AnswerMetrics`,
+    `GlossaryMetrics`, `CampaignResult`, `GlossaryContribution`, `RoutingRule`,
+    `RoutingPlan`, `Question`, `AnswerResult`, `Fact`, `Term`, `ConfusablePair`—, y
+    `types/_campana.py` son **191 líneas de las que sólo `TedsReport` tiene
+    productor**. Hay además **14 ficheros de tres líneas útiles o menos**.
+
+    **Cinco defectos concretos que salieron con ello, y ésos SÍ se arreglaron en el
+    acto**, porque eran afirmaciones falsas o código muerto y no cobertura pendiente:
+    dos literales de cadena huérfanos —`entity/boe.py` y `corpus/pairing.py`, expresiones
+    evaluadas y tiradas—, una rama inalcanzable en `corpus/harvest.py`, un
+    `sin_urls` cuyo docstring afirmaba «se publican al lado de `intentados`» sin que
+    nadie lo lea, y un `holes()` cuyo docstring decía «quien la usa es `validate`»
+    cuando `validate` **no la llama**: pasa por `_invariantes._cobertura`, que es una
+    **segunda implementación** de «posición cubierta», y **las dos difieren para
+    tablas mal formadas**. Y el entry point `docbench` estaba declarado en
+    `pyproject.toml` apuntando a un módulo que no existe: `uv run docbench --help`
+    reventaba. **Retirado hasta L5**, que es quien escribe la CLI.
+
+    **La poda queda como deuda con su tamaño, no como promesa:** ~600 líneas fuera
+    sin perder funcionalidad, y vuelven cuando su hito las construya. Y hay tres
+    implementaciones idénticas de `tasa_descarte` —`pairing.py`, `_cosecha.py`,
+    `manifest.py`— en un repo cuyo propio `entity/boe.py` dice que **«dos copias del
+    mismo dato no pueden divergir»**.

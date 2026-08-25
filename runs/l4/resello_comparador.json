@@ -14,7 +14,7 @@
  "nuevos": [
   "scripts/informe_l4.py"
  ],
- "motivo": "se añadió `--informe` a `comparar_verdad.py`: emite runs/l4/informe.json con una fila por fixture —coincide, discrepancias, contaminada, corregido—. Es SALIDA, no una regla: ADR-0040 sigue igual y no se ha tocado. La serialización vive en scripts/informe_l4.py porque el comparador llegó a 309 líneas y el repo no admite ficheros por encima de 300 sin razón escrita.",
+ "motivo": "se añadió `--informe` a `comparar_verdad.py`: emite runs/l4/informe.json con una fila por fixture —coincide, discrepancias, contaminada, corregido—. Es SALIDA, no una regla: ADR-0040 sigue igual y no se ha tocado. La serialización vive en scripts/informe_l4.py porque el comparador llegó a 309 líneas y el repo no admite ficheros por encima de 300 sin razón escrita. · SEGUNDA vuelta, en la auditoria en frio de a0d85ed: el informe emite ahora la COBERTURA —celdas comparadas contra celdas ancladas en las 30 tablas—, porque el 2.283 del «53,1%» se publicaba sin que ningun script lo emitiera. Sigue siendo salida: mismo numero, mismos 5 controles, ADR-0040 intacto.",
  "prueba_de_que_es_solo_salida": {
   "numero_antes": "25 de 30 coinciden · 5 discrepancias",
   "numero_despues": "25 de 30 coinciden · 5 discrepancias",
@@ -23,10 +23,10 @@
  },
  "POR_QUE_NO_SE_SOBRESCRIBE_EL_ORIGINAL": "el sello original es lo que hace que «los 4 controles negativos hablan de lo que se midió» sea comprobable. Sobrescribirlo borraría esa propiedad; se añade al lado y el test exige que los 3 ficheros intactos SIGAN cuadrando con el original.",
  "huellas": {
-  "scripts/comparar_verdad.py": "ac7a96c7f87d80c947b44ef690310b12d5f0c426b44b614744649b87358bdb3d",
+  "scripts/comparar_verdad.py": "e2ae3039d6c850eab037e13c74fa69c7550d0e4165d15b4ba7b4dad9722d7c8d",
   "src/docbench_es/truth/derived.py": "356e450ecf229590db1aa0b19ae842f34f41bee1ee404388428c8c5bbc538497",
   "docs/adr/0040-las-reglas-del-comparador-de-verdad.md": "8d1cb738b9e49cd23c5720efdf302a0c848977025a1a5fff1d10e1b32017e4c9",
   "tests/unit/test_comparar_verdad.py": "3758d2e557b1d2cd445f56a2aaf7772feeda96f1a8e6338aa3184df1f6d1acd9",
-  "scripts/informe_l4.py": "f2c884ec1095edd8ea8bcf86321a4dcd16ecd896e2fc7464e23a710f6a1973ce"
+  "scripts/informe_l4.py": "4669ef7ed62a21ad57071306d8b65976df382555e0072953c272c25100f6e40f"
  }
 }
