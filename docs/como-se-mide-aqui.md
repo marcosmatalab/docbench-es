@@ -101,7 +101,7 @@ ocurre no es una comprobación: es suerte.
 **Este repo no construye ni construirá un extractor propio.** Si lo hiciera, su
 ranking valdría cero.
 
-Suena a precaución teórica. En agosto de 2026, de los seis bancos de extracción
+Suena a precaución teórica. En agosto de 2026, de los ocho bancos de extracción
 documental que cubren tablas o parseo multilingüe, **tres los publica quien vende lo
 que el banco mide**:
 
@@ -112,7 +112,9 @@ que el banco mide**:
 - **MORE** lo publican **nueve autores de Tencent**, la compañía que desarrolla
   HunyuanOCR — el sistema que sale primero en su tabla de español, con 97,25.
 
-Los otros tres —OmniDocBench, DocVQA y MDPBench— son académicos.
+OmniDocBench, DocVQA y MDPBench son académicos, y Dr. DocBench es un consorcio de once
+instituciones. El octavo, **XDocParse, no está publicado**: se describe y se puntúa
+contra él en el artículo de un modelo que lo encabeza.
 
 Verificado el 25 de agosto de 2026; el criterio de búsqueda y los seis con su reparto
 por idioma están en §1.2 del [manual](../MANUAL.md).

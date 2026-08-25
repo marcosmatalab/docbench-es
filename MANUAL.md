@@ -51,7 +51,7 @@ blogs de los proveedores, con los términos *table extraction benchmark multilin
 *document parsing benchmark Spanish*, *multilingual document benchmark 2026*; ventana
 **enero 2025 – agosto 2026**; y para cada candidato, lectura de la página del artículo
 para sacar **el reparto por idioma** y **cómo se construyó su verdad**. Fecha de corte:
-**25 ago 2026**. Los seis encontrados, con por qué ninguno cubre el hueco:
+**25 ago 2026**. Los ocho encontrados, con por qué ninguno cubre el hueco:
 
 | Benchmark | Quién lo publica | Tamaño | En español |
 |---|---|---|---|
@@ -60,7 +60,28 @@ para sacar **el reparto por idioma** y **cómo se construyó su verdad**. Fecha 
 | **MDPBench** (marzo 2026) | HUST, el grupo de `MultimodalOCR` — **académico** | 3.400 imágenes, 17 idiomas | ~200 muestras como techo optimista |
 | **MORE** (julio 2026, ICML 2026) | **Tencent**, que desarrolla HunyuanOCR | 1.288 páginas, 149 idiomas | **0 tablas.** El español tiene 80 párrafos, 10 de maquetación, 5 de fórmula y **cero de tabla** |
 | **ExtractBench** (jul 2026) | **LlamaIndex**, con su CTO entre los cinco autores | 4.869 páginas, 370 documentos | No declara reparto por idioma; el corpus es empresarial en inglés |
-| **PulseBench-Tab** (arXiv 2606.07534, enviado el 21 abr 2026) | **Pulse AI**, con Georgia Tech y S&P Global | 1.820 tablas, 9 idiomas, 380 documentos | **176 tablas, 9,7%. El tercer idioma**, tras inglés (594) y chino (213) |
+| **PulseBench-Tab** (arXiv 2606.07534) | **Pulse AI**, con Georgia Tech y S&P Global | 1.820 tablas, 9 idiomas, 380 documentos | **176 tablas, 9,7%. El tercer idioma**, tras inglés (594) y chino (213) |
+| **Dr. DocBench** (arXiv 2606.01393) | consorcio de 11 instituciones: 2077AI, Stanford, USC, Harvard, **IBM Research**, CMU, MIT y otras | 4.514 páginas, 14 idiomas | **45 páginas, 1,00%.** Sí trae tablas complejas, pero el muestreo es por *fallo del parser*, no por idioma |
+| **XDocParse** (en el artículo de `dots.ocr`, arXiv 2512.02498) | los autores de `dots.ocr` | 126 idiomas | **No se puede saber: el banco NO ESTÁ PUBLICADO.** Se describe y se puntúa contra él, y su propio modelo lo encabeza |
+
+**Y el criterio está COMPROBADO, no sólo declarado.** La pregunta que lo valida es una:
+*¿con estos términos se habría encontrado lo que se escapó en agosto?* Se corrieron.
+**`table extraction benchmark multilingual` devuelve PulseBench-Tab como primer
+resultado.** Sí: el hueco de agosto no era la ventana —PulseBench-Tab cae dentro por
+las dos fechas— **eran los términos**.
+
+**Y en la misma corrida el criterio demostró que la lista se quedaba corta.**
+`document parsing benchmark Spanish` sacó **dos candidatos que no estaban entre los
+seis**: Dr. DocBench y XDocParse. Están añadidos arriba. Un criterio que al estrenarse
+no encuentra nada nuevo no es un criterio: es la lista de siempre con una cabecera.
+
+**Sobre la fecha de PulseBench-Tab, porque hay DOS y contarlas como una es contar
+mal.** Fue **enviado a arXiv el 21 de abril de 2026** —historial de envíos de su página
+`abs`, línea `[v1] Tue, 21 Apr 2026 18:19:44 UTC`— y **anunciado en junio de 2026**,
+que es lo que codifica el `2606`: según el [esquema oficial de
+identificadores](https://info.arxiv.org/help/arxiv_identifier.html), `YYMM` es **el año
+y el mes en que el artículo se añadió a arXiv**. Aquí llegó a ponerse que *«el 2606 no
+es su fecha»*, y es falso: sí lo es, la del anuncio.
 
 **El que más se acerca es PulseBench-Tab, y por eso la afirmación cambia de forma.** Su
 verdad es **anotación humana**: 8 rondas de etiquetado, hablantes nativos por idioma,
