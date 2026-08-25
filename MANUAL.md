@@ -34,20 +34,47 @@ Está escrito para que puedas construir el proyecto entero sin volver a pregunta
 
 Tienes miles de PDFs en español con tablas: convenios colectivos, pliegos, expedientes de contratación, cuentas anuales, facturas. Quieres que una IA conteste preguntas sobre ellos. El primer paso es sacar el texto y las tablas del PDF, y hay unas quince herramientas que lo hacen, de gratis a caras, con un rango de calidad enorme.
 
-**Nadie sabe cuál usar con documentos en español, porque no existe ningún benchmark en español.** `docbench-es` lo mide, y mide lo que de verdad importa: no qué extractor saca mejor nota técnica, sino **cuántas respuestas finales pierdes por elegir mal**.
+**Nadie sabe cuál usar con documentos en español, porque no existe ningún banco DEDICADO al español.** El que más español tiene son **176 tablas dentro de un multilingüe de 1.820**, y su verdad es **anotada a mano**, así que **no crece**: 176 es su techo mientras nadie pague más anotadores. `docbench-es` lo mide, y mide lo que de verdad importa: no qué extractor saca mejor nota técnica, sino **cuántas respuestas finales pierdes por elegir mal**.
 
 Y no es un estudio de laboratorio: el motor no sabe qué es el BOE. Cualquier entidad, una diputación, una aseguradora o una empresa privada, entra por un adaptador de siete métodos, con su fuente de documentos, su modo de verdad de referencia, su licencia, su política de privacidad y su vocabulario.
 
 ### 1.2 El hueco, contado página a página
 
-Verificado el 19 de agosto de 2026 contra los cuatro únicos candidatos:
+**Re-verificado el 25 de agosto de 2026**, y esta vez **con el criterio escrito**, que
+es lo que hace que se pueda repetir y auditar. La verificación del 19 de agosto decía
+*«los cuatro únicos candidatos»* y **se le escapó uno**; no dejó escrito qué se buscó
+ni dónde, así que no se podía repetir. Es la clase de afirmación no auditable del
+límite 78, pero **sobre la premisa del proyecto** en vez de sobre un congelado.
 
-| Benchmark | Tamaño | En español |
-|---|---|---|
-| **OmniDocBench** (CVPR 2025) | 981 páginas | **0**. Son 290 en inglés, 612 en chino y 79 mixtas |
-| **DocVQA** (CVC-UAB, Barcelona) | Grande | **0**. Equipo español, documentos en inglés del archivo tabacalero de la UCSF |
-| **MDPBench** (marzo 2026) | 3.400 imágenes, 17 idiomas | ~200 muestras como techo optimista |
-| **MORE** (Tencent, julio 2026) | 1.288 páginas, 149 idiomas | Unidades de páginas |
+**Cómo se buscó, para que se pueda rehacer:** búsqueda web sobre arXiv, GitHub y los
+blogs de los proveedores, con los términos *table extraction benchmark multilingual*,
+*document parsing benchmark Spanish*, *multilingual document benchmark 2026*; ventana
+**enero 2025 – agosto 2026**; y para cada candidato, lectura de la página del artículo
+para sacar **el reparto por idioma** y **cómo se construyó su verdad**. Fecha de corte:
+**25 ago 2026**. Los seis encontrados, con por qué ninguno cubre el hueco:
+
+| Benchmark | Quién lo publica | Tamaño | En español |
+|---|---|---|---|
+| **OmniDocBench** (CVPR 2025) | OpenDataLab · Shanghai AI Laboratory — **académico** | 981 páginas | **0**. Son 290 en inglés, 612 en chino y 79 mixtas |
+| **DocVQA** (CVC-UAB, Barcelona) | CVC-UAB — **académico** | Grande | **0**. Equipo español, documentos en inglés del archivo tabacalero de la UCSF |
+| **MDPBench** (marzo 2026) | HUST, el grupo de `MultimodalOCR` — **académico** | 3.400 imágenes, 17 idiomas | ~200 muestras como techo optimista |
+| **MORE** (julio 2026, ICML 2026) | **Tencent**, que desarrolla HunyuanOCR | 1.288 páginas, 149 idiomas | **0 tablas.** El español tiene 80 párrafos, 10 de maquetación, 5 de fórmula y **cero de tabla** |
+| **ExtractBench** (jul 2026) | **LlamaIndex**, con su CTO entre los cinco autores | 4.869 páginas, 370 documentos | No declara reparto por idioma; el corpus es empresarial en inglés |
+| **PulseBench-Tab** (arXiv 2606.07534, enviado el 21 abr 2026) | **Pulse AI**, con Georgia Tech y S&P Global | 1.820 tablas, 9 idiomas, 380 documentos | **176 tablas, 9,7%. El tercer idioma**, tras inglés (594) y chino (213) |
+
+**El que más se acerca es PulseBench-Tab, y por eso la afirmación cambia de forma.** Su
+verdad es **anotación humana**: 8 rondas de etiquetado, hablantes nativos por idioma,
+revisión cruzada por revisores especialistas y una auditoría celda a celda contra la
+imagen. Es un trabajo serio, y **precisamente por serlo no escala**: 176 tablas en
+español son su techo mientras nadie pague más anotadores.
+
+**Lo que sigue sin existir, dicho en positivo:** un banco **dedicado** al español, con
+verdad de referencia que **crezca sin anotar a mano** —que es lo que hace posible el
+par PDF/XML del BOE—, y que mida **el efecto sobre la respuesta final** y no sólo la
+nota técnica de la extracción. Ninguno de los seis lo hace, y `docbench-es` no compite
+con ellos en su terreno: PulseBench-Tab mide mejor la estructura de una tabla suelta
+de lo que la va a medir este repo.
+
 
 Lo que sí hay en español es **texto ya extraído**, no documento: LexBOE del BSC (58.453 filas de clasificación) y BOE-XSUM (3.648 resúmenes). Ninguno mide la extracción.
 
@@ -2038,7 +2065,9 @@ Los tres releases, en orden, y cada uno es publicable por sí solo.
 
 ## 20. Cómo se cuenta en una entrevista
 
-1. *"No existe ningún benchmark de comprensión documental nativo en español. OmniDocBench tiene 981 páginas y cero en español; MORE tiene 1.288 repartidas entre 149 idiomas. Lo comprobé uno por uno."*
+1. *"No existe ningún banco DEDICADO al español. El que más tiene son 176 tablas dentro de un multilingüe de 1.820, y su verdad es anotada a mano, así que no crece. OmniDocBench tiene 981 páginas y cero en español; MORE tiene 1.288 repartidas entre 149 idiomas y **cero tablas** en español. Verificado con criterio escrito el 25 de agosto de 2026; la lista y cómo se buscó están en §1.2."*
+
+   > **Aquí ponía «lo comprobé uno por uno», en primera persona y sin fecha.** La comprobación del 19 de agosto tenía un hueco —se le escapó PulseBench-Tab— y no dejó escrito qué se buscó ni dónde, así que nadie podía repetirla. **La frase se queda sólo porque ahora hay un criterio detrás y una fecha de corte**; sin eso se habría retirado.
 2. *"El BOE publica el mismo documento como PDF firmado y como XML con marcado de tabla real, así que la verdad de referencia sale gratis y a escala. Eso me deja gastar todo el esfuerzo en la capa que importa."*
 3. *"Y la capa que importa no es cuánto acierta el parser, es cuántas respuestas finales pierdes al elegir mal. Por eso hay un extractor `oracle` que devuelve la verdad y marca el techo del pipeline: sin ese brazo de control, mi titular mezclaría el error del extractor con el del resto de la tubería."*
 4. *"El motor no sabe qué es el BOE. Una diputación o vuestra empresa entran implementando siete métodos. Y si vuestros documentos no pueden salir de vuestra red, el adaptador lo declara y el motor se niega a llamar a ningún modelo por API: no es una advertencia en el README, la campaña no arranca."*

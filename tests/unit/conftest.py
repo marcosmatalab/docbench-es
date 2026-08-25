@@ -110,6 +110,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_congelados_l4.py": "test_un_fixture_manipulado_no_cuadra_con_su_huella",
     "test_guardianes_l4.py": "test_re_congelar_aborta_sin_correccion_registrada",
     "test_guardianes_por_glob.py": "test_si_el_glob_se_rompe_el_recuento_lo_delata",
+    "test_documentos_que_sostienen.py": "test_un_documento_que_acumula_no_lleva_tope",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

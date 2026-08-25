@@ -492,19 +492,19 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 376 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 384 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **210 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **218 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
-    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (8),
+    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (8), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (5), `sellar_xml` (4), `errors` (3),
     `sin_consumidor` (3), `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **55,9% hoy** — y 53 de los 210 entraron de golpe con
-    `congelados_l4` (38), `guardianes_l4` (7) y `guardianes_por_glob` (8), que son
+    12,4% al cerrar L2, **56,8% hoy** — y 61 de los 218 entraron de golpe con
+    `congelados_l4` (38), `guardianes_l4` (7) y `guardianes_por_glob` (8), `documentos_que_sostienen` (8), que son
     candados de fichero, de proceso y de glob, no código con mutante posible: sus
     controles negativos viven dentro —se manipula un fixture y se exige que la huella
     deje de cuadrar, se le da al guardián de la re-congelación una huella movida sin
@@ -512,7 +512,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **373 de 376 tests protegidos por algo** —un
+    *el arnés*, no la protección: **381 de 384 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -786,7 +786,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —373 de 376— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —381 de 384— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que

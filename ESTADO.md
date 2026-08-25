@@ -165,7 +165,7 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 376 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 384 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -173,8 +173,8 @@ nota. Ver LIMITS 49.
    |---|---|---|---|---|---|---|
    | al cerrar **L2** | 185 | 162 | 87,6% | 182 | 98,4% | 3 |
    | **L3**, cerrado | 321 | 166 | 51,7% | 318 | 99,1% | 3 |
-   | **L4**, cerrado | 376 | 166 | 44,1% | 373 | 99,2% | 3 |
-   | delta L3→L4 | **+55** | **0** | **−7,6 puntos** | **+55** | **+0,1 puntos** | **0** |
+   | **L4**, cerrado | 384 | 166 | 43,2% | 381 | 99,2% | 3 |
+   | delta L3→L4 | **+63** | **0** | **−8,5 puntos** | **+63** | **+0,1 puntos** | **0** |
 
    **Y las dos series van en direcciones distintas, que es exactamente lo que había
    que saber antes de L5. La divergencia es ESTRUCTURAL, no deterioro**, y hay que
@@ -204,9 +204,9 @@ nota. Ver LIMITS 49.
 
    **Ya hay tres puntos, y la proyección de L3 se cumplió por poco.** Se publicó
    *«si L4 añadiera tests fuera del arnés al ritmo de L3 y ni un mutante, la
-   cobertura del arnés bajaría del 51,7% al entorno del 50%»*. Bajó a **44,1%**,
-   o sea **más de lo proyectado**: L4 añadió 55 tests y **cero mutantes**, y 55 de
-   55 quedaron fuera del arnés. La proyección erraba porque suponía «al ritmo de
+   cobertura del arnés bajaría del 51,7% al entorno del 50%»*. Bajó a **43,2%**,
+   o sea **más de lo proyectado**: L4 añadió 63 tests y **cero mutantes**, y 63 de
+   63 quedaron fuera del arnés. La proyección erraba porque suponía «al ritmo de
    L3» y L4 fue más extremo: todo lo que añadió son candados de fichero y de
    proceso, que no admiten mutante.
 

@@ -36,7 +36,7 @@ de cada número vive con su método, en `docs/metrics.md`.
 - **`scripts/derivadas.py`** y **`scripts/estado_readme.py`**, de la auditoría en
   frío: el primero recalcula los números derivados de los documentos publicados, el
   segundo deriva el estado del README desde `ESTADO.md`.
-- **55 tests nuevos** (321 → 376), todos en candados de fichero, de proceso y de
+- **63 tests nuevos** (321 → 384), todos en candados de fichero, de proceso y de
   glob: `test_congelados_l4`, `test_guardianes_l4`, `test_guardianes_por_glob`.
 
 #### Decidido
