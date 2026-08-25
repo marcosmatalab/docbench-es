@@ -1,0 +1,108 @@
+# COMO SE ESTIMA EL TOTAL DE B5-bis · escrito ANTES de medir
+#
+# Sustituye al metodo de la revision 1, que era medir los documentos MAS LARGOS de cada
+# banda y censurar por tope el que no cupiera. Ese metodo estaba mal, y el porque esta
+# en runs/l5/termica.yaml, seccion censura. En una linea: los 38 documentos de mas de 50
+# paginas son el 3,8% de los documentos y EL 36,6% DE LAS PAGINAS, asi que censurarlos
+# no recorta la cola, tira el tercio que decide la respuesta.
+
+hito: L5
+mide: B5-bis
+decide: si L5 corre sobre los 1.000 documentos o sobre una muestra
+regla_de_decision: runs/l5/computo.yaml   # intacta: si no cabe, se recortan EXTRACTORES
+
+# ------------------------------------------------------------------ EL CENSO
+# NINGUNO DE ESTOS NUMEROS SE TECLEA. Salen de runs/l3/manifiesto.json al correr, y el
+# estimador aborta si el manifiesto no los reproduce. Aqui estan para poder confrontarlo.
+censo_declarado:
+  documentos: 1000
+  paginas: 10298
+  comando: uv run python scripts/censo_paginas.py
+
+# --------------------------------------------------------------- LAS BANDAS
+# Las del COSTE, que NO son las del informe. Trabajos distintos, criterios distintos.
+bandas_del_coste:
+  cuales: "<=10 | 11-50 | >50 paginas"
+  de_donde: la agrupacion secundaria de B2 (ExtractBench)
+  reparto: "776 doc / 3.199 pag (31,1%) · 186 / 3.329 (32,3%) · 38 / 3.770 (36,6%)"
+  por_que_esta_y_no_la_primaria: >
+    Porque su banda alta es ESTRECHA y por tanto un documento representativo la
+    representa de verdad: 22 de sus 38 documentos caen entre 84 y 96 paginas, p25=84 y
+    p75=93. La agrupacion primaria de B2 (1-4 / 5-12 / 13+) tiene su banda alta de 15 a
+    55 en los cuartiles y se lleva el 60,7% de las paginas: demasiado heterogenea para
+    un modelo de coste. La primaria sigue siendo la del informe de resultados.
+  por_que_por_bandas_y_no_un_coste_por_pagina_global: >
+    Porque el coste por pagina NO es constante con la longitud, y esta medido en este
+    repo: los KB por pagina caen un factor 5,6 (RESULTS 1212-1218), y el coste de cargar
+    el modelo se reparte entre mas paginas igual que el de fuentes y metadatos. Un
+    coste/pagina medido en cortos y aplicado a largos es EL ERROR DE LOS 533 MB DE L3.
+
+# ------------------------------------------------------------------ LA SUMA
+formula:
+  total: "sum sobre bandas de (paginas de la banda x coste por pagina de la banda)"
+  desarrollada: "3.199 x c1 + 3.329 x c2 + 3.770 x c3"
+  por_extractor: >
+    Se calcula UNO POR EXTRACTOR y luego se suman los extractores que vayan a correr.
+    Sumar primero y repartir despues supondria que todos cuestan lo mismo, que es
+    exactamente lo que B5-bis existe para no suponer.
+
+# --------------------------------------------------------------- LA MUESTRA
+muestra:
+  n_por_banda: 6
+  como: >
+    ALEATORIA dentro de cada banda, con semilla declarada. No «los mas largos» —era el
+    metodo viejo y sesgaba hacia arriba— ni «los medianos» —comodo, pero entonces el
+    intervalo no seria un intervalo de muestreo y habria que decirlo—. Aleatoria es lo
+    unico que hace que el bootstrap signifique lo que dice.
+  semilla: 20260825
+  excluido: >
+    EL DOCUMENTO DE 309 PAGINAS, y solo ese. Es el 3,0% de todas las paginas del corpus
+    y el unico por encima de 182. Sus 309 paginas SIGUEN CONTANDO en P3 = 3.770: lo que
+    se excluye es que caiga en la MUESTRA, no del total.
+  direccion_del_sesgo_por_excluirlo: >
+    CONSERVADORA, y se puede argumentar antes de medir: hay un coste FIJO por documento
+    —cargar el modelo, las fuentes, los metadatos— que se reparte entre sus paginas, asi
+    que el coste POR PAGINA baja con la longitud. Excluir el documento mas largo deja la
+    muestra en documentos mas cortos, con coste/pagina mas alto, asi que c3 sale ALTO y
+    el total sale ALTO. Si el veredicto es «cabe», cabe de verdad.
+  se_comprueba_despues: >
+    Regresion de coste/pagina contra paginas dentro de la banda 3. Si la pendiente NO es
+    negativa, el argumento de arriba es falso y hay que publicarlo como tal.
+
+# ----------------------------------------------------------- CUANDO SE PARA
+regla_de_parada:
+  base: n=6 por banda, 18 documentos, por cada extractor
+  si_el_intervalo_sale_ancho: >
+    Si el intervalo del total es mas ancho que +-25% del punto, se anaden 3 documentos
+    mas por banda y se vuelve a informar, hasta n=12. Escrito ahora para que anadir
+    muestra no sea una decision tomada mirando el resultado.
+  si_sigue_ancho_con_n_12: >
+    Se publica ancho, con su n y su anchura. Un intervalo ancho es un resultado.
+
+# ------------------------------------------------------- EL INTERVALO Y SU REGLA
+intervalo:
+  metodo: bootstrap de percentiles, 10.000 remuestreos
+  que_se_remuestrea: >
+    DOCUMENTOS DENTRO DE CADA BANDA, independientemente por banda. Es la regla de oro 3
+    del repo: las paginas de un mismo documento estan correlacionadas, y remuestrear
+    paginas daria un intervalo falsamente estrecho.
+  estimador_por_banda: "c_b = suma de coste de la banda / suma de paginas de la banda"
+  por_que_ese_y_no_la_media_de_los_cocientes: >
+    Es un estimador de razon, y es el que corresponde a la formula: el total quiere el
+    coste medio POR PAGINA de la banda, no la media de los coste/pagina por documento,
+    que daria mas peso a los documentos cortos dentro de la banda.
+
+# -------------------------------------------------------- EN QUE MONEDA DECIDE
+decide_en:
+  moneda: RELOJ DE PARED, al numero de hilos con el que se correria de verdad
+  por_que: >
+    «Cabe esta noche?» depende de los hilos. Los segundos de CPU son invariantes a los
+    hilos y contestan otra pregunta —la factura de la nube—, asi que un «cabe» calculado
+    en segundos de CPU no es un «cabe». Las dos se publican; decide el reloj.
+  el_puente: "reloj ~= segundos de CPU / hilos efectivos, con hilos_efectivos MEDIDO por unidad"
+  presupuesto: >
+    El de runs/l5/computo.yaml, intacto: si los ocho sobre los 1.000 pasan de ~4 h de
+    reloj, no cabe y se recortan EXTRACTORES, no documentos.
+  el_reloj_que_se_publica_lleva_al_lado: >
+    Los hilos configurados, los hilos efectivos medidos, y que WSL ve 8 procesadores de
+    los 32 logicos del anfitrion. Sin eso es una cifra desnuda.

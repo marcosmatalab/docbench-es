@@ -17,47 +17,81 @@ por_que_va_aparte_de_computo_yaml: >
   van en su propio fichero, con su propia fecha.
 
 # ------------------------------------------------------------------ EL SOBRE
+# 2026-08-25, revision 2. El primer sobre era 80/72, y ese numero no tenia dato
+# detras: era una precaucion. AMD documenta que el procesador esta disenado para
+# funcionar a TJMax —~95 grados— de forma CONTINUA sin deterioro, y el silicio se
+# frena solo antes de sufrir. 90/82 deja 5 grados de colchon sobre el punto donde el
+# fabricante dice que puede vivir permanentemente.
 limites:
-  techo_c: 80          # a partir de aqui el gobernador manda SIGSTOP al hijo
-  reanudar_c: 70       # y SIGCONT al bajar de aqui
-  objetivo_media_c: 72 # la media de la sesion, descansos incluidos
+  techo_c: 90          # a partir de aqui el gobernador manda SIGSTOP al hijo
+  reanudar_c: 84       # y SIGCONT al bajar de aqui
+  objetivo_media_c: 82 # la media de la sesion, descansos incluidos
   resolucion_s: 2.0    # cada cuanto se lee el termometro. Es la resolucion del control.
 
 carga:
-  hilos_con_termometro: 6     # el gobernador acota el pico por MEDICION
+  # 8, que es TODO lo que WSL ve en esta maquina (32 logicos en el anfitrion). Con el
+  # techo en 90 no hace falta dejar margen por miedo: lo acota la medicion.
+  hilos_con_termometro: 8
   hilos_sin_termometro: 2     # a ciegas: se compensa con menos carga, no con promesas
-  descanso_base: 0.35         # pausa = trabajo x factor, adaptado por la media
-  descanso_tope_s: 180
+  descanso_base: 0.15         # pausa = trabajo x factor, adaptado por la media
+  descanso_tope_s: 120
   prioridad: nice -n 19
-  tope_unidad_min: 45         # una unidad que pase de aqui se MATA y se censura
+  tope_unidad_min: 20         # RED DE SEGURIDAD, no metodo de muestreo. Ver censura.
 
 # ------------------------------------------------------------- LA CENSURA
 # El documento mas largo del corpus son 309 paginas. docling sobre eso es UNA unidad
 # indivisible de posiblemente una hora: la carga sostenida que hay que evitar, y lo
 # contrario de estar partido. No se esconde: se CENSURA POR LA DERECHA.
 censura:
-  regla: >
-    Una unidad que pase de tope_unidad_min se mata y se registra ok=false,
-    causa=TOPE_MINUTOS, censurada=true. Su cpu_s es una COTA INFERIOR, no una medida.
-  por_que_basta: >
-    B5-bis no pregunta cuanto cuesta exactamente: pregunta SI CABE. Una cota inferior
-    contesta que no cabe en cuanto cota x 1.000 pasa del presupuesto. Contesta la
-    pregunta sin terminar la medida.
-  como_se_publica: >
-    Las censuradas NO entran en la mediana. Se cuentan aparte y se dice cuantas son.
-    Una mediana que se come una censurada como si fuera una medida es una mentira.
+  QUE_CAMBIO: >
+    La revision 1 de este fichero decia que censurar el documento de 309 paginas
+    «basta, porque B5-bis no pregunta cuanto cuesta sino SI CABE». ERA FALSO, y de tres
+    formas distintas. Se deja escrito porque el error importa mas que la correccion.
+  fallo_1_supervivencia: >
+    Excluir las censuradas de la mediana la sesga A LA BAJA: solo contribuyen las
+    rapidas. Es sesgo de supervivencia, y justo en el sitio donde esta el coste.
+  fallo_2_la_pregunta_es_una_suma: >
+    «Cabe?» no es una pregunta sobre la MEDIANA sino sobre la SUMA. Una suma construida
+    desde una mediana sesgada a la baja esta mal dos veces.
+  fallo_3_la_cota_solo_decide_en_un_sentido: >
+    Una cota inferior valida decide SI YA NO CABE. Si sale que cabe, no se sabe nada,
+    porque lo censurado puede reventarlo. La mitad de los desenlaces queda sin contestar.
+  fallo_4_el_tercio_del_computo: >
+    Y el mas grave: los 38 documentos de mas de 50 paginas son el 3,8% de los documentos
+    y el 36,6% de las PAGINAS. Censurarlos no recorta la cola: tira el tercio que decide.
+  que_se_hace_ahora: >
+    El metodo esta en runs/l5/estimacion.yaml: coste por PAGINA medido por bandas sobre
+    documentos de tamano representativo, y total por suma ponderada por las paginas de
+    cada banda. Ninguna unidad deberia pasar de unos minutos.
+  para_que_queda_el_tope: >
+    Como RED DE SEGURIDAD contra un extractor que se cuelga, no como metodo. Si salta,
+    es un fallo que hay que mirar, y la unidad se registra censurada=true para que se
+    vea. Con el metodo nuevo no deberia saltar nunca.
   el_tiempo_pausado_no_cuenta: >
     El tope se mide sobre reloj MENOS pausado_s. Un proceso parado por el gobernador no
     estaba trabajando, y penalizarlo por enfriar la maquina seria medir la refrigeracion.
 
 # ------------------------------------------------- LA MONEDA, Y POR QUE CAMBIA
+# Revision 2: SON DOS MONEDAS Y CONTESTAN PREGUNTAS DISTINTAS. La revision 1 decia
+# «primaria: segundos de CPU» y con eso habria contestado «cabe?» en la moneda que NO
+# contesta esa pregunta.
 moneda:
-  primaria: segundos de CPU (ru_utime + ru_stime del hijo, via os.wait4)
-  por_que: >
-    El gobernador para el proceso con SIGSTOP. Eso corrompe el reloj y NO corrompe los
-    segundos de CPU. Ademas los segundos de CPU son lo que se factura en la nube, que es
-    la pregunta que B5-bis contesta: cuanto cuesta correr los ocho sobre los mil.
-  secundaria: segundos de reloj, publicados SIEMPRE con hilos, pausas y pausado_s al lado
+  segundos_de_cpu:
+    que_contesta: cuanto COMPUTO consume. Es la pregunta de la factura en la nube.
+    como_se_mide: ru_utime + ru_stime del hijo, via os.wait4
+    invariante_a: el numero de hilos, el SIGSTOP y el ciclo de trabajo
+  reloj_de_pared:
+    que_contesta: «termina esta noche?». ES LA PREGUNTA DE B5-bis.
+    como_se_mide: reloj menos pausado_s, o sea trabajo efectivo
+    depende_de: el numero de hilos, y por eso NUNCA se publica sin el al lado
+  la_que_decide: >
+    EL RELOJ, evaluado al numero de hilos con el que se correria de verdad. Un «cabe»
+    calculado en segundos de CPU no es un «cabe».
+  el_puente: >
+    reloj ~= segundos de CPU / hilos efectivos. Por eso cada medida guarda
+    hilos_efectivos = cpu_s / trabajo_s MEDIDO, no el configurado: pdfplumber es
+    monohilo y docling no, asi que el efectivo es distinto en cada fila y es lo unico
+    que permite reescalar el reloj a otro numero de trabajadores.
   no_publicable: >
     Un s/pagina de reloj sin decir con cuantos hilos se midio. Seria una cifra desnuda.
 

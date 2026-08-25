@@ -1455,29 +1455,49 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     comprueba que `runs/l5/computo.yaml` tenga una clave `regla:`, ni que la regla
     que contiene sea la que se aplicó. Eso lo sostiene el cierre del hito, a mano.
 
-84. **LA PUERTA NO COMPRUEBA TIPOS EN `scripts/`, Y ALLÍ ES DONDE SE MIDE.** `make
-    fast` corre `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, o
-    sea que se tipa lo que un test importe y nada más. Y `scripts/` es exactamente
-    donde viven `comparar_verdad.py`, `derivadas.py`, `computo_l5.py` y los demás
-    programas **que producen los números que se publican**.
+84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 22 DE 36.** `make fast` corre
+    `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, así que se tipa
+    **lo que un test alcance** —directa o transitivamente— y nada más.
 
-    Medido, no supuesto: al escribir B5-bis, `uv run mypy scripts/*.py` sacó errores
-    reales en ficheros que la puerta daba por buenos. Se corrigieron a mano.
+    **Las dos mitades, y hablan de subconjuntos distintos.** Un script que un test
+    importa **sí** lo tipa la puerta, incluso a través de otro script: `informe_l4.py`
+    no lo importa ningún test, pero sí `comparar_verdad.py`, y por ahí llega. Lo que
+    la puerta **no** ve son los huérfanos, que nadie importa. Decir «la puerta no tipa
+    `scripts/`» a secas es más grande que el hueco real.
 
-    **No está arreglado a propósito**: meter `scripts` en la puerta hoy la pondría
-    roja por ficheros de un solo uso de hitos ya cerrados, y ésa es una tarde de
-    trabajo que no toca ahora. Precio y fecha: con L5, cuando `scripts/` deje de ser
-    un cajón y los que sobrevivan tengan consumidor.
+    **Comprobado plantando el fallo en los dos sitios**, no deducido: se añadió
+    `def _plantado() -> int: return "no soy un int"` al final de `scripts/informe_l4.py`
+    —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
+    cazó el primero y **no vio el segundo**.
+
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **59** scripts,
+    **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
+    nada—, **14 los alcanza algún test** y **22 no**. Entre los 22 están `derivadas.py`
+    y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
+    se publican**. Y este mismo censo es uno de los 22: se cuenta a sí mismo.
+
+    **No está arreglado a propósito**: meter `scripts` entero en la puerta hoy la pondría
+    roja por programas de un solo uso de hitos ya cerrados, y ésa es una tarde que no
+    toca. Precio y fecha: con L5, cuando `scripts/` deje de ser un cajón y los que
+    sobrevivan tengan consumidor.
 
 85. **EL COSTE DE B5-bis SE MIDE DENTRO DE UN SOBRE TÉRMICO, ASÍ QUE EL RELOJ NO ES
     EL SUELO DE LA MÁQUINA.** La primera versión del cómputo corrió los cuatro
     extractores en un solo proceso sin límite de hilos: `docling` carga *torch*,
     *torch* cogió los 8 procesadores que WSL ve, y la CPU llegó a **85 °C** —dentro
     de especificación para un 9950X3D, Tjmax 95 y corte térmico 115, pero por encima
-    de lo que el dueño de la máquina quiere—. Desde entonces se mide con los hilos
+    de los 65 °C que el dueño de la máquina pidió al principio—. Desde entonces se mide
+    con los hilos
     fijados, con `nice -n 19`, con pausas entre unidades y, cuando hay termómetro,
     con el proceso **parado por `SIGSTOP`** al pasar del techo. El sobre está
     declarado en `runs/l5/termica.yaml`.
+
+    **El techo se relajó después a 90 °C de pico y 82 °C de media**, con su razón
+    escrita: AMD documenta que el procesador está diseñado para funcionar a TJMax
+    —~95 °C— de forma continua sin deterioro, y el silicio se frena solo antes de
+    sufrir. 90/82 deja 5 °C de colchón sobre el punto donde el fabricante dice que
+    puede vivir permanentemente. **Los 65 °C iniciales no eran un límite físico:
+    eran una precaución sin dato.**
 
     **La consecuencia sobre los números**: los segundos de **reloj** de B5-bis no son
     el coste mínimo alcanzable en esta máquina, y **no se publican sin decir con

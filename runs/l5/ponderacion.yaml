@@ -1,0 +1,67 @@
+# COMO SE PROMEDIA EL TEDS EN LA TABLA DE L5 · escrito ANTES de medir nada
+#
+# La pregunta la abre un numero del censo: los 38 documentos de mas de 50 paginas son
+# el 3,8% de los DOCUMENTOS y el 36,6% de las PAGINAS. Con esa asimetria, «el TEDS medio»
+# no es una cosa: son tres cosas distintas que dan tres numeros distintos.
+#
+#   por documento        -> los 38 largos pesan 3,8%. La tabla habla de documentos cortos.
+#   ponderado por pagina -> los largos pesan 36,6%. Se parece a lo que siente quien
+#                           procesa un boletin entero.
+#   por tabla            -> pesa cada tabla igual, venga de donde venga.
+#
+# Las tres son defendibles. Elegir DESPUES de ver los numeros no lo es.
+
+hito: L5
+decide: cual es el TEDS agregado primario de la tabla de resultados
+
+# ------------------------------------------------------------------- PRIMARIA
+primaria:
+  cual: MEDIA POR DOCUMENTO, sin ponderar
+  definicion: >
+    TEDS de un documento = media de los TEDS de sus tablas. TEDS agregado = media de los
+    TEDS de los documentos. Un documento sin tablas no puntua: sale NO_APLICABLE, nunca
+    0,00. Ver la decision B3.
+  por_que_esta:
+    - >
+      EL DOCUMENTO ES LA UNIDAD DE MUESTREO Y LA DE REMUESTREO. La regla de oro 3 del
+      repo dice que el bootstrap remuestrea DOCUMENTOS porque las preguntas de un mismo
+      documento estan correlacionadas. Un estimador cuya unidad coincide con la unidad
+      del bootstrap es el unico cuyo intervalo significa lo que dice. Con la media por
+      tabla, el punto y el intervalo hablarian de poblaciones distintas.
+    - >
+      Es la que se puede comparar hacia fuera: los bancos de extraccion de tablas
+      publican media por documento, y un numero que no se puede comparar vale menos.
+    - >
+      No la distorsiona la longitud, que es una propiedad del corpus y no del extractor.
+
+# ------------------------------------------------------------------ SECUNDARIA
+secundaria:
+  cual: PONDERADA POR PAGINAS
+  definicion: "suma sobre documentos de (paginas x TEDS del documento) / suma de paginas"
+  se_publica: al lado de la primaria, en la misma tabla, con su nombre
+  por_que_se_publica_igual: >
+    Porque contesta la pregunta del que procesa un boletin entero, que es un lector real
+    de esto, y porque NO CUESTA UNA SEGUNDA MEDIDA: son los mismos TEDS con otros pesos.
+    Publicar las dos ahorra que nadie tenga que fiarse de la eleccion.
+  si_las_dos_se_separan_mucho: >
+    Es un RESULTADO, no un problema: significa que el extractor se comporta distinto en
+    documentos largos, y eso es justo lo que la tabla por bandas existe para ensenar.
+
+# ------------------------------------------------------------------ DESCARTADA
+descartada:
+  cual: MEDIA POR TABLA
+  por_que_no: >
+    Contradice la regla de oro 3 EN EL MISMO REPO QUE LA HACE CUMPLIR EN EL BOOTSTRAP.
+    Las tablas de un documento estan correlacionadas —mismo maquetador, misma fuente,
+    mismo tipo de rejilla—, asi que tratarlas como observaciones independientes infla la
+    n efectiva y estrecha el intervalo sin motivo. Y un documento con 40 tablas pesaria
+    40 veces mas que uno con una, sin que nadie lo haya decidido.
+  cuando_si_aparece: >
+    El recuento de tablas por documento SI se publica, como descriptivo del corpus. Lo
+    que no se hace es promediar TEDS sobre el.
+
+# ------------------------------------------------------------------ EL LIMITE
+no_cubre: >
+  Ninguna de las dos arregla que el agregado sea un numero solo. La tabla POR BANDAS es
+  la que ensena la dependencia con la longitud, y el agregado es una comodidad. Si algun
+  dia hay que elegir entre publicar el agregado o las bandas, se publican las bandas.
