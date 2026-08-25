@@ -225,6 +225,43 @@ que disparará primero no es el techo sino la **número 2**: `pytest` en proceso
 pasado de 3,2 s a **4,52 s** (n=3, medido al cerrar L3), y a ese ritmo llega a los
 10 s hacia L8.
 
+### EL PRIMER PASO CUANDO EL p90 SE PASA NO ES ELEGIR ENTRE LAS TRES: ES `--durations`
+
+**Las tres opciones de abajo —subir el techo, gastar una palanca, reestructurar— son
+las TRES CONCESIONES.** Y durante tres cierres seguidos se eligió entre ellas sin
+hacer antes la pregunta que las precede:
+
+> **¿Hay algo que simplemente ESTÁ MAL?**
+
+```bash
+uv run pytest tests/unit -q --durations=12    # ANTES de tocar el techo. Siempre.
+```
+
+**La puerta no es sólo una alarma: es un DIAGNÓSTICO**, y usarla sólo como alarma
+tira la mitad de su valor. Un p90 que sube puede significar «la suite hace más
+trabajo» —y entonces sí, concesión— o puede significar «alguien escribió algo
+ineficiente», que no se arregla con ninguna de las tres.
+
+**El caso, medido, del cierre de L4.** El p90 dio **8558 contra un techo de 8500**,
+58 ms de más. `--durations` señaló el test más caro de toda la suite: el guardián del
+PDF, **0,69 s**. La causa no estaba en el banco de pruebas sino en el **script**:
+`corregir_fixtures_l4.py` invocaba `pdftotext` **hasta ocho veces sobre los mismos
+bytes** —las 6 correcciones tocan 3 documentos, y cada comprobación abría el PDF otra
+vez en `-raw` y otra en `-bbox`—. Con `lru_cache`: **0,69 s → 0,36 s**.
+
+**Y es un arreglo del producto, no del banco:** corregir de verdad también iba ocho
+veces al mismo fichero. Ésa es la señal de que la respuesta era ésta y no una
+concesión — si el arreglo sólo hubiera hecho más rápido el test y no el script, sería
+maquillar la medición.
+
+**El orden queda así, y es un paso de `/cerrar`, no una ocurrencia:**
+
+1. `--durations`. ¿Hay un defecto real? Si lo hay, se arregla y se vuelve a medir.
+2. **Sólo si no lo hay**, se abren las tres opciones de abajo.
+
+**Lo que este paso NO es: una forma de aplazar la reestructuración indefinidamente.**
+Los ~330 ms recuperados en L4 compran **un hito de margen, como mucho**. Ver abajo.
+
 ### Cuándo se deja de subir el techo, que es la parte que faltaba
 
 Subir el techo cada hito es honesto y **no tiene final**. 6000 no aguantaba L3;
@@ -233,7 +270,8 @@ extractores y el nivel 1 entero—. Así que la regla necesita un punto donde la
 respuesta deja de ser «sube el techo».
 
 **Se deja de subir y se REESTRUCTURA cuando se cumpla cualquiera de estas tres,
-medidas en el cierre:**
+medidas en el cierre** —y sólo después de que `--durations` haya dicho que no hay un
+defecto real, que es el paso de arriba:
 
 1. **La mediana en el runner pasa de 30 000 ms**, o sea un tercio del presupuesto
    de §15. Con el ×2,3 medido en L0 entre local y runner, eso son ~13 000 ms

@@ -1603,3 +1603,68 @@ sello de antes de la primera comparación**. La prueba de que es sólo salida: e
 número es idéntico (25 de 30, 5 discrepancias) y los 5 controles siguen pasando. El
 sello original **no se sobrescribe**: es lo que hace comprobable que los controles
 hablan de lo que se midió.
+
+
+### La puerta al cerrar L4 · n=40, árbol quieto, sello `f89c5b6`
+
+```bash
+uv run python scripts/medir_puerta.py --techo 8500; echo $?
+```
+
+| | ms |
+|---|---|
+| mínimo | 7529 |
+| **mediana** | **7842** |
+| **p90** | **8006** |
+| máximo | 8051 |
+| desviación típica | 124 |
+| medianas por tanda | 7734–7973 |
+| **margen contra el techo de 8500** | **494 ms** |
+
+40 corridas en frío en 10 tandas, `.hypothesis` borrada, **0 descartadas por
+`rc != 0`**, carga de la máquina mediana 1,05 (rango 0,60–1,25). El árbol no se movió:
+el sello va sin `+N`.
+
+**El p90 BAJA con 53 tests más que al empezar el hito** —8238 antes de L4, 8006
+ahora— y eso no es suerte: es el arreglo de las ocho invocaciones de `pdftotext`.
+La serie intermedia se publica igual, porque existió: con el árbol en `98a2df1` el
+p90 dio **8558, o sea 58 ms POR ENCIMA del techo**, y de ahí salió el paso nuevo de
+ADR-0022.
+
+### De dónde sale ese tiempo, paso a paso · n=5 EN CALIENTE
+
+**No son cinco trozos del p90 de arriba**, y decirlo importa: el p90 se mide **en
+frío** y esto es **en caliente**, con las cachés de `mypy` y `ruff` ya pobladas. Su
+suma (~4,9 s) no cuadra con 8006 ms **por eso**, no porque falte un paso.
+
+| Paso | mediana (ms) | rango |
+|---|---|---|
+| `ruff check` + `format --check` | 103 | 83–108 |
+| `mypy --strict src tests` | 142 | 135–143 |
+| `lint-imports` | 113 | 102–114 |
+| **`pytest tests/unit`** | **4491** | 4411–6603 |
+
+**El barrido de referencias: medido y NO RESUELTO, y se publica así.** ADR-0022 y la
+skill `cerrar` piden aislarlo. Las dos formas de hacerlo **no coinciden**:
+
+| Cómo | Resultado |
+|---|---|
+| corriéndolo solo (`-k barreras`) | 656 ms medianos, de los que ~270 son arranque de `pytest` → **~390 ms de trabajo** |
+| diferencial: la suite entera con y sin `test_barreras.py`, n=5 cada una | **con** 4505 · **sin** 4622 — o sea que quitarlo sale **más lento**, que es imposible |
+
+El diferencial da el **signo contrario**, luego con n=5 el ruido —±150 ms, más un
+valor extremo de 6640— se come un efecto de ~390 ms. **La cifra honesta hoy es: el
+barrido cuesta del orden de 400 ms aislado, y el diferencial no lo confirma con este
+n.** Se decide en L5 con un n mayor, como estaba escrito; lo que no se hace es elegir
+el número que cuadra.
+
+> **AVISO, y está escrito así para que dentro de dos semanas nadie lea «se arregló»
+> donde pone «se aplazó».** Los ~330 ms recuperados compran **un hito de margen, como
+> mucho**. La proyección de L5 sigue **intacta**: 14-18 h, ocho extractores con sus
+> suites, **~+3.000 ms**. Con el techo en 8.500 y ~300 ms de margen, **L5 lo rompe
+> igual**.
+>
+> **La reestructuración queda APLAZADA, NO CANCELADA**, y sigue siendo **lo primero
+> de L5**: `pytest -n auto` con `pytest-xdist`, **medido antes de escribir una sola
+> línea de código del hito**. Medirlo después sería medirlo cuando ya no hay margen
+> para decidir.

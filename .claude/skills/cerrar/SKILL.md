@@ -187,6 +187,28 @@ disable-model-invocation: true
    máximo y desviación**, y fija el techo del hito siguiente con la proyección
    escrita.
 
+   **SI EL p90 SE PASA, EL PRIMER PASO ES `--durations`. Como paso, no como
+   ocurrencia:**
+
+   ```bash
+   uv run pytest tests/unit -q --durations=12    # ANTES de tocar el techo
+   ```
+
+   Subir el techo, gastar una palanca o reestructurar **son las tres concesiones**, y
+   durante tres cierres seguidos se eligió entre ellas sin preguntar antes lo que las
+   precede: **¿hay algo que simplemente ESTÁ MAL?** La puerta no es sólo una alarma,
+   es un **diagnóstico**, y usarla sólo como alarma tira la mitad de su valor.
+
+   *El caso, del cierre de L4.* p90 **8558** contra techo 8500. `--durations` señaló
+   el test más caro de la suite —el guardián del PDF, **0,69 s**— y la causa estaba en
+   el **script**: `pdftotext` invocado **ocho veces sobre los mismos bytes**. Con
+   `lru_cache`, **0,69 s → 0,36 s**, y el p90 bajó a **8006**, mejor que antes de
+   empezar el hito. **Y la señal de que era la respuesta correcta y no maquillaje: el
+   arreglo hace más rápido el script, no sólo el test.** Si sólo acelerara el test,
+   sería maquillar la medición.
+
+   Sólo cuando `--durations` no señale nada se abren las tres opciones de ADR-0022.
+
    **Y el desglose por PASO, con el barrido de referencias como uno más.** La
    puerta son cinco pasos y cada uno lleva su número medido, igual que `pytest`,
    `mypy`, `ruff` y `lint-imports`:
