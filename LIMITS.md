@@ -1456,7 +1456,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     comprueba que `runs/l5/computo.yaml` tenga una clave `regla:`, ni que la regla
     que contiene sea la que se aplicó. Eso lo sostiene el cierre del hito, a mano.
 
-84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 25 de 42.** `make fast` corre
+84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 27 de 44.** `make fast` corre
     `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, así que se tipa
     **lo que un test alcance** —directa o transitivamente— y nada más.
 
@@ -1471,9 +1471,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **65** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **67** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **42** que quedan, **huérfanos: 25 de 42**. Entre ellos `derivadas.py`
+    nada—, y de los **44** que quedan, **huérfanos: 27 de 44**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
