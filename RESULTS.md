@@ -530,16 +530,16 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 394 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 407 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **228 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **241 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
 `test_guardianes_l4` (7), `test_guardianes_por_glob` (9), `test_documentos_que_sostienen` (8), `test_policy` (7),
 `test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
 `test_comparar_verdad` (5), `test_types` (5), `test_sellar_xml` (4),
-`test_estimador_computo` (6), `test_errors` (3), `test_sin_consumidor` (3),
+`test_estimador_computo` (6), `test_extractor_contrato` (13), `test_errors` (3), `test_sin_consumidor` (3),
 `test_reglas_parseables` (3), `test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
@@ -861,9 +861,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 391 de 394
+### Qué fracción de la suite está protegida por algo: 404 de 407
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 394» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 407» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -1349,7 +1349,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-394 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+407 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -1887,3 +1887,51 @@ falso y la exclusión sesga el total a la baja**, que es la dirección mala.
 
 No se arregla reinterpretándolo: se publica que la dirección del sesgo **depende de la
 configuración de hilos**, y que sólo es conservadora en la configuración de pocos hilos.
+
+### B5-bis, CERRADO · la campaña de L5 cabe con cuatro extractores
+
+```bash
+uv run python scripts/poblacion_l5.py
+```
+
+| población | docs | páginas | horas de reloj |
+|---|---|---|---|
+| **con tabla · censo, puntúan** | 338 | 6.076 | 2,54 |
+| sin tabla `≤10` · muestra de 584 | 200 | 833 | 0,82 |
+| sin tabla `11-50` · censo | 72 | 1.085 | 0,44 |
+| sin tabla `>50` · censo | 6 | 739 | 0,21 |
+| **total de la campaña** | **616** | **8.733** | **4,01** |
+| los 1.000, para comparar | 1.000 | 10.298 | 5,55 |
+
+**Presupuesto congelado en [`runs/l5/computo.yaml`](runs/l5/computo.yaml): ~4 h. Cabe.**
+Con los ocho no cabe —serían del orden de 8 h—, y ahí se aplica la regla escrita antes
+de medir: **se recortan extractores, no documentos**. Los otros cuatro entran de uno en
+uno con `/extractor`, que es el patrón que §16 ya tiene escrito.
+
+Las horas salen del modelo de coste de **pocos hilos**
+(`runs/l5/computo_base_2hilos.json`), que es la configuración en la que L5 va a correr:
+el experimento A midió que 28 hilos por unidad cuestan entre 4 y 12 veces la CPU para el
+mismo reloj o peor.
+
+**QUÉ FAMILIAS CUBRE ESTA TABLA, Y CUÁLES NO.** §16 dice que los ocho extractores cubren
+cinco familias. **Los cuatro de esta campaña cubren tres.**
+
+| familia | extractores de §16 | en esta campaña |
+|---|---|---|
+| parser de texto | `pymupdf4llm`, `pdfplumber` | **los dos** |
+| extractor de tablas | `camelot` | **sí** |
+| document-AI | `docling`, `marker`, `unstructured` | **`docling`** |
+| TEI / científico | `grobid` | **NO** |
+| OCR | `tesseract` | **NO** |
+
+**No fue una elección: son todo lo que está medido.** Cambiar `pymupdf4llm` —que repite
+familia con `pdfplumber`— por `tesseract` compraría la familia OCR, pero **su coste no
+está medido** y es OCR sobre 8.733 páginas: elegirlo hoy sería decidir con un número que
+no existe. Va aquí, en la tabla, y no en un límite al final, porque quien lea los
+resultados tiene que ver el hueco sin buscarlo.
+
+**La palanca conocida y no accionada.** El paralelismo útil está **entre unidades**, no
+en hilos por unidad. Su cuello no será la CPU sino la RAM: `docling` pica **4,4 GB** por
+unidad y hay 47 GB, así que salen del orden de **10 unidades a la vez**, no 28. No se
+mide ahora: se mide cuando haga falta, que es cuando entren los otros cuatro extractores
+y el presupuesto deje de dar. Su predicción se escribe entonces, antes de medirla.

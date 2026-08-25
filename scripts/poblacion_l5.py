@@ -41,7 +41,10 @@ from censo_paginas import DEL_COSTE, paginas  # noqa: E402
 from censo_tablas import tablas  # noqa: E402
 
 PLAN = RAIZ / "runs" / "l5" / "poblacion.yaml"
-MEDIDAS = RAIZ / "runs" / "l5" / "computo.json"
+# El modelo de coste sale de la corrida de POCOS HILOS, que es la configuración en la
+# que L5 va a correr: el experimento A midió que 28 hilos por unidad cuestan entre 4 y
+# 12 veces la CPU para el mismo reloj o peor. Ver LIMITS 89.
+MEDIDAS = RAIZ / "runs" / "l5" / "computo_base_2hilos.json"
 
 
 def _banda(n: int) -> str:
@@ -133,8 +136,9 @@ def main() -> int:
     )
     print(f"\n  extractores medidos: {sorted({e for e, _ in coste})}")
     print(
-        "  las horas son de RELOJ en la configuración de runs/l5/computo.json, "
-        "que lleva\n  sus hilos al lado. Reproducir: uv run python scripts/poblacion_l5.py"
+        f"  horas de RELOJ con el modelo de {MEDIDAS.name}, o sea la configuración de\n"
+        "  POCOS HILOS, que es en la que L5 va a correr. Ver LIMITS 89.\n"
+        "  Reproducir: uv run python scripts/poblacion_l5.py"
     )
 
     (RAIZ / "runs" / "l5" / "poblacion.json").write_text(
