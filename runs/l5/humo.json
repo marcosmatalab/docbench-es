@@ -1,0 +1,287 @@
+{
+ "ADVERTENCIA": "NO ES UN NUMERO PUBLICABLE. Ver runs/l5/humo.yaml",
+ "emparejado": "un ORACULO elige la tabla: cota superior, no medida",
+ "n": 30,
+ "teds_mediana": 0.866209,
+ "teds_min": 0.0,
+ "teds_max": 1.0,
+ "teds_distintos": 25,
+ "revientan": 0,
+ "errores": [],
+ "segundos_mediana_por_documento": 0.522,
+ "segundos_total": 35.9,
+ "paginas_totales": 718,
+ "segundos_por_pagina": 0.05,
+ "por_documento": [
+  {
+   "fixture": "BOE-A-2026-5511-t0",
+   "teds": 0.951613,
+   "teds_s": 0.951613,
+   "tablas_halladas": 1,
+   "paginas": 5,
+   "segundos": 0.252,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5593-t1",
+   "teds": 0.884615,
+   "teds_s": 0.884615,
+   "tablas_halladas": 3,
+   "paginas": 2,
+   "segundos": 0.102,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5851-t2",
+   "teds": 0.80257,
+   "teds_s": 0.802817,
+   "tablas_halladas": 4,
+   "paginas": 13,
+   "segundos": 0.599,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5856-t0",
+   "teds": 0.888889,
+   "teds_s": 0.888889,
+   "tablas_halladas": 4,
+   "paginas": 11,
+   "segundos": 0.577,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5863-t0",
+   "teds": 0.931624,
+   "teds_s": 0.931624,
+   "tablas_halladas": 2,
+   "paginas": 2,
+   "segundos": 0.079,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5870-t12",
+   "teds": 0.785714,
+   "teds_s": 0.785714,
+   "tablas_halladas": 16,
+   "paginas": 24,
+   "segundos": 1.102,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5975-t0",
+   "teds": 0.214681,
+   "teds_s": 0.217452,
+   "tablas_halladas": 5,
+   "paginas": 6,
+   "segundos": 0.614,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-5979-t15",
+   "teds": 0.75,
+   "teds_s": 0.75,
+   "tablas_halladas": 28,
+   "paginas": 92,
+   "segundos": 4.399,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6077-t4",
+   "teds": 0.769231,
+   "teds_s": 0.769231,
+   "tablas_halladas": 7,
+   "paginas": 12,
+   "segundos": 0.733,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6204-t3",
+   "teds": 0.94,
+   "teds_s": 0.94,
+   "tablas_halladas": 7,
+   "paginas": 12,
+   "segundos": 0.519,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6388-t0",
+   "teds": 0.590781,
+   "teds_s": 0.748322,
+   "tablas_halladas": 3,
+   "paginas": 4,
+   "segundos": 0.288,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6626-t5",
+   "teds": 1.0,
+   "teds_s": 1.0,
+   "tablas_halladas": 7,
+   "paginas": 12,
+   "segundos": 0.508,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6728-t0",
+   "teds": 0.934783,
+   "teds_s": 0.934783,
+   "tablas_halladas": 1,
+   "paginas": 84,
+   "segundos": 3.562,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6732-t0",
+   "teds": 0.882419,
+   "teds_s": 0.887097,
+   "tablas_halladas": 2,
+   "paginas": 4,
+   "segundos": 0.565,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6941-t1",
+   "teds": 0.90411,
+   "teds_s": 0.90411,
+   "tablas_halladas": 21,
+   "paginas": 12,
+   "segundos": 0.764,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "teds": 0.818966,
+   "teds_s": 0.836207,
+   "tablas_halladas": 2,
+   "paginas": 21,
+   "segundos": 1.128,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-6971-t3",
+   "teds": 0.730159,
+   "teds_s": 0.730159,
+   "tablas_halladas": 8,
+   "paginas": 4,
+   "segundos": 0.237,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7031-t0",
+   "teds": 0.931624,
+   "teds_s": 0.931624,
+   "tablas_halladas": 2,
+   "paginas": 2,
+   "segundos": 0.08,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7174-t12",
+   "teds": 0.6875,
+   "teds_s": 0.6875,
+   "tablas_halladas": 21,
+   "paginas": 18,
+   "segundos": 0.994,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7189-t0",
+   "teds": 0.52809,
+   "teds_s": 0.550562,
+   "tablas_halladas": 2,
+   "paginas": 2,
+   "segundos": 0.077,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7191-t0",
+   "teds": 0.931624,
+   "teds_s": 0.931624,
+   "tablas_halladas": 2,
+   "paginas": 2,
+   "segundos": 0.129,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7330-t0",
+   "teds": 0.934783,
+   "teds_s": 0.934783,
+   "tablas_halladas": 1,
+   "paginas": 85,
+   "segundos": 3.608,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7342-t0",
+   "teds": 0.931624,
+   "teds_s": 0.931624,
+   "tablas_halladas": 2,
+   "paginas": 2,
+   "segundos": 0.088,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7438-t0",
+   "teds": 0.0,
+   "teds_s": 0.0,
+   "tablas_halladas": 0,
+   "paginas": 7,
+   "segundos": 0.251,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7446-t0",
+   "teds": 0.392857,
+   "teds_s": 0.392857,
+   "tablas_halladas": 1,
+   "paginas": 4,
+   "segundos": 0.447,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7527-t3",
+   "teds": 0.85,
+   "teds_s": 0.85,
+   "tablas_halladas": 4,
+   "paginas": 4,
+   "segundos": 0.186,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7536-t1",
+   "teds": 0.785714,
+   "teds_s": 0.785714,
+   "tablas_halladas": 7,
+   "paginas": 12,
+   "segundos": 0.525,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7559-t0",
+   "teds": 0.774194,
+   "teds_s": 0.774194,
+   "tablas_halladas": 2,
+   "paginas": 73,
+   "segundos": 3.041,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7560-t12",
+   "teds": 0.946429,
+   "teds_s": 0.946429,
+   "tablas_halladas": 65,
+   "paginas": 175,
+   "segundos": 9.905,
+   "error": ""
+  },
+  {
+   "fixture": "BOE-A-2026-7623-t3",
+   "teds": 0.928571,
+   "teds_s": 0.928571,
+   "tablas_halladas": 7,
+   "paginas": 12,
+   "segundos": 0.515,
+   "error": ""
+  }
+ ]
+}
