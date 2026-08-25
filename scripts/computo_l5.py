@@ -90,6 +90,7 @@ class Estado:
                 {
                     "regla": "runs/l5/computo.yaml",
                     "sobre": "runs/l5/termica.yaml",
+                    "sellos": self.sellos,
                     "medidas": self.medidas,
                     "termica": self.termica,
                 },

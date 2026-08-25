@@ -1590,3 +1590,69 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Lo que **no** afecta: la estimación de coste. El censo que hay que procesar es 66%
     sin tablas, así que una muestra aleatoria del censo lo refleja bien — el coste de
     procesar un documento sin tablas también es coste.
+
+89. **CATORCE VECES LOS HILOS NO COMPRARON NADA DE RELOJ Y COSTARON HASTA DOCE VECES
+    LA CPU.** De 2 hilos por unidad a 28, mismos 27 documentos y mismas 108 unidades:
+    el reloj total de los cuatro extractores sobre los 1.000 documentos pasó de
+    **5,55 h a 5,95 h** —**subió**— mientras los segundos de CPU pasaban de 10,91 h a
+    **67,61 h**. Por página, `docling` multiplicó su CPU por **12,03** para ir un 10%
+    **más lento**.
+
+    **La causa medida**: los hilos efectivos de `docling` pasaron de 1,48 a **13,77**.
+    No estaba en su techo de paralelismo —eso era lo que decía el razonamiento
+    pre-registrado, y era falso—: estaba topado, tenía hambre, y **no convierte esa CPU
+    en velocidad**. Paralelismo de rendimiento negativo. Con grupos de hebras que
+    esperan girando —OpenMP, ONNX Runtime, *torch*— una hebra bloqueada consume CPU sin
+    hacer trabajo.
+
+    **Lo que esto invalida de lo publicado**: nada, porque los dos números están
+    publicados con su configuración al lado, que es para lo que se separaron las dos
+    monedas. Lo que invalida es **el supuesto**, escrito en el pre-registro, de que los
+    segundos de CPU son casi invariantes al número de trabajadores. No lo son.
+
+    **La consecuencia para L5**: la configuración de pocos hilos es estrictamente mejor
+    —mismo reloj, entre 4 y 12 veces menos CPU—, así que el paralelismo hay que buscarlo
+    en **unidades concurrentes** y no en hilos por unidad. Eso está sin medir y sin
+    predecir: es el experimento B, y su cuello no será la CPU sino la RAM, porque
+    `docling` pica 4,4 GB por unidad y hay 47 GB.
+
+    No medido: dónde está el óptimo de hilos por unidad. Se han medido **dos** puntos,
+    2 y 28, y el de 2 puede no ser el mejor de los dos extremos ni del medio.
+
+90. **LA DIRECCIÓN DEL SESGO POR EXCLUIR EL DOCUMENTO DE 309 PÁGINAS DEPENDE DE LOS
+    HILOS, Y EL PRE-REGISTRO LO DIO POR FIJO.** `runs/l5/estimacion.yaml` afirmaba,
+    antes de medir, que excluirlo sesga el total **al alza** —conservador— porque el
+    coste por página baja con la longitud cuando hay un coste fijo por documento. Se
+    escribió falsable y se comprobó con la pendiente de coste/página contra páginas en
+    la banda `>50`.
+
+    A **2 hilos** sale **−9,275e-05**: negativa, el argumento se sostiene.
+    A **28 hilos** sale **+1,801e-02**: positiva, y **el argumento es falso** — el coste
+    por página sube con la longitud, porque un documento largo pasa más tiempo dentro de
+    las secciones paralelas donde está la contención.
+
+    Así que la exclusión es conservadora **sólo en la configuración de pocos hilos**, y
+    en la de muchos sesga a la baja, que es la dirección mala. No se arregla
+    reinterpretando el argumento: se publica que **la dirección depende de la
+    configuración**, y cada número va con la suya.
+
+    Lo que queda sin cubrir: no se ha medido si hay una configuración en la que la
+    pendiente sea cero, ni si el signo cambia de forma continua o de golpe.
+
+91. **EL PUNTO DE CONTROL DE B5-bis SE MIDIÓ SIN SELLO DENTRO, Y EL SELLO EXISTÍA.**
+    `Estado.guardar()` no escribía el campo `sellos` que `Estado` ya calculaba y que el
+    informe ya imprimía: un parche por sustitución de texto **no encajó y se aplicó en
+    silencio**. Es la segunda vez en la misma sesión —la primera fue `main()` en
+    `unidad_computo.py`, que dejó la unidad esperando dos argumentos cuando el padre le
+    pasaba tres— y las dos veces la causa fue la misma: reemplazar sin **afirmar** que
+    el original encajaba.
+
+    **Alcance real**: `runs/l5/computo_A_28hilos.json` no lleva su sello dentro. Sí lo
+    lleva `runs/l5/computo_A_28hilos.log`, **impreso por el propio instrumento**
+    —`sello: 810f705 · 28w · 28 trabajadores de 28 CPU`—, así que la procedencia está
+    registrada y no reconstruida a mano. Arreglado para las corridas siguientes, con
+    `assert` en el parche.
+
+    Lo que queda sin cubrir: nada comprueba que un artefacto de medición lleve sello.
+    Se detectó mirándolo, que es exactamente la clase de garantía que este repo no
+    acepta para lo demás.

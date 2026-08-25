@@ -1773,3 +1773,117 @@ estrecho.
 **Lo que esto NO dice:** que el código haya mejorado. Los 8170 en serie sobre este árbol
 son **peores** que los 8006 de `f89c5b6`, y es lo esperado — la suite creció. Lo único
 que cambia es el instrumento, y por eso van las dos.
+
+---
+
+## L5 · B5-bis: cuánto cuesta correr los caros, y qué pasó al subir de 2 a 28 hilos
+
+### El coste de los cuatro extractores sobre los 1.000 documentos
+
+Estimación por suma ponderada por páginas —`total = Σ (páginas de la banda × coste por
+página de la banda)`—, con bootstrap de percentiles que remuestrea **documentos dentro
+de cada banda** (regla de oro 3). Método pre-registrado en
+[`runs/l5/estimacion.yaml`](runs/l5/estimacion.yaml), commiteado antes de medir.
+
+```bash
+uv run --extra extract-local python scripts/computo_l5.py   # 108 unidades
+uv run python scripts/estimar_computo.py                    # la suma y su intervalo
+```
+
+**Base · 2 hilos por unidad**, `taskset -c 0-1`, ciclo de trabajo al 30%, 8 CPU
+visibles. n=9 documentos por banda, 27 documentos, 108 unidades, 0 fallos, 0 censuradas.
+Sello `7e8ecc8`. Artefacto: `runs/l5/computo_base_2hilos.json`.
+
+| extractor | h CPU / 1.000 | h reloj / 1.000 | IC95 reloj | hilos efectivos |
+|---|---|---|---|---|
+| pdfplumber | 0,16 | 0,16 | 0,15 – 0,18 | 1,05 |
+| pymupdf4llm | 5,70 | 1,24 | 1,13 – 1,40 | 5,07 |
+| camelot | 0,57 | 0,48 | 0,45 – 0,54 | 1,23 |
+| docling | 4,48 | 3,67 | 3,16 – 4,74 | 1,48 |
+| **suma** | **10,91** | **5,55** | | |
+
+**A · 28 hilos por unidad**, `taskset -c 0-27`, sin ciclo, 28 CPU visibles de las 32
+del anfitrión. Mismos 27 documentos, mismas 108 unidades, 0 fallos, 0 censuradas.
+Sello `810f705 · 28 trabajadores de 28 CPU`, impreso por el instrumento en
+`runs/l5/computo_A_28hilos.log`. Artefacto: `runs/l5/computo_A_28hilos.json`.
+
+| extractor | h CPU / 1.000 | h reloj / 1.000 | IC95 reloj | hilos efectivos |
+|---|---|---|---|---|
+| pdfplumber | 0,18 | 0,18 | 0,17 – 0,20 | 1,03 |
+| pymupdf4llm | 24,52 | 1,48 | 1,37 – 1,66 | 16,84 |
+| camelot | 1,87 | 0,46 | 0,43 – 0,50 | 3,33 |
+| docling | 41,04 | 3,84 | 3,37 – 4,75 | 13,77 |
+| **suma** | **67,61** | **5,95** | | |
+
+**Catorce veces el presupuesto de hilos no compró nada de reloj y costó entre 1,15 y 12
+veces la CPU.** Por página:
+
+| extractor | CPU/pág ×  | reloj/pág × |
+|---|---|---|
+| pdfplumber | 1,15 | 1,16 |
+| pymupdf4llm | 4,27 | 1,25 |
+| camelot | 2,29 | **0,97** |
+| docling | **12,03** | 1,10 |
+
+Sólo `camelot` mejoró, y un 3%. Los otros tres empeoraron en reloj.
+
+**No es calentamiento de caché.** WSL se reinició entre las dos corridas, así que A
+empezó con la caché de disco fría; se comprobó mirando las unidades de `docling` de A en
+orden de ejecución: la primera de 6 páginas dio **2,380 s/pág** y la última comparable
+**2,261 s/pág**. No hay tendencia.
+
+### La predicción, y qué se cumplió
+
+Escrita y commiteada **antes** de remedir, en
+[`runs/l5/prediccion_hilos.yaml`](runs/l5/prediccion_hilos.yaml). No se ha tocado: se
+puede diferenciar contra `git log`.
+
+| # | afirmación | veredicto | el número |
+|---|---|---|---|
+| 1 | el reloj de `docling` NO baja más del 50% | **se cumple** | no bajó: **+4,6%** |
+| 2 | el reloj de `pymupdf4llm` baja **más** del 33% | **FALSA** | no bajó: **+19,4%** |
+| 3 | el total NO baja más del 60% | **se cumple** | no bajó: **+7,2%** |
+| 4 | control: `pdfplumber` dentro del ±20% | **se cumple** | **+12,5%**, en el borde |
+
+De las cinco bandas numéricas, **dos dentro y tres fuera**: `pdfplumber` 0,18 en
+[0,13–0,19] ✓, `camelot` 0,46 en [0,30–0,48] ✓, `pymupdf4llm` 1,48 fuera de [0,40–0,83],
+`docling` 3,84 fuera de [1,85–3,60], total 5,95 fuera de [2,70–5,10].
+
+**Las dos que se cumplen se cumplen por la letra y no por la razón.** El razonamiento
+escrito era *«`docling` está en su propio techo de paralelismo, ~1,5»*. **Es falso**: sus
+hilos efectivos pasaron de **1,48 a 13,77**, así que sí estaba topado y sí tenía hambre.
+Lo que no hace es convertir esa CPU en velocidad. Eso es peor que estar en su techo: es
+**paralelismo de rendimiento negativo**.
+
+### Lo que la predicción declaró mal, y hay que decirlo
+
+El fichero decía: *«nada sobre segundos de CPU: esos son casi invariantes al número de
+trabajadores, y si se movieran más de un 15% sería señal de que algo más cambió entre
+las dos corridas»*. Se movieron entre el **15% y el 1.103%**.
+
+Por ese criterio habría que concluir que algo más cambió. **No es eso: el criterio
+estaba mal escrito.** Los segundos de CPU **no** son invariantes al número de hilos
+cuando el paralelismo lo llevan grupos de hebras que esperan girando —OpenMP, ONNX
+Runtime, *torch*—: una hebra bloqueada en espera activa consume CPU sin hacer trabajo.
+El supuesto era mío y era falso; se deja escrito en vez de reinterpretarlo para que
+encaje.
+
+**El control 4 es el que autoriza a comparar las dos corridas**, y pasa: `pdfplumber`,
+que es monohilo, se movió +12,5% dentro del ±20% declarado. Pero se movió, y en la
+dirección de ir más lento — así que **hay una componente de máquina de ~15% metida en
+todos los números de A**, y las diferencias por debajo de eso no significan nada.
+
+### La pendiente se dio la vuelta, y con ella un argumento pre-registrado
+
+El pre-registro afirmaba, antes de medir, que excluir el documento de 309 páginas sesga
+el total **al alza** —conservador— porque el coste por página baja con la longitud
+cuando hay un coste fijo por documento. A 2 hilos la pendiente salió **−9,275e-05**,
+negativa, y el argumento se sostenía.
+
+**A 28 hilos sale +1,801e-02, positiva.** El coste por página ahora **sube** con la
+longitud dentro de la banda `>50`, porque un documento largo pasa más tiempo dentro de
+las secciones paralelas donde está la contención. Así que **a 28 hilos el argumento es
+falso y la exclusión sesga el total a la baja**, que es la dirección mala.
+
+No se arregla reinterpretándolo: se publica que la dirección del sesgo **depende de la
+configuración de hilos**, y que sólo es conservadora en la configuración de pocos hilos.

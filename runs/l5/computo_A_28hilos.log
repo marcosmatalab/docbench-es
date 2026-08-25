@@ -1,0 +1,351 @@
+
+  SIN MEDICIÓN TÉRMICA · vigilancia: ninguna. Lo decidió Marcos, el 2026-08-25.
+  No es «temperatura correcta»: es que no se mide. La razón, en runs/l5/termica.yaml.
+
+  27 documentos, 987 páginas · 0 unidades hechas, 108 pendientes
+  térmica: sin vigilancia · el único tope activo es el de 30 min por unidad, contra un extractor colgado
+  trabajadores: 28 de los 28 que ve WSL · ciclo apagado
+  sin medición térmica: no se afirma ningún grado en el informe
+
+  sello: 810f705 · 28w · 28 trabajadores de 28 CPU
+
+  [1/108] pdfplumber · BOE-A-2026-5688 (<=10, 6 pág)
+      0.4 s CPU · 0.4 s trabajo de 0.4 s reloj · 0.91 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [2/108] pdfplumber · BOE-A-2026-5601 (11-50, 21 pág)
+      1.3 s CPU · 1.2 s trabajo de 1.2 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [3/108] pdfplumber · BOE-A-2026-5715 (>50, 88 pág)
+      4.5 s CPU · 4.3 s trabajo de 4.3 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [4/108] pymupdf4llm · BOE-A-2026-5688 (<=10, 6 pág)
+      55.1 s CPU · 3.6 s trabajo de 3.6 s reloj · 15.31 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [5/108] pymupdf4llm · BOE-A-2026-5601 (11-50, 21 pág)
+      176.3 s CPU · 11.7 s trabajo de 11.7 s reloj · 15.08 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [6/108] pymupdf4llm · BOE-A-2026-5715 (>50, 88 pág)
+      338.0 s CPU · 24.5 s trabajo de 24.5 s reloj · 13.81 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 4 s (x0.15)
+  [7/108] camelot · BOE-A-2026-5688 (<=10, 6 pág)
+      5.4 s CPU · 1.2 s trabajo de 1.2 s reloj · 4.52 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [8/108] camelot · BOE-A-2026-5601 (11-50, 21 pág)
+      9.0 s CPU · 2.8 s trabajo de 2.8 s reloj · 3.21 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [9/108] camelot · BOE-A-2026-5715 (>50, 88 pág)
+      27.1 s CPU · 10.3 s trabajo de 10.3 s reloj · 2.62 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [10/108] docling · BOE-A-2026-5688 (<=10, 6 pág)
+      94.1 s CPU · 14.3 s trabajo de 14.3 s reloj · 6.59 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [11/108] docling · BOE-A-2026-5601 (11-50, 21 pág)
+      225.5 s CPU · 15.8 s trabajo de 15.8 s reloj · 14.28 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [12/108] docling · BOE-A-2026-5715 (>50, 88 pág)
+      1101.1 s CPU · 50.9 s trabajo de 50.9 s reloj · 21.65 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 8 s (x0.15)
+  [13/108] pdfplumber · BOE-A-2026-6226 (<=10, 4 pág)
+      0.2 s CPU · 0.2 s trabajo de 0.2 s reloj · 0.99 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [14/108] pdfplumber · BOE-A-2026-5486 (11-50, 11 pág)
+      0.7 s CPU · 0.6 s trabajo de 0.6 s reloj · 1.01 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [15/108] pdfplumber · BOE-A-2026-5691 (>50, 85 pág)
+      4.8 s CPU · 4.6 s trabajo de 4.6 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [16/108] pymupdf4llm · BOE-A-2026-6226 (<=10, 4 pág)
+      35.0 s CPU · 2.3 s trabajo de 2.3 s reloj · 14.94 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [17/108] pymupdf4llm · BOE-A-2026-5486 (11-50, 11 pág)
+      68.0 s CPU · 4.5 s trabajo de 4.5 s reloj · 15.01 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [18/108] pymupdf4llm · BOE-A-2026-5691 (>50, 85 pág)
+      522.7 s CPU · 31.4 s trabajo de 31.4 s reloj · 16.64 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [19/108] camelot · BOE-A-2026-6226 (<=10, 4 pág)
+      4.8 s CPU · 0.8 s trabajo de 0.8 s reloj · 5.89 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [20/108] camelot · BOE-A-2026-5486 (11-50, 11 pág)
+      6.9 s CPU · 1.7 s trabajo de 1.7 s reloj · 4.17 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [21/108] camelot · BOE-A-2026-5691 (>50, 85 pág)
+      27.3 s CPU · 10.3 s trabajo de 10.3 s reloj · 2.65 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [22/108] docling · BOE-A-2026-6226 (<=10, 4 pág)
+      61.2 s CPU · 9.1 s trabajo de 9.1 s reloj · 6.74 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [23/108] docling · BOE-A-2026-5486 (11-50, 11 pág)
+      131.6 s CPU · 12.9 s trabajo de 12.9 s reloj · 10.20 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [24/108] docling · BOE-A-2026-5691 (>50, 85 pág)
+      907.3 s CPU · 43.2 s trabajo de 43.2 s reloj · 21.00 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 6 s (x0.15)
+  [25/108] pdfplumber · BOE-A-2026-7431 (<=10, 2 pág)
+      0.2 s CPU · 0.2 s trabajo de 0.2 s reloj · 0.93 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [26/108] pdfplumber · BOE-A-2026-5877 (11-50, 15 pág)
+      0.9 s CPU · 0.8 s trabajo de 0.8 s reloj · 1.02 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [27/108] pdfplumber · BOE-A-2026-6643 (>50, 95 pág)
+      5.3 s CPU · 5.1 s trabajo de 5.1 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [28/108] pymupdf4llm · BOE-A-2026-7431 (<=10, 2 pág)
+      42.3 s CPU · 2.4 s trabajo de 2.4 s reloj · 17.59 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [29/108] pymupdf4llm · BOE-A-2026-5877 (11-50, 15 pág)
+      120.2 s CPU · 6.9 s trabajo de 6.9 s reloj · 17.33 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [30/108] pymupdf4llm · BOE-A-2026-6643 (>50, 95 pág)
+      629.5 s CPU · 36.5 s trabajo de 36.5 s reloj · 17.27 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [31/108] camelot · BOE-A-2026-7431 (<=10, 2 pág)
+      4.3 s CPU · 0.6 s trabajo de 0.6 s reloj · 7.42 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [32/108] camelot · BOE-A-2026-5877 (11-50, 15 pág)
+      8.0 s CPU · 2.2 s trabajo de 2.2 s reloj · 3.69 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [33/108] camelot · BOE-A-2026-6643 (>50, 95 pág)
+      30.1 s CPU · 11.6 s trabajo de 11.6 s reloj · 2.60 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [34/108] docling · BOE-A-2026-7431 (<=10, 2 pág)
+      45.3 s CPU · 8.7 s trabajo de 8.7 s reloj · 5.19 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [35/108] docling · BOE-A-2026-5877 (11-50, 15 pág)
+      217.8 s CPU · 16.7 s trabajo de 16.7 s reloj · 13.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 3 s (x0.15)
+  [36/108] docling · BOE-A-2026-6643 (>50, 95 pág)
+      1171.5 s CPU · 57.9 s trabajo de 57.9 s reloj · 20.22 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 9 s (x0.15)
+  [37/108] pdfplumber · BOE-A-2026-5977 (<=10, 1 pág)
+      0.1 s CPU · 0.2 s trabajo de 0.2 s reloj · 0.79 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [38/108] pdfplumber · BOE-A-2026-6209 (11-50, 13 pág)
+      1.0 s CPU · 1.0 s trabajo de 1.0 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [39/108] pdfplumber · BOE-A-2026-6389 (>50, 62 pág)
+      3.4 s CPU · 3.3 s trabajo de 3.3 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [40/108] pymupdf4llm · BOE-A-2026-5977 (<=10, 1 pág)
+      23.7 s CPU · 1.6 s trabajo de 1.6 s reloj · 14.36 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [41/108] pymupdf4llm · BOE-A-2026-6209 (11-50, 13 pág)
+      134.2 s CPU · 7.4 s trabajo de 7.4 s reloj · 18.12 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [42/108] pymupdf4llm · BOE-A-2026-6389 (>50, 62 pág)
+      394.7 s CPU · 24.1 s trabajo de 24.1 s reloj · 16.39 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 4 s (x0.15)
+  [43/108] camelot · BOE-A-2026-5977 (<=10, 1 pág)
+      3.7 s CPU · 0.5 s trabajo de 0.5 s reloj · 7.64 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [44/108] camelot · BOE-A-2026-6209 (11-50, 13 pág)
+      7.1 s CPU · 2.0 s trabajo de 2.0 s reloj · 3.54 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [45/108] camelot · BOE-A-2026-6389 (>50, 62 pág)
+      21.7 s CPU · 8.0 s trabajo de 8.0 s reloj · 2.70 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [46/108] docling · BOE-A-2026-5977 (<=10, 1 pág)
+      36.6 s CPU · 9.3 s trabajo de 9.3 s reloj · 3.95 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [47/108] docling · BOE-A-2026-6209 (11-50, 13 pág)
+      210.5 s CPU · 15.5 s trabajo de 15.5 s reloj · 13.54 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [48/108] docling · BOE-A-2026-6389 (>50, 62 pág)
+      735.9 s CPU · 36.5 s trabajo de 36.5 s reloj · 20.14 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [49/108] pdfplumber · BOE-A-2026-6536 (<=10, 1 pág)
+      0.1 s CPU · 0.1 s trabajo de 0.1 s reloj · 0.91 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [50/108] pdfplumber · BOE-A-2026-7538 (11-50, 37 pág)
+      2.4 s CPU · 2.3 s trabajo de 2.3 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [51/108] pdfplumber · BOE-A-2026-5979 (>50, 92 pág)
+      5.6 s CPU · 5.4 s trabajo de 5.4 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [52/108] pymupdf4llm · BOE-A-2026-6536 (<=10, 1 pág)
+      27.0 s CPU · 1.7 s trabajo de 1.7 s reloj · 16.22 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [53/108] pymupdf4llm · BOE-A-2026-7538 (11-50, 37 pág)
+      329.7 s CPU · 18.0 s trabajo de 18.0 s reloj · 18.30 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 3 s (x0.15)
+  [54/108] pymupdf4llm · BOE-A-2026-5979 (>50, 92 pág)
+      722.1 s CPU · 40.4 s trabajo de 40.4 s reloj · 17.88 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 6 s (x0.15)
+  [55/108] camelot · BOE-A-2026-6536 (<=10, 1 pág)
+      4.3 s CPU · 0.5 s trabajo de 0.5 s reloj · 7.81 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [56/108] camelot · BOE-A-2026-7538 (11-50, 37 pág)
+      14.5 s CPU · 5.0 s trabajo de 5.0 s reloj · 2.91 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [57/108] camelot · BOE-A-2026-5979 (>50, 92 pág)
+      28.7 s CPU · 11.2 s trabajo de 11.2 s reloj · 2.56 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [58/108] docling · BOE-A-2026-6536 (<=10, 1 pág)
+      27.4 s CPU · 7.7 s trabajo de 7.7 s reloj · 3.55 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [59/108] docling · BOE-A-2026-7538 (11-50, 37 pág)
+      457.7 s CPU · 25.2 s trabajo de 25.2 s reloj · 18.17 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 4 s (x0.15)
+  [60/108] docling · BOE-A-2026-5979 (>50, 92 pág)
+      1163.6 s CPU · 54.5 s trabajo de 54.5 s reloj · 21.35 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 8 s (x0.15)
+  [61/108] pdfplumber · BOE-A-2026-6775 (<=10, 5 pág)
+      0.3 s CPU · 0.3 s trabajo de 0.3 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [62/108] pdfplumber · BOE-A-2026-6393 (11-50, 24 pág)
+      1.4 s CPU · 1.3 s trabajo de 1.3 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [63/108] pdfplumber · BOE-A-2026-7278 (>50, 84 pág)
+      4.4 s CPU · 4.2 s trabajo de 4.2 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [64/108] pymupdf4llm · BOE-A-2026-6775 (<=10, 5 pág)
+      23.0 s CPU · 2.0 s trabajo de 2.0 s reloj · 11.77 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [65/108] pymupdf4llm · BOE-A-2026-6393 (11-50, 24 pág)
+      215.6 s CPU · 12.1 s trabajo de 12.1 s reloj · 17.84 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [66/108] pymupdf4llm · BOE-A-2026-7278 (>50, 84 pág)
+      575.1 s CPU · 33.0 s trabajo de 33.0 s reloj · 17.40 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [67/108] camelot · BOE-A-2026-6775 (<=10, 5 pág)
+      4.9 s CPU · 0.9 s trabajo de 0.9 s reloj · 5.43 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [68/108] camelot · BOE-A-2026-6393 (11-50, 24 pág)
+      9.1 s CPU · 3.2 s trabajo de 3.2 s reloj · 2.87 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [69/108] camelot · BOE-A-2026-7278 (>50, 84 pág)
+      26.4 s CPU · 10.1 s trabajo de 10.1 s reloj · 2.60 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [70/108] docling · BOE-A-2026-6775 (<=10, 5 pág)
+      70.7 s CPU · 9.7 s trabajo de 9.7 s reloj · 7.29 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [71/108] docling · BOE-A-2026-6393 (11-50, 24 pág)
+      292.2 s CPU · 18.6 s trabajo de 18.6 s reloj · 15.68 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 3 s (x0.15)
+  [72/108] docling · BOE-A-2026-7278 (>50, 84 pág)
+      1082.3 s CPU · 51.3 s trabajo de 51.3 s reloj · 21.10 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 8 s (x0.15)
+  [73/108] pdfplumber · BOE-A-2026-6971 (<=10, 4 pág)
+      0.4 s CPU · 0.4 s trabajo de 0.4 s reloj · 0.99 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [74/108] pdfplumber · BOE-A-2026-6625 (11-50, 26 pág)
+      2.8 s CPU · 2.7 s trabajo de 2.7 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [75/108] pdfplumber · BOE-A-2026-6193 (>50, 85 pág)
+      4.7 s CPU · 4.6 s trabajo de 4.6 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [76/108] pymupdf4llm · BOE-A-2026-6971 (<=10, 4 pág)
+      39.6 s CPU · 2.6 s trabajo de 2.6 s reloj · 14.95 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [77/108] pymupdf4llm · BOE-A-2026-6625 (11-50, 26 pág)
+      300.0 s CPU · 16.0 s trabajo de 16.0 s reloj · 18.76 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [78/108] pymupdf4llm · BOE-A-2026-6193 (>50, 85 pág)
+      539.5 s CPU · 32.0 s trabajo de 32.0 s reloj · 16.84 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [79/108] camelot · BOE-A-2026-6971 (<=10, 4 pág)
+      4.8 s CPU · 0.9 s trabajo de 0.9 s reloj · 5.45 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [80/108] camelot · BOE-A-2026-6625 (11-50, 26 pág)
+      11.4 s CPU · 3.8 s trabajo de 3.8 s reloj · 2.99 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [81/108] camelot · BOE-A-2026-6193 (>50, 85 pág)
+      27.3 s CPU · 10.7 s trabajo de 10.7 s reloj · 2.55 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [82/108] docling · BOE-A-2026-6971 (<=10, 4 pág)
+      73.8 s CPU · 10.7 s trabajo de 10.7 s reloj · 6.89 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [83/108] docling · BOE-A-2026-6625 (11-50, 26 pág)
+      307.6 s CPU · 26.1 s trabajo de 26.1 s reloj · 11.78 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 4 s (x0.15)
+  [84/108] docling · BOE-A-2026-6193 (>50, 85 pág)
+      1219.3 s CPU · 55.5 s trabajo de 55.5 s reloj · 21.96 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 8 s (x0.15)
+  [85/108] pdfplumber · BOE-A-2026-7185 (<=10, 6 pág)
+      0.3 s CPU · 0.3 s trabajo de 0.3 s reloj · 0.98 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [86/108] pdfplumber · BOE-A-2026-7539 (11-50, 20 pág)
+      1.2 s CPU · 1.1 s trabajo de 1.1 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [87/108] pdfplumber · BOE-A-2026-6620 (>50, 85 pág)
+      4.8 s CPU · 4.7 s trabajo de 4.7 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [88/108] pymupdf4llm · BOE-A-2026-7185 (<=10, 6 pág)
+      57.8 s CPU · 3.5 s trabajo de 3.5 s reloj · 16.72 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [89/108] pymupdf4llm · BOE-A-2026-7539 (11-50, 20 pág)
+      179.4 s CPU · 11.2 s trabajo de 11.2 s reloj · 16.05 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [90/108] pymupdf4llm · BOE-A-2026-6620 (>50, 85 pág)
+      534.8 s CPU · 31.7 s trabajo de 31.7 s reloj · 16.88 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 5 s (x0.15)
+  [91/108] camelot · BOE-A-2026-7185 (<=10, 6 pág)
+      5.7 s CPU · 1.1 s trabajo de 1.1 s reloj · 5.19 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [92/108] camelot · BOE-A-2026-7539 (11-50, 20 pág)
+      9.6 s CPU · 2.9 s trabajo de 2.9 s reloj · 3.33 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [93/108] camelot · BOE-A-2026-6620 (>50, 85 pág)
+      27.1 s CPU · 10.1 s trabajo de 10.1 s reloj · 2.68 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [94/108] docling · BOE-A-2026-7185 (<=10, 6 pág)
+      78.1 s CPU · 9.8 s trabajo de 9.8 s reloj · 7.98 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [95/108] docling · BOE-A-2026-7539 (11-50, 20 pág)
+      257.4 s CPU · 18.7 s trabajo de 18.7 s reloj · 13.77 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 3 s (x0.15)
+  [96/108] docling · BOE-A-2026-6620 (>50, 85 pág)
+      1050.1 s CPU · 49.0 s trabajo de 49.0 s reloj · 21.43 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 7 s (x0.15)
+  [97/108] pdfplumber · BOE-A-2026-5822 (<=10, 6 pág)
+      0.4 s CPU · 0.4 s trabajo de 0.4 s reloj · 0.99 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [98/108] pdfplumber · BOE-A-2026-6397 (11-50, 13 pág)
+      0.7 s CPU · 0.7 s trabajo de 0.7 s reloj · 1.03 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [99/108] pdfplumber · BOE-A-2026-6390 (>50, 96 pág)
+      5.3 s CPU · 5.1 s trabajo de 5.1 s reloj · 1.04 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [100/108] pymupdf4llm · BOE-A-2026-5822 (<=10, 6 pág)
+      61.7 s CPU · 3.6 s trabajo de 3.6 s reloj · 17.25 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [101/108] pymupdf4llm · BOE-A-2026-6397 (11-50, 13 pág)
+      123.8 s CPU · 6.9 s trabajo de 6.9 s reloj · 17.86 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 1 s (x0.15)
+  [102/108] pymupdf4llm · BOE-A-2026-6390 (>50, 96 pág)
+      743.6 s CPU · 41.3 s trabajo de 41.3 s reloj · 18.00 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 6 s (x0.15)
+  [103/108] camelot · BOE-A-2026-5822 (<=10, 6 pág)
+      5.7 s CPU · 1.2 s trabajo de 1.2 s reloj · 4.80 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [104/108] camelot · BOE-A-2026-6397 (11-50, 13 pág)
+      7.3 s CPU · 1.9 s trabajo de 1.9 s reloj · 3.75 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 0 s (x0.15)
+  [105/108] camelot · BOE-A-2026-6390 (>50, 96 pág)
+      34.4 s CPU · 14.5 s trabajo de 14.5 s reloj · 2.37 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [106/108] docling · BOE-A-2026-5822 (<=10, 6 pág)
+      129.5 s CPU · 13.6 s trabajo de 13.6 s reloj · 9.55 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [107/108] docling · BOE-A-2026-6397 (11-50, 13 pág)
+      233.8 s CPU · 16.5 s trabajo de 16.5 s reloj · 14.18 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 2 s (x0.15)
+  [108/108] docling · BOE-A-2026-6390 (>50, 96 pág)
+      1434.6 s CPU · 64.9 s trabajo de 64.9 s reloj · 22.11 núcleos de media (tope 28.0) · 0 pausas térmicas · {'n': 0}
+      descanso 10 s (x0.15)
+
+  108 unidades medidas · moneda primaria: segundos de CPU
+
+  extractor      s CPU/doc  s CPU/pág  s reloj/doc   RSS MB  fallos  cens    n
+  pdfplumber         1.164     0.0583        1.127      691       0     0   27
+  pymupdf4llm      176.254     7.1049       11.172      824       0     0   27
+  camelot            8.994     0.3815        2.800      305       0     0   27
+  docling          233.841    12.9856       16.706     4371       0     0   27
+
+  ciclo de trabajo: las 108 unidades por debajo del tope. La peor, docling con 22.11 núcleos de media sobre 28.00
+
+  sello: 810f705 · 28w · 28 trabajadores de 28 CPU
+
+  térmica de la sesión: {'hilos': 28, 'techo_c': 90.0, 'reanudar_c': 84.0, 'vigilado': False, 'sesion': {'n': 0}}
+
+  reproducir: uv run --extra extract-local python scripts/computo_l5.py
