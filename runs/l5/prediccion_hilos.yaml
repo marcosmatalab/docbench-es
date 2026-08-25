@@ -1,0 +1,63 @@
+# QUE VA A PASAR AL SUBIR DE 8 A 32 TRABAJADORES · escrito ANTES de remedir
+#
+# El 2026-08-25, con .wslconfig en processors=8 y el gobernador en taskset -c 0-1, las
+# 108 unidades dieron 5,55 h de reloj para los cuatro extractores sobre los 1.000
+# documentos. Marcos sube .wslconfig a processors=32 y se remide.
+#
+# ESTO NO ES UN NUMERO QUE SE DIVIDA POR 16. Escribirlo antes es lo unico que hace que
+# la remedida pueda desmentirme.
+
+hito: L5
+mide: como escala B5-bis con el numero de trabajadores
+base: "n=9 por banda (108 unidades), 8 CPU en WSL, taskset -c 0-1, ciclo al 30%"
+despues: "processors=32 en .wslconfig, sin ciclo, taskset -c 0-31"
+
+# ----------------------------------------------------------- EL RAZONAMIENTO
+por_que_no_baja_proporcionalmente: >
+  Porque casi ninguno estaba tocando el tope. hilos_efectivos = cpu_s / trabajo_s, MEDIDO
+  por unidad, dice cuanto paralelismo consiguio cada extractor con el tope en 2:
+  pdfplumber 1,05, camelot 1,23, docling 1,48 y pymupdf4llm 5,07. Un extractor por debajo
+  del tope no estaba esperando CPU: estaba en SU PROPIO techo de paralelismo, y darle mas
+  no le da nada. El unico con hambre era pymupdf4llm, que con el tope en 2 se escapo a
+  5,09 con 45 hebras porque se repone la afinidad.
+
+el_matiz_que_puede_tumbar_esto: >
+  hilos_efectivos es una MEDIA sobre toda la unidad. Un extractor que satura 4 nucleos la
+  mitad del tiempo y 0 la otra mitad da 2,0 de media y SI estaba topado. Con 1,55 y tope
+  2, docling puede estar en su techo o puede estar topado a rachas. Por eso su banda de
+  prediccion es la mas ancha de las cuatro.
+
+# ------------------------------------------------- LAS PREDICCIONES, EN RELOJ
+# Bandas, no puntos: un punto exacto no seria una prediccion honesta con esta base.
+# La base son los numeros de n=9 (108 unidades), no los de n=6. Se refrescaron ANTES de
+# commitear esto y ANTES de remedir nada: refrescar la BASE no filtra nada sobre el
+# RESULTADO, que es lo que aqui se predice. Con n=6 eran 0,16 / 0,49 / 1,18 / 3,97 y un
+# total de 5,79; con n=9 son los de abajo. Las cuatro afirmaciones son RELATIVAS y no
+# cambian por esto.
+predicciones_h_de_reloj_sobre_los_1000:
+  pdfplumber:   {antes: 0.16, banda: [0.13, 0.19], razon: "monohilo, 1,05 efectivos. No cambia."}
+  camelot:      {antes: 0.48, banda: [0.30, 0.48], razon: "1,23 efectivos: casi en su techo."}
+  pymupdf4llm:  {antes: 1.24, banda: [0.40, 0.83], razon: "el unico con hambre. Baja mucho."}
+  docling:      {antes: 3.67, banda: [1.85, 3.60], razon: "1,48 efectivos. Baja poco, y es el que domina."}
+  TOTAL:        {antes: 5.55, banda: [2.70, 5.10], razon: "menos de la mitad de lo que sugiere x16."}
+
+# ------------------------------------------- LAS TRES AFIRMACIONES FALSABLES
+# Se comprueban una a una contra la remedida. Cada una puede salir falsa por separado.
+afirmaciones:
+  1_docling_baja_menos_de_la_mitad: >
+    El reloj de docling NO baja mas del 50%. Si baja mas, estaba topado a rachas y el
+    razonamiento de «su propio techo» era falso para el.
+  2_pymupdf4llm_baja_mas_de_un_tercio: >
+    El reloj de pymupdf4llm baja MAS del 33%. Si baja menos, entonces sus 45 hebras no
+    estaban esperando CPU y el diagnostico de «tenia hambre» era falso.
+  3_el_total_baja_menos_del_60_por_ciento: >
+    El total NO baja mas del 60%. Si baja mas, el modelo entero —que el paralelismo
+    conseguido lo fija el extractor y no el tope— esta mal.
+  4_pdfplumber_no_se_mueve: >
+    El reloj de pdfplumber se queda dentro de +-20%. Es el control: si SE MUEVE mucho, la
+    remedida no es comparable con la base y no hay que creerse ninguna de las otras tres.
+
+lo_que_esto_NO_predice: >
+  Nada sobre la temperatura, que no se lee. Nada sobre los cuatro extractores sin medir.
+  Y nada sobre segundos de CPU: esos son casi invariantes al numero de trabajadores, y si
+  se movieran mas de un 15% seria senal de que algo mas cambio entre las dos corridas.

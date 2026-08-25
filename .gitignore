@@ -63,6 +63,9 @@ runs/*/*
 !runs/*/estimacion.yaml
 !runs/*/ponderacion.yaml
 !runs/*/censo_tablas.json
+!runs/*/poblacion.yaml
+!runs/*/poblacion.json
+!runs/*/prediccion_hilos.yaml
 !runs/*/computo.json
 !runs/*/humo.json
 !runs/*/resello_comparador.json

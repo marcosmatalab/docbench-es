@@ -2,7 +2,7 @@
 
 Un banco de pruebas es una máquina de producir números sobre el trabajo de otros. Lo
 único que hace que esos números valgan algo es que **el que los produce no pueda
-elegirlos**. Este documento es el conjunto de reglas que lo impiden, y tres casos
+elegirlos**. Este documento es el conjunto de reglas que lo impiden, y cuatro casos
 reales en los que se notó.
 
 No hace falta conocer el proyecto para leerlo.
@@ -42,7 +42,7 @@ comprobable.
 
 ---
 
-## Tres casos en los que la regla decidió algo
+## Cuatro casos en los que la regla decidió algo
 
 ### Un número correcto y uno incorrecto, y la diferencia era dónde vivían
 
@@ -96,33 +96,34 @@ ocurre no es una comprobación: es suerte.
 
 ---
 
+### Un canal compartido usado como si fuera propio
+
+`pymupdf4llm` falló en **3 de 3** documentos, y el registro dijo `SALIDA_ILEGIBLE`. La
+lectura natural es que el extractor está roto. No lo estaba: **el fallo era del arnés**.
+
+La unidad de medida escribía su resultado en `stdout`. Y `stdout` no es suyo: lo comparte
+con todo lo que importe. `pymupdf4llm` arrastra `rapidocr`, que imprime
+`rapidocr_api using backend: rapidocr` y un bloque `=== Document parser messages ===`
+**antes** de que la unidad llegue a escribir su JSON. El padre encontraba basura por
+delante, no podía parsear, y anotaba un fallo del extractor.
+
+**Es el mismo error que publicar un número en un documento que otro proceso también
+escribe**, un nivel más abajo: el sitio donde dejas el resultado tiene que ser tuyo, o
+lo que leas de vuelta no es lo que escribiste. El arreglo es de una línea de diseño —la
+unidad recibe la ruta de su fichero de salida— y lo que compra es que
+`SIN_RESULTADO` signifique **lo que dice**: que el proceso murió antes de escribir.
+
+Y hay una segunda mitad. `stderr` **no** se tira: ahí escriben `rapidocr` y `camelot`
+sus avisos, y sin él la causa de un fallo real se perdería. Un canal se comparte o no se
+comparte; lo que no se puede es tratarlo de las dos maneras.
+
 ## Una regla más, y ésta es sobre quién publica
 
 **Este repo no construye ni construirá un extractor propio.** Si lo hiciera, su
-ranking valdría cero.
-
-Suena a precaución teórica. En agosto de 2026, de los ocho bancos de extracción
-documental que cubren tablas o parseo multilingüe, **tres los publica quien vende lo
-que el banco mide**:
-
-- **ExtractBench** lo publica **LlamaIndex**. Lo encabeza LlamaExtract Agentic Plus
-  con **95,6 de value F1** y la mejor relación coste-exactitud del banco. Entre sus
-  cinco autores está **Simon Suo, cofundador y CTO de LlamaIndex**.
-- **PulseBench-Tab** lo publica **Pulse AI**, que vende extracción documental.
-- **MORE** lo publican **nueve autores de Tencent**, la compañía que desarrolla
-  HunyuanOCR — el sistema que sale primero en su tabla de español, con 97,25.
-
-OmniDocBench, DocVQA y MDPBench son académicos, y Dr. DocBench es un consorcio de once
-instituciones.
-
-**El octavo es de otra clase, y es peor.** Los tres de arriba tienen un conflicto de
-interés —eligen el corpus y su producto gana— pero **el banco existe**: cualquiera
-puede recorrerlo, rehacer las cuentas y discutirlas. **XDocParse no está publicado.** Se
-describe, se puntúa contra él y el modelo de sus autores lo encabeza por +7,4 puntos.
-Eso no es un conflicto de interés: es una **afirmación que no se puede falsar**.
-
-Verificado el 25 de agosto de 2026; el criterio de búsqueda y los seis con su reparto
-por idioma están en §1.2 del [manual](../MANUAL.md).
+ranking valdría cero. Suena a precaución teórica: de los ocho bancos que cubren tablas
+o parseo multilingüe, **tres los publica quien vende lo que el banco mide, y uno ni
+siquiera está publicado**. Quién publica cada cual, con nombres y cifras:
+[quién publica los bancos](quien-publica-los-bancos.md).
 
 ## Qué NO es esto
 

@@ -28,11 +28,20 @@ limites:
   objetivo_media_c: 82 # la media de la sesion, descansos incluidos
   resolucion_s: 2.0    # cada cuanto se lee el termometro. Es la resolucion del control.
 
+# 2026-08-25, revision 3. TERMINAR RAPIDO ES LA OPCION TERMICAMENTE MAS AMABLE EN
+# TOTAL: el trabajo es el mismo, asi que a mas trabajadores menos horas caliente, menos
+# horas de ventilador y la misma energia. Una hora a 88 grados es mejor que seis a 72.
+# Con eso, y con AMD documentando que el procesador esta disenado para funcionar a TJMax
+# de forma continua sin deterioro, el sobre deja de ser una restriccion que apretar.
 carga:
-  # 8, que es TODO lo que WSL ve en esta maquina (32 logicos en el anfitrion). Con el
-  # techo en 90 no hace falta dejar margen por miedo: lo acota la medicion.
-  hilos_con_termometro: 8
-  hilos_sin_termometro: 2     # a ciegas: se compensa con menos carga, no con promesas
+  # «todos» = os.cpu_count(), o sea lo que WSL vea. SE RESUELVE AL CORRER, no se teclea:
+  # asi, subir processors en .wslconfig basta y no hay que tocar este fichero. El
+  # 2026-08-25 eran 8 de los 32 logicos del anfitrion, con .wslconfig en processors=8.
+  hilos_con_termometro: todos
+  # A ciegas TAMBIEN todos. La revision 2 bajaba a 2 «para compensar», y eso era pagar
+  # con horas una seguridad que el sobre de 90/82 dice que no hace falta. Lo que NO
+  # cambia: a ciegas no se afirma ni un grado, y hay que pedirlo con --sin-termometro.
+  hilos_sin_termometro: todos
   # pausa ENTRE unidades = trabajo x factor, adaptada por la media de la sesion. Ya
   # NO es la barrera de carga —lo es el ciclo—, asi que es la misma con y sin
   # termometro: a ciegas valia 1,0 y duplicaba la sesion sin anadir seguridad.
@@ -40,12 +49,10 @@ carga:
   descanso_tope_s: 120
   prioridad: nice -n 19
   afinidad: taskset -c 0-(hilos-1)
-  # RED DE SEGURIDAD, no metodo de muestreo. Ver censura. Esta definido A
-  # hilos_con_termometro y ESCALA con los hilos que se usen de verdad: es un tope de
-  # RELOJ sobre un trabajo paralelo, asi que a la mitad de hilos tarda el doble y un
-  # tope fijo censuraria por ir despacio en vez de por colgarse.
-  #     tope efectivo = tope_unidad_min x hilos_con_termometro / hilos_en_uso
-  tope_unidad_min: 20
+  # RED DE SEGURIDAD contra un extractor colgado, no metodo de muestreo. Ver censura.
+  # Ya no escala con los hilos: con «todos» siempre se corre a la maxima velocidad de la
+  # maquina, asi que no hay configuracion lenta contra la que un tope fijo fuera injusto.
+  tope_unidad_min: 30
 
 # ------------------------------------------- POR QUE HAY UN CICLO DE TRABAJO
 # NI LAS VARIABLES DE ENTORNO NI taskset ACOTAN ESTA CARGA. Medido con tres
@@ -65,18 +72,24 @@ ciclo:
     El gobernador para el proceso con SIGSTOP una fraccion de cada periodo y lo reanuda
     con SIGCONT. Acota el consumo MEDIO de CPU pase lo que pase con las hebras, porque no
     depende de cuantas haya sino de cuanto rato se les deja correr.
+  # APAGADO en la revision 3: fraccion 1,0 = correr sin parar. El ciclo alargaba la
+  # sesion, y alargar la sesion es lo contrario de lo que conviene termicamente. Se deja
+  # el mecanismo escrito y probado porque es la UNICA barrera que aguanta contra una
+  # biblioteca que se repone la afinidad, y hara falta el dia que el sobre apriete.
   periodo_s: 2.0
-  fraccion_con_termometro: 0.60
-  fraccion_sin_termometro: 0.30
+  fraccion_con_termometro: 1.0
+  fraccion_sin_termometro: 1.0
   latido_s: 0.02              # resolucion del ciclo. Con periodo 2,0 el error es ~3%
   no_distorsiona_el_numero: >
     El tiempo parado se acumula en pausado_s y se resta: trabajo_s = reloj - pausado_s.
     Asi que el s/pagina publicado es el que habria salido sin ciclo. Lo que el ciclo
     alarga es la SESION, no la medida.
   la_afirmacion_ES_FALSABLE: >
-    cpu_s / reloj_s <= fraccion x 8 nucleos. Se comprueba con los datos que el propio
+    cpu_s / reloj_s <= fraccion x nucleos. Se comprueba con los datos que el propio
     gobernador guarda, en cada unidad. Si alguna unidad la incumple, el ciclo no esta
-    acotando y hay que decirlo en vez de suponerlo.
+    acotando y hay que decirlo en vez de suponerlo. Con fraccion 1,0 la comprobacion
+    sigue corriendo y lo unico que dice es que ninguna unidad paso del numero de nucleos,
+    que es una perogrullada util: si la pasara, el instrumento estaria roto.
 
 # ------------------------------------------------------------- LA CENSURA
 # El documento mas largo del corpus son 309 paginas. docling sobre eso es UNA unidad

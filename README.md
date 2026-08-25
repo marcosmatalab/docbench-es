@@ -42,7 +42,7 @@ así que los trabajos `full` y `nightly` de CI nacen dormidos en vez de rojos.
 
 | Si eres… | Empieza por | Tiempo |
 |---|---|---|
-| alguien que evalúa si esto es serio | **[Cómo se mide aquí](docs/como-se-mide-aqui.md)** — las cinco reglas y tres casos en que decidieron algo | 3 min |
+| alguien que evalúa si esto es serio | **[Cómo se mide aquí](docs/como-se-mide-aqui.md)** — las cinco reglas y cuatro casos en que decidieron algo | 3 min |
 | alguien que quiere saber si le sirve | [Las cinco cosas que lo hacen distinto](docs/las-cinco-cosas.md), cada una con el hito en que deja de ser promesa | 5 min |
 | alguien que va a usar los números | [`RESULTS.md`](RESULTS.md), cada cifra con su comando · y [`LIMITS.md`](LIMITS.md), lo que **no** se mide | 30 min |
 | alguien que va a tocar el código | [`docs/reading-order.md`](docs/reading-order.md) · [`MANUAL.md`](MANUAL.md) · [`docs/adr/`](docs/adr/) | 2 h |

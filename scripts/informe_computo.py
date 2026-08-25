@@ -22,6 +22,7 @@ class ConMedidas(Protocol):
 
     medidas: list[Registro]
     termica: Registro
+    sellos: list[str]
 
 
 def numero(m: Registro, clave: str) -> float:
@@ -117,5 +118,15 @@ def informe(estado: ConMedidas) -> None:
             "  INFERIOR, no su valor. Ver runs/l5/termica.yaml, censura."
         )
     _comprobar_el_ciclo(estado.medidas)
+    if len(estado.sellos) > 1:
+        print(
+            f"\n  ATENCIÓN: estas medidas se tomaron bajo {len(estado.sellos)} sellos "
+            "distintos.\n  No son una corrida, son varias, y el informe las presenta "
+            "juntas:"
+        )
+        for s in estado.sellos:
+            print(f"    {s}")
+    elif estado.sellos:
+        print(f"\n  sello: {estado.sellos[0]}")
     print(f"\n  térmica de la sesión: {estado.termica or '—'}")
     print("\n  reproducir: uv run --extra extract-local python scripts/computo_l5.py")

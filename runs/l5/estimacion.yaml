@@ -48,7 +48,9 @@ formula:
 
 # --------------------------------------------------------------- LA MUESTRA
 muestra:
-  n_por_banda: 6
+  n_base_por_banda: 6
+  n_por_banda: 9            # 6 -> 9 el 2026-08-25 al dispararse la regla de parada
+  semilla_de_la_ampliacion: 20260825002
   como: >
     ALEATORIA dentro de cada banda, con semilla declarada. No «los mas largos» —era el
     metodo viejo y sesgaba hacia arriba— ni «los medianos» —comodo, pero entonces el
@@ -76,6 +78,15 @@ regla_de_parada:
     Si el intervalo del total es mas ancho que +-25% del punto, se anaden 3 documentos
     mas por banda y se vuelve a informar, hasta n=12. Escrito ahora para que anadir
     muestra no sea una decision tomada mirando el resultado.
+  ejecucion_2026_08_25: >
+    LA REGLA SE DISPARO. Con n=6 los intervalos salieron: pdfplumber +-12,5%,
+    pymupdf4llm +-17,8%, camelot +-19,4% y DOCLING +-39,5%. Se pasa a n=9 por banda.
+    Al ir a ejecutarla se descubrio que el muestreo NO LA SOPORTABA: random.sample(pob,9)
+    no contiene a random.sample(pob,6), asi que ampliar habria cambiado el sorteo entero
+    y tirado las 72 medidas ya tomadas. Se arregla sorteando los 3 que faltan DE ENTRE
+    LOS QUE NO SALIERON, con semilla propia: eso da un conjunto distribuido igual que un
+    aleatorio simple de tamano 9 y deja intacto el de tamano 6. El sorteo base no se
+    toca.
   si_sigue_ancho_con_n_12: >
     Se publica ancho, con su n y su anchura. Un intervalo ancho es un resultado.
 

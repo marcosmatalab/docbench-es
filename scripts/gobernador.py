@@ -145,6 +145,10 @@ def correr(
         str(salida),
     ]
     t0 = time.perf_counter()
+    # Con fracción 1,0 no hay ciclo: `cambio` se pone en el infinito y el `SIGSTOP`
+    # sólo puede venir del termómetro. Correr sin parar es lo que conviene
+    # térmicamente en total: mismo trabajo, menos horas caliente.
+    hay_ciclo = t.fraccion < 1.0
     trabajo_ventana = t.periodo * t.fraccion
     descanso_ventana = t.periodo - trabajo_ventana
     with Path(os.devnull).open("w") as fs, error.open("w") as fe:
@@ -153,7 +157,7 @@ def correr(
         )
         pausas, pausado, desde = 0, 0.0, 0.0
         parado = censurada = caliente = False
-        cambio = t0 + trabajo_ventana
+        cambio = t0 + trabajo_ventana if hay_ciclo else float("inf")
         proxima_lectura = 0.0
         while True:
             pid, estado, ru = os.wait4(p.pid, os.WNOHANG)
@@ -185,7 +189,7 @@ def correr(
                 os.killpg(os.getpgid(p.pid), signal.SIGCONT)
                 parado = False
                 pausado += ahora - desde
-                cambio = ahora + trabajo_ventana
+                cambio = ahora + trabajo_ventana if hay_ciclo else float("inf")
             if tope_s and not parado and (ahora - t0 - pausado) > tope_s:
                 os.killpg(os.getpgid(p.pid), signal.SIGKILL)
                 censurada = True

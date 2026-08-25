@@ -1,0 +1,86 @@
+# SOBRE QUE DOCUMENTOS CORRE L5 · escrito ANTES de puntuar nada
+#
+# Es la respuesta a B1, y no es «censo» ni «muestra»: son DOS POBLACIONES con dos
+# denominadores, porque contestan dos preguntas distintas. Este repo ya publica tablas
+# con tres denominadores cuando dicen cosas distintas.
+
+hito: L5
+decide: sobre que documentos corre la campana de L5
+regla_de_decision: runs/l5/computo.yaml   # intacta: si no cabe, se recortan EXTRACTORES
+
+# ------------------------------------------------------- EL NUMERO QUE MANDA
+# Derivado, no tecleado: uv run python scripts/censo_tablas.py y scripts/poblacion_l5.py
+el_hallazgo: >
+  662 DE LOS 1.000 DOCUMENTOS NO TIENEN NI UNA TABLA en la verdad de referencia. No
+  puntuan: salen NO_APLICABLE, nunca 0,00 (decision B3). Y cuestan EL 54,7% DEL COMPUTO,
+  mas que su 41,0% de las paginas, porque son cortos y la pagina corta cuesta mas: el
+  coste fijo por documento se reparte entre menos paginas. En docling, una pagina de la
+  banda <=10 cuesta 5,2 veces lo que una de la banda >50.
+por_que_el_modelo_lineal_lo_escondia: >
+  Multiplicar el total por la fraccion de PAGINAS habria dicho 2,32 h para los 662. El
+  modelo por bandas dice 3,10 h. Un coste/pagina global aplicado a poblaciones con
+  distinta distribucion de longitud es el mismo error de los 533 MB de L3.
+
+# ------------------------------------------------------ LO QUE SE PERDERIA
+lo_que_casi_nadie_mide: >
+  Un extractor que INVENTA una tabla donde no la hay esta haciendo algo malo, y los 662
+  sin tabla son EL UNICO SITIO DONDE ESO SE VE. Es un control negativo de deteccion. No
+  esta en ExtractBench, ni en PulseBench-Tab, ni en ninguno de los ocho extractores del
+  banco. Tirar los 662 ahorraria 3,10 h y borraria la unica columna propia que hay aqui.
+
+# --------------------------------------------------------------- EL DISENO
+los_que_puntuan:
+  quienes: los 338 con al menos una tabla
+  como: CENSO
+  paginas: 6076
+  publica: TEDS y todo lo demas, SIN intervalo, por ADR-0015 (censo de la ventana)
+
+muestra_de_los_que_no_puntuan:
+  quienes: los 662 sin ninguna tabla
+  publica: tasa de falso positivo de DETECCION, con intervalo de Wilson
+  semilla: 20260825003
+  estratificada_por: las tres bandas de coste, que tambien son bandas de longitud
+  tamanos:
+    "<=10": 200      # de 584
+    "11-50": censo   # son 72
+    ">50": censo     # son SEIS
+  por_que_censo_en_los_pequenos: >
+    Con asignacion proporcional, el estrato >50 —que son SEIS documentos— habria recibido
+    dos, y una tasa sobre dos documentos no es una tasa. Censar los estratos pequenos da
+    su valor exacto sin intervalo y gasta la muestra donde hay poblacion.
+  por_que_200_y_no_150: >
+    Porque cabe. Con 200 el Wilson da +-4,2 puntos si la tasa sale 10% y +-6,9 en el peor
+    caso de 50%; con 150 serian +-4,8 y +-7,9. El tamano se elige por la PRECISION que
+    compra y se comprueba contra el presupuesto despues, no al reves: si no cupiera, la
+    regla congelada dice que se recortan EXTRACTORES, no documentos.
+  por_que_esto_no_invade_L6: >
+    Una proporcion unica con intervalo de Wilson y semilla declarada es lo que este repo
+    hace desde L1. El plan de muestreo de L6 es para comparaciones pareadas y potencia,
+    que es otra cosa.
+
+# ---------------------------------- EL SESGO DE LA COLUMNA NUEVA, Y COMO SE ACOTA
+# Esto es lo que hace que la columna sea defendible, y va escrito antes de medirla.
+el_falso_positivo_no_es_lo_mismo_que_la_alucinacion:
+  el_problema: >
+    La referencia es el XML del BOE. «Cero tablas» significa cero tablas EN EL XML, no
+    cero tablas en el documento. Si el maquetador del BOE no marco como <table> algo que
+    en el PDF SI es una tabla, un extractor que la encuentre acertaria y se contaria como
+    falso positivo. La tasa cruda mezcla ALUCINACION con OMISION DE LA FUENTE.
+  como_se_acota: >
+    Igual que las discrepancias de L4: se adjudican contra el PDF, nunca contra el XML.
+    ADR-0039 regla 5 —comprobar contra el XML da por supuesto que el XML acierta, que es
+    lo que se mide—. Se toma una muestra declarada de los positivos, se mira el PDF, y se
+    publica la tasa cruda Y la fraccion adjudicada como omision de la fuente.
+  si_no_da_tiempo_a_adjudicar: >
+    Se publica la tasa cruda LLAMANDOLA «tasa de tabla no presente en la referencia» y
+    NO «tasa de alucinacion», y se declara aqui que la separacion esta sin hacer. Lo que
+    no se hace es publicarla con el nombre que no se ha ganado.
+
+# ------------------------------------------------------------- LO QUE CUESTA
+presupuesto:
+  a_la_configuracion_de_8_cpu: >
+    338 censo (2,56 h) + 6 y 72 censados + 200 muestreados. El total y su desglose salen
+    de scripts/poblacion_l5.py, que los deriva de lo medido en runs/l5/computo.json.
+  se_reevalua_tras_subir_los_trabajadores: >
+    Las horas de arriba son de reloj a 8 CPU. Marcos sube .wslconfig a processors=32 y se
+    remide; la prediccion de cuanto baja esta congelada en runs/l5/prediccion_hilos.yaml.

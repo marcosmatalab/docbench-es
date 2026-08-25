@@ -14,8 +14,9 @@ se indica**; ✅, que existe hoy.
 ## 5 minutos · ¿esto me sirve?
 
 1. [`README.md`](../README.md) — qué es, para quién y qué funciona hoy.
-2. [Cómo se mide aquí](como-se-mide-aqui.md) — las cinco reglas y tres casos en que
-   decidieron algo. **Es lo que separa este repo de un script con tests.**
+2. [Cómo se mide aquí](como-se-mide-aqui.md) — las cinco reglas y cuatro casos en que
+   decidieron algo. **Es lo que separa este repo de un script con tests.** Y, aparte,
+   [quién publica los ocho bancos](quien-publica-los-bancos.md), que acumula.
 3. [Las cinco cosas que lo hacen distinto](las-cinco-cosas.md) — cada una con el hito
    en que deja de ser una promesa.
 

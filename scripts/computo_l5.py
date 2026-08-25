@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import sys
 import time
@@ -51,6 +52,7 @@ sys.path.insert(0, str(RAIZ / "src"))
 from gobernador import Muestreo, Registro, Termica, correr, descansa  # noqa: E402
 from informe_computo import informe, numero  # noqa: E402
 from muestra_l5 import muestra, unidades  # noqa: E402
+from sello import cpus_visibles, sello  # noqa: E402
 from termometro import leer  # noqa: E402
 
 DOCS = RAIZ / "runs" / "l3" / "docs"
@@ -64,6 +66,11 @@ class Estado:
 
     medidas: list[Registro] = field(default_factory=list)
     termica: Registro = field(default_factory=dict)
+    # Los sellos bajo los que se tomó cada tramo. **Es una lista y no un campo**: este
+    # punto de control está pensado para matarse y continuar, así que puede abarcar
+    # varios commits y varias configuraciones de máquina. Si trae más de uno, el informe
+    # lo dice en vez de presentar dos corridas como una.
+    sellos: list[str] = field(default_factory=list)
 
     @classmethod
     def cargar(cls) -> Estado:
@@ -74,7 +81,8 @@ class Estado:
             raise TypeError(f"{PUNTO} no contiene un objeto JSON")
         medidas = [m for m in crudo.get("medidas", []) if isinstance(m, dict)]
         termica = crudo.get("termica", {})
-        return cls(medidas, termica if isinstance(termica, dict) else {})
+        sellos = [s for s in crudo.get("sellos", []) if isinstance(s, str)]
+        return cls(medidas, termica if isinstance(termica, dict) else {}, sellos)
 
     def guardar(self) -> None:
         PUNTO.write_text(
@@ -92,13 +100,21 @@ class Estado:
         )
 
 
+def _hilos(valor: object) -> int:
+    """`todos` se resuelve al correr. Un número derivado no se teclea: así, subir
+    `processors` en `.wslconfig` basta y no hay que editar el sobre."""
+    if isinstance(valor, str) and valor.strip().lower() == "todos":
+        return os.cpu_count() or 1
+    return int(str(valor))
+
+
 def sobre(vigilado: bool) -> tuple[Termica, dict[str, float]]:
     """El sobre térmico, LEÍDO de `runs/l5/termica.yaml`. Un número derivado no se teclea."""
     d = yaml.safe_load(SOBRE.read_text(encoding="utf-8"))
     lim, carga = d["limites"], d["carga"]
     ciclo = d["ciclo"]
     t = Termica(
-        hilos=int(carga["hilos_con_termometro" if vigilado else "hilos_sin_termometro"]),
+        hilos=_hilos(carga["hilos_con_termometro" if vigilado else "hilos_sin_termometro"]),
         techo=float(lim["techo_c"]),
         reanudar=float(lim["reanudar_c"]),
         objetivo_media=float(lim["objetivo_media_c"]),
@@ -107,18 +123,16 @@ def sobre(vigilado: bool) -> tuple[Termica, dict[str, float]]:
         fraccion=float(ciclo["fraccion_con_termometro" if vigilado else "fraccion_sin_termometro"]),
         latido=float(ciclo["latido_s"]),
     )
-    # El tope por unidad ESCALA con los hilos: es un tope de reloj sobre un trabajo
-    # paralelo, así que a 2 hilos el mismo trabajo tarda unas 4 veces más que a 8, y un
-    # tope fijo censuraría por ir despacio en vez de por colgarse. Y una censurada rompe
-    # la suma entera, no sólo su fila.
-    escala = float(carga["hilos_con_termometro"]) / t.hilos
+    # El tope por unidad ya no escala con los hilos: con «todos» siempre se corre a la
+    # máxima velocidad de la máquina, así que no hay configuración lenta contra la que un
+    # tope fijo fuera injusto. Sigue siendo red de seguridad contra un extractor colgado.
     ritmo = {
         # El descanso ENTRE unidades ya no es la barrera: lo es el ciclo de trabajo,
         # que acota el consumo medio DENTRO de cada unidad. Antes, a ciegas, este
         # factor valía 1,0 y duplicaba la sesión sin añadir ninguna seguridad.
         "base": float(carga["descanso_base"]),
         "tope": float(carga["descanso_tope_s"]),
-        "unidad": float(carga["tope_unidad_min"]) * 60.0 * escala,
+        "unidad": float(carga["tope_unidad_min"]) * 60.0,
     }
     return t, ritmo
 
@@ -194,10 +208,19 @@ def main(argv: list[str]) -> int:
         f"vigilado {'SÍ' if t.vigilado else 'NO'} · tope {ritmo['unidad'] / 60:.0f} min"
     )
     print(
+        f"  trabajadores: {t.hilos} de los {os.cpu_count()} que ve WSL · "
+        f"ciclo {'apagado' if t.fraccion >= 1.0 else f'{t.fraccion:.0%} de cada {t.periodo:.0f} s'}"
+    )
+    print(
         f"  ahora mismo: {lectura.etiqueta} {lectura.grados:.1f} °C\n"
         if lectura
         else "  a ciegas: no se afirma ningún grado en el informe\n"
     )
+
+    firma = f"{sello(len(pendientes))} · {t.hilos}w de {cpus_visibles()} CPU"
+    if firma not in estado.sellos:
+        estado.sellos.append(firma)
+    print(f"  sello: {firma}\n")
 
     sesion = Muestreo()
     for i, (extractor, ident, paginas, banda) in enumerate(pendientes, 1):

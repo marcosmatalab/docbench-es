@@ -42,25 +42,42 @@ def muestra() -> list[tuple[str, int, str]]:
     página baja con la longitud cuando hay un coste fijo por documento— y se comprueba
     después por regresión.
     """
-    d = yaml.safe_load(ESTIMACION.read_text(encoding="utf-8"))
-    n = int(d["muestra"]["n_por_banda"])
-    rng = random.Random(int(d["muestra"]["semilla"]))
+    d = yaml.safe_load(ESTIMACION.read_text(encoding="utf-8"))["muestra"]
+    base, n = int(d["n_base_por_banda"]), int(d["n_por_banda"])
     bandas = repartir(DEL_COSTE)
     mas_largo = max(
         ((i, p) for b in bandas.values() for i, p in zip(b.documentos, b.paginas, strict=True)),
         key=lambda x: x[1],
     )[0]
-    fuera: list[tuple[str, int, str]] = []
-    for nombre, b in bandas.items():
-        candidatos = [
+    candidatos = {
+        nombre: sorted(
             (i, p)
             for i, p in zip(b.documentos, b.paginas, strict=True)
             if i != mas_largo and (DOCS / f"{i}.pdf").exists()
-        ]
-        if len(candidatos) < n:
-            raise ValueError(f"la banda {nombre} sólo tiene {len(candidatos)} candidatos, y n={n}")
-        fuera += [(i, p, nombre) for i, p in rng.sample(sorted(candidatos), n)]
-    return fuera
+        )
+        for nombre, b in bandas.items()
+    }
+
+    # PRIMERA PASADA: el sorteo base, EXACTAMENTE como se hizo la primera vez. Un solo
+    # `Random` recorriendo las bandas en orden, igual que entonces, o las 72 medidas ya
+    # tomadas dejarían de corresponder a esta muestra.
+    rng = random.Random(int(d["semilla"]))
+    elegidos = {nombre: rng.sample(c, base) for nombre, c in candidatos.items()}
+
+    # SEGUNDA PASADA: la ampliación de la regla de parada, con SU PROPIA semilla.
+    #
+    # `random.sample(pob, 9)` NO contiene a `random.sample(pob, 6)`: no son anidados. La
+    # regla de parada estaba escrita en el pre-registro y el muestreo no la soportaba —
+    # ampliar habría cambiado el sorteo entero y tirado lo medido. Sortear los que faltan
+    # DE ENTRE LOS QUE NO SALIERON da un conjunto distribuido igual que un muestreo
+    # aleatorio simple de tamaño n, y además deja intacto el de tamaño `base`.
+    if n > base:
+        extra = random.Random(int(d["semilla_de_la_ampliacion"]))
+        for nombre, c in candidatos.items():
+            resto = [x for x in c if x not in elegidos[nombre]]
+            elegidos[nombre] += extra.sample(resto, n - base)
+
+    return [(i, p, nombre) for nombre, ds in elegidos.items() for i, p in ds]
 
 
 def unidades(docs: list[tuple[str, int, str]]) -> list[tuple[str, str, int, str]]:

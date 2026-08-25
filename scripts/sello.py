@@ -61,6 +61,22 @@ def trabajadores() -> str:
     return f"{os.cpu_count() or '?'}w"
 
 
+def cpus_visibles() -> int:
+    """Cuántas CPU lógicas ve ESTE proceso. **Condición de máquina, como la carga.**
+
+    No es una propiedad de la máquina sino de cómo está configurada: en WSL2 lo fija
+    `processors` en `C:\\Users\\<usuario>\\.wslconfig`, y el 2026-08-25 valía **8 con 32
+    lógicos en el anfitrión** —un 9950X3D de 16 núcleos—. Cualquier medida de reloj
+    tomada con 8 y comparada con una tomada con 32 es una comparación entre máquinas
+    distintas, aunque el hardware sea el mismo.
+
+    Se separa de `trabajadores()` porque aquélla contesta *cuántos procesos levanta
+    `pytest`* y ésta *cuántas CPU hay*: coinciden por casualidad cuando `-n auto` está
+    puesto, y dejan de coincidir en cuanto alguien mide en serie.
+    """
+    return os.cpu_count() or 0
+
+
 def _pyproject_addopts() -> str:
     config = (RAIZ / "pyproject.toml").read_text(encoding="utf-8")
     return next((x for x in config.splitlines() if x.startswith("addopts")), "")
