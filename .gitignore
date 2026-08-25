@@ -67,7 +67,7 @@ runs/*/*
 !runs/*/poblacion.json
 !runs/*/prediccion_hilos.yaml
 !runs/*/computo.json
-!runs/*/computo_8cpu.json
+!runs/*/computo_base_2hilos.json
 !runs/*/humo.json
 !runs/*/resello_comparador.json
 # LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO
