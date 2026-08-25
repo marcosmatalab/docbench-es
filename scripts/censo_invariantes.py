@@ -36,7 +36,6 @@ from censo_mutaciones import (
     _mutaciones,
     _mutaciones_legales,
 )
-
 from docbench_es.core.canonical import from_html, holes, validate
 from docbench_es.types import CanonicalCell, CanonicalTable, HallazgoTabla
 

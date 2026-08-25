@@ -40,14 +40,34 @@ combinadas —que es el que se sobremuestrea y el que se declara titular— **co
 hubiera competido y perdido**, cuando lo que pasó es que el formato no llegaba. Eso no
 es un extractor malo: es una comparación amañada sin querer, que es la peor clase.
 
-Por eso la conformidad **no se cree la declaración**: ejecuta el extractor y compara lo
-declarado con el `native_format` que devuelve de verdad.
+Por eso **no se elige**: `.claude/rules/extractores.md` lo dice sin margen —*«lo fija el
+conversor canónico según el formato de origen, no el extractor; un extractor no puede
+declararse capaz de algo que su formato no permite»*—. `expresa_spans()` lo deriva aquí,
+y la conformidad comprueba que lo declarado coincide con lo derivado del `native_format`
+que el extractor devuelve **de verdad**, no del que dice que devuelve.
 
 **`runs_locally` sí se cree**, y está declarado que sí: `core.policy` lo dice en su
 propio docstring. La puerta de egress recibe descriptores, no extractores, porque el
 núcleo no puede importar `extract`. Que la declaración sea cierta lo mira la suite de
 conformidad; que se respete, la puerta. Un extractor que mintiera pasaría la puerta, y
 **eso es un límite del contrato, no un fallo de la puerta**.
+
+## Por qué hay un `cumple_la_forma` además de `@runtime_checkable`
+
+**Porque el decorador no sirve para el caso que importa.** Comprobado en el intérprete:
+
+    isinstance(instancia, Extractor)  ->  True/False, y sí mira los atributos de dato
+    issubclass(clase, Extractor)      ->  TypeError: Protocols with non-method members
+                                          don't support issubclass()
+
+Y el registro **no tiene instancia**: devuelve la clase precisamente para decidir sin
+construir nada, porque construir un extractor de document-AI carga modelos. Así que el
+único chequeo que el decorador habilita exige justo lo que el diseño evita.
+
+`@runtime_checkable` se queda —`isinstance` sirve donde sí hay instancia— y al lado va
+`cumple_la_forma`, que hace sobre **la clase** lo que `issubclass` habría hecho. Y
+**publica su denominador**: cuántos miembros miró, no sólo si pasó. Un guardián que dice
+«verde» sin decir sobre cuántas cosas es indistinguible de uno que no mira ninguna.
 
 ## Lo que este módulo NO hace
 
@@ -61,16 +81,25 @@ para no escribir un mecanismo de carga antes de tener algo que cargar.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Protocol, runtime_checkable
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Final, Literal, Protocol, runtime_checkable
 
 from docbench_es.core.policy import ExtractorDeclarado
+from docbench_es.types import FORMATOS_SIN_SPANS
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipar
     from benchcore.types import Cost, ProbeResult
 
     from docbench_es.types import Extraction, RawDoc
 
-__all__ = ["Extractor", "FamiliaExtractor", "descriptor"]
+__all__ = [
+    "Extractor",
+    "FamiliaExtractor",
+    "Forma",
+    "cumple_la_forma",
+    "descriptor",
+    "expresa_spans",
+]
 
 FamiliaExtractor = Literal["parser", "ocr", "vlm", "hibrido"]
 """Las cuatro de §7.2. Ojo: **no son las cinco familias de §16.**
@@ -127,6 +156,71 @@ class Extractor(Protocol):
         arrancar la campaña costaría lo que cuesta el extractor más caro.
         """
         ...
+
+
+DECLARACIONES: Final = (
+    "id",
+    "version",
+    "kind",
+    "runs_locally",
+    "expresses_spans",
+    "benchcore_api",
+)
+"""Los seis atributos de §7.2. Enumerados para poder decir **cuál** falta."""
+
+METODOS: Final = ("extract", "cost_of", "probe")
+"""Los tres métodos de §7.2."""
+
+
+@dataclass(frozen=True)
+class Forma:
+    """El resultado de mirar la forma de una clase, **con su denominador**."""
+
+    faltan: tuple[str, ...]
+    comprobados: tuple[str, ...]
+
+    @property
+    def cumple(self) -> bool:
+        return not self.faltan
+
+    def __str__(self) -> str:
+        veredicto = "cumple la forma" if self.cumple else f"le falta {', '.join(self.faltan)}"
+        return (
+            f"{veredicto} · {len(self.comprobados)} miembros comprobados "
+            f"({len(DECLARACIONES)} declaraciones + {len(METODOS)} métodos)"
+        )
+
+
+def expresa_spans(native_format: str) -> bool:
+    """Si ese formato puede con `rowspan`/`colspan`. **Se deriva, no se declara.**
+
+    Markdown y texto plano no pueden por construcción del formato (ADR-0006), y la
+    lista vive en `types.FORMATOS_SIN_SPANS` — una sola vez, porque una segunda copia
+    de «qué formatos pierden los spans» es una copia que se queda vieja.
+
+    Un extractor que ponga `expresses_spans=True` devolviendo Markdown no está siendo
+    optimista: está pidiendo que se le puntúe un cero en el estrato de celdas
+    combinadas como si hubiera competido. Por eso el valor sale de aquí y la conformidad
+    contrasta, en vez de creerse el atributo.
+    """
+    return native_format not in FORMATOS_SIN_SPANS
+
+
+def cumple_la_forma(cls: type) -> Forma:
+    """Lo que `issubclass` habría hecho, **sobre la clase y sin construir nada**.
+
+    Mira que las seis declaraciones estén y que los tres métodos sean invocables. Es
+    deliberadamente barato: no ejecuta el extractor, no llama a `probe` y no toca disco.
+    Lo que sí dice es que un extractor que asigna `benchcore_api` en `__init__` **no
+    pasa** — y ésa es justamente la regla que hace posible descubrir sin construir.
+
+    **Lo que NO mira, y hay que decirlo**: los tipos. `kind = "parseador"` pasaría por
+    aquí. Eso lo caza `mypy` en quien escribe el extractor, y la conducta la caza
+    `extract.conformance` ejecutándolo contra documentos. Aquí sólo está la forma.
+    """
+    faltan = [n for n in DECLARACIONES if not hasattr(cls, n)]
+    faltan += [n for n in METODOS if not callable(getattr(cls, n, None))]
+    return Forma(tuple(faltan), (*DECLARACIONES, *METODOS))
 
 
 def descriptor(extractor: Extractor) -> ExtractorDeclarado:

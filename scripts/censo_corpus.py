@@ -57,7 +57,6 @@ sys.path.insert(0, str(RAIZ / "src"))
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 from _censo_agregado import agregar, imprimir  # noqa: E402
-
 from docbench_es.core.canonical import validate  # noqa: E402
 from docbench_es.entity import boe_xml  # noqa: E402
 

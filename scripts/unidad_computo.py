@@ -73,7 +73,7 @@ def _pdfplumber(ruta: Path) -> int:
 
 
 def _pymupdf4llm(ruta: Path) -> int:
-    import pymupdf4llm  # type: ignore[import-untyped]
+    import pymupdf4llm
 
     return len(pymupdf4llm.to_markdown(str(ruta), show_progress=False))
 
@@ -81,7 +81,7 @@ def _pymupdf4llm(ruta: Path) -> int:
 def _camelot(ruta: Path) -> int:
     import camelot
 
-    return len(camelot.read_pdf(str(ruta), pages="all"))  # type: ignore[attr-defined]
+    return len(camelot.read_pdf(str(ruta), pages="all"))
 
 
 def _docling(ruta: Path) -> int:

@@ -12,10 +12,10 @@ cobertura al lado**, porque las dos son campos del mismo `TedsReport`.
 from __future__ import annotations
 
 import pytest
-from _estrategias import tabla_completa
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from _estrategias import tabla_completa
 from docbench_es.core.canonical import from_html
 from docbench_es.core.teds import teds_batch
 from docbench_es.types import CanonicalTable

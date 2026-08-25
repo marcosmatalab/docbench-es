@@ -18,10 +18,10 @@ from __future__ import annotations
 from datetime import date
 
 import pytest
+
 from _adaptadores_falsos import AdaptadorAnotado, AdaptadorCarpeta, AdaptadorDerivado
 from _adaptadores_rotos import AdaptadorRoto, SinVersion, VersionSoloEnInstancia
 from conftest import Registrar
-
 from docbench_es.entity.conformance import comprobar
 from docbench_es.entity.registry import cargar
 

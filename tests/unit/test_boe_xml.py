@@ -14,7 +14,6 @@ tabla traen celdas combinadas» diría otra cosa.
 from __future__ import annotations
 
 from _boe_falso import XML_CON_TABLA, XML_SIN_TABLA
-
 from docbench_es.entity.boe_xml import estratos, rasgos, tablas, texto_plano
 
 XML_SPAN_UNO = '<doc><table><tr><td colspan="1">sola</td></tr></table></doc>'

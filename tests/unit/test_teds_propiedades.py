@@ -14,10 +14,10 @@ búsqueda, se sube este número y se remide la puerta, no se quita el tope.
 
 from __future__ import annotations
 
-from _estrategias import tabla_completa, tabla_con_dos_filas_de_cabecera
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from _estrategias import tabla_completa, tabla_con_dos_filas_de_cabecera
 from docbench_es.core.teds import teds, teds_struct
 from docbench_es.core.teds._arbol import a_arbol, n_nodos
 from docbench_es.types import CanonicalCell, CanonicalTable

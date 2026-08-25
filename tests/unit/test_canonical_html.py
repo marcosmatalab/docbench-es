@@ -21,9 +21,9 @@ este fichero: renderiza, vuelve a parsear y compara celda a celda.
 
 from __future__ import annotations
 
-from _estrategias import a_html, codigos, tabla_bien_formada
 from hypothesis import given, settings
 
+from _estrategias import a_html, codigos, tabla_bien_formada
 from docbench_es.core.canonical import from_html, normalize_cell_text, validate
 from docbench_es.types import CanonicalTable, HallazgoTabla
 

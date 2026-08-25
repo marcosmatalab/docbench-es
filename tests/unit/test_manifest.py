@@ -17,9 +17,9 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pytest
-from _boe_falso import PDF_URL, XML_URL, Origen, Reloj
 from benchcore.types import LicenseDecl
 
+from _boe_falso import PDF_URL, XML_URL, Origen, Reloj
 from docbench_es.corpus.harvest import cosechar
 from docbench_es.corpus.manifest import (
     ESQUEMA,

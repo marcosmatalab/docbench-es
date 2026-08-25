@@ -492,19 +492,19 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 407 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 414 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **241 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **248 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (5), `sellar_xml` (4), `errors` (3),
-    `estimador_computo` (6), `extractor_contrato` (13), `sin_consumidor` (3), `reglas_parseables` (3),
+    `estimador_computo` (6), `extractor_contrato` (20), `sin_consumidor` (3), `reglas_parseables` (3),
     `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **59,2% hoy** — y 65 de los 241 entraron de golpe con
+    12,4% al cerrar L2, **59,9% hoy** — y 65 de los 248 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -514,7 +514,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **404 de 407 tests protegidos por algo** —un
+    *el arnés*, no la protección: **411 de 414 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -788,7 +788,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —404 de 407— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —411 de 414— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1656,3 +1656,101 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Lo que queda sin cubrir: nada comprueba que un artefacto de medición lleve sello.
     Se detectó mirándolo, que es exactamente la clase de garantía que este repo no
     acepta para lo demás.
+
+92. **LA PUERTA ESTUVO ROJA EN CI TRES COMMITS SEGUIDOS, Y LA CAUSA FUE INSTALAR
+    DEPENDENCIAS PARA MEDIR.** `make fast` en un clon limpio daba **7 errores** de
+    `mypy` sobre `scripts/unidad_computo.py`: `pdfplumber`, `pymupdf4llm`, `camelot`,
+    `torch` y `docling.document_converter` no tienen stubs **y no están instalados**.
+
+    ```bash
+    git clone <repo> /tmp/frio && cd /tmp/frio
+    uv sync --only-group dev && make fast; echo "rc=$?"     # rc=2
+    ```
+
+    **Aquí pasaba porque `extract-local` se instaló para correr B5-bis.** El workflow
+    instala **sólo** el grupo `dev`, y a propósito: `--all-extras` arrastra torch, CUDA
+    y OCR, varios GB, muy por encima del presupuesto de 90 s. Así que desde el momento
+    en que se instalaron los extras había **una máquina donde la puerta pasa y ninguna
+    otra**, y la puerta no declaraba de qué entorno dependía su resultado.
+
+    **Es la segunda vez con esta forma**: el mensaje de `9db1be9` dice, con estas
+    palabras, *«el barrido medía mi máquina, no el repositorio: la puerta estaba roja en
+    cualquier clon»*. Entonces era `referencias.py`; ahora `mypy`. **La causa sí es
+    nueva**: no es un guardián que mira mal, es que **medir cambió el entorno en el que
+    se evalúa la puerta**.
+
+    Y los `# type: ignore[import-untyped]` en línea **fallaban en las dos direcciones**:
+    sobraban cuando la biblioteca estaba —`unused-ignore`— y no bastaban cuando no
+    estaba. Un arreglo táctico que sólo funciona en un entorno es el mismo bug con otro
+    signo.
+
+    **Arreglado en las dos mitades, y comprobado en los dos entornos**:
+
+    1. `[[tool.mypy.overrides]]` con `ignore_missing_imports` e `implicit_reexport` para
+       las cinco bibliotecas opcionales. El resultado de la puerta deja de depender de
+       qué extras haya. Verificado **con** extras (`rc=0`) y **sin** extras en un clon
+       limpio (`rc=0`).
+    2. **El entorno entra en la huella de la puerta.** `.claude/hooks/huella-puerta.sh`
+       incluye ahora los nombres de lo instalado en `.venv`, así que un verde de un
+       entorno deja de avalar un commit en otro. Es la misma familia que el número de
+       trabajadores de `-n auto`: una cifra que depende de una condición no declarada no
+       es reproducible.
+
+    Lo que queda sin cubrir: **nadie mira CI**. Estos tres commits pasaron el aro local
+    de `guard-commit.sh` con la puerta local verde y CI en rojo, y el aro no lo sabía
+    porque miraba un entorno distinto. Ahora la huella los distingue, pero **seguir el
+    resultado de CI sigue siendo una costumbre**, no un mecanismo.
+
+93. **`@runtime_checkable` NO PUEDE COMPROBAR LO QUE EL REGISTRO NECESITA.** Comprobado
+    en el intérprete: `isinstance(instancia, Extractor)` funciona y sí mira los
+    atributos de dato, pero `issubclass(clase, Extractor)` lanza
+    `TypeError: Protocols with non-method members don't support issubclass()`.
+
+    Y el registro **no tiene instancia**: devuelve la clase precisamente para decidir sin
+    construir, porque construir un extractor de document-AI carga modelos. Así que el
+    único chequeo que el decorador habilita exige justo lo que el diseño evita. **No era
+    falso: era inutilizable donde hacía falta**, que es el límite 77 otra vez y en el
+    primer fichero de L5.
+
+    **Arreglado** con `extract.base.cumple_la_forma(cls)`, que hace sobre la clase lo que
+    `issubclass` habría hecho y **publica su denominador** —«9 miembros comprobados
+    (6 declaraciones + 3 métodos)»—. `@runtime_checkable` se queda para donde sí hay
+    instancia, y el test dice **sobre qué opera cada mitad**.
+
+    Lo que `cumple_la_forma` **no** mira: los tipos. `kind = "parseador"` pasaría. Eso lo
+    caza `mypy` en quien escribe el extractor, y la conducta la caza la conformidad.
+
+94. **Y `ruff` TAMBIÉN DEPENDÍA DEL ENTORNO, PERO PEOR: LOS DOS EXIGÍAN FORMAS
+    CONTRADICTORIAS.** Al comprobar el arreglo del límite 92 en un clon limpio apareció
+    otro, de la misma familia y más grave. Con **la misma versión** (`ruff 0.16.4`), **el
+    mismo `pyproject.toml`** —comprobado por `md5sum`— y **el mismo fichero byte a byte**
+    —comprobado por `md5sum`—:
+
+    | | `scripts/estimar_computo.py` |
+    |---|---|
+    | aquí | exige `censo_paginas` y `unidad_computo` **juntos** |
+    | clon limpio | exige una **línea en blanco** entre los dos |
+
+    **No había forma del código que pasara en los dos.** Comprobado en las dos
+    direcciones: se puso la línea en blanco y entonces la puerta se ponía roja aquí. Eso
+    es peor que el límite 92, donde al menos existía un arreglo táctico que funcionaba en
+    un entorno.
+
+    **La causa**: `ruff` **infiere** qué imports son de primera parte, y la inferencia
+    depende de lo que resuelva. No estaba declarado. **Arreglado declarándolo**:
+    `src = ["src", "scripts", "tests/unit"]` en `[tool.ruff]`. Con eso la clasificación
+    es determinista y las dos máquinas dicen lo mismo. Reclasificó 24 imports.
+
+    **Y de la reclasificación salió un choque con el congelado**, que se resolvió por
+    donde manda la regla: `ruff` quiso reordenar el bloque de imports de tres ficheros
+    **sellados** en `runs/l4/congelacion_comparador.json` —`comparar_verdad.py`,
+    `truth/derived.py` y `test_comparar_verdad.py`—, y el candado lo cazó por **una línea
+    en blanco**. El sello vale porque es a nivel de byte, así que una línea de más lo
+    rompe igual que un cambio de lógica: eso es una propiedad, no un defecto. Se hizo
+    `git checkout` de los tres y se les eximió `I001` con la razón escrita. **Re-sellar
+    por comodidad es exactamente lo que el congelado prohíbe.**
+
+    Lo que queda sin cubrir: **no se ha buscado la tercera**. `mypy` y `ruff` dependían
+    del entorno; nadie ha comprobado si `pytest`, `lint-imports` o los guardianes de
+    `scripts/` también. La puerta se ha verificado entera en los dos entornos —`rc=0` en
+    ambos— pero eso es un resultado de hoy, no una propiedad garantizada.

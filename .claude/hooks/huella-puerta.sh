@@ -20,10 +20,28 @@ cd "${CLAUDE_PROJECT_DIR:-$(pwd)}" || exit 0
 
 CONFIG="pyproject.toml .importlinter Makefile uv.lock"
 
+# EL ENTORNO FORMA PARTE DE LA HUELLA, y hizo falta descubrirlo con la puerta tres
+# commits en rojo. Al instalar `extract-local` para medir B5-bis, `mypy` dejo de dar
+# `import-not-found` sobre pdfplumber, torch y compania... SOLO AQUI. CI instala
+# `--only-group dev` a proposito, asi que tenia otro entorno y otra respuesta.
+#
+# Un verde de un entorno NO es un verde de otro, y la huella tiene que decirlo o el aro
+# de `guard-commit.sh` deja pasar un commit avalado por un verde que nadie mas puede
+# reproducir. Es la misma familia que el numero de trabajadores de `-n auto`: una cifra
+# que depende de una condicion no declarada no es reproducible, es irrepetible.
+#
+# Se listan los NOMBRES de lo instalado, no su contenido: basta para distinguir entornos
+# y cuesta un `ls`, no un `uv pip freeze`.
+entorno() {
+  ls -1 .venv/lib/python*/site-packages 2>/dev/null | sort
+  cat .venv/pyvenv.cfg 2>/dev/null || true
+}
+
 if [ "${1:-}" = "--que" ]; then
   echo "diff de *.py contra HEAD"
   echo "contenido de los *.py sin seguimiento"
   for f in $CONFIG; do echo "contenido de $f"; done
+  echo "nombres de los paquetes instalados en .venv ($(entorno | wc -l) entradas)"
   exit 0
 fi
 
@@ -34,4 +52,5 @@ fi
   done
   # shellcheck disable=SC2086
   cat -- $CONFIG 2>/dev/null || true
+  entorno
 } | md5sum | cut -d' ' -f1

@@ -23,9 +23,9 @@ from collections.abc import Iterable
 from datetime import date
 from hashlib import sha256
 
-from _adaptadores_falsos import CARPETA, FECHA_FIJA, AdaptadorCarpeta
 from benchcore.types import LicenseDecl, PrivacyDecl
 
+from _adaptadores_falsos import CARPETA, FECHA_FIJA, AdaptadorCarpeta
 from docbench_es.types import DocRef, Glossary, RawDoc, TruthMode
 
 

@@ -46,10 +46,9 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
 sys.path.insert(0, str(RAIZ / "scripts"))
 
-from sello import sello  # noqa: E402
-
 from docbench_es.entity.base import cargar_perfil  # noqa: E402
 from docbench_es.entity.boe import BoeAdapter  # noqa: E402
+from sello import sello  # noqa: E402
 
 EQUINOCCIO = date(2026, 3, 20)
 """El corte, escrito en el plan ANTES de cosechar: «cruza el equinoccio del 20 de

@@ -13,10 +13,10 @@ from __future__ import annotations
 from collections.abc import Iterator
 
 import pytest
-from _estrategias import codigos
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from _estrategias import codigos
 from docbench_es.core.canonical import (
     from_dataframe,
     from_html,

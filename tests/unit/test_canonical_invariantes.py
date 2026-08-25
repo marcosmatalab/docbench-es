@@ -19,14 +19,14 @@ determinista de `scripts/censo_invariantes.py` siga siendo el que da el número.
 from __future__ import annotations
 
 import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
 from _estrategias import (
     codigos,
     tabla_bien_formada,
     tabla_completa,
 )
-from hypothesis import assume, given, settings
-from hypothesis import strategies as st
-
 from docbench_es.core.canonical import validate
 from docbench_es.types import CanonicalCell, CanonicalTable, HallazgoTabla
 

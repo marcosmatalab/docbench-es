@@ -28,13 +28,13 @@ from __future__ import annotations
 from typing import get_args, get_type_hints
 
 import pytest
-from _adaptadores_falsos import AdaptadorCarpeta
-from _adaptadores_rotos import ConstruirTocaElMundo, SinVersion, VersionEnInit, VersionIncompatible
 from benchcore.contracts import AXES, Plugin
 from benchcore.errors import BenchcoreError
 from benchcore.types import Capabilities
-from conftest import Registrar
 
+from _adaptadores_falsos import AdaptadorCarpeta
+from _adaptadores_rotos import ConstruirTocaElMundo, SinVersion, VersionEnInit, VersionIncompatible
+from conftest import Registrar
 from docbench_es.entity.base import EntityAdapter
 from docbench_es.entity.boe import BoeAdapter
 from docbench_es.entity.registry import cargar, descubrir

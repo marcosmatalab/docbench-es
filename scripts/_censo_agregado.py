@@ -21,9 +21,8 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
 sys.path.insert(0, str(RAIZ / "scripts"))
 
-from sello import sello  # noqa: E402
-
 from docbench_es.types import HallazgoTabla  # noqa: E402
+from sello import sello  # noqa: E402
 
 Fila = dict[str, object]
 BANDAS = (("corto", 1, 4), ("medio", 5, 12), ("largo", 13, 10**9))

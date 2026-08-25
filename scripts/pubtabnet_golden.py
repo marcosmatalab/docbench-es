@@ -35,7 +35,6 @@ from typing import Protocol
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from ancla import unica
-
 from docbench_es.core.canonical import from_html
 from docbench_es.core.teds import a_html
 from docbench_es.types import CanonicalTable

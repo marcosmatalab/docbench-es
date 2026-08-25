@@ -74,6 +74,15 @@ boe = "docbench_es.entity.boe:BoeAdapter"
 # `docbench_es.entity.registry.GRUPO` y en ADR-0036.
 
 [tool.ruff]
+# DONDE ESTA EL CODIGO DE PRIMERA PARTE, DICHO Y NO ADIVINADO. Sin esto, `ruff` infiere
+# la seccion de cada import y **infiere distinto en entornos distintos**: con la misma
+# version 0.16.4, el mismo pyproject.toml (mismo md5) y el mismo fichero byte a byte,
+# aqui exigia `censo_paginas` y `unidad_computo` JUNTOS y en un clon limpio los exigia
+# SEPARADOS por una linea en blanco. O sea que NO habia forma del codigo que pasara en
+# los dos, y la puerta dejaba de ser una propiedad del repositorio.
+# Es la misma familia que los stubs de `extract-local` en mypy: un resultado que depende
+# de una condicion no declarada. La condicion se declara.
+src = ["src", "scripts", "tests/unit"]
 line-length = 100
 # Ruff 0.16 formatea el codigo Python dentro de los .md. Los manuales llevan
 # snippets elididos a proposito, asi que sin esto la puerta se pone roja por
@@ -87,6 +96,16 @@ select = ["E","F","I","N","UP","B","SIM","RUF","ANN","PTH","RET","ARG","C4"]
 ignore = ["N818"]
 
 [tool.ruff.lint.per-file-ignores]
+# LOS FICHEROS SELLADOS NO SE REORDENAN. `runs/l4/congelacion_comparador.json` guarda su
+# SHA-256, y el sello vale porque es a nivel de byte: una linea en blanco de mas lo
+# rompe igual que un cambio de logica, y eso es una propiedad, no un defecto.
+# Declarar `src` cambio la clasificacion de `comparar_verdad` a primera parte y `ruff`
+# quiso separar el bloque de imports. Se revierte el fichero y se le exime la regla:
+# la alternativa era re-sellar por comodidad, que es exactamente lo que el congelado
+# prohibe. `git checkout` de un congelado es siempre la respuesta correcta.
+"tests/unit/test_comparar_verdad.py" = ["I001"]
+"scripts/comparar_verdad.py" = ["I001"]
+"src/docbench_es/truth/derived.py" = ["I001"]
 # Los dobles de test implementan un Protocol: sus argumentos existen para
 # cumplir la firma, no para usarse.
 "tests/**" = ["ARG002", "ARG001"]
@@ -114,6 +133,27 @@ namespace_packages = true
 strict = true
 warn_unreachable = true
 disallow_any_explicit = true
+
+# LAS BIBLIOTECAS DE `extract-local` NO ESTAN EN LA PUERTA, Y NO DEBEN ESTARLO.
+# El workflow instala SOLO el grupo dev: `--all-extras` arrastraba torch, CUDA y OCR
+# —varios GB y muy por encima del presupuesto de 90 s—. Asi que el resultado de `mypy`
+# no puede depender de si estan instaladas, y sin esto dependia:
+#
+#   · SIN los extras -> 7 errores `import-not-found`, la puerta roja en CI y en
+#     cualquier clon. Tres commits en rojo sin que nadie lo mirara.
+#   · CON los extras -> los `# type: ignore[import-untyped]` en linea eran necesarios.
+#
+# O sea que los ignores en linea fallaban en LAS DOS direcciones segun el entorno:
+# sobraban cuando la biblioteca estaba y no bastaban cuando no estaba. Esto lo hace
+# declarativo y estable: la puerta deja de medir la maquina y vuelve a medir el repo.
+#
+# `implicit_reexport` es por `camelot.read_pdf`, que con camelot INSTALADO da
+# «does not explicitly export attribute». Sin la biblioteca ese error no existe, asi
+# que hacen falta las dos claves para cubrir los dos entornos.
+[[tool.mypy.overrides]]
+module = ["pdfplumber.*", "pymupdf4llm.*", "camelot.*", "torch.*", "docling.*"]
+ignore_missing_imports = true
+implicit_reexport = true
 
 [tool.pytest.ini_options]
 # `-n auto` desde L5. Para medir en serie sobre el MISMO arbol, sin moverlo:

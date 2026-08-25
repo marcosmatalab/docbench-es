@@ -79,6 +79,7 @@ import re
 from pathlib import Path
 
 import pytest
+
 from conftest import (
     CONTROLES_NEGATIVOS,
     RecuentoDegenerado,

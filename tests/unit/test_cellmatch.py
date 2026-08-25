@@ -9,9 +9,9 @@ Presupuesto declarado: `max_examples=30`.
 
 from __future__ import annotations
 
-from _estrategias import tabla_completa
 from hypothesis import given, settings
 
+from _estrategias import tabla_completa
 from docbench_es.core.canonical import from_html
 from docbench_es.core.cellmatch import cell_accuracy, cell_f1, emparejar
 from docbench_es.core.teds import teds

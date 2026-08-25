@@ -24,10 +24,9 @@ import pytest
 RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
-from verificar_corpus import verificar  # noqa: E402
-
 from docbench_es.corpus.manifest import Procedencia, crear  # noqa: E402
 from docbench_es.entity.base import cargar_perfil  # noqa: E402
+from verificar_corpus import verificar  # noqa: E402
 
 PERFIL = cargar_perfil(RAIZ / "entities" / "boe.yaml")
 SHA = "a" * 64

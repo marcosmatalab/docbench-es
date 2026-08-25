@@ -15,10 +15,10 @@ invariantes.
 
 from __future__ import annotations
 
-from _estrategias import codigos, tabla_bien_formada, tabla_con_rowspan_sobre_fila_corta
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from _estrategias import codigos, tabla_bien_formada, tabla_con_rowspan_sobre_fila_corta
 from docbench_es.core.canonical import holes, validate
 from docbench_es.types import CanonicalCell, CanonicalTable, HallazgoTabla
 
