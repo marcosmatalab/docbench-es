@@ -1910,6 +1910,15 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 > del PDF y no del XML** —del XML sería comparar el XML consigo mismo—, **se
 > congelan con hash antes de la primera comparación**, y **se declara cuáles ya se
 > habían inspeccionado** en vez de excluirlas, porque excluirlas sesgaría la muestra.
+>
+> **Y una precisión que L4 tuvo que aprender: «se congelan antes» sólo significa algo
+> si el ORDEN lo puede comprobar un tercero.** En L4 no se podía —el commit que
+> declaraba la congelación llevaba un puntero y cero hashes, y los 30 `sha256`
+> entraron en el mismo commit que publicó el número—. Está declarado en `LIMITS.md`
+> 78 y el mecanismo que lo cierra, para la próxima congelación, en
+> [ADR-0041](docs/adr/0041-el-congelado-se-atestigua-con-un-digest-empujado.md): **al
+> congelar, lo que va a git es el DIGEST, no el puntero**, en un commit que se empuja
+> solo antes de medir.
 | **L5** | `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | Primera tabla de estructura con coste y cobertura evaluable. Ocho, no trece: los otros cinco entran después con `/extractor`, una tarde cada uno | 14-18 |
 | **L6** | `sample` con McNemar + bootstrap agrupado | Plan congelado y publicado antes de la primera campaña seria | 8-10 |
 | **L7** | Quickstart: 20 documentos versionados + `make quickstart` | De clone a tabla en menos de 3 minutos, sin red y sin gastar | 6-8 |

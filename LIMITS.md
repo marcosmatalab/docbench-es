@@ -1256,3 +1256,62 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     nadie añada su glob. El test exige lo que hay, no lo que debería haber, así que
     una familia nueva **no ponría nada rojo** — la lista de obligatorios se deriva del
     disco para las familias ya declaradas, no para las que no existen todavía.
+
+78. **EL ORDEN DEL CONGELADO DE L4 NO ESTÁ ATESTIGUADO POR GIT: nada en el
+    repositorio ata las 30 transcripciones a un momento anterior a la primera
+    comparación.** Es la otra mitad del límite 74 —aquél dice que el número no es
+    **reproducible** en un clon frío; éste dice que el **orden** tampoco es
+    **auditable**—. Tres comandos:
+
+    ```bash
+    git show --stat --format="" c4ac769                        # 1 fichero, 5 líneas
+    git ls-tree -r --name-only c4ac769 | grep -c '^runs/l4/fixtures/'   # 0
+    git log --oneline --diff-filter=A -- runs/l4/congelacion.json       # 988a0fe
+    ```
+
+    **El hecho.** `c4ac769` dice en su mensaje *«Las 30 tablas transcritas del PDF y
+    congeladas con hash antes de la primera comparacion»*, y su contenido son **cinco
+    líneas de `runs/l4/plan.yaml` y CERO hashes**: escribe un **puntero**
+    —`congelacion: runs/l4/congelacion.json`— a un fichero que **todavía no está en
+    git**, más una fecha y el sello de un commit anterior. Los 30 `sha256` entran en
+    `988a0fe`, que es **el mismo commit que publica el 25 de 30** en `RESULTS.md`,
+    `ESTADO.md` y `LIMITS.md`.
+
+    Consecuencia: **lo único que sostiene «transcrito a ciegas antes de comparar» es
+    un campo `congelado_en` dentro de un JSON escrito por la misma persona en el
+    mismo commit.** `test_los_26_no_tocados_conservan_la_huella_de_antes_de_comparar`
+    es correcto y vale lo que dice: comprueba la **coherencia interna** de un
+    manifiesto cuya **procedencia no está atestiguada**. Impide la deriva posterior;
+    **no establece el orden original**.
+
+    **El contraste, y es la mitad del valor de este límite: el congelado del
+    COMPARADOR sí está atestiguado, y por el mecanismo correcto.** `b0853f4` mete en
+    git **los bytes** de ADR-0040, `comparar_verdad.py`, `truth/derived.py` y
+    `test_comparar_verdad.py` a las 06:38, **una hora antes** de `988a0fe` (07:38).
+    Ahí git no atestigua un hash: atestigua el **contenido**, que es más fuerte. Y el
+    re-sello de `98a2df1` es del mismo estándar —motivo escrito, sello original
+    conservado al lado en vez de sobrescrito, sólo añadidos, y un test que exige que
+    los tres ficheros intactos sigan cuadrando con el original—.
+
+    **Mismo hito, dos congelaciones, una atestiguada y la otra no — y la que no lo
+    está es el instrumento sobre el que descansa el hito entero.** ADR-0039 abre con
+    *«todo lo que dependa de su buena fe hay que sacarlo de su buena fe y meterlo en
+    una regla previa»*: se aplicó al comparador y no al instrumento.
+
+    **Y pesa más aquí que en cualquier otro número del repo.** El 1.000/1.000 de L3
+    lo puede recomprobar un tercero contra el BOE; el *«transcrito a ciegas antes de
+    comparar»* **no lo puede comprobar nadie** salvo que el compromiso esté en git.
+
+    **Lo que NO se hace, y va escrito para que no se haga por inercia: no se mete
+    ahora un digest en `runs/l4/plan.yaml`.** Escribir hoy el `sha256` de
+    `congelacion.json` en un commit posterior **parece** un compromiso y no lo es, y
+    sería exactamente la familia que este repo ya tiene declarada cinco veces —
+    publicar como observado lo que no se observó. **L4 se declara, no se retoca.**
+
+    **Se cierra en la PRÓXIMA congelación, que es L8b**, con el paso escrito en
+    [ADR-0041](docs/adr/0041-el-congelado-se-atestigua-con-un-digest-empujado.md) y
+    en la skill `cerrar`. Por qué L8b y no «algún día»: son **120 documentos con
+    doble pasada ciega**, el hito más caro en horas de persona del release y **el que
+    cierra `v0.1.0`**. Es el mismo modo de fallo con cuatro veces la muestra y con
+    anotadores de por medio; si ahí el orden tampoco está atestiguado, **el número
+    que cierra el release depende otra vez de la buena fe de quien lo produce**.

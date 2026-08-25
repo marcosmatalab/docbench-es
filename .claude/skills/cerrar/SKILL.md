@@ -409,6 +409,35 @@ disable-model-invocation: true
    de salida o en un `assert` de la puerta, ahí es donde va.** La skill se queda
    con lo que no cabe en ningún sitio ejecutable.
 
+   **Y AL CONGELAR: LO QUE VA A GIT ES EL DIGEST, NO EL PUNTERO** (ADR-0041).
+
+   Un congelado sólo significa algo si **el orden** —congelado ANTES de medir— lo
+   puede comprobar un tercero. Cinco pasos:
+
+   1. `sha256` **del manifiesto de huellas**.
+   2. Esa línea, en un fichero **que YA ESTÁ EN GIT**: el plan del hito.
+   3. **Ese commit se hace solo y SE EMPUJA SOLO**, antes de la primera medición.
+   4. El manifiesto y los ficheros se revelan **después**, en su commit.
+   5. Un test de **clon frío** recalcula el `sha256` y lo compara con el digest.
+
+   El valor entero está en el paso 3: **el sello de tiempo lo guarda GitHub, o sea
+   un tercero, no el autor.** Y la contrapartida se dice, no se esconde: **empujar
+   antes de medir la puerta va contra la disciplina de no empujar sin número**, y se
+   admite **sólo** porque ese commit no lleva código — una línea de digest en un YAML
+   no mueve la puerta. Si llevara algo más, la excepción no aplica.
+
+   *El caso, del cierre de L4.* `c4ac769` dice *«las 30 tablas congeladas con hash
+   antes de la primera comparacion»* y su contenido son **cinco líneas de YAML y cero
+   hashes**: un **puntero** a un fichero que aún no estaba en git. Los 30 `sha256`
+   entraron en el **mismo commit que publicó el número**. Y en el mismo hito, una
+   hora antes, el congelado del **comparador** sí quedó atestiguado —sus bytes
+   entraron en git antes de medir—. **El mecanismo correcto ya se conocía y se aplicó
+   a nueve metros de distancia.** Límite 78.
+
+   **Lo que no se hace: retrofitar.** Escribir hoy el digest de un congelado viejo en
+   un commit posterior **parece** un compromiso y no lo es. El congelado viejo **se
+   declara en `LIMITS.md`**; el paso se aplica al siguiente.
+
    **Y LA TERCERA FAMILIA, que es la de las protecciones por RUTA:**
 
    > **UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER
