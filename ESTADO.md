@@ -16,8 +16,8 @@
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | ~~16-20~~ **18-23** | **CERRADO 2026-08-24** | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | **1.000 de 1.000 emparejados**, de 1.043 intentados, con **tasa de descarte 4,12%** —denominador 1.043, umbral 0,85, ventana 2026-03-09 a 2026-04-11, causa única `incoherente` (43)—, 0 reintentos agotados y 4 días sin boletín fuera del denominador. `uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml` → **CUMPLE, 0 fallos, rc=0**, y ese CUMPLE incluye **rehacer los 1.000 `sha256` contra los bytes**. No es una estimación: censo sobre la población completa de la ventana, sin intervalo (ADR-0015). **Desglose por estación**, que es para lo que la ventana cruza el equinoccio: invierno **3,90%** (462/444), primavera **4,30%** (581/556), reconstruido y declarado (límite 63). **La ventana se eligió sobre el tramo con MÁS descarte de los tres medidos** —agosto 2,0%, otoño 4,5%, primavera 5,5%— para que a la tasa no se le pueda acusar de estar elegida. Ritmo **1,0000851 s de espaciado mediano, mínimo 1,0000211, n=2.064**, contra 1 rps declarado. **361,9 MB** en disco contra tres proyecciones que fallaron las tres (−23,5%, **+47,3%**, −29,8%): la corrección empeoró la estimación por aplicar KB/página medido en documentos cortos a una población larga, y KB/página **cae un factor 5,6** con la longitud. Puerta al cerrar: **mediana 7400 ms, p90 7505**, n=40 en 10 tandas en frío, σ=100, cero descartadas, sello `1600137`, **margen 995 ms** bajo el techo de 8500. Desglose por paso con el **barrido de referencias medido por fin: 220 ms, el 3,0%** de la puerta. **21 mutantes, todos mueren y todos SIEMPRE**, control negativo **0 de 164**, sello `0717b70 · 164 tests`. *(Publicado como «22 mutantes, 0 de 166» junto a un sello de 164: eran DOS corridas presentadas como una. `seccion_sin_cerrar` entró en el `PLAN` cuatro horas después, y su suite objetivo tiene 2 tests — 164 + 2 = 166. Corregido en la auditoría en frío de `a0d85ed`.)* El escrutinio adversarial del cierre sacó **12 hallazgos y 4 eran afirmaciones falsas**, todas corregidas en el acto. Números en [`RESULTS.md`](RESULTS.md) |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | **CERRADO 2026-08-25** | La verdad derivada reproduce las tablas a mano | **25 de 30 coinciden** sobre 30 documentos y **1.213 celdas** transcritas del PDF, `uv run python scripts/comparar_verdad.py --detalle`. No es una estimación: recuento exhaustivo sobre las 30, sin intervalo (ADR-0015). **CERO discrepancias atribuibles al código**; de las 11, **6 errores de transcripción** evidenciados contra el PDF y **5 de frontera ambigua**, las dos clases declaradas antes de verlas. **Antes de corregir, 22 de 30**, y las dos cifras se publican. De los 25, **21 limpias + 1 contaminada + 3 corregidas**, y el desglose lo emite el propio comparador en `runs/l4/informe.json` (`--informe`), no se deduce. **Y el cero está atacado**: `seccion_sin_cerrar` —el bug real del grupo de filas— **mata 0 de 25** porque 0 de 30 documentos tienen la forma que lo dispara, mientras mata 2 de 2 en `test_grupo_de_filas.py`. **Dos huecos medidos** del instrumento de 22 mutantes, límites 65-68. Cobertura de la comparación: **53,1%** (1.213 de 2.283 celdas), límite 75. **No reproducible en clon frío**, límite 74, y el **orden del congelado tampoco está atestiguado por git**, límite 78. **Puerta: p90 8006 ms, techo 8500, margen 494 ms**, n=40, sello `f89c5b6`, 0 descartadas. **Baja** desde los 8238 de antes del hito (sello `988a0fe`, σ=86) con 55 tests más — **correlación, no causa aislada**: entre las dos series entraron el arreglo de `pdftotext` *y* los 55 tests, y las tres series con sus seis campos están en [`RESULTS.md`](RESULTS.md). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
 | L5 `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | 14-18 | **PENDIENTE, el siguiente** | Primera tabla de estructura con coste y cobertura evaluable | — |
-| L6 `sample` con McNemar + bootstrap agrupado | 8-10 | PENDIENTE | Plan congelado y publicado antes de la primera campaña seria | — |
-| L7 quickstart: 20 documentos versionados + `make quickstart` | 6-8 | PENDIENTE | De clone a tabla en < 3 min, sin red y sin gastar | — |
+| L6 `sample` con McNemar + bootstrap agrupado | 8-10 | PENDIENTE · **va DESPUÉS de L7** (ADR-0042) | Plan congelado y publicado antes de la primera campaña seria | — |
+| L7 quickstart: 20 documentos versionados + `make quickstart` | 6-8 | PENDIENTE · **ADELANTADO, va antes de L6** (ADR-0042) | De clone a tabla en < 3 min, sin red y sin gastar | — |
 | L8 los tres adaptadores hostiles + cableado de `benchcore.core.policy` + fuga de credenciales | ~~10-12~~ **11-14** | PENDIENTE | Los tres bloquean. Ningún secreto en ningún artefacto | **Alcance ampliado en L3 (ADR-0037):** L8 mueve `src/docbench_es/core/policy.py` a `benchcore.core.policy`, con su suite y subiendo el menor de `API_VERSION`. **~1 h 30 min**, y el rango sube porque un cambio en otro repo tiene ida y vuelta |
 | **L8b verdad auditada**: 120 documentos, doble pasada ciega | 20-26 | PENDIENTE | *"La verdad derivada coincide con la auditoría humana en X%, IC [a,b]"*. **Cierra `v0.1.0`** | — |
 
@@ -475,6 +475,23 @@ tarde cada uno.
 > de L5**: `pytest -n auto` con `pytest-xdist`, **medido antes de escribir una sola
 > línea de código del hito**. Medirlo después sería medirlo cuando ya no hay margen
 > para decidir.
+
+**Y ANTES de comprometerse con ocho extractores, una PRUEBA DE HUMO con uno.** Las 30
+tablas de L4 ya tienen verdad derivada congelada y el TEDS de L2 ya está validado
+contra PubTabNet. Pasar **`pdfplumber`, el más simple**, sobre esos 30 y sacar el TEDS
+contra la verdad derivada son **~2 h** y dan tres cosas que hoy no existen:
+
+- la **primera prueba de extremo a extremo** de la cadena L1→L2→L3→L4 con un consumidor
+  real — que es exactamente el patrón que la sección «Construido y NO VALIDADO» de este
+  fichero declara: L1 cerró verde y **L2 descubrió que `from_html` marcaba mal el 100%
+  de las cabeceras de PubTabNet**;
+- el **orden de magnitud del coste por documento**, que es lo que decide si ocho
+  extractores caben en las 14-18 h presupuestadas;
+- y los **bugs de integración antes** de que ocho extractores los multipliquen.
+
+> **NO SE PUBLICA COMO NÚMERO.** 30 documentos elegidos por riqueza de spans no son
+> muestra de nada, y publicar un TEDS de ahí sería justo lo que este repo prohíbe. Es
+> **prueba de humo con su límite escrito**, y se dice que lo es.
 
 **Lo que L5 hereda de L4 y no puede ignorar:**
 

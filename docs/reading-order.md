@@ -1,71 +1,52 @@
 # Orden de lectura
 
-Tres rutas según el tiempo que tengas. Cada una termina en un sitio distinto: la
-primera te dice **si esto te sirve**, la segunda **si el método es serio**, la
-tercera **te deja poder cambiarlo**.
+Tres rutas según el tiempo que tengas. La marca 🕓 significa **llega en el hito que
+se indica**; ✅, que existe hoy.
 
-> **Marcas.** ✅ existe hoy · 🕓 llega en el hito que se indica. A 21 de agosto de
-> 2026 el repo está en L0, así que buena parte de la ruta de 2 h está por escribir
-> y sería deshonesto no decirlo aquí.
-
----
+<!-- ESTADO:inicio -->
+| | |
+|---|---|
+| Release en curso | `v0.1.0` · **5 hitos cerrados** (L0, L1, L2, L3, L4), el último el 2026-08-25. Siguiente: **L5** |
+| La puerta | `make fast` en verde. **p90 8006 ms** local sobre `f89c5b6`, techo 8500 (ADR-0022), margen 494 ms, n=40 en frío. El presupuesto del manual son 90 s y es del runner. Procedencia en [`RESULTS.md`](../RESULTS.md) |
+| Dónde va el checkpoint | [`ESTADO.md`](../ESTADO.md), que se actualiza al cerrar cada hito. **Esta tabla se genera desde ahí** con `uv run python scripts/estado_readme.py --escribir` |
+<!-- ESTADO:fin -->
 
 ## 5 minutos · ¿esto me sirve?
 
-| # | Qué leer | Qué te llevas |
-|---|---|---|
-| 1 | ✅ [`README.md`](../README.md), las tres primeras líneas | El número. Hoy: que todavía no hay número, y cuál será |
-| 2 | ✅ [`RESULTS.md`](../RESULTS.md), la sección *"lo que todavía NO hay aquí"* | Qué está medido y qué no, sin adornos |
-| 3 | ✅ [`LIMITS.md`](../LIMITS.md), los límites 4, 10 y 11 | El sesgo de corpus, la falta de potencia y por qué `NO_APLICABLE` no es cero |
-
-**Si después de esto te sirve**, el siguiente paso es `make fast`: la puerta entera
-en ~1,7 s en local y 4,43 s en el runner de GitHub, sin red. Las dos cifras y su
-rango, en [`RESULTS.md`](../RESULTS.md); el método, en
-[`docs/metrics.md`](metrics.md).
-
----
+1. [`README.md`](../README.md) — qué es, para quién y qué funciona hoy.
+2. [Cómo se mide aquí](como-se-mide-aqui.md) — las cinco reglas y tres casos en que
+   decidieron algo. **Es lo que separa este repo de un script con tests.**
+3. [Las cinco cosas que lo hacen distinto](las-cinco-cosas.md) — cada una con el hito
+   en que deja de ser una promesa.
 
 ## 30 minutos · ¿es serio el método?
 
-Esta es la ruta de quien va a juzgar el proyecto, no a usarlo.
-
-| # | Qué leer | Qué demuestra |
-|---|---|---|
-| 1 | ✅ `MANUAL.md` §1, *"Qué es, y el hueco verificado"* | Que el hueco está comprobado página a página contra los cuatro candidatos, no supuesto |
-| 2 | ✅ `MANUAL.md` §4, los doce ADR | Que cada decisión tiene su alternativa descartada escrita |
-| 3 | ✅ [`.importlinter`](../.importlinter) | **El corazón del asunto.** Tres prohibiciones, y cada una hace cumplir una afirmación del README. Si `lint-imports` se pone rojo, se ha roto una promesa, no un estilo |
-| 4 | ✅ [`src/docbench_es/errors.py`](../src/docbench_es/errors.py) | Que "ningún error se traga" es código: enum cerrado y un código de salida por causa |
-| 5 | ✅ [`tests/unit/test_types.py`](../tests/unit/test_types.py) | Cómo se escribe un test aquí: la pregunta no es *qué prueba* sino *qué demuestra* |
-| 6 | ✅ `MANUAL.md` §12, *"Métricas: fórmula, supuestos y caso degenerado"* | Que cada métrica declara qué hace cuando la entrada es degenerada |
-| 7 | ✅ `MANUAL.md` §14, la tabla de tests | Los tres que casi nadie tiene: degradación, deriva sintética y los tres adaptadores hostiles |
-| 8 | ✅ [`docs/metrics.md`](metrics.md) | El método de cada número publicado: qué mide, resolución del instrumento, de dónde sale su incertidumbre, y el historial de correcciones. Hoy sólo el tiempo de la puerta; crece con TEDS en L2 y con exactitud y kappa en L5 y L8b |
-
-**El atajo de un minuto para un examinador con prisa:** §14 del manual y el
-`.importlinter`. Uno dice qué se prueba y por qué; el otro impide que deje de
-probarse.
-
----
+1. [`RESULTS.md`](../RESULTS.md) — los números medidos, **cada uno con el comando que
+   lo reproduce**. Empieza por el criterio del último hito cerrado.
+2. [`LIMITS.md`](../LIMITS.md) — lo que este proyecto **no** mide, numerado y con la
+   fecha en que se descubrió. Si sólo vas a leer un documento, que sea éste.
+3. [`docs/metrics.md`](metrics.md) — qué mide cada métrica, con qué resolución, de
+   dónde sale su incertidumbre y **su historial de correcciones**.
+4. [`docs/adr/`](adr/) — una decisión por fichero, con su alternativa descartada.
+   Los que más se citan: [0015](adr/0015-alcance-de-la-regla-del-intervalo.md) (qué
+   número lleva intervalo), [0022](adr/0022-el-techo-de-la-puerta.md) (el techo de la
+   puerta y qué hacer al romperlo), [0039](adr/0039-la-adjudicacion-de-discrepancias-de-la-verdad.md)
+   y [0040](adr/0040-las-reglas-del-comparador-de-verdad.md) (cómo se adjudica una
+   discrepancia contra la verdad de referencia).
 
 ## 2 horas · quiero poder cambiarlo
 
-| # | Qué leer | Para qué |
-|---|---|---|
-| 1 | ✅ `MANUAL.md` §6 y [`src/docbench_es/types/`](../src/docbench_es/types/) en paralelo | El modelo de datos entero. Lee el manual y el código a la vez: el código lleva en cada docstring **por qué** el campo es así |
-| 2 | ✅ [`docs/adr/`](adr/) | Las decisiones tomadas fuera del manual, una por fichero |
-| 3 | ✅ `MANUAL.md` §7, las tres interfaces | `EntityAdapter` (siete métodos), `Extractor`, `AnswerEngine` |
-| 4 | ✅ `MANUAL.md` §8, el árbol fichero a fichero | Dónde va cada cosa y por qué el contrato de capas lo obliga |
-| 5 | ✅ `MANUAL.md` §9, *"los módulos con lógica no obvia"* | La forma canónica, TEDS, los seis verificadores, las tres señales de deriva |
-| 6 | ✅ [`CLAUDE.md`](../CLAUDE.md) y [`.claude/rules/`](../.claude/rules/) | Las reglas de trabajo del repo. Las tres de `rules/` se cargan solas según el fichero que toques |
-| 7 | ✅ [`PARCHES.md`](../PARCHES.md) | Los siete fallos del pack de arranque, con su síntoma exacto. Léelo **antes** de tocar `pyproject.toml` |
-| 8 | 🕓 `docs/entity-guide.md` — **L3** | Cómo escribir un adaptador de entidad, con un ejemplo entero |
-| 9 | 🕓 `docs/extractor-guide.md` — **L5** | Cómo conectar tu propio extractor. Pasa por el mismo aro que los de casa |
-| 10 | 🕓 `docs/glossary-guide.md` — **L11** | Cómo construir la capa semántica de una entidad |
-| 11 | 🕓 `docs/deployment.md` — **L15** | Los seis perfiles de entorno y qué se pierde en cada uno |
+1. [`MANUAL.md`](../MANUAL.md) — la especificación completa: modelo de datos,
+   interfaces, métricas e hitos. **Manda sobre cualquier otro documento.**
+2. [`CLAUDE.md`](../CLAUDE.md) — las reglas de oro del repo y el contrato de capas,
+   que lo verifica el CI y no es cuestión de estilo.
+3. [`ESTADO.md`](../ESTADO.md) — dónde está el proyecto, qué se hereda de cada hito y
+   la deuda abierta con su tamaño medido.
+4. [`HITOS.md`](../HITOS.md) — el prompt literal de cada hito.
 
-### Si lo que quieres es contribuir
+### Si vas a contribuir
 
-1. ✅ `MANUAL.md` §16, la tabla de hitos con su criterio de aceptación.
-2. ✅ [`ESTADO.md`](../ESTADO.md), que dice dónde está el proyecto ahora mismo.
-3. ✅ `make fast`. **Es la puerta.** No se cierra un hito con la puerta en rojo.
-4. ✅ [`LIMITS.md`](../LIMITS.md). Si descubres un límite construyendo, se apunta
-   el mismo día. Es el fichero que más dice de este proyecto.
+`make fast` es la puerta y no se cierra un hito con la puerta en rojo. Todo lo demás
+—cómo se cierra un hito, qué se congela y cuándo, y por qué una barrera nueva trae su
+control negativo el mismo día— está en las cinco reglas de
+[Cómo se mide aquí](como-se-mide-aqui.md).

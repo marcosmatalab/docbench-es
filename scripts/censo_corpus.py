@@ -61,7 +61,7 @@ from _censo_agregado import agregar, imprimir  # noqa: E402
 from docbench_es.core.canonical import validate  # noqa: E402
 from docbench_es.entity import boe_xml  # noqa: E402
 
-SALIDA = RAIZ / "docs" / "censo-corpus-1000.json"
+SALIDA = RAIZ / "runs" / "censos" / "censo-corpus-1000.json"
 
 
 def columnas_declaradas(tabla: str) -> int | None:

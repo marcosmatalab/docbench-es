@@ -416,7 +416,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     cabeceras de ese corpus. Arreglado en L2. En el BOE el efecto es menor
     —usa `<th>` 2.659 veces contra 596 `<thead>`—.
 
-    **MEDIDO en L3, y la respuesta es CERO.** `docs/censo-boe-50.json`, 50
+    **MEDIDO en L3, y la respuesta es CERO.** `runs/censos/censo-boe-50.json`, 50
     documentos de las secciones I+III, `uv run python scripts/censo_boe_50.py`:
 
     | | |
@@ -679,7 +679,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
 
     **Medido antes de decidir arreglarlos**, sobre 50 documentos reales de las
     secciones I+III (`uv run python scripts/censo_boe_50.py`, censo versionado en
-    `docs/censo-boe-50.json`):
+    `runs/censos/censo-boe-50.json`):
 
     | | |
     |---|---|
@@ -698,7 +698,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `matar.py`** antes de bajar un documento más. No después.
 
 57. **El tamaño del corpus de L3 está medido, y el sondeo no lo había mirado.**
-    `docs/censo-boe-50.json`, n=50, tamaños tomados del campo `szBytes` que la
+    `runs/censos/censo-boe-50.json`, n=50, tamaños tomados del campo `szBytes` que la
     **propia API entrega en el sumario** — o sea sin bajar un solo PDF:
 
     | | mediana | media | máximo |
@@ -1408,3 +1408,21 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     implementaciones idénticas de `tasa_descarte` —`pairing.py`, `_cosecha.py`,
     `manifest.py`— en un repo cuyo propio `entity/boe.py` dice que **«dos copias del
     mismo dato no pueden divergir»**.
+
+82. **`runs/l4/plan.yaml` está congelado y cita una ruta que ya no existe.** Los
+    censos y sondeos —**50.517 líneas de JSON generado contra 4.468 de prosa**—
+    vivían en `docs/`, así que de un vistazo el repo parecía tener 55.000 líneas de
+    documentación escrita a mano. Se han movido a `runs/censos/`, que es donde viven
+    los demás artefactos de medición.
+
+    **El plan de L4 no se ha editado para arreglar la ruta**, y es deliberado: ese
+    fichero es el instrumento de un hito cerrado y tocarlo por comodidad es
+    exactamente lo que la regla del congelado prohíbe. Sigue diciendo
+    `censo: docs/censo-corpus-1000.json`, y su `censo_sello: 525c71d` identifica el
+    contenido igual de bien: `git show 525c71d:docs/censo-corpus-1000.json`. **Una
+    ruta vieja en un fichero congelado se resuelve con un `git log`; un fichero
+    congelado editado, no se resuelve.**
+
+    Lo que sí queda sin cubrir: el barrido de referencias **no ve esa cita** —no
+    recorre los `plan.yaml`— así que nadie se pondría rojo si mañana el sello
+    también dejara de resolver. Declarado, no arreglado.

@@ -1922,6 +1922,21 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 | **L5** | `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | Primera tabla de estructura con coste y cobertura evaluable. Ocho, no trece: los otros cinco entran después con `/extractor`, una tarde cada uno | 14-18 |
 | **L6** | `sample` con McNemar + bootstrap agrupado | Plan congelado y publicado antes de la primera campaña seria | 8-10 |
 | **L7** | Quickstart: 20 documentos versionados + `make quickstart` | De clone a tabla en menos de 3 minutos, sin red y sin gastar | 6-8 |
+
+> **Transcrito de [ADR-0042](docs/adr/0042-l7-antes-que-l6-por-demostrabilidad.md), en
+> L4.** **L7 se adelanta a L6: el orden pasa a ser `L5 → L7 → L6`.** Para la validez
+> de una campaña seria L6 va antes; **para el artefacto, L7 vale mucho más**, porque
+> es la diferencia entre que alguien lea que mides y que lo vea medir en su máquina en
+> tres minutos. El intercambio es **gratis**, comprobado contra esta misma tabla: el
+> criterio de L7 depende de **L5**, que le da los extractores, y **no depende de L6 en
+> nada**.
+>
+> **Lo que no cambia:** **L6 entra antes de la primera campaña seria**, y adelantar L7
+> **no** autoriza a publicar una comparación entre extractores sin plan de muestreo.
+> Y el riesgo va declarado: un quickstart que funciona invita a leer sus números como
+> resultados, así que **su salida lleva su límite en la cabecera** —20 documentos
+> elegidos para caber en tres minutos, no para representar nada—, y eso es requisito
+> de L7, no una nota.
 | **L8** | Los tres adaptadores hostiles + cableado de `benchcore.core.policy` + fuga de credenciales | Los tres bloquean. Ningún secreto en ningún artefacto | 10-12 |
 | **L8b** | **Verdad auditada**: 120 documentos con doble pasada ciega y la coincidencia derivada-humana medida | *"La verdad derivada coincide con la auditoría humana en X%, IC [a,b]"*. Elimina la crítica científica más peligrosa del proyecto | 20-26 |
 | | **← aquí cierra `v0.1.0`** | | **112-144** |

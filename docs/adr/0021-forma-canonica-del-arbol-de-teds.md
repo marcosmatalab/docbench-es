@@ -41,7 +41,7 @@ para generar el golden, de modo que los dos lados comparen lo mismo:
    árbol codifica.
 
    > **Esta decisión se declaró sin número, y ahora lo tiene.** Medido en L3 sobre
-   > 50 documentos reales del BOE (`docs/censo-boe-50.json`,
+   > 50 documentos reales del BOE (`runs/censos/censo-boe-50.json`,
    > `uv run python scripts/censo_boe_50.py`): **4 de 323 celdas de cabecera —el
    > 1,2%— llegan como `<th>` sin `<thead>` que las envuelva**, y **las cuatro
    > están en un solo documento de los 50** (`BOE-A-2026-17073`, sección III, 4

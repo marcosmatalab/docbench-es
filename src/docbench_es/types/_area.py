@@ -18,7 +18,7 @@ documentos, y **los extractores son justo lo que produce spans basura**: un span
 grande y la campaña se queda sin memoria a mitad.
 
 **El número sale del corpus, no del aire.** Sobre las 2.135 tablas de los 1.000
-documentos de L3 (`docs/censo-corpus-1000.json`):
+documentos de L3 (`runs/censos/censo-corpus-1000.json`):
 
 | | área |
 |---|---|

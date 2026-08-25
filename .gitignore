@@ -58,6 +58,11 @@ runs/*/*
 !runs/*/mutantes.json
 !runs/*/informe.json
 !runs/*/resello_comparador.json
+# LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO
+# contra 4.468 de prosa, así que `docs/` parecía 55.000 líneas de documentación
+# escrita a mano. Son artefactos de medición: viven con los demás artefactos.
+!runs/censos/
+!runs/censos/*.json
 .claude/.ultima-puerta
 .env
 

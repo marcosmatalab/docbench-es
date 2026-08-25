@@ -1356,7 +1356,7 @@ desde ese commit exacto.
 ## L4 · Lo medido ANTES de escribir `truth.derived`
 
 `uv run python scripts/censo_corpus.py` · 1.000 documentos, 2.135 tablas, 3,8 s.
-Salida completa en `docs/censo-corpus-1000.json`.
+Salida completa en `runs/censos/censo-corpus-1000.json`.
 
 ### El número que decidía el diseño de L4: `SOLAPE` en 0 documentos
 

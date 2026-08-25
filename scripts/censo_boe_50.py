@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import Protocol
 
 RAIZ = Path(__file__).resolve().parents[1]
-SALIDA = RAIZ / "docs" / "censo-boe-50.json"
+SALIDA = RAIZ / "runs" / "censos" / "censo-boe-50.json"
 API = "https://www.boe.es/datosabiertos/api/boe/sumario/"
 UA = "docbench-es/0.1 (banco de extraccion documental; +https://github.com/marcosmatalab/docbench-es)"
 SECCIONES = {"1", "3"}

@@ -50,7 +50,7 @@ def hitos() -> list[tuple[str, str, str]]:
     return fuera
 
 
-def bloque() -> str:
+def bloque(prefijo: str = "") -> str:
     """El texto que va entre las dos marcas. **Derivado, nunca tecleado.**"""
     filas = hitos()
     cerrados = [h for h, e, _ in filas if "CERRADO" in e]
@@ -63,6 +63,8 @@ def bloque() -> str:
     )
     lineas = [
         INICIO,
+        "| | |",
+        "|---|---|",
         f"| Release en curso | `v0.1.0` · **{len(cerrados)} hitos cerrados**"
         f" ({', '.join(cerrados)}), el último el {fecha.group(1) if fecha else '—'}."
         f" Siguiente: **{siguiente}** |",
@@ -72,10 +74,10 @@ def bloque() -> str:
             f"| La puerta | `make fast` en verde. **p90 {puerta.group(1)} ms** local"
             f" sobre `{sello.group(1)}`, techo {puerta.group(2)} (ADR-0022),"
             f" margen {puerta.group(3)} ms, n=40 en frío. El presupuesto del manual son"
-            " 90 s y es del runner. Procedencia en [`RESULTS.md`](RESULTS.md) |"
+            f" 90 s y es del runner. Procedencia en [`RESULTS.md`]({prefijo}RESULTS.md) |"
         )
     lineas += [
-        "| Dónde va el checkpoint | [`ESTADO.md`](ESTADO.md), que se actualiza al cerrar"
+        f"| Dónde va el checkpoint | [`ESTADO.md`]({prefijo}ESTADO.md), que se actualiza al cerrar"
         " cada hito. **Esta tabla se genera desde ahí** con"
         " `uv run python scripts/estado_readme.py --escribir` |",
         FIN,
@@ -119,19 +121,36 @@ def main() -> int:
     partes.add_argument("--escribir", action="store_true")
     args = partes.parse_args()
 
-    ruta = RAIZ / "README.md"
+    for ruta in (RAIZ / "README.md", RAIZ / "docs" / "reading-order.md"):
+        rc = _un_fichero(ruta, args.escribir)
+        if rc:
+            return rc
+    return 0
+
+
+def _un_fichero(ruta: Path, escribir: bool) -> int:
+    """Un documento con marcas. **Los dos, no sólo el README.**
+
+    `docs/reading-order.md` es la tercera puerta que lee un extraño y se quedó
+    diciendo «a 21 de agosto de 2026 el repo está en L0» con cinco hitos cerrados,
+    enlazada desde un README que ya era correcto. Una puerta arreglada que apunta a
+    una sin arreglar no está arreglada.
+    """
     texto = ruta.read_text(encoding="utf-8")
-    for marca in (INICIO, FIN, T_INICIO, T_FIN):
+    for marca in (INICIO, FIN):
         if marca not in texto:
-            print(f"  ABORTA: falta la marca {marca} en README.md")
+            print(f"  ABORTA: falta la marca {marca} en {ruta.name}")
             return 2
-    partidas = ((INICIO, FIN, bloque()), (T_INICIO, T_FIN, titular()))
+    prefijo = "../" if ruta.parent.name == "docs" else ""
+    partidas = [(INICIO, FIN, bloque(prefijo))]
+    if T_INICIO in texto:
+        partidas.append((T_INICIO, T_FIN, titular()))
     rancias = [(i, f, n) for i, f, n in partidas if actual(texto, i, f) != n]
     if not rancias:
-        print("  El README coincide con ESTADO.md: titular y tabla de estado.")
+        print(f"  {ruta.name} coincide con ESTADO.md.")
         return 0
-    if not args.escribir:
-        print("  EL README ESTÁ RANCIO. Regenéralo:")
+    if not escribir:
+        print(f"  {ruta.name} ESTÁ RANCIO. Regenéralo:")
         print("    uv run python scripts/estado_readme.py --escribir")
         for _, _, n in rancias:
             print(f"\n{n}\n")
@@ -139,7 +158,7 @@ def main() -> int:
     for i, f, n in partidas:
         texto = texto.replace(actual(texto, i, f), n)
     ruta.write_text(texto, encoding="utf-8")
-    print("  README regenerado desde ESTADO.md: titular y tabla de estado.")
+    print(f"  {ruta.name} regenerado desde ESTADO.md.")
     return 0
 
 
