@@ -1,0 +1,24 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6077",
+ "tabla": 4,
+ "fuente": "pdf",
+ "pagina_pdf": 12,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "4 tablas en la página; es la 2.ª de 2 de dimensión 5x4 del documento, o sea la de Importe/N.º meses/Total",
+ "alcance": "completa",
+ "dimension": {"n_rows": 5, "n_cols": 4},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 4, "col": 0, "rowspan": 1, "colspan": 3}
+ ],
+ "filas": [
+  ["", "Importe", "N.ºmeses", "Total"],
+  ["Bolsa estudiante.", "€", "0", ""],
+  ["Seguridad social.", "€", "0", ""],
+  ["Coste personal (convenio).", "€", "0", ""],
+  ["Total.", "€€€"]
+ ]
+}

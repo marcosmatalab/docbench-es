@@ -1,0 +1,39 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6388",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": "2-4",
+ "localizacion": "automatica",
+ "cruza_pagina": true,
+ "nota_localizacion": "única tabla del documento, sobre 3 páginas con las 4 filas de cabecera repetidas en cada una",
+ "alcance": "ventana",
+ "razon_ventana": "241 celdas, por encima del umbral de 100 declarado en el plan",
+ "ventana": "4 filas de cabecera + 6 filas de cuerpo (la CABEZA, fija) + la ÚLTIMA fila",
+ "dimension": {"n_rows": 55, "n_cols": 5},
+ "dimension_como_se_conto": "51 filas de cuerpo contadas sobre el TEXTO del PDF —45 de datos con sus cuatro importes y 6 de GRUPO— más 4 de cabecera. Comprobado aparte: 45x5 + 6x1 + 10 de cabecera = 241 celdas ancladas",
+ "filas_de_cabecera": 4,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 0, "col": 0, "rowspan": 4, "colspan": 1},
+  {"row": 0, "col": 1, "rowspan": 1, "colspan": 4},
+  {"row": 1, "col": 1, "rowspan": 3, "colspan": 1},
+  {"row": 1, "col": 2, "rowspan": 2, "colspan": 1},
+  {"row": 1, "col": 3, "rowspan": 1, "colspan": 2},
+  {"row": 4, "col": 0, "rowspan": 1, "colspan": 5}
+ ],
+ "filas": [
+  ["", "Tabla salarial 2025"],
+  ["Tabla salarial – Euros", "Valor hora normal", "Horas extraordinarias"],
+  ["Días laborables", "Días no laborables"],
+  ["Salario hora – Euros", "Salario hora – Euros", "Salario hora – Euros"],
+  ["GRUPO 1.º PERSONAL TÉCNICO"],
+  ["CON TITULO SUPERIOR.", "2.472,73", "20,01", "35,02", "60,03"],
+  ["CON TITULO NO SUPERIOR.", "2.153,00", "17,42", "30,49", "52,26"],
+  ["DIRECTOR PERSONAL EMPRESA.", "2.122,75", "17,18", "30,07", "51,54"],
+  ["DIRECTOR PERSONAL CENTRO.", "1.909,83", "15,46", "27,06", "46,38"],
+  ["DIRECTOR COMPRAS.", "2.122,75", "17,18", "30,07", "51,54"]
+ ],
+ "ultima_fila": ["PEÓN.", "40,53", "9,96", "17,43", "29,88"],
+ "indice_de_la_ultima_fila": 54
+}

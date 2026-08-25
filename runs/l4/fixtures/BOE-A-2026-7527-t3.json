@@ -1,0 +1,23 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7527",
+ "tabla": 3,
+ "fuente": "pdf",
+ "pagina_pdf": 4,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "2 tablas en la página; la única de 6x2 y además la t3 de 4, o sea la última del documento",
+ "alcance": "completa",
+ "dimension": {"n_rows": 6, "n_cols": 2},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Edad", "Importe 2026"],
+  ["A los 61 años.", "25.430,31"],
+  ["A los 62 años.", "19.072,73"],
+  ["A los 63 años.", "12.715,15"],
+  ["A los 64 años.", "6.357,58"],
+  ["A los 65 años y hasta 6 meses antes de llegar la jubilación forzosa.", "4.768,18"]
+ ]
+}

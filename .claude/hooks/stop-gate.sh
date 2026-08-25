@@ -30,8 +30,25 @@ bloquea() {
 # Hacen falta DOS comprobaciones porque `git diff HEAD` sólo ve lo que ya está
 # en HEAD, y un fixture recién creado no lo está durante todo el hito que lo
 # crea (L2, L6, L7). Eso dejaba desprotegido justo el hito que más importa.
+# `runs/*/fixtures` entró con L4: las 30 tablas transcritas del PDF viven ahí y
+# NINGUNO de los dos hooks las veía, mientras el repo afirmaba «congeladas con
+# hash». Eso es la regla que gobierna el repo incumplida, no un descuido de globs.
+# El candado de verdad es tests/unit/test_congelados_l4.py, que está en la puerta;
+# esto es la red de siempre, para las vías que no pasan por Write/Edit.
+# `runs/*/fixtures/*` con la BARRA Y EL ASTERISCO FINALES: como pathspec de git,
+# `runs/*/fixtures` casa con el DIRECTORIO y no con lo que hay dentro — devuelve 0
+# ficheros. La primera versión de este glob lo tenía mal y `LIMITS.md` 70 llegó a
+# publicar «arreglado en los dos hooks» con uno de los dos ciego. Comprobado:
+#   git ls-files -o -c --exclude-standard -- 'runs/*/fixtures'    -> 0
+#   git ls-files -o -c --exclude-standard -- 'runs/*/fixtures/*'  -> 30
+#
+# Y LOS MANIFIESTOS TAMBIÉN, que es el agujero de verdad: los fixtures se comparan
+# CONTRA ellos, así que la forma barata de hacer pasar un fixture manipulado no es
+# tocar el fixture, es tocar el manifiesto.
 GLOBS=(tests/fixtures/pubtabnet tests/fixtures/tablas tests/fixtures/quickstart
-       plan.yaml '*/plan.yaml')
+       plan.yaml '*/plan.yaml' 'runs/*/fixtures/*'
+       'runs/*/congelacion.json' 'runs/*/congelacion_comparador.json'
+       'runs/*/recongelacion.json' 'runs/*/correcciones.json')
 
 if git rev-parse --git-dir >/dev/null 2>&1; then
   # 1a. Congelados YA EN HEAD. `--diff-filter=MDRT`: modificado, borrado,

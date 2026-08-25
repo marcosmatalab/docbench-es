@@ -1,0 +1,122 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5851",
+ "tabla": 2,
+ "fuente": "pdf",
+ "pagina_pdf": 11,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "SEGUNDA tabla de la página («Estructura de referencia»); la primera («Tabla salarial») es 5 columnas y no cuadra con 14x4",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 14,
+  "n_cols": 4
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {
+   "row": 3,
+   "col": 0,
+   "rowspan": 2,
+   "colspan": 1
+  },
+  {
+   "row": 5,
+   "col": 0,
+   "rowspan": 3,
+   "colspan": 1
+  },
+  {
+   "row": 8,
+   "col": 0,
+   "rowspan": 4,
+   "colspan": 1
+  },
+  {
+   "row": 12,
+   "col": 0,
+   "rowspan": 2,
+   "colspan": 1
+  }
+ ],
+ "filas": [
+  [
+   "",
+   "Nivel",
+   "División funcional-producción",
+   "CODIF."
+  ],
+  [
+   "Grupo Prof. 1 Personal Dirección.",
+   "1",
+   "Personal de Dirección.",
+   "DF/P_GP/1_N/1"
+  ],
+  [
+   "Grupo Prof. 2 Personal Mando Intermedio-Mánagers.",
+   "1",
+   "Mandos Intermedios-Mánagers.",
+   "DF/P_GP/2_N/1"
+  ],
+  [
+   "Grupo Prof.3 Personal Técnico.",
+   "1",
+   "Técnico Industrial/Métodos/Mantenimiento. Encargado Sección Producción/Almacén/Taller. Modelistas/Patronistas.",
+   "DF/P_GP/3_N/1"
+  ],
+  [
+   "2",
+   "Técnico Desarrollo Nuevo Producto/Métodos/ Mantenimiento.",
+   "DF/P_GP/3_N/1"
+  ],
+  [
+   "Grupo Prof. 4 Personal Administrativo/Logística/Soporte.",
+   "1",
+   "Jefe de Grupo (Logística).",
+   "DF/P_GP/4_N/1"
+  ],
+  [
+   "2",
+   "Control de Calidad/Oficial Logístico 1.º.",
+   "DF/P_GP/4_N/2"
+  ],
+  [
+   "3",
+   "Oficial 2.ª Logístico.",
+   "DF/P_GP/4_N/3"
+  ],
+  [
+   "Grupo Prof. 5 Personal de Producción.",
+   "1",
+   "Coordinador de Equipo.",
+   "DF/P_GP/5_N/1"
+  ],
+  [
+   "2",
+   "Oficial 1.º.",
+   "DF/P_GP/5_N/2"
+  ],
+  [
+   "3",
+   "Oficial 2.ª.",
+   "DF/P_GP/5_N/3"
+  ],
+  [
+   "4",
+   "Nivel inicial.",
+   "DF/P_GP/5_N/4"
+  ],
+  [
+   "Grupo Prof. 6 Personal Subalterno y Auxiliar.",
+   "1",
+   "–",
+   "–"
+  ],
+  [
+   "2",
+   "Auxiliar de Mantenimiento Operario Logístico.",
+   "DF/P_GP/6_N/2"
+  ]
+ ]
+}

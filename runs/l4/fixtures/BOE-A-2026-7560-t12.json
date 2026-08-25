@@ -1,0 +1,92 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7560",
+ "tabla": 12,
+ "fuente": "pdf",
+ "pagina_pdf": 142,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "una sola tabla en la pagina 142",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 18,
+  "n_cols": 2
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "Tasa por la expedición de títulos académicos y profesionales",
+   "Euros"
+  ],
+  [
+   "1. Título de Especialización Didáctica.",
+   "148,32"
+  ],
+  [
+   "2. Título de Bachiller.",
+   "58,56"
+  ],
+  [
+   "3. Título de Técnico Formación Profesional.",
+   "23,87"
+  ],
+  [
+   "4. Título de Técnico Superior de Formación Profesional.",
+   "58,56"
+  ],
+  [
+   "5. Título de Especialista.",
+   "25,00"
+  ],
+  [
+   "6. Título de Máster de Formación Profesional.",
+   "60,00"
+  ],
+  [
+   "7. Título Profesional de Música.",
+   "27,94"
+  ],
+  [
+   "8. Título Superior de Música.",
+   "163,29"
+  ],
+  [
+   "9. Título Profesional de Danza.",
+   "28,18"
+  ],
+  [
+   "10. Título Superior de Arte Dramático.",
+   "163,29"
+  ],
+  [
+   "11. Título de Técnico de Artes Plásticas y Diseño.",
+   "23,87"
+  ],
+  [
+   "12. Título de Técnico Superior de Artes Plásticas y Diseño.",
+   "58,56"
+  ],
+  [
+   "13. Expedición de certificados oficiales de enseñanzas de idiomas de régimen especial.",
+   "28,09"
+  ],
+  [
+   "14. Título de Técnico Deportivo.",
+   "23,40"
+  ],
+  [
+   "15. Título de Técnico Deportivo Superior.",
+   "57,43"
+  ],
+  [
+   "16. Certificado de ciclo inicial de grado medio de enseñanzas deportivas.",
+   "11,69"
+  ],
+  [
+   "17. Título Superior de Diseño.",
+   "80,68"
+  ]
+ ]
+}

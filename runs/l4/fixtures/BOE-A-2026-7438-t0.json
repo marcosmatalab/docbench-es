@@ -1,0 +1,20 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7438",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": 7,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "única tabla del documento",
+ "observacion_para_la_adjudicacion": "TABLA SIN BORDES: es el bloque de firmas del acuerdo, usado como maquetación en dos columnas. En el PDF NO se ve como una tabla. La transcripción es inequívoca, pero un extractor que lea el PDF tiene que decidir si esto es una tabla, y el que decida que no NO estará equivocado. Dato para L5",
+ "alcance": "completa",
+ "dimension": {"n_rows": 2, "n_cols": 2},
+ "filas_de_cabecera": 0,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Por el Reino de España,", "Por el Reino Hachemí de Jordania,"],
+  ["José Manuel Albares Bueno, Ministro de Asuntos Exteriores, Unión Europea y Cooperación", "Ayman Safadi, Vice Primer Ministro y Ministro de Asuntos Exteriores y de Expatriados"]
+ ]
+}

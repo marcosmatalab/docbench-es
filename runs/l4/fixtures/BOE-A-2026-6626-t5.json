@@ -1,0 +1,19 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6626",
+ "tabla": 5,
+ "fuente": "pdf",
+ "pagina_pdf": 12,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "dos tablas de 2x2 en la página; es la 1.ª de 2 de su dimensión, o sea la de MITERD",
+ "alcance": "completa",
+ "dimension": {"n_rows": 2, "n_cols": 2},
+ "filas_de_cabecera": 0,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Porcentaje aportación MITERD (convenio).", "90 %"],
+  ["Total aportación MITERD.", "€€€"]
+ ]
+}

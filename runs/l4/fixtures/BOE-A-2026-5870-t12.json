@@ -1,0 +1,21 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5870",
+ "tabla": 12,
+ "fuente": "pdf",
+ "pagina_pdf": 24,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "DOS tablas de 4x2 en la misma página (ANEXO IV A y IV B). Elegida la B por ser la t12 de 13, o sea la última del documento, y la página es la 24 de 24",
+ "alcance": "completa",
+ "dimension": {"n_rows": 4, "n_cols": 2},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Módulos profesionales superados", "Estándares de competencias profesionales acreditables"],
+  ["5170. Instalación y mantenimiento de sistemas de aprendizaje automático.", "ECP2494_3: Instalar y mantener sistemas de Inteligencia Artificial basados en aprendizaje automático."],
+  ["5171. Despliegue de sistemas de aprendizaje automático.", "ECP2495_3: Desplegar sistemas de Inteligencia Artificial basados en aprendizaje automático."],
+  ["5172. Explotación de servicios de procesamiento y analítica de datos.", "ECP2496_3: Explotar servicios de procesamiento y analítica de datos en plataformas disponibles en línea."]
+ ]
+}

@@ -529,18 +529,20 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 321 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 364 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **155 tests restantes** —`test_barreras` (14), `test_harvest` (14),
+Los **198 tests restantes** —`test_congelados_l4` (36), `test_barreras` (14),
+`test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
-`test_verificar_corpus` (9), `test_barreras` (8), `test_manifest` (8),
-`test_pairing` (8), `test_policy` (7), `test_types_invariantes` (7),
-`test_boe_xml` (6), `test_ancla` (5), `test_types` (5), `test_errors` (3) y
-`test_sin_consumidor` (3)— quedan fuera
+`test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
+`test_guardianes_l4` (7), `test_policy` (7), `test_types_invariantes` (7),
+`test_boe_xml` (6), `test_ancla` (5), `test_comparar_verdad` (5), `test_types` (5),
+`test_sellar_xml` (4), `test_errors` (3), `test_sin_consumidor` (3),
+`test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
-que **esos 21** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 155 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+que **esos 22** huecos están tapados, **no** que la suite esté medida. Algunos de
+esos 198 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
@@ -840,9 +842,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 318 de 321
+### Qué fracción de la suite está protegida por algo: 361 de 364
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 321» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 364» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -1300,7 +1302,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-321 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+364 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -1417,3 +1419,166 @@ razón**, y comprueba el mecanismo (`gold.n_rows == 4` contra `3 <tr>`).
 Los tres son del **mismo tipo**: la referencia trabaja sobre el marcado y nosotros
 sobre la tabla. Cuando las dos cosas coinciden, coincidimos; cuando el marcado dice
 algo que la tabla no dice, no.
+
+### EL NÚMERO DEL CRITERIO DE L4 · la verdad derivada contra 30 tablas transcritas a mano
+
+```bash
+uv run python scripts/comparar_verdad.py --detalle      # el número
+uv run python scripts/evidencia_pdf.py                  # la evidencia de cada discrepancia
+uv run python scripts/corregir_fixtures_l4.py           # las 6 correcciones, sin --aplicar: sólo comprueba
+uv run python scripts/mutar_el_instrumento.py           # el ataque al cero
+```
+
+> **PRECONDICIÓN, y sin ella ninguno de los cuatro corre.** Necesitan `runs/l3/docs`
+> —los 2.000 PDF y XML del corpus, **362 MB, que NO están en el repo**— y los dos
+> últimos necesitan además el binario **`pdftotext`** (`poppler-utils`). Rehidratar
+> el corpus son ~35 minutos a 1 rps: `runs/l3/README.md`. **Así que este número no
+> es reproducible por un tercero en un clon frío**, sólo tras rehacer la cosecha.
+> Va declarado en el límite 74, porque la regla de oro 2 no admite otra cosa.
+
+> **30 documentos, 1.213 celdas transcritas del PDF y congeladas antes de comparar
+> ni una vez.**
+> **CERO discrepancias atribuibles al código.**
+> **11 discrepancias: 6 errores de transcripción** —evidenciados contra el PDF, uno a
+> uno— **y 5 de frontera ambigua** —límite 31 y nota al pie, **las dos clases
+> declaradas ANTES de verlas**.
+> **Antes de corregir, 22 de 30. Después, 25 de 30. Las dos se publican.**
+
+**Los tres denominadores, porque dicen cosas distintas y publicar uno solo engaña:**
+
+| Denominador | Antes | Después | Qué mide |
+|---|---|---|---|
+| fixtures con alguna discrepancia | 8 de 30 | 5 de 30 | cuántos **documentos** tienen algo |
+| discrepancias | 11 | 5 | cuántas **cosas** hay |
+| celdas y tablas, **separadas por unidad** | 9 de 1.213 celdas · 2 de 30 tablas | 3 de 1.213 celdas · 2 de 30 tablas | ver abajo |
+
+**La tercera fila iba mal y se publica corregida.** Decía «11 de 1.213 celdas» y
+«5 de 1.213 celdas», mezclando unidades: de las 5 que quedan, **2 son de
+`DIMENSION`** —25x4 contra 26x4 y 7x3 contra 8x3—, que no son celdas sino **una
+fila entera de más**. Numerador de clase mixta sobre denominador de celdas no es una
+densidad. Van separadas: **discrepancias de texto sobre celdas** y **discrepancias
+de estructura sobre tablas**. Detectado en el escrutinio adversarial de este cierre.
+
+**Y el 1.213 no es todo lo que hay: las 30 tablas suman 2.283 celdas ancladas.** El
+umbral de ventana de `plan.yaml` deja 3 tablas transcritas sólo por su cabecera más
+su última fila, así que **la comparación cubre el 53,1%** de lo que las 30 tablas
+contienen. La dimensión completa sí se comprueba en las 30. Estaba en el docstring
+del comparador y no en este documento; ahora está aquí.
+
+**El desglose de los 25 que coinciden, porque no todos valen lo mismo:**
+
+| | n | Qué vale |
+|---|---|---|
+| coincidencias limpias | **21 o 22** | transcrito ciego del PDF, congelado, nunca tocado |
+| el fixture **contaminado** | 1, **y no se sabe cuál** | se miró el XML para desambiguar. **Su coincidencia no prueba nada** — y como no está marcado, tampoco se sabe si está entre los 25 que coinciden o entre los 5 que fallan. Límite 75 |
+| fixtures **corregidos** tras adjudicar | 3 | coinciden porque se corrigió el fixture, con evidencia del PDF. No son evidencia independiente |
+
+**La adjudicación, una a una y con su causa** (ADR-0039 reglas 2 y 3):
+
+| Causa | n | Cuáles |
+|---|---|---|
+| **fallo del código** | **0** | — |
+| **error de transcripción** | **6** | 2 elipsis (`...` por `…`), 3 apóstrofo/acento (`d'`→`d’`, `Serós`→`Seròs`, `L'`→`L’`), 1 **errata del BOE auto-corregida** (`Catauña`) |
+| **frontera ambigua** | **5** | 3 de partición de línea (límite 31) + 2 de nota al pie |
+
+**Las 6 correcciones llevan su cadena de evidencia**, en `runs/l4/correcciones.json`:
+el byte del PDF, lo que se transcribió, y la regla que lo decide —**ADR-0040 reglas
+4 y 5, congeladas el 25 ago antes de la primera comparación**, o sea antes de ver el
+caso—. `corregir_fixtures_l4.py` **se niega a escribir** una corrección que el PDF no
+respalde, y eso **tiene su test**, no una frase:
+`tests/unit/test_guardianes_l4.py::test_el_guardian_del_pdf_rechaza_una_correccion_que_el_pdf_no_respalda`
+le da cuatro casos malos —un acento inventado, «corregir» a lo mismo que ya había,
+puntos de más y **una discrepancia de frontera**, donde el PDF respalda la
+transcripción— y exige que los rechace los cuatro, más el aro en la dirección buena.
+**Ese test se salta en un clon sin corpus**, y por eso va con el límite 74 al lado.
+
+### EL ATAQUE AL CERO · el arnés de mutantes contra el instrumento, no contra la suite
+
+Un cero sin esto es indistinguible de una venda en los ojos: *«el código reproduce
+el PDF»* y *«estos 30 fixtures no pueden ver un fallo del código»* se leen igual
+desde fuera. Se rompe el código a propósito y se cuenta.
+
+```bash
+uv run python scripts/mutar_el_instrumento.py     # resultado en runs/l4/mutantes.json
+```
+
+**Base: 25 de 30 coinciden.** `mata` = de esos 25, cuántos dejan de coincidir.
+`cambia` = de los 30, cuántos cambian su conjunto de discrepancias — hace falta
+porque **un fixture que ya falla por frontera no puede «dejar de coincidir»**.
+`alcanzado` = si el código del mutante se ejecutó **durante la derivación**, que es
+el sujeto medido; que toque al comparador no cuenta.
+
+| Mutante | mata | cambia | alcanzado | |
+|---|---|---|---|---|
+| `roto` | **25** de 25 | 30 de 30 | sí | el instrumento lo ve |
+| `sin_tablas` | **25** de 25 | 30 de 30 | sí | el instrumento lo ve |
+| `sin_spans` | **4** de 25 | 8 de 30 | sí | el instrumento lo ve |
+| `seccion_sin_cerrar` | **0** | **0** | sí | **HUECO** |
+| `ok` | **0** | **0** | sí | **HUECO** |
+| `n3_incompleta` | 0 | 0 | sí | **EQUIVALENTE**: no cambia la salida |
+| `normalizador_identidad`, `normalizador_agresivo` | 0 | 0 | **no** | no llegan al sujeto |
+| 13 mutantes de TEDS, `cellmatch`, claves y recuentos | 0 | 0 | **no** | fuera de este camino |
+| `recuentos_todo_vale` | — | — | — | **NO MEDIDO**: importa `conftest`, sólo arranca en pytest |
+
+**Son 22 mutantes: 3 vistos + 2 huecos + 1 equivalente + 15 fuera + 1 no medido.**
+
+**Esta tabla se publica corregida, y las dos correcciones importan más que la tabla:**
+
+1. **`normalizador_agresivo` y `normalizador_identidad` NO llegan al código medido.**
+   Parchean `canonical.normalize_cell_text` —el atributo del paquete— y `_html.py`
+   importa el nombre directamente de `_normalizar`, así que la ligadura ya está
+   hecha. Comprobado: bajo el mutante, `canonical.normalize_cell_text('  a   b  ')`
+   devuelve la cadena intacta y `from_html` sigue devolviendo `'a b'`. La primera
+   versión de este documento los daba por **alcanzados**, uno por «visto» y otro por
+   «hueco», y explicaba el resultado con una causa falsa —que la misma función
+   normalizaba los dos lados y se cancelaba—. **Sólo se mutaba un lado, el del
+   comparador.** Corregido midiendo el alcance **sólo durante la derivación**.
+2. **`normalizador_agresivo` salía «cambia 3 de 30» sin detectar nada.** `cambia`
+   comparaba el mensaje formateado de cada discrepancia, que lleva dentro el texto
+   de la celda: las 3 eran las mismas discrepancias de frontera de siempre con el
+   texto en minúsculas. Ahora la identidad de una discrepancia es `(clase, posición)`
+   y **nunca su texto**, con su test en `test_guardianes_l4.py`.
+
+**El titular incómodo, y es el que hay que leer al lado del cero:
+`seccion_sin_cerrar` mata 0.** Es el bug real del día anterior —el que desplazaba
+los datos una columna con `validate` diciendo `ok=True`—, y reintroducido **las 30
+`CanonicalTable` salen idénticas celda a celda**. No es ceguera del comparador
+—`test_comparar_verdad.py` demuestra que detecta una celda movida— es que **0 de 30
+documentos tienen la forma que lo dispara**: 8 tienen algún span, 2 tienen
+`rowspan>1` en cabecera y **ninguno tiene un `rowspan` de cabecera que desborde su
+sección**. Y el contraste que lo cierra: **el mismo mutante mata 2 de 2 en
+`tests/unit/test_grupo_de_filas.py`**. La suite lo ve; la verdad de referencia no.
+
+Los otros dos ceros, con su diagnóstico numérico: **0 de 30** documentos tienen una
+tabla descartada por `FATAL` —por eso `ok` no se ve— y **0 de las 1.213 celdas**
+cambian al normalizar, así que no hay nada que un mutante del normalizador pudiera
+mover aunque llegara. Límites 65 a 68.
+
+**Lo que este barrido NO prueba, y hay que decirlo: no prueba nada sobre la
+normalización.** Los tres mutantes que la tocan o no llegan al sujeto (2) o no
+cambian su salida (1). Límite 76, con su precio.
+
+### Los cuatro controles negativos del comparador, sobre ESTE comparador
+
+`tests/unit/test_comparar_verdad.py`: **5 pasan** —cuatro mutaciones (texto, celda
+movida de columna, fila que falta, dimensión) más el aro en la dirección buena—.
+Y corrieron sobre lo que se midió, no sobre una versión anterior: las **4 huellas**
+de `runs/l4/congelacion_comparador.json` —el comparador, `truth.derived`, ADR-0040 y
+la propia suite— **cuadran**, y desde hoy lo comprueba `tests/unit/test_congelados_
+l4.py` en la puerta, no una inspección a mano.
+
+**Y una pieza que esos cinco NO cubrían**, encontrada en el escrutinio: los cinco
+usan `"spans": []`, así que `colocar` —el colocador independiente, «lo más importante
+del fichero» según su propio docstring— **nunca se ejercitaba con spans**, y 8 de los
+30 fixtures los llevan. Cerrado con dos tests en `tests/unit/test_guardianes_l4.py`,
+en fichero aparte para no romper el sello del comparador: uno de `rowspan` que
+comprueba que el cursor salta lo ocupado, otro de `colspan` que comprueba que avanza
+dos. **Un colocador mal es la misma familia del bug del grupo de filas.**
+
+### La congelación, y qué se movió
+
+| | n | |
+|---|---|---|
+| fixtures con la huella de **antes de la primera comparación** | **27** de 30 | `runs/l4/congelacion.json`, sello `be6f5e0` |
+| fixtures re-congelados tras corregir | **3** de 30 | `runs/l4/recongelacion.json`, y `congelar_l4.py` **aborta** si una huella cambia sin corrección registrada |
+| celdas transcritas, antes y después | **1.213** = 1.213 | corregir texto no puede mover el denominador. Lo fija un test |

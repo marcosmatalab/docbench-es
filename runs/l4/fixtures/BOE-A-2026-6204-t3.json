@@ -1,0 +1,74 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6204",
+ "tabla": 3,
+ "fuente": "pdf",
+ "pagina_pdf": 12,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "4 tablas en la pagina; elegida por dimension 6x7",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 6,
+  "n_cols": 7
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "Práctica",
+   "Nombre y apellidos estudiante",
+   "Fecha inicio",
+   "Fecha fin",
+   "Meses duración",
+   "Meses de Seguridad Social",
+   "Observaciones"
+  ],
+  [
+   "1",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  [
+   "2",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  [
+   "3",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  [
+   "…",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  [
+   "",
+   "",
+   "",
+   "",
+   "0",
+   "0",
+   ""
+  ]
+ ]
+}

@@ -1897,6 +1897,14 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 >    quita puntos por acertar. **El mecanismo es el del límite 33**: se MARCA la fila
 >    como no evaluable en vez de incluirla o excluirla a ojo.
 > 4. **Si el código se arregla, se re-comparan LAS 30**, no sólo la que falló.
+> 5. **La EVIDENCIA de una adjudicación viene del PDF, NUNCA del XML.** *(Añadida el
+>    25 ago 2026, tras la primera comparación y antes de adjudicar ni una
+>    discrepancia.)* Comprobar una discrepancia contra el XML **da por supuesto que
+>    el XML acierta**, y el XML es lo que el hito mide: es la circularidad que la
+>    regla de «transcribir del PDF» evita al principio, reintroducida al final.
+>    Ante una discrepancia la única pregunta admisible es *¿qué pone el PDF?* Sólo
+>    después se mira el XML crudo, y sólo para separar **defecto del origen** de
+>    **fallo del código**.
 >
 > Y lo que sostiene que las transcripciones sean independientes: **se transcriben
 > del PDF y no del XML** —del XML sería comparar el XML consigo mismo—, **se

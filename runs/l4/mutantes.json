@@ -1,0 +1,281 @@
+{
+ "esquema": "docbench-es.mutantes-del-instrumento/1",
+ "comando": "uv run python scripts/mutar_el_instrumento.py",
+ "base_coinciden": 25,
+ "de": 30,
+ "no_medidos": [
+  "recuentos_todo_vale"
+ ],
+ "huecos": [
+  "ok",
+  "seccion_sin_cerrar"
+ ],
+ "equivalentes": {
+  "n3_incompleta": "muta la constante CATEGORIAS_DE_ESPACIO quitando Zl y Zp, y `normalize_cell_text` termina en `\" \".join(s.split())`, que los considera espacio igualmente. Comprobado sobre las cuatro categorías —Zl, Zp, Zs, Cc—: la salida es idéntica con y sin mutante, así que NINGÚN instrumento puede verlo por la salida de esa función"
+ },
+ "fuera_de_este_camino": [
+  "arbol_orden_invertido",
+  "arbol_thead_solo_la_primera",
+  "batch_sobrescribe",
+  "cellmatch_por_pertenencia",
+  "cellmatch_siempre_ok",
+  "cellmatch_siempre_roto",
+  "clave_orden_malo",
+  "clave_sin_escapar",
+  "normalizador_agresivo",
+  "normalizador_identidad",
+  "recuentos_plano_flojo",
+  "recuentos_sin_claude",
+  "teds_cuenta_la_raiz",
+  "teds_siempre_cero",
+  "teds_siempre_uno"
+ ],
+ "tabla": [
+  {
+   "mutante": "arbol_orden_invertido",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "arbol_thead_solo_la_primera",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "batch_sobrescribe",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "cellmatch_por_pertenencia",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "cellmatch_siempre_ok",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "cellmatch_siempre_roto",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "clave_orden_malo",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "clave_sin_escapar",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "n3_incompleta",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "EQUIVALENTE: no cambia la salida",
+   "muertos": []
+  },
+  {
+   "mutante": "normalizador_agresivo",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "normalizador_identidad",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "ok",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "sí",
+   "que_es": "HUECO DEL INSTRUMENTO",
+   "muertos": []
+  },
+  {
+   "mutante": "recuentos_plano_flojo",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "recuentos_sin_claude",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "roto",
+   "mata": 25,
+   "de": 25,
+   "cambia": 30,
+   "alcanzado": "sí",
+   "que_es": "el instrumento lo ve",
+   "muertos": [
+    "BOE-A-2026-5511-t0",
+    "BOE-A-2026-5593-t1",
+    "BOE-A-2026-5856-t0",
+    "BOE-A-2026-5863-t0",
+    "BOE-A-2026-5870-t12",
+    "BOE-A-2026-5975-t0",
+    "BOE-A-2026-5979-t15",
+    "BOE-A-2026-6077-t4",
+    "BOE-A-2026-6204-t3",
+    "BOE-A-2026-6388-t0",
+    "BOE-A-2026-6626-t5",
+    "BOE-A-2026-6728-t0",
+    "BOE-A-2026-6941-t1",
+    "BOE-A-2026-6957-t0",
+    "BOE-A-2026-7031-t0",
+    "BOE-A-2026-7174-t12",
+    "BOE-A-2026-7189-t0",
+    "BOE-A-2026-7191-t0",
+    "BOE-A-2026-7330-t0",
+    "BOE-A-2026-7342-t0",
+    "BOE-A-2026-7438-t0",
+    "BOE-A-2026-7527-t3",
+    "BOE-A-2026-7536-t1",
+    "BOE-A-2026-7560-t12",
+    "BOE-A-2026-7623-t3"
+   ]
+  },
+  {
+   "mutante": "seccion_sin_cerrar",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "sí",
+   "que_es": "HUECO DEL INSTRUMENTO",
+   "muertos": []
+  },
+  {
+   "mutante": "sin_spans",
+   "mata": 4,
+   "de": 25,
+   "cambia": 8,
+   "alcanzado": "sí",
+   "que_es": "el instrumento lo ve",
+   "muertos": [
+    "BOE-A-2026-6077-t4",
+    "BOE-A-2026-6388-t0",
+    "BOE-A-2026-6941-t1",
+    "BOE-A-2026-7174-t12"
+   ]
+  },
+  {
+   "mutante": "sin_tablas",
+   "mata": 25,
+   "de": 25,
+   "cambia": 30,
+   "alcanzado": "sí",
+   "que_es": "el instrumento lo ve",
+   "muertos": [
+    "BOE-A-2026-5511-t0",
+    "BOE-A-2026-5593-t1",
+    "BOE-A-2026-5856-t0",
+    "BOE-A-2026-5863-t0",
+    "BOE-A-2026-5870-t12",
+    "BOE-A-2026-5975-t0",
+    "BOE-A-2026-5979-t15",
+    "BOE-A-2026-6077-t4",
+    "BOE-A-2026-6204-t3",
+    "BOE-A-2026-6388-t0",
+    "BOE-A-2026-6626-t5",
+    "BOE-A-2026-6728-t0",
+    "BOE-A-2026-6941-t1",
+    "BOE-A-2026-6957-t0",
+    "BOE-A-2026-7031-t0",
+    "BOE-A-2026-7174-t12",
+    "BOE-A-2026-7189-t0",
+    "BOE-A-2026-7191-t0",
+    "BOE-A-2026-7330-t0",
+    "BOE-A-2026-7342-t0",
+    "BOE-A-2026-7438-t0",
+    "BOE-A-2026-7527-t3",
+    "BOE-A-2026-7536-t1",
+    "BOE-A-2026-7560-t12",
+    "BOE-A-2026-7623-t3"
+   ]
+  },
+  {
+   "mutante": "teds_cuenta_la_raiz",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "teds_siempre_cero",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  },
+  {
+   "mutante": "teds_siempre_uno",
+   "mata": 0,
+   "de": 25,
+   "cambia": 0,
+   "alcanzado": "no",
+   "que_es": "fuera de este camino",
+   "muertos": []
+  }
+ ]
+}

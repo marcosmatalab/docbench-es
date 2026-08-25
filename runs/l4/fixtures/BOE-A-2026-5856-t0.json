@@ -1,0 +1,50 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5856",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": 6,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "2 tablas en la pagina; elegida por dimension 5x4",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 5,
+  "n_cols": 4
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "Concepto",
+   "Cuantía – €/mes",
+   "Meses",
+   "Coste total – Euros"
+  ],
+  [
+   "Bolsa de ayudas al alumnado.",
+   "1000",
+   "30",
+   "30.000"
+  ],
+  [
+   "Coste máximo de seguridad Social.",
+   "82,15",
+   "30",
+   "2.464,50"
+  ],
+  [
+   "Costes de gestión.",
+   "250",
+   "30",
+   "7.500"
+  ],
+  [
+   "Total anualidad 2026.",
+   "",
+   "",
+   "39.964,50"
+  ]
+ ]
+}

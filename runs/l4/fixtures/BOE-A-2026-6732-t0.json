@@ -1,0 +1,29 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6732",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": "3-4",
+ "localizacion": "automatica",
+ "cruza_pagina": true,
+ "nota_localizacion": "única tabla del documento, sobre 2 páginas con la cabecera repetida",
+ "alcance": "ventana",
+ "razon_ventana": "396 celdas, por encima del umbral de 100 declarado en el plan",
+ "ventana": "1 fila de cabecera + 6 filas de cuerpo (la CABEZA, fija) + la ÚLTIMA fila",
+ "dimension": {"n_rows": 36, "n_cols": 11},
+ "dimension_como_se_conto": "35 filas de cuerpo contadas sobre el TEXTO del PDF (31 en la página 3 y 4 en la 4), más 1 de cabecera",
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Grupo", "Nivel", "Equivalencia 2010-2012", "Salario bruto anual 2025 – Euros", "Salario mensual *14 pagas – Euros", "Hora normal – Euros", "Hora extra – Euros", "Hora nocturna – Euros", "Hora festiva/hora domingo – Euros", "Festivo nacional/ domingo – Euros", "Festivo local – Euros"],
+  ["1", "1", "Resp. Área de 1.ª", "49.475,79", "3.533,99", "27,73", "41,60", "34,66", "49,92", "429,33", "449,33"],
+  ["1", "2", "Resp. Área de 2.ª", "41.745,20", "2.981,81", "23,40", "35,10", "29,25", "42,12", "366,94", "386,94"],
+  ["1", "3", "Resp. Área de 3.ª", "32.468,49", "2.319,18", "18,20", "27,31", "22,75", "32,76", "292,11", "312,11"],
+  ["1", "4", "Técnico Área.", "30.922,38", "2.208,74", "17,33", "25,99", "21,66", "31,19", "279,51", "299,51"],
+  ["1", "5", "Administrativo.", "27.830,14", "1.987,86", "15,60", "23,40", "19,50", "28,08", "254,65", "274,65"],
+  ["1", "6", "Auxiliar Administrativo.", "24.737,90", "1.766,99", "13,87", "20,81", "17,34", "24,96", "229,71", "249,71"]
+ ],
+ "ultima_fila": ["5", "4", "Oficial de Mantenimiento de 3.ª", "27.234,87", "1.945,35", "15,27", "22,91", "19,09", "27,48", "249,88", "269,88"],
+ "indice_de_la_ultima_fila": 35
+}

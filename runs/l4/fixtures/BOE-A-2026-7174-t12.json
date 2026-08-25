@@ -1,0 +1,24 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7174",
+ "tabla": 12,
+ "fuente": "pdf",
+ "pagina_pdf": 16,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "el localizador daba 10-18 por repetición de ancla. Página hallada con un RANKING que no imprime texto —6 de 6 aciertos en la 16— para no contaminar. En la página hay 4 tablas y sólo una es 5x2 con 9 celdas ancladas: «Grupo de razas de cerdo blanco»",
+ "alcance": "completa",
+ "dimension": {"n_rows": 5, "n_cols": 2},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 1, "col": 0, "rowspan": 1, "colspan": 2}
+ ],
+ "filas": [
+  ["Tipo de animal", "% del valor unitario elegido"],
+  ["Todos los regímenes"],
+  ["Reproductores selecto macho.", "150"],
+  ["Reproductores selecto hembra.", "110"],
+  ["Resto de reproductores.", "79"]
+ ]
+}

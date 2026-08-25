@@ -1,0 +1,50 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5593",
+ "tabla": 1,
+ "fuente": "pdf",
+ "pagina_pdf": 2,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "2 tablas en la pagina; elegida por dimension 6x3",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 6,
+  "n_cols": 3
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "Denominación",
+   "CC. AA.",
+   "N.º Reg. CC. AA."
+  ],
+  [
+   "Asociación Centro Clará de Atención a la Familia.",
+   "Andalucía.",
+   "11376"
+  ],
+  [
+   "Hogar La Salle de Jerez.",
+   "Andalucía.",
+   "8166"
+  ],
+  [
+   "Asociación de Víctimas de Abusos Sexuales en la Infancia.",
+   "Andalucía.",
+   "19010"
+  ],
+  [
+   "Personas con Discapacidad Virgen de Consolación-APDIS.",
+   "Andalucía.",
+   "10662"
+  ],
+  [
+   "Asociación Síndrome Prader-Willi de Andalucía.",
+   "Andalucía.",
+   "8883"
+  ]
+ ]
+}

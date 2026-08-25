@@ -1,0 +1,38 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6941",
+ "tabla": 1,
+ "fuente": "pdf",
+ "pagina_pdf": 2,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "14 tablas de 18x3 en el documento. La t0 («T + 3») cruza de la página 1 a la 2; la t1 es «T + 2», entera en la página 2",
+ "alcance": "completa",
+ "dimension": {"n_rows": 18, "n_cols": 3},
+ "filas_de_cabecera": 2,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 0, "col": 0, "rowspan": 1, "colspan": 2},
+  {"row": 17, "col": 0, "rowspan": 1, "colspan": 2}
+ ],
+ "filas": [
+  ["Tamaño de buque", "T + 2"],
+  ["De", "A", "De 14.867.452 GT a 15.300.484 GT"],
+  ["0", "1.000", "430,02 €"],
+  ["1.001", "2.000", "365,52 € + (0,064503*GT)"],
+  ["2.001", "3.000", "346,17 € + (0,074178*GT)"],
+  ["3.001", "4.000", "312,78 € + (0,085304*GT)"],
+  ["4.001", "5.000", "261,60 € + (0,098101*GT)"],
+  ["5.001", "6.000", "188,02 € + (0,112816*GT)"],
+  ["6.001", "7.000", "86,49 € + (0,129737*GT)"],
+  ["7.001", "8.000", "(0,149199*GT) -49,74 €"],
+  ["8.001", "9.000", "(0,171578*GT) -228,77 €"],
+  ["9.001", "10.000", "(0,197315*GT) -460,41 €"],
+  ["10.001", "15.000", "1.058,93 € + (0,045382*GT)"],
+  ["15.001", "20.000", "1.609,19 € + (0,008699*GT)"],
+  ["20.001", "25.000", "1.604,84 € + (0,008916*GT)"],
+  ["25.001", "30.000", "1 599,26 € + (0,009139*GT)"],
+  ["30.001", "35.000", "1 592,41 € + (0,009367*GT)"],
+  [">35.000", "1.584,21 € + (0,009601*GT)"]
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7559",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": 71,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "única de su dimensión en el documento",
+ "observacion_para_la_adjudicacion": "FRONTERA AMBIGUA, segunda instancia del caso de la nota al pie. Cuento 7 filas y 20 celdas; el XML dice 8 y 21. Debajo del borde hay «(*) Importes actualizados a 2026.», que explica exactamente +1 fila y +1 celda. Misma firma que BOE-A-2026-6971 t3: la clase es sistemática, no un caso suelto",
+ "alcance": "completa",
+ "dimension": {"n_rows": 7, "n_cols": 3},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 0, "col": 0, "rowspan": 1, "colspan": 2}
+ ],
+ "filas": [
+  ["", "Euros"],
+  ["1", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie igual o inferior a 10 hectáreas.", "305,37"],
+  ["2", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie mayor a 10 hectáreas e igual o inferior a 20 hectáreas.", "839,78"],
+  ["3", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie mayor a 20 hectáreas e igual o inferior a 30 hectáreas.", "1.679,55"],
+  ["4", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie mayor a 30 hectáreas e igual o inferior a 50 hectáreas.", "2.519,33"],
+  ["5", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie mayor a 50 hectáreas e igual o inferior a 80 hectáreas.", "3.359,11"],
+  ["6", "Cambios de uso de forestal a cualquier otro uso en terrenos de superficie mayor a 80 hectáreas.", "4.198,88"]
+ ]
+}

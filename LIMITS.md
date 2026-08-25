@@ -492,21 +492,25 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 321 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 364 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **155 tests restantes** —`barreras` (14), `harvest` (14),
-    `verificar_corpus` (14), `boe` (12), `boe_api` (10), `entity_conformance` (9),
-    `entity_registry` (9), `capas_permitidas` (8), `comparar_verdad` (5), `sellar_xml` (4),
-    `limite_lineas` (2), `tope_area` (2), `grupo_de_filas` (2),
-    `manifest` (8), `pairing` (8), `policy` (7),
-    `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `types` (5),
-    `errors` (3) y `sin_consumidor` (3)— **no tienen ningún mutante escrito contra su código**,
-    así que «los 21 mueren» no dice
-    nada sobre si esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **46,3% hoy**.
+    árbol de TEDS y el lote. Los **198 tests restantes** —`congelados_l4` (36), `barreras` (14),
+    `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
+    `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
+    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `policy` (7),
+    `types_invariantes` (7), `boe_xml` (6), `ancla` (5), `comparar_verdad` (5),
+    `types` (5), `sellar_xml` (4), `errors` (3), `sin_consumidor` (3),
+    `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
+    mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
+    esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
+    12,4% al cerrar L2, **54,4% hoy** — y 43 de los 198 entraron de golpe con
+    `congelados_l4` (36) y `guardianes_l4` (7), que son candados de fichero y de
+    proceso, no código con mutante posible: sus controles negativos viven dentro —se
+    manipula un fixture y se exige que la huella deje de cuadrar, y se le da al
+    guardián de la re-congelación una huella movida sin corrección—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **318 de 321 tests protegidos por algo** —un
+    *el arnés*, no la protección: **361 de 364 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -780,7 +784,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —318 de 321— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —361 de 364— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -975,3 +979,226 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `marker` emiten Markdown, `camelot` DataFrames, `grobid` TEI y `tesseract`
     texto plano. Ese día el test se cae y obliga a quitarlos de la lista **a
     mano**, que es el momento exacto en que hay que decidir si ya están validados.
+
+### L4 · 25 de agosto de 2026
+
+65. **EL «CERO FALLOS DEL CÓDIGO» DE L4 TIENE DOS HUECOS MEDIDOS, Y UNO DE ELLOS
+    ES EL BUG REAL DEL DÍA ANTERIOR.** L4 publica *cero discrepancias atribuibles al
+    código* sobre 1.213 celdas. Ese cero tiene dos lecturas que desde fuera se leen
+    igual —«el código reproduce el PDF» y «estos 30 fixtures no pueden ver un fallo
+    del código»— así que se ha medido cuál es, rompiendo el código a propósito y
+    contando: `uv run python scripts/mutar_el_instrumento.py`, resultado en
+    `runs/l4/mutantes.json`.
+
+    De **22** mutantes: **3 los ve el instrumento** (`roto` 25 de 25, `sin_tablas` 25
+    de 25, `sin_spans` 4 de 25), **15 no llegan al sujeto** —TEDS, `cellmatch`,
+    claves, recuentos y **los dos del normalizador**, medido con `settrace` sobre la
+    derivación—, **1 no es medible fuera de pytest** (`recuentos_todo_vale`, que
+    importa `conftest`), **1 es equivalente** (`n3_incompleta`, límite 68) y **2 se
+    ejecutan y no los ve nadie**:
+
+    | Mutante | mata | cambia | Por qué no lo ve, medido |
+    |---|---|---|---|
+    | `seccion_sin_cerrar` | 0 de 25 | 0 de 30 | **0 de 30** tablas tienen un `rowspan` de cabecera que DESBORDE la sección. Ver 66 |
+    | `ok` (`comprobar` siempre ok) | 0 | 0 | **0 de 30** documentos tienen una tabla descartada por `FATAL`. Ver 67 |
+
+    **Esta lista se publica corregida dos veces, y las correcciones importan más que
+    la lista.** La primera versión contaba 23 mutantes —son 22—, daba
+    `normalizador_agresivo` como «visto» y `normalizador_identidad` como «hueco»
+    cuando **ninguno de los dos llega al código medido**, y explicaba el cero con una
+    causa falsa. Ver 68. Las dos las encontró el escrutinio adversarial del cierre.
+
+    **`mata` y `cambia` no son la misma cifra y hacen falta las dos.** Un fixture que
+    ya tiene una discrepancia de frontera **no puede «dejar de coincidir»**, así que
+    `mata` no lo puede contar nunca. Pero `cambia` mal medido es peor: comparaba el
+    **mensaje formateado**, que lleva dentro el texto de la celda, así que un mutante
+    que sólo cambiara el renderizado contaba como detectado sin detectar nada — y eso
+    produjo el «cambia 3 de 30» falso de `normalizador_agresivo`. Ahora la identidad
+    de una discrepancia es `(clase, posición)` y nunca su texto.
+
+66. **La muestra de L4 es CIEGA al bug del grupo de filas, y está medido: 0 de 30.**
+    `seccion_sin_cerrar` reintroduce el fallo que desplazaba los datos una columna
+    con `validate` diciendo `ok=True`. Reintroducido, **las 30 `CanonicalTable` salen
+    idénticas celda a celda**: no es que el comparador sea ciego —`test_comparar_
+    verdad.py` demuestra que detecta una celda movida de columna— es que **ninguno
+    de los 30 documentos tiene la forma que lo dispara**. 8 de 30 tienen algún span y
+    2 tienen `rowspan>1` en cabecera, pero **0 tienen un `rowspan` de cabecera que
+    desborde su sección**, que es la condición exacta.
+
+    Consecuencia dura y hay que decirla así: **el «0 fallos del código» de L4 no dice
+    nada sobre esa clase de fallo.** Lo que lo cubre es `tests/unit/test_grupo_de_
+    filas.py`, donde el mismo mutante mata **2 de 2**; lo que NO lo cubre es la verdad
+    de referencia. Cerrarlo pide un fixture elegido **por forma** y no por estrato, y
+    eso cambia el diseño de la muestra: va a L8b, no aquí.
+
+67. **L4 no puede decir nada sobre `validate`: 0 de 30 tablas se descartan.** El
+    límite 30 avisaba de que `truth.derived` podía emitir una tabla `FATAL` desde el
+    XML del BOE y dejar un documento sin verdad. En esta muestra **no pasa ni una
+    vez**, así que la rama de descarte de `derivar` —y el `SIN_VERDAD` del
+    comparador— **están sin ejercitar por el instrumento**. El comparador tiene el
+    caso escrito, pero ningún dato real lo recorre.
+
+68. **Los tres mutantes del normalizador no prueban nada sobre L4, y la primera
+    explicación publicada de por qué era FALSA.** Se publicó que *«la misma función
+    normaliza los dos lados, así que una mutación suya se cancela»*, citando el
+    límite 52. **No es eso lo que pasa.** `_html.py` hace
+    `from ._normalizar import normalize_cell_text`, o sea liga el nombre al importar;
+    `normalizador_identidad` y `normalizador_agresivo` parchean
+    `canonical.normalize_cell_text`, el atributo del **paquete**. Comprobado
+    ejecutándolo: bajo el mutante, `canonical.normalize_cell_text('  a   b  ')`
+    devuelve la cadena intacta y `from_html` sigue devolviendo `'a b'`. **Sólo se
+    muta el lado del comparador, no el del sujeto.**
+
+    El tercero, `n3_incompleta`, **sí llega** —parchea la constante
+    `CATEGORIAS_DE_ESPACIO` del propio módulo, que se lee en cada llamada— pero es un
+    **mutante equivalente en la salida**: quita `Zl` y `Zp`, y `normalize_cell_text`
+    termina en `" ".join(s.split())`, que los considera espacio igualmente.
+    Comprobado sobre las cuatro categorías —Zl, Zp, Zs, Cc—: la salida es idéntica
+    con y sin mutante. **Ningún instrumento puede verlo por la salida de esa
+    función**, así que llamarlo hueco acusaba al instrumento de no ver algo que no
+    está.
+
+    Y la mitad que sí es verdad y se mantiene: **`normalize_cell_text` no cambia ni
+    una de las 1.213 celdas**, en ninguno de los dos lados. No hay un NBSP, ni un
+    espacio de otra categoría, ni una forma NFD en toda la muestra. Así que aunque un
+    mutante del normalizador llegara al sujeto, no habría nada que mover.
+
+69. **El transcriptor humano AUTO-CORRIGE las erratas del original, y va en la
+    dirección de penalizar al extractor que acierta. Medido: 1 de 1.213 celdas.** El
+    BOE escribe `Catauña` en `BOE-A-2026-6957` —**en el PDF y en el XML, los dos
+    formatos oficiales coinciden**— y al transcribir a mano se copió `Cataluña` sin
+    darse cuenta. Si esa discrepancia se hubiera adjudicado como defecto del origen,
+    habría entrado `Cataluña` en la verdad de referencia y **todo extractor que
+    leyera el PDF fielmente habría perdido un punto por acertar**.
+
+    Lo que lo impidió fue mirar el PDF, que es ADR-0039 regla 5. **La tasa es de una
+    sola persona, una sola pasada y n = 1**: no es una estimación con intervalo, es
+    un recuento sobre esta muestra, y su valor es señalar la dirección del sesgo, no
+    cuantificarlo. Toca a la verdad `ANNOTATED` y a **L8b** tanto como a L4: una
+    auditoría humana que corrija erratas del original mide su propia pulcritud, no
+    la del extractor.
+
+70. **Los 30 fixtures de L4 NO los protegía ninguno de los dos hooks, mientras el
+    repo afirmaba «congeladas con hash».** Los globs de `guard-frozen.sh` y
+    `stop-gate.sh` eran `tests/fixtures/{pubtabnet,tablas,quickstart}` y
+    `*/plan.yaml`; los fixtures viven en `runs/l4/fixtures/`. Además **estaban en
+    `.gitignore`**, así que ni siquiera entraban en el repo: «la verdad derivada
+    reproduce 25 de 30» sólo lo podía comprobar quien transcribió — el mismo fallo
+    que el manifiesto de L3 vino a arreglar, repetido un hito después.
+
+    Arreglado el mismo día en las tres capas: glob en los dos hooks, salida del
+    `.gitignore` —**46 KB**, y `entities/boe.yaml` declara `may_redistribute_content:
+    true`— y, sobre todo, **el candado de verdad que pedía el límite 27**: un test de
+    la puerta, `tests/unit/test_congelados_l4.py`, que compara los 30 contra un
+    manifiesto **versionado**. Lo que queda del límite 27 sigue igual: la ventana del
+    primer turno.
+
+    **Y la primera versión de ese arreglo era falsa, que es peor que no arreglarlo.**
+    El glob de `stop-gate.sh` era `runs/*/fixtures`, que como pathspec de git casa con
+    el **directorio** y no con lo que hay dentro: `git ls-files -- 'runs/*/fixtures'`
+    devuelve **0** ficheros y `'runs/*/fixtures/*'` devuelve 30. O sea que se publicó
+    «arreglado en los dos hooks» con uno de los dos ciego, y las 6 correcciones se
+    aplicaron sin que ningún hook las viera —`corregir_fixtures_l4.py` escribe con
+    `write_text`, que `guard-frozen.sh` tampoco ve, porque su `matcher` es
+    Write/Edit/NotebookEdit—. Encontrado por el escrutinio adversarial del cierre.
+
+    **Y faltaba lo que de verdad hay que proteger: los MANIFIESTOS.** Los fixtures se
+    comparan **contra** `congelacion.json`, `recongelacion.json` y
+    `correcciones.json`, así que la forma barata de hacer pasar un fixture manipulado
+    no es tocar el fixture, es tocar el manifiesto — y ésos no los cubría ninguno de
+    los dos hooks. Ahora sí, los dos, comprobado invocándolos.
+
+71. **Una de las 30 está CONTAMINADA, su coincidencia no prueba nada, y NO SE SABE
+    CUÁL ES.** Para desambiguar cuál de las tablas del documento era, se miró el
+    texto del XML antes de transcribir. La herramienta se arregló después para
+    desambiguar por dimensión y orden, y el método limpio da la misma respuesta,
+    **pero eso no deshace haber visto**.
+
+    **Lo que hace este límite peor de lo que parecía: el fixture no está marcado.**
+    `runs/l4/congelacion.json` dice `"contaminadas": 1`, pero ninguno de los 30
+    ficheros lleva la marca —sólo tienen `localizacion` ∈ {`automatica` (18),
+    `automatica_con_desambiguacion` (11), `a_ojo` (1)}— y las dos notas que mencionan
+    contaminación dicen que se hizo el esfuerzo de **no** contaminar. O sea que el
+    dato **no es recuperable de ningún artefacto**.
+
+    Consecuencia para el número publicado, y va con él: de los 25 que coinciden,
+    **21 o 22 son limpias, 3 son fixtures corregidos, y la contaminada puede estar
+    entre los 25 o entre los 5 que fallan**. El desglose se publica con esa
+    horquilla, no con un 21 exacto que no se puede comprobar. **Se cierra marcando el
+    fixture en su origen**, y eso sólo lo puede hacer quien recuerde cuál fue: si no
+    aparece, la muestra arrastra el rango.
+
+72. **La partición de línea sólo muerde DENTRO de un token, y su primera frecuencia
+    está medida: 3 de 30.** El límite 31 predijo la asimetría y dijo que medirla
+    exigía verdad de referencia con palabras partidas, o sea L4. Aquí está: 3 de las
+    30 tablas tienen una celda que el PDF parte y el XML no, **y las tres parten
+    justo detrás de una barra**. La afinación que sale gratis: en `BOE-A-2026-5851`
+    el PDF también parte tres veces dentro de otra celda, pero **entre frases, tras
+    un punto**, donde el espacio es correcto igual — y esa celda coincide. **La
+    partición sólo produce discrepancia cuando cae dentro de un token.** Sigue sin
+    estar cuantificado el daño sobre la nota de un extractor: eso es L5.
+
+73. **Las tres barreras que L4 estrena se cerraron SIN control negativo, y se
+    publicó que sí lo tenían.** `corregir_fixtures_l4.py` (el guardián del PDF),
+    `congelar_l4.py` (el de la re-congelación) y `mutar_el_instrumento.py` (el arnés)
+    son barreras en el sentido exacto de la regla en firme del repo —*un módulo cuyo
+    único trabajo es ponerse rojo trae su control negativo en el mismo hito*— y
+    ningún test las tocaba. Peor: `RESULTS.md` llegó a publicar *«se ha comprobado
+    que sabe decir que no»* con **tres afirmaciones sin comando, sin test y sin
+    artefacto**, que es literalmente la frase que este repo no admite.
+
+    Cerrado el mismo día con `tests/unit/test_guardianes_l4.py`. **Y el primer
+    intento de cerrarlo también estaba mal**, del mismo modo que el control negativo
+    de `test_congelados_l4.py`: re-implementaba la lógica del guardián dentro del
+    test en vez de llamarla, así que probaba su propia copia. Se extrajo
+    `congelar_l4.sin_respaldo` para poder llamarlo de verdad. **Un control negativo
+    que no invoca al sujeto no es un control negativo**, y este cierre lo ha
+    demostrado dos veces seguidas.
+
+74. **El número del criterio de L4 NO es reproducible en un clon frío.** Los cuatro
+    comandos que `RESULTS.md` publica necesitan `runs/l3/docs` —2.000 PDF y XML, 362
+    MB, fuera del repo por peso— y dos de ellos necesitan además el binario
+    **`pdftotext`** (`poppler-utils`), que no estaba declarado en ningún sitio. Un
+    tercero puede rehacer la cosecha (~35 min a 1 rps, `runs/l3/README.md`) y
+    entonces sí, pero **eso no es lo mismo que reproducirlo**: el BOE puede haber
+    cambiado un documento, y el manifiesto lo diría.
+
+    Lo que **sí** corre en un clon frío, y por eso es donde vive el candado: los 43
+    tests de `test_congelados_l4.py` y `test_guardianes_l4.py` que sólo necesitan los
+    fixtures y los manifiestos, que ya están en el repo. El único que se salta es el
+    del guardián del PDF, **con `skipif` y su razón escrita** en vez de un verde que
+    no significaría nada.
+
+75. **La cobertura de la comparación es del 53,1%, no del 100%: 1.213 celdas de
+    2.283.** Las 30 tablas suman 2.283 celdas ancladas; el umbral de ventana de
+    `plan.yaml` deja 3 tablas transcritas sólo por su cabecera más su última fila. La
+    **dimensión completa** sí se comprueba en las 30, que es lo que recupera parte de
+    lo que la ventana no ve. Estaba en el docstring del comparador y **no en
+    `RESULTS.md`**, que es donde hace falta: un «cero fallos sobre 1.213 celdas» sin
+    esta cifra al lado sugiere que 1.213 es todo lo que hay.
+
+    Y la otra mitad del mismo descuido: **«11 de 1.213 celdas» mezclaba unidades.**
+    De las 11, dos eran de `DIMENSION` —una fila entera de más—, que no son celdas.
+    Se publica separado: discrepancias de texto sobre celdas, discrepancias de
+    estructura sobre tablas.
+
+76. **El barrido de mutantes de L4 no prueba NADA sobre la normalización, y no hay
+    mutante que lo arregle sin escribirlo.** De los tres mutantes que tocan
+    `normalize_cell_text`, dos no llegan al sujeto y uno es equivalente en la salida
+    (límite 68). Así que la pregunta *«¿vería este instrumento un normalizador roto?»*
+    **sigue sin respuesta**, y el instrumento no puede contestarla por su cuenta.
+
+    **Lo que costaría cerrarlo, medido y sin promesa:** un mutante nuevo que parchee
+    `docbench_es.core.canonical._normalizar.normalize_cell_text` —el módulo, no el
+    paquete— y su entrada en el `PLAN` de `matar.py` con la suite que tiene que
+    matarlo. Es un fichero de ~15 líneas, pero **no es gratis**: `matar.py` exige que
+    todo mutante muera, así que hay que comprobar antes contra qué suite muere, y
+    `test_canonical_normalizar.py` importa el nombre **del paquete** en su línea 29,
+    o sea que podría sobrevivir y poner el arnés en rojo. Estimado **40-60 min**,
+    incluido el trabajo de averiguar qué suite lo mata. Va a L5, que es quien vuelve
+    a tocar el camino de normalización con los ocho extractores.
+
+    Mientras tanto lo que cubre la normalización es L1: `normalizador_agresivo`,
+    `normalizador_identidad` y `n3_incompleta` mueren los tres en
+    `tests/unit/test_canonical_normalizar.py` —13, 5 y 1 tests respectivamente— por
+    la vía del paquete, que es la que ese fichero usa.

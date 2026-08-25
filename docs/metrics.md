@@ -625,3 +625,95 @@ nota «no imprime nada». Al arreglar el `Makefile` dejó de ser cierto: hoy imp
 `Makefile` y `.gitignore`. La afirmación sigue en pie —el objetivo `fast` no cambia—
 pero ahora hay que sostenerla mirando el diff, no la ausencia de salida. Un comando
 cuyo resultado esperado es «nada» se rompe en silencio.
+
+## L4 · «La verdad derivada reproduce las tablas a mano»: qué mide y qué no
+
+**Qué es el número.** Cuántas de 30 tablas del corpus, transcritas a mano **del PDF**,
+reproduce celda a celda la `CanonicalTable` que `truth.derived` saca **del XML**. No
+es una estimación estadística: es un **recuento exhaustivo sobre las 30 elegidas**,
+así que no lleva intervalo (ADR-0015). Lleva su n, su método y su incertidumbre
+declarada, que es lo que la regla de oro 2 exige de un recuento.
+
+**Qué se compara, con qué resolución.** Posición a posición sobre la rejilla, con los
+tres estados de L1 —celda anclada, posición cubierta por un span, hueco— más la
+dimensión completa. La resolución es **una celda**: no hay medias ni parciales. Las
+reglas de qué cuenta como «reproduce» están en **ADR-0040**, congeladas antes de la
+primera comparación; la normalización es exactamente la del pipeline
+(`normalize_cell_text`) y **nada más**.
+
+**El denominador tiene tres formas y las tres se publican**, porque miden cosas
+distintas: fixtures con alguna discrepancia (5 de 30), discrepancias (5), y la
+densidad **separada por unidad** — 3 discrepancias de texto sobre 1.213 celdas y 2 de
+estructura sobre 30 tablas. Publicar sólo una es lo que hace que un número suene
+mejor de lo que es; **mezclar las unidades en la tercera es lo que hacía la primera
+versión de este documento**, que ponía «5 de 1.213 celdas» contando como celdas dos
+discrepancias de `DIMENSION`, que son una fila entera de más.
+
+**Y el 1.213 no es el total: las 30 tablas suman 2.283 celdas ancladas.** El umbral
+de ventana deja 3 tablas transcritas sólo por su cabecera y su última fila, así que
+la comparación cubre el **53,1%**. La dimensión completa sí se comprueba en las 30.
+Límite 75.
+
+### De dónde sale la incertidumbre de este número
+
+No de un remuestreo —no lo hay— sino de **cuatro cosas declaradas**, cada una con su
+cifra:
+
+| Fuente | Cifra | Dónde |
+|---|---|---|
+| un solo transcriptor, una sola pasada; **el acuerdo intra-anotador NO está medido** | — | ADR-0039, alternativa descartada |
+| el transcriptor **auto-corrige erratas del origen** | 1 de 1.213 | límite 69 |
+| un fixture **contaminado**: se miró el XML para desambiguar | 1 de 30 | límite 71 |
+| 3 fixtures **corregidos** tras adjudicar: coinciden, pero no son evidencia independiente | 3 de 30 | `runs/l4/correcciones.json` |
+
+Por eso el número se publica siempre desglosado, y **con horquilla**: **21 o 22
+limpias + 3 corregidas**, y la contaminada en algún sitio de las 30 sin que se sepa
+en cuál, porque el fixture **no lleva la marca** (límite 71). Nunca «25 de 30» a
+secas, y nunca un 21 exacto que no se puede comprobar.
+
+### Qué NO dice este número, y está medido
+
+**«Cero discrepancias atribuibles al código» no significa «el código no falla».**
+Significa que **estos 30 fixtures no vieron fallar el código**, y cuánto vale eso se
+ha medido rompiendo el código a propósito: `scripts/mutar_el_instrumento.py`. De
+**22** mutantes: 3 los ve el instrumento, 15 no llegan al sujeto, 1 no es medible
+fuera de pytest, 1 es equivalente en la salida y **2 se ejecutan sin que nadie los
+note** — `seccion_sin_cerrar`, que es el bug real del día anterior, y `ok`. Cada
+hueco lleva su diagnóstico con número: 0 de 30 tablas con la forma que dispara ese
+bug y 0 de 30 descartadas por `FATAL`. Límites 65 a 68.
+
+**El alcance se mide sólo durante la DERIVACIÓN**, no durante la comparación. Que un
+mutante toque al comparador no es alcance, es contaminación: la primera versión
+trazaba las 30 comparaciones enteras y por eso daba por alcanzados los dos mutantes
+del normalizador, que **no llegan a `from_html`** — parchean el atributo del paquete
+y `_html.py` liga el nombre del módulo al importar.
+
+**La medida `mata` sola es engañosa y por eso van dos.** Un fixture que ya tiene una
+discrepancia de frontera **no puede «dejar de coincidir»**, así que `mata` no lo
+puede contar nunca; `cambia` mira los 30 y detecta que el conjunto de discrepancias
+se mueve.
+
+**Historial de este número, y tiene dos vueltas.** La primera versión sólo tenía
+`mata`. La segunda añadió `cambia` **comparando el mensaje formateado**, que lleva
+dentro el texto de la celda: con eso `normalizador_agresivo` salía «cambia 3 de 30»
+—las 3 discrepancias de frontera de siempre, con el texto en minúsculas— y se
+publicó como *«el instrumento lo ve»*. **La versión vieja tenía razón y la corrección
+introdujo el error.** La tercera compara `(clase, posición)` y **nunca el texto**, con
+su test en `tests/unit/test_guardianes_l4.py`. Las tres se dicen, porque la segunda
+se publicó.
+
+### Cómo se adjudica una discrepancia, y por qué el método importa más que el número
+
+**La evidencia sale del PDF, nunca del XML** (ADR-0039 regla 5, escrita antes de
+adjudicar ni una). Comprobar contra el XML da por supuesto que el XML acierta, que es
+lo que se mide: toda discrepancia saldría «error de transcripción» por construcción.
+La prueba es mecánica y no depende de dónde se busque —se buscan **las dos versiones
+enteras** en la capa de texto, `scripts/evidencia_pdf.py`—, con una tercera prueba a
+nivel de **palabra suelta** para las cadenas de un solo token, donde la de subcadena
+no decide: `'...'` está contenido en cualquier línea de puntos de relleno.
+
+**Historial de correcciones de este método.** La primera versión de `evidencia_pdf.py`
+anclaba la búsqueda en el prefijo común de las dos versiones y **falló en 2 de las
+11**: `'Ayuntamiento de'` cayó en otro ayuntamiento de la misma tabla y `'...'` en una
+línea de relleno. Un ancla que puede caer en el sitio equivocado no es evidencia; se
+sustituyó por la búsqueda de la cadena entera, que no tiene ese modo de fallo.

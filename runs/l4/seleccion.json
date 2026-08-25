@@ -1,0 +1,280 @@
+{
+ "esquema": "docbench-es.seleccion-l4/1",
+ "plan_hash": "e49fe599619316709fabab2cca64f9c25404f417718c3e1510adb73490ba58b9",
+ "censo_sello": "525c71d",
+ "semilla": 20260824,
+ "n": 30,
+ "ya_inspeccionados": 0,
+ "seleccion": [
+  {
+   "external_id": "BOE-A-2026-5511",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "medio",
+   "n_pages": 5,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5593",
+   "tabla": 1,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 3,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5851",
+   "tabla": 2,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 13,
+   "n_tablas_del_documento": 4,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5856",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "medio",
+   "n_pages": 11,
+   "n_tablas_del_documento": 2,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5863",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5870",
+   "tabla": 12,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 24,
+   "n_tablas_del_documento": 13,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5975",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "medio",
+   "n_pages": 6,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-5979",
+   "tabla": 15,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 92,
+   "n_tablas_del_documento": 27,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6077",
+   "tabla": 4,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6204",
+   "tabla": 3,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6388",
+   "tabla": 0,
+   "estrato": "celdas-combinadas",
+   "banda": "corto",
+   "n_pages": 4,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6626",
+   "tabla": 5,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6728",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "largo",
+   "n_pages": 84,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6732",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 4,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6941",
+   "tabla": 1,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 14,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6957",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "largo",
+   "n_pages": 21,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-6971",
+   "tabla": 3,
+   "estrato": "celdas-combinadas",
+   "banda": "corto",
+   "n_pages": 4,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7031",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7174",
+   "tabla": 12,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 18,
+   "n_tablas_del_documento": 18,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7189",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7191",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7330",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "largo",
+   "n_pages": 85,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7342",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "corto",
+   "n_pages": 2,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7438",
+   "tabla": 0,
+   "estrato": "tabla-simple",
+   "banda": "medio",
+   "n_pages": 7,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7446",
+   "tabla": 0,
+   "estrato": "celdas-combinadas",
+   "banda": "corto",
+   "n_pages": 4,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7527",
+   "tabla": 3,
+   "estrato": "celdas-combinadas",
+   "banda": "corto",
+   "n_pages": 4,
+   "n_tablas_del_documento": 4,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7536",
+   "tabla": 1,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7559",
+   "tabla": 0,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 73,
+   "n_tablas_del_documento": 1,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7560",
+   "tabla": 12,
+   "estrato": "celdas-combinadas",
+   "banda": "largo",
+   "n_pages": 175,
+   "n_tablas_del_documento": 20,
+   "ya_inspeccionado": false
+  },
+  {
+   "external_id": "BOE-A-2026-7623",
+   "tabla": 3,
+   "estrato": "celdas-combinadas",
+   "banda": "medio",
+   "n_pages": 12,
+   "n_tablas_del_documento": 7,
+   "ya_inspeccionado": false
+  }
+ ]
+}

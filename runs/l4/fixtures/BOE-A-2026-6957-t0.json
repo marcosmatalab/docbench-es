@@ -1,0 +1,172 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6957",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": "2-3",
+ "localizacion": "automatica",
+ "cruza_pagina": true,
+ "nota_localizacion": "única tabla del documento. Cruza de la 2 a la 3, y la CABECERA SE REPITE en la página 3: es el mismo <thead> renderizado dos veces, UNA sola fila en el modelo. Contarla dos veces daría 39 filas",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 38,
+  "n_cols": 2
+ },
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "Relación de consultados",
+   "Respuestas recibidas"
+  ],
+  [
+   "Subdirección General de Biodiversidad Terrestre y Marina. Dirección General de Biodiversidad, Bosques y Desertificación. Ministerio para la Transición Ecológica y el Reto Demográfico. (MITECO).",
+   "Sí"
+  ],
+  [
+   "Confederación Hidrográfica del Ebro. (MITECO).",
+   "Sí"
+  ],
+  [
+   "Oficina Española del Cambio Climático. (MITECO).",
+   "Sí"
+  ],
+  [
+   "Dirección General de Calidad Ambiental y Cambio Climático. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "No"
+  ],
+  [
+   "Dirección General de Políticas Ambientales y Medio Natural. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "Sí"
+  ],
+  [
+   "Subdirección General de Biodiversidad y Medio Natural. Dirección General de Políticas Ambientales y Medio Natural. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "No"
+  ],
+  [
+   "Dirección General de Agricultura y Ganadería. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Catauña.",
+   "No"
+  ],
+  [
+   "Dirección General de Planificación en Salud. Departamento de Salud. Generalitat de Cataluña.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Protección Civil. Departamento de Interior. Generalitat de Cataluña.",
+   "Sí"
+  ],
+  [
+   "Agencia Catalana del Agua. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Patrimonio Cultural. Departamento de Cultura. Generalitat de Cataluña.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Ecosistemas Forestales y Gestión del Medio. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "No"
+  ],
+  [
+   "Dirección General de Ordenación del Territorio, Urbanismo y Arquitectura. Departamento de Territorio. Generalitat de Cataluña.",
+   "No"
+  ],
+  [
+   "Diputación Provincial de Lleida.",
+   "No"
+  ],
+  [
+   "Dirección General de Desarrollo Rural. Departamento de Agricultura, Ganadería y Medio Ambiente. Gobierno de Aragón.",
+   "No"
+  ],
+  [
+   "Instituto Aragonés de Gestión Ambiental (INAGA). Departamento de Agricultura, Ganadería y Medio Ambiente. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Instituto Aragonés del Agua. Departamento de Agricultura, Ganadería y Medio Ambiente. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Salud Pública. Departamento de Sanidad. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Gestión Forestal. Departamento de Medio Ambiente y Turismo. Gobierno de Aragón.",
+   "No"
+  ],
+  [
+   "Dirección General de Interior y Emergencias. Departamento de Presidencia, Interior y Cultura. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Cambio Climático y Educación Ambiental. Departamento de Agricultura, Ganadería y Medio Ambiente. Gobierno de Aragón.",
+   "No"
+  ],
+  [
+   "Dirección General de Medio Natural. Departamento de Medio Ambiente y Turismo. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Calidad Ambiental. Departamento de Medio Ambiente y Turismo. Gobierno de Aragón.",
+   "No"
+  ],
+  [
+   "Dirección General de Patrimonio Cultural. Departamento de Presidencia, Interior y Cultura. Gobierno de Aragón.",
+   "Sí"
+  ],
+  [
+   "Dirección General de Desarrollo Territorial. Departamento de Desarrollo Territorial, Despoblación y Justicia. Gobierno de Aragón.",
+   "No"
+  ],
+  [
+   "Diputación Provincial de Zaragoza.",
+   "No"
+  ],
+  [
+   "Ayuntamiento de Mequinenza (Zaragoza).",
+   "No"
+  ],
+  [
+   "Ayuntamiento de Granja d’Escarp (Lleida).",
+   "No"
+  ],
+  [
+   "Ayuntamiento de Llardecans (Lleida).",
+   "No"
+  ],
+  [
+   "Ayuntamiento de Maials (Lleida).",
+   "Sí"
+  ],
+  [
+   "Ayuntamiento de Seròs (Lleida).",
+   "Sí"
+  ],
+  [
+   "Plataforma en Defensa de L’Ebre.",
+   "No"
+  ],
+  [
+   "Ecologistas en Acción de Aragón.",
+   "No"
+  ],
+  [
+   "Ecologistas en Acción de Cataluña.",
+   "No"
+  ],
+  [
+   "Fundación para la Conservación del Quebrantahuesos.",
+   "No"
+  ],
+  [
+   "SEO/BirdLife.",
+   "No"
+  ],
+  [
+   "WWF España.",
+   "No"
+  ]
+ ]
+}

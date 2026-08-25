@@ -1,0 +1,28 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-6728",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": 1,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "única tabla del documento",
+ "alcance": "completa",
+ "dimension": {"n_rows": 11, "n_cols": 3},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["", "Fecha de suscripción", "N.º anexo"],
+  ["Miguel Gallardo Expósito.", "30 de diciembre de 2025", "I"],
+  ["Rafael Cosquiere Fernández.", "8 de enero de 2026", "II"],
+  ["Farmacia Puga.", "21 de enero de 2026", "III"],
+  ["Farmacia Puga 2.", "21 de enero de 2026", "IV"],
+  ["FDS Melilla, SL.", "21 de enero de 2026", "V"],
+  ["Asesoría Prim.", "22 de enero de 2026", "VI"],
+  ["Afiliago International, SL.", "26 de enero de 2026", "VII"],
+  ["Group RJP Solutions, SL.", "26 de enero de 2026", "VIII"],
+  ["Centro de Negocios y Asesoramiento Melilla, SL.", "24 de febrero de 2026", "IX"],
+  ["Ignacio Rodríguez Tasador, SLU.", "24 de febrero de 2026", "X"]
+ ]
+}

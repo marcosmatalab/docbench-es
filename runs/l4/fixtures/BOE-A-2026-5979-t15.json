@@ -1,0 +1,21 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5979",
+ "tabla": 15,
+ "fuente": "pdf",
+ "pagina_pdf": 64,
+ "localizacion": "automatica_con_desambiguacion",
+ "cruza_pagina": false,
+ "nota_localizacion": "dos tablas de 2x4 en la página (Pluses y Dietas); es la 1.ª de 2 de su dimensión en el documento, o sea Pluses",
+ "CONTAMINADA": true,
+ "razon_contaminacion": "para desambiguar se miró el TEXTO del XML antes de transcribir, así que esta transcripción NO es ciega y su coincidencia no prueba nada por sí sola. La herramienta se arregló después para desambiguar por dimensión y orden —estructura, no valores—; las demás usan ese método",
+ "alcance": "completa",
+ "dimension": {"n_rows": 2, "n_cols": 4},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["Noctur. – Euros/día", "Turno – Euros/mes", "Sábado Domingo – Euros/día", "Festivo – Euros/día"],
+  ["36,66", "73,34", "82,88", "89,97"]
+ ]
+}

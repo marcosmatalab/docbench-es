@@ -1,7 +1,8 @@
 # ADR-0039 · Qué pasa cuando la verdad derivada y la transcripción a mano discrepan
 
-**Fecha:** 2026-08-24 · **Estado:** aceptada, **escrita ANTES de transcribir la
-primera tabla**. **Amplía §16**, que da el criterio de L4 sin umbral y sin regla de
+**Fecha:** 2026-08-24, **reglas 1-4** · **regla 5 añadida el 2026-08-25**, tras la
+primera comparación y **antes de adjudicar ni una discrepancia** · **Estado:**
+aceptada. **Amplía §16**, que da el criterio de L4 sin umbral y sin regla de
 adjudicación
 
 ## Contexto
@@ -27,7 +28,16 @@ que sacarlo de su buena fe y meterlo en una regla previa.
 
 ## Decisión
 
-**Cuatro reglas, y se escriben antes de mirar la primera tabla.**
+**Cuatro reglas escritas antes de mirar la primera tabla, y una quinta escrita
+después de la primera comparación y ANTES de adjudicar ni una discrepancia.**
+
+**La quinta lleva su fecha aparte y se dice por qué se puede añadir tarde sin que
+eso la contamine**: la 5 no decide si una discrepancia pasa o no pasa —eso ya lo
+decidieron el comparador y ADR-0040, congelados antes—, decide **de dónde sale la
+prueba** al clasificarla. Y va en la dirección incómoda: prohíbe la comprobación
+barata —mirar el XML— y obliga a la cara —abrir el PDF—, así que no puede haberse
+elegido para que el número salga mejor. Aun así, **quedó escrita antes de mirar el
+primer PDF de adjudicación**, que es lo único que la hace comprobable.
 
 ### 1. El orden de sospecha: PRIMERO EL CÓDIGO, SEGUNDO LA TRANSCRIPCIÓN
 
@@ -69,6 +79,39 @@ publicaría 30 resultados de los que 29 son de otro código.
 
 Es la misma razón por la que el arnés de mutantes recorre la suite entera y no sólo
 la suite objetivo del mutante.
+
+
+### 5. LA EVIDENCIA DE UNA ADJUDICACIÓN VIENE DEL PDF, NUNCA DEL XML
+
+> **Para adjudicar una discrepancia como «error de transcripción», la evidencia
+> viene de la FUENTE DE TRANSCRIPCIÓN —el PDF—, nunca de la FUENTE MEDIDA —el XML.**
+
+**Por qué, y es la regla de la que dependen las otras cuatro.** Comprobar una
+discrepancia contra el XML **da por supuesto que el XML acierta**, y el XML es
+exactamente lo que este hito mide. Es la misma circularidad que la regla que
+prohíbe transcribir del XML, movida al final del proceso: se transcribió del PDF
+para no comparar el XML consigo mismo, y adjudicar contra el XML **lo deshace
+entero**. Toda discrepancia saldría «error de transcripción» por construcción, la
+columna «fallo del código» quedaría vacía siempre, y el instrumento volvería a ser
+un espejo — que es lo que ADR-0039 existe para impedir.
+
+**Consecuencia operativa: «coinciden» no es evidencia de nada.** Ante una
+discrepancia la única pregunta admisible es *¿qué pone el PDF?*, y se contesta
+mirando el PDF —su capa de texto **y** su renderizado—, no el XML. Sólo después de
+contestarla se mira el XML crudo, y sólo para separar dos causas que el PDF ya no
+puede distinguir:
+
+| Lo que dice el PDF | Adjudicación |
+|---|---|
+| lo mismo que la verdad derivada | **error de transcripción**: se corrige el fixture con su razón |
+| lo mismo que la transcripción, **y el XML crudo dice lo que la verdad** | **defecto del origen**: los dos formatos oficiales del mismo documento no coinciden (cuarta categoría) |
+| lo mismo que la transcripción, **y el XML crudo dice lo que la transcripción** | **fallo del código**: `truth.derived` produce algo que no está en su entrada |
+| lo mismo que la transcripción, pero por un camino que el modelo del XML no puede expresar | **frontera ambigua**: no es error de nadie, es que renderizado y modelo discrepan |
+
+**El XML crudo no es «la verdad» y por eso sí se puede mirar en la fila 2 y en la
+3.** Lo que no se admite es mirarlo **primero**: en las cuatro filas la pregunta se
+abre con el PDF, y el XML sólo entra a desempatar entre *defecto del origen* y
+*fallo del código*, que es una pregunta sobre el código, no sobre la transcripción.
 
 ## Lo que sostiene que las transcripciones sean independientes
 

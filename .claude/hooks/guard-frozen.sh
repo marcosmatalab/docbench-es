@@ -19,7 +19,7 @@ F=$(printf '%s' "$IN" | jq -r '.tool_input.file_path // .tool_input.notebook_pat
 [ -e "$F" ] || exit 0   # todavía no existe: crearlo es legítimo
 
 case "$F" in
-  *tests/fixtures/pubtabnet/*|*tests/fixtures/tablas/*|*tests/fixtures/quickstart/*|*/plan.yaml)
+  *tests/fixtures/pubtabnet/*|*tests/fixtures/tablas/*|*tests/fixtures/quickstart/*|*/plan.yaml|*/runs/*/fixtures/*|*/runs/*/congelacion.json|*/runs/*/congelacion_comparador.json|*/runs/*/recongelacion.json|*/runs/*/correcciones.json)
     MSG="FICHERO CONGELADO: $F. Los casos de referencia, las tablas con verdad conocida, los 20 documentos del quickstart y los planes de muestreo no se editan para que cuadren los números. Si el test falla, el fallo está en el código. Si de verdad hay que cambiar la verdad de referencia, pídeselo al usuario explícitamente y explica por qué."
     jq -n --arg m "$MSG" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$m}}'
     printf '%s\n' "$MSG" >&2

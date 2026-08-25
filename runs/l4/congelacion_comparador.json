@@ -1,0 +1,14 @@
+{
+ "esquema": "docbench-es.congelacion-comparador/1",
+ "congelado_en": "2026-08-25T06:37:16Z",
+ "sello": "c4ac769+4",
+ "ANTES_DE": "la primera corrida del comparador. Ni una sola comparación se ha hecho",
+ "reglas": "docs/adr/0040-las-reglas-del-comparador-de-verdad.md",
+ "controles": "5: cuatro mutaciones (texto, celda movida, fila que falta, dimensión) y el aro en la dirección buena",
+ "huellas": {
+  "scripts/comparar_verdad.py": "9e9dfa3280df5c66eaec9a310f3a4a48750031167043c7009c5ea0af94d4eac8",
+  "src/docbench_es/truth/derived.py": "356e450ecf229590db1aa0b19ae842f34f41bee1ee404388428c8c5bbc538497",
+  "docs/adr/0040-las-reglas-del-comparador-de-verdad.md": "8d1cb738b9e49cd23c5720efdf302a0c848977025a1a5fff1d10e1b32017e4c9",
+  "tests/unit/test_comparar_verdad.py": "3758d2e557b1d2cd445f56a2aaf7772feeda96f1a8e6338aa3184df1f6d1acd9"
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "esquema": "docbench-es.correcciones-l4/1",
+ "adjudicacion": "docs/adr/0039-la-adjudicacion-de-discrepancias-de-la-verdad.md",
+ "reglas_del_comparador": "docs/adr/0040-las-reglas-del-comparador-de-verdad.md",
+ "congelado_original": "runs/l4/congelacion.json",
+ "LO_QUE_NO_SE_CORRIGE": "las 5 de FRONTERA AMBIGUA —3 de partición de línea (límite 31) y 2 de nota al pie—. No son errores de nadie: corregirlas sería ajustar el instrumento para que salga el número",
+ "n": 6,
+ "correcciones": [
+  {
+   "fixture": "BOE-A-2026-6204-t3",
+   "pos": [
+    4,
+    0
+   ],
+   "puse": "...",
+   "el_pdf_dice": "…",
+   "que_paso": "transcribí el glifo de elipsis como tres puntos. Se ven igual",
+   "regla": "ADR-0017: ningún glifo visible se altera ni se borra",
+   "por_que_no_es_del_codigo": "el PDF trae U+2026 en su capa de texto, así que un extractor saca «…» y coincide con la verdad: no se le penaliza por acertar",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "palabra suelta (-bbox)",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "e280a6"
+   },
+   "sha256_despues": "2a10f829e8f9003cadf268fbced7a93266d8a259ca6bbfb129d6904ee5d53ad0"
+  },
+  {
+   "fixture": "BOE-A-2026-7623-t3",
+   "pos": [
+    4,
+    0
+   ],
+   "puse": "...",
+   "el_pdf_dice": "…",
+   "que_paso": "el mismo caso que 6204: es la misma plantilla de anexo",
+   "regla": "ADR-0017: ningún glifo visible se altera ni se borra",
+   "por_que_no_es_del_codigo": "ídem: U+2026 en el PDF",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "palabra suelta (-bbox)",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "e280a6"
+   },
+   "sha256_despues": "e4de53c4a6c3535367e05ed27547336a6646ec31ecd9ad80ee3e84bf5282e4e2"
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "pos": [
+    7,
+    0
+   ],
+   "puse": "Dirección General de Agricultura y Ganadería. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Cataluña.",
+   "el_pdf_dice": "Dirección General de Agricultura y Ganadería. Departamento de Acción Climática, Alimentación y Agenda Rural. Generalitat de Catauña.",
+   "que_paso": "AUTO-CORREGÍ UNA ERRATA DEL ORIGEN. El BOE escribe «Catauña» en el PDF y en el XML —los dos formatos coinciden— y al transcribir la arreglé sin darme cuenta. Es el error más importante de los seis: si se adjudica al revés, entra «Cataluña» en la verdad y todo extractor fiel pierde un punto",
+   "regla": "ADR-0017: ningún glifo visible se altera ni se borra",
+   "por_que_no_es_del_codigo": "los dos formatos oficiales coinciden en la errata: no hay defecto del origen ni techo sobre la exactitud de L5",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "subcadena en -raw colapsado",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "44697265636369c3b36e2047656e6572616c206465204167726963756c7475726120792047616e61646572c3ad612e20446570617274616d656e746f2064652041636369c3b36e20436c696dc3a1746963612c20416c696d656e74616369c3b36e2079204167656e646120527572616c2e2047656e6572616c69746174206465204361746175c3b1612e"
+   },
+   "sha256_despues": "ae6267aca08a95a729ed78602dc7a27de49b54058f071cb22dae13e31e2053fd"
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "pos": [
+    28,
+    0
+   ],
+   "puse": "Ayuntamiento de Granja d'Escarp (Lleida).",
+   "el_pdf_dice": "Ayuntamiento de Granja d’Escarp (Lleida).",
+   "que_paso": "apóstrofo tipográfico U+2019 transcrito como U+0027",
+   "regla": "ADR-0040 regla 4: guion corto ≠ largo y \" ≠ «. Glifos visibles distintos",
+   "por_que_no_es_del_codigo": "el cuerpo del mismo documento usa el recto, pero la TABLA usa el tipográfico, y la tabla es lo que se mide",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "subcadena en -raw colapsado",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "4179756e74616d69656e746f206465204772616e6a612064e2809945736361727020284c6c65696461292e"
+   },
+   "sha256_despues": "4168b4a6d023ec049965d55917fb29f1e7cc5228c3d038f53851676b0669e826"
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "pos": [
+    31,
+    0
+   ],
+   "puse": "Ayuntamiento de Serós (Lleida).",
+   "el_pdf_dice": "Ayuntamiento de Seròs (Lleida).",
+   "que_paso": "acento grave U+00F2 transcrito como agudo U+00F3. El grave es la grafía catalana",
+   "regla": "ADR-0040 regla 5: los acentos son significativos; sólo NFC se unifica",
+   "por_que_no_es_del_codigo": "el PDF trae el grave; castellanicé el topónimo al copiar",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "subcadena en -raw colapsado",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "4179756e74616d69656e746f20646520536572c3b27320284c6c65696461292e"
+   },
+   "sha256_despues": "b9008955c472e6062cd9c9ec079c6390464b22fea797d9a8e004fa7d96d848e2"
+  },
+  {
+   "fixture": "BOE-A-2026-6957-t0",
+   "pos": [
+    32,
+    0
+   ],
+   "puse": "Plataforma en Defensa de L'Ebre.",
+   "el_pdf_dice": "Plataforma en Defensa de L’Ebre.",
+   "que_paso": "apóstrofo tipográfico U+2019 transcrito como U+0027",
+   "regla": "ADR-0040 regla 4: guion corto ≠ largo y \" ≠ «. Glifos visibles distintos",
+   "por_que_no_es_del_codigo": "ídem que (28, 0)",
+   "evidencia": {
+    "fuente": "el PDF, nunca el XML (ADR-0039 regla 5)",
+    "prueba": "subcadena en -raw colapsado",
+    "el_pdf_contiene_el_corregido": true,
+    "el_pdf_contiene_lo_que_puse": false,
+    "bytes_utf8_del_corregido": "506c617461666f726d6120656e20446566656e7361206465204ce28099456272652e"
+   },
+   "sha256_despues": "3b1c3ad3c8dd5d309843bea0a455f7794181b70cf2782ec2fa8f0413b8b65683"
+  }
+ ]
+}

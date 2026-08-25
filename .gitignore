@@ -37,6 +37,25 @@ runs/*/*
 !runs/*/manifiesto.json
 !runs/*/desglose.json
 !runs/*/README.md
+# Y LOS FIXTURES DE L4 TAMBIÉN, por el mismo criterio y no por comodidad: son el
+# INSTRUMENTO de medida del hito, no datos. Sin ellos en el repo, «la verdad
+# derivada reproduce 25 de 30» es una afirmación que sólo puede comprobar quien
+# transcribió, que es exactamente lo que el manifiesto de L3 vino a arreglar.
+# Caben: 30 ficheros, 46 KB de bytes reales (128K por bloques en `du`). Y la licencia lo permite —`entities/boe.yaml`
+# declara `may_redistribute_content: true`—, así que no hay conflicto con la
+# regla de oro que prohíbe redistribuir contenido de una fuente que lo niegue.
+# Los PDF y XML de los que se transcribieron siguen fuera: ésos sí son bytes.
+!runs/*/fixtures/
+!runs/*/fixtures/*.json
+# Los sellos de la congelación, la adjudicación y la re-congelación: son la cadena
+# «transcrito ciego → comparado → adjudicado → corregido con evidencia», y su valor
+# entero está en poder comprobarla contra el historial de git.
+!runs/*/congelacion.json
+!runs/*/congelacion_comparador.json
+!runs/*/correcciones.json
+!runs/*/recongelacion.json
+!runs/*/seleccion.json
+!runs/*/mutantes.json
 .claude/.ultima-puerta
 .env
 

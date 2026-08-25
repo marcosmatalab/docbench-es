@@ -1,0 +1,29 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5975",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": "2-6",
+ "localizacion": "automatica",
+ "cruza_pagina": true,
+ "nota_localizacion": "única tabla del documento, sobre 5 páginas con la cabecera repetida en cada una",
+ "alcance": "ventana",
+ "razon_ventana": "600 celdas, por encima del umbral de 100 declarado en el plan",
+ "ventana": "1 fila de cabecera + 6 filas de cuerpo (la CABEZA, fija) + la ÚLTIMA fila",
+ "dimension": {"n_rows": 120, "n_cols": 5},
+ "dimension_como_se_conto": "119 filas de datos contadas sobre el TEXTO del PDF con el patrón de NIF (22+25+25+25+22), más 1 de cabecera. A ojo son inviables 120 filas y el recuento sería mi mayor fuente de error",
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["NIF", "Razón social", "Fecha publicación BOE de la revocación", "Fecha acuerdo de rehabilitación", "Registro público de inscripción"],
+  ["B84039858", "PROMOCIONES LA HIGUERA DE SERRACINES SL.", "05/07/2017", "18/02/2026", "REGISTRO MERCANTIL DE MADRID."],
+  ["B44100899", "TRANSPORTES HERMANOS USON SL.", "18/12/2023", "02/01/2026", "REGISTRO MERCANTIL DE TERUEL."],
+  ["A29157013", "PUERTO ROMANO DE ESTEPONA SA.", "14/10/2022", "19/02/2026", "REGISTRO MERCANTIL DE MALAGA."],
+  ["A39202759", "INMOBILIARIA SALAMAR, SA.", "21/04/2021", "19/02/2026", "REGISTRO MERCANTIL DE CANTABRIA."],
+  ["B73234874", "EL CASTILLO III DEL BASTON SL.", "11/09/2020", "23/02/2026", "REGISTRO MERCANTIL DE MURCIA."],
+  ["B55273098", "SOMOS LAS CRAKS SL.", "13/09/2021", "05/03/2026", "REGISTRO MERCANTIL DE GIRONA."]
+ ],
+ "ultima_fila": ["B56987522", "BIOMEDICAL PARTNERS, SL.", "29/09/2025", "25/02/2026", "REGISTRO MERCANTIL DE VALENCIA."],
+ "indice_de_la_ultima_fila": 119
+}

@@ -106,6 +106,8 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_ancla.py": "test_un_ancla_que_no_existe_aborta_en_vez_de_borrar_hasta_el_final",
     "test_types.py": "test_todo_el_modelo_de_datos_es_inmutable",
     "test_sin_consumidor.py": "test_from_html_si_tiene_consumidor_y_por_eso_no_esta_en_la_lista",
+    "test_congelados_l4.py": "test_un_fixture_manipulado_no_cuadra_con_su_huella",
+    "test_guardianes_l4.py": "test_re_congelar_aborta_sin_correccion_registrada",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

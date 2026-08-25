@@ -1,0 +1,21 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7536",
+ "tabla": 1,
+ "fuente": "pdf",
+ "pagina_pdf": 6,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "única de dimensión 4x2 en el documento",
+ "alcance": "completa",
+ "dimension": {"n_rows": 4, "n_cols": 2},
+ "filas_de_cabecera": 1,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  ["", "Euros"],
+  ["Coste máximo a financiar por el Ministerio.", "89.920,13"],
+  ["Coste máximo a financiar por la Universidad", "9.991,12"],
+  ["Total.", "99.911,25"]
+ ]
+}

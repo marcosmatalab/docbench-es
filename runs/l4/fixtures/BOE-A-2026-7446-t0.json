@@ -1,0 +1,28 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-7446",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": 4,
+ "localizacion": "automatica",
+ "cruza_pagina": false,
+ "nota_localizacion": "única tabla del documento",
+ "alcance": "completa",
+ "dimension": {"n_rows": 3, "n_cols": 8},
+ "filas_de_cabecera": 2,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [
+  {"row": 0, "col": 0, "rowspan": 2, "colspan": 1},
+  {"row": 0, "col": 1, "rowspan": 2, "colspan": 1},
+  {"row": 0, "col": 2, "rowspan": 2, "colspan": 1},
+  {"row": 0, "col": 3, "rowspan": 2, "colspan": 1},
+  {"row": 0, "col": 4, "rowspan": 2, "colspan": 1},
+  {"row": 0, "col": 5, "rowspan": 1, "colspan": 2},
+  {"row": 0, "col": 7, "rowspan": 2, "colspan": 1}
+ ],
+ "filas": [
+  ["Número", "Medida", "Hito/ Objetivo", "Nombre", "Indicadores cualitativos para los hitos", "Período", "Descripción de cada hito y objetivo"],
+  ["Trimestre", "Año"],
+  ["242", "C15.I5", "Hito.", "Infraestructuras digitales: cables submarinos y proyectos de I+D.", "Informes finales del pago de subvenciones; o actas de recepción, declaraciones de conformidad u otros documentos equivalentes acreditativos de la ejecución del contrato. Resolución de adjudicación y justificante de pago para proyectos de I+D+i.", "T2", "2026", "Presentación de informes finales por los beneficiarios (entidades y particulares) de subvenciones relacionadas con cables submarinos, o confirmación por parte de la Administración de la ejecución de contratos, o partes de estos, relacionados con cables submarinos, por un importe total acumulado de 57 000 000 EUR en subvenciones concedidas y contratos adjudicados (incluidas sus eventuales modificaciones). Desembolso de 393 000 000 EUR para proyectos de I+D en i) infraestructuras en la nube, ii) procesadores avanzados y semiconductores y iii) comunicaciones cuánticas y por satélite.»"]
+ ]
+}

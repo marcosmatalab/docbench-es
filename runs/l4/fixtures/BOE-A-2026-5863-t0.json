@@ -1,0 +1,165 @@
+{
+ "esquema": "docbench-es.fixture-tabla/1",
+ "external_id": "BOE-A-2026-5863",
+ "tabla": 0,
+ "fuente": "pdf",
+ "pagina_pdf": "1-2",
+ "localizacion": "automatica",
+ "cruza_pagina": true,
+ "nota_localizacion": "cruza de página: 27 filas en la 1 y 2 en la 2. Contar sólo la primera habría dado 27x3 y una discrepancia de dimensión falsa",
+ "alcance": "completa",
+ "dimension": {
+  "n_rows": 29,
+  "n_cols": 3
+ },
+ "filas_de_cabecera": 0,
+ "normalizacion": "espacios colapsados a uno; el texto se copia tal como se ve",
+ "spans": [],
+ "filas": [
+  [
+   "1 euro =",
+   "1,1581",
+   "dólares USA."
+  ],
+  [
+   "1 euro =",
+   "183,63",
+   "yenes japoneses."
+  ],
+  [
+   "1 euro =",
+   "24,377",
+   "coronas checas."
+  ],
+  [
+   "1 euro =",
+   "7,4718",
+   "coronas danesas."
+  ],
+  [
+   "1 euro =",
+   "0,86363",
+   "libras esterlinas."
+  ],
+  [
+   "1 euro =",
+   "387,83",
+   "forints húngaros."
+  ],
+  [
+   "1 euro =",
+   "4,2523",
+   "zlotys polacos."
+  ],
+  [
+   "1 euro =",
+   "5,0907",
+   "nuevos leus rumanos."
+  ],
+  [
+   "1 euro =",
+   "10,6543",
+   "coronas suecas."
+  ],
+  [
+   "1 euro =",
+   "0,9031",
+   "francos suizos."
+  ],
+  [
+   "1 euro =",
+   "145,00",
+   "coronas islandesas."
+  ],
+  [
+   "1 euro =",
+   "11,1700",
+   "coronas noruegas."
+  ],
+  [
+   "1 euro =",
+   "51,0671",
+   "liras turcas."
+  ],
+  [
+   "1 euro =",
+   "1,6195",
+   "dólares australianos."
+  ],
+  [
+   "1 euro =",
+   "5,9887",
+   "reales brasileños."
+  ],
+  [
+   "1 euro =",
+   "1,5742",
+   "dólares canadienses."
+  ],
+  [
+   "1 euro =",
+   "7,9518",
+   "yuanes renminbi chinos."
+  ],
+  [
+   "1 euro =",
+   "9,0642",
+   "dólares de Hong-Kong."
+  ],
+  [
+   "1 euro =",
+   "19569,86",
+   "rupias indonesias."
+  ],
+  [
+   "1 euro =",
+   "3,5979",
+   "shekel israelí."
+  ],
+  [
+   "1 euro =",
+   "106,6290",
+   "rupias indias."
+  ],
+  [
+   "1 euro =",
+   "1710,64",
+   "wons surcoreanos."
+  ],
+  [
+   "1 euro =",
+   "20,4403",
+   "pesos mexicanos."
+  ],
+  [
+   "1 euro =",
+   "4,5357",
+   "ringgits malasios."
+  ],
+  [
+   "1 euro =",
+   "1,9571",
+   "dólares neozelandeses."
+  ],
+  [
+   "1 euro =",
+   "68,622",
+   "pesos filipinos."
+  ],
+  [
+   "1 euro =",
+   "1,4757",
+   "dólares de Singapur."
+  ],
+  [
+   "1 euro =",
+   "36,787",
+   "bahts tailandeses."
+  ],
+  [
+   "1 euro =",
+   "18,9949",
+   "rands sudafricanos."
+  ]
+ ]
+}
