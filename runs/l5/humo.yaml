@@ -1,0 +1,47 @@
+# B6 · LA PRUEBA DE HUMO DE L5 · congelada ANTES de correrla
+#
+# Un extractor —pdfplumber, el mas simple— sobre las 30 tablas de L4, con TEDS contra
+# la verdad derivada. Es la primera vez que la cadena L1→L2→L3→L4 tiene un consumidor
+# real, y ese es el patron que «Construido y NO VALIDADO» de ESTADO.md declara: L1
+# cerro verde y L2 descubrio que from_html marcaba mal el 100% de las cabeceras de
+# PubTabNet.
+
+hito: L5
+paso: prueba-de-humo
+extractor: pdfplumber
+corpus: runs/l4/fixtures        # las 30 con verdad derivada congelada
+metrica: TEDS y TEDS-S (core.teds, validado contra PubTabNet en L2)
+
+# ------------------------------------------------------------------ LO QUE NO ES
+# Sin esta linea, cualquier numero que salga se lee como resultado.
+NO_SE_PUBLICA_COMO_NUMERO: >
+  30 documentos elegidos por riqueza de spans NO son muestra de nada. Publicar un TEDS
+  de aqui seria exactamente lo que este repo prohibe. Es prueba de humo, y se dice que
+  lo es.
+
+# --------------------------------------------------- QUE LA HARIA PARAR, ESCRITO ANTES
+# Sin las tres escritas antes de correr, CUALQUIER resultado se lee como «funciona».
+# Cada una tiene su umbral y lo que obliga a hacer.
+parar_si:
+  - id: plana
+    umbral: "todos los TEDS iguales, o todos 1,0 o todos 0,0"
+    significa: "el instrumento NO DISCRIMINA sobre este corpus"
+    obliga: "L5 no empieza. Se investiga la metrica antes de tocar un segundo extractor"
+
+  - id: revienta
+    umbral: "mas de 3 de las 30 lanzan excepcion"
+    significa: "bug de integracion, no del extractor"
+    obliga: "se arregla ANTES de tocar el segundo extractor"
+
+  - id: caro
+    umbral: "mas de 2 s por documento de mediana"
+    significa: "8 extractores x 1.000 documentos no caben en una tarde"
+    obliga: "cambia B5 y el alcance del hito: se recortan EXTRACTORES, no rigor"
+
+# ------------------------------------------------------------------- QUE SE MIDE
+# Y se publica aunque sea feo, que es la mitad de para lo que sirve.
+se_registra:
+  - teds y teds_s por documento, y su mediana y su rango
+  - cuantos de los 30 lanzan excepcion, con su tipo
+  - segundos por documento y por pagina, con la maquina declarada
+  - cuantas tablas devuelve pdfplumber frente a las que la verdad tiene

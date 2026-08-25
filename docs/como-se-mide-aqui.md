@@ -113,8 +113,13 @@ que el banco mide**:
   HunyuanOCR — el sistema que sale primero en su tabla de español, con 97,25.
 
 OmniDocBench, DocVQA y MDPBench son académicos, y Dr. DocBench es un consorcio de once
-instituciones. El octavo, **XDocParse, no está publicado**: se describe y se puntúa
-contra él en el artículo de un modelo que lo encabeza.
+instituciones.
+
+**El octavo es de otra clase, y es peor.** Los tres de arriba tienen un conflicto de
+interés —eligen el corpus y su producto gana— pero **el banco existe**: cualquiera
+puede recorrerlo, rehacer las cuentas y discutirlas. **XDocParse no está publicado.** Se
+describe, se puntúa contra él y el modelo de sus autores lo encabeza por +7,4 puntos.
+Eso no es un conflicto de interés: es una **afirmación que no se puede falsar**.
 
 Verificado el 25 de agosto de 2026; el criterio de búsqueda y los seis con su reparto
 por idioma están en §1.2 del [manual](../MANUAL.md).

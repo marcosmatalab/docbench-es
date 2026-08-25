@@ -62,7 +62,7 @@ para sacar **el reparto por idioma** y **cómo se construyó su verdad**. Fecha 
 | **ExtractBench** (jul 2026) | **LlamaIndex**, con su CTO entre los cinco autores | 4.869 páginas, 370 documentos | No declara reparto por idioma; el corpus es empresarial en inglés |
 | **PulseBench-Tab** (arXiv 2606.07534) | **Pulse AI**, con Georgia Tech y S&P Global | 1.820 tablas, 9 idiomas, 380 documentos | **176 tablas, 9,7%. El tercer idioma**, tras inglés (594) y chino (213) |
 | **Dr. DocBench** (arXiv 2606.01393) | consorcio de 11 instituciones: 2077AI, Stanford, USC, Harvard, **IBM Research**, CMU, MIT y otras | 4.514 páginas, 14 idiomas | **45 páginas, 1,00%.** Sí trae tablas complejas, pero el muestreo es por *fallo del parser*, no por idioma |
-| **XDocParse** (en el artículo de `dots.ocr`, arXiv 2512.02498) | los autores de `dots.ocr` | 126 idiomas | **No se puede saber: el banco NO ESTÁ PUBLICADO.** Se describe y se puntúa contra él, y su propio modelo lo encabeza |
+| **XDocParse** (en el artículo de `dots.ocr`, arXiv 2512.02498) | los autores de `dots.ocr` | 126 idiomas | **No se puede saber, y no es lo mismo que los demás: el banco NO ESTÁ PUBLICADO.** Se describe, se puntúa contra él y su propio modelo lo encabeza por +7,4. No es un conflicto de interés —ésos se pueden discutir porque el banco existe—: es una **afirmación no falsable** |
 
 **Y el criterio está COMPROBADO, no sólo declarado.** La pregunta que lo valida es una:
 *¿con estos términos se habría encontrado lo que se escapó en agosto?* Se corrieron.
