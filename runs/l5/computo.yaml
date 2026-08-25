@@ -1,0 +1,55 @@
+# EL COMPUTO DE L5 · la regla de decision, ESCRITA ANTES DE MEDIR
+#
+# Escribi «con B5 diciendo que el coste no aprieta, la pregunta de B1 se inclina a
+# censo», y ahi habia DOS NUMEROS DISTINTOS TRATADOS COMO UNO:
+#
+#   B5 midio el coste de INTEGRACION: adaptadores de 2 a 11 lineas. Cierto.
+#   B6 midio el coste de EJECUCION de UNO: 0,522 s/doc con pdfplumber,
+#      QUE ES EL MAS BARATO DE LOS OCHO.
+#
+# Ninguno dice cuanto cuestan los OCHO sobre los MIL. Y no es matiz: pdfplumber y
+# pymupdf4llm son parseo puro; docling y marker cargan modelos; camelot detecta por
+# pagina; tesseract es OCR; grobid es un servicio. Entre el mas barato y el mas caro
+# puede haber un factor 30-50.
+#
+#   0,522 x 1.000 x 8 = 70 minutos SI los ocho costaran lo que pdfplumber.
+#   NO LO CUESTAN, y ese calculo es exactamente el que no hay que hacer.
+
+hito: L5
+decide: si L5 corre sobre los 1.000 o sobre una muestra
+
+# ------------------------------------------------------------------ LA REGLA
+# Escrita antes de ver el numero, que es lo unico que la hace una regla.
+regla: >
+  SI NO CABE EL COMPUTO, SE RECORTAN EXTRACTORES, NO DOCUMENTOS.
+
+por_que_no_es_una_preferencia: >
+  Muestrear en L5 exige un plan de muestreo, y el plan de muestreo ES L6, que ADR-0042
+  acaba de mover DESPUES de L5. Una muestra sin plan en L5 seria el «plan congelado y
+  publicado antes de la primera campaña seria» incumplido POR EL HITO ANTERIOR AL QUE
+  LO ESTABLECE. No es que el censo sea mejor: es que la otra opcion se contradice con
+  un ADR de ayer.
+
+las_dos_salidas:
+  censo:
+    que_es: 1.000 documentos x los extractores que quepan
+    consecuencia: tabla sin intervalos, ADR-0015 se aplica solo (censo de la ventana)
+    si_sobran_extractores: entran de uno en uno con /extractor, una tarde cada uno
+    veredicto: hito cerrado
+  muestra:
+    que_es: ~300 documentos x los ocho
+    consecuencia: intervalos en TODAS las celdas y un plan de muestreo ad hoc
+    veredicto: contradiccion con ADR-0042
+
+# --------------------------------------------------------- QUE SE MIDE ANTES
+# El total sale de SUMAR, no de extrapolar desde el suelo.
+se_mide:
+  - los DOS O TRES MAS CAROS (docling, marker, tesseract si esta) sobre ~10 documentos
+  - cubriendo LAS TRES BANDAS de longitud: el coste de OCR y de deteccion escala con
+    PAGINAS, no con documentos, asi que medirlo solo en cortos daria un techo falso
+  - y se publica segundos por DOCUMENTO y por PAGINA, que es lo que hace sumable el total
+
+presupuesto_de_referencia: >
+  Una tarde. Si los ocho sobre los 1.000 pasan de ~4 h de reloj, no cabe y se aplica la
+  regla. El numero no esta elegido para que salga bien: es lo que dura una sesion de
+  trabajo sin bloquear la maquina.

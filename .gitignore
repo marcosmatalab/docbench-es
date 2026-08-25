@@ -58,6 +58,8 @@ runs/*/*
 !runs/*/mutantes.json
 !runs/*/informe.json
 !runs/*/humo.yaml
+!runs/*/computo.yaml
+!runs/*/computo.json
 !runs/*/humo.json
 !runs/*/resello_comparador.json
 # LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO
