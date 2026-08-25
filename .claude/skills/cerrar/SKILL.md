@@ -195,9 +195,17 @@ disable-model-invocation: true
    ```
 
    Subir el techo, gastar una palanca o reestructurar **son las tres concesiones**, y
-   durante tres cierres seguidos se eligió entre ellas sin preguntar antes lo que las
-   precede: **¿hay algo que simplemente ESTÁ MAL?** La puerta no es sólo una alarma,
-   es un **diagnóstico**, y usarla sólo como alarma tira la mitad de su valor.
+   antes de elegir entre ellas va la pregunta que las precede: **¿hay algo que
+   simplemente ESTÁ MAL?** La puerta no es sólo una alarma, es un **diagnóstico**, y
+   usarla sólo como alarma tira la mitad de su valor.
+
+   **Y esto está escrito porque la pregunta ya se hizo una vez y no se convirtió en
+   paso.** En el cierre de **L2**, la palanca que se iba a gastar —`max_examples`
+   100→50, publicada en L1 como «ahorra 285 ms»— **se midió antes de accionarla**:
+   vale **44 ms**. El coste no estaba donde se suponía. Eso era esto mismo sin
+   nombre, evitó publicar un número falso… y entre L2 y L4 la puerta volvió a
+   apretar y no se repitió. **Una comprobación que se hace cuando a uno se le ocurre
+   no es una comprobación: es suerte.**
 
    *El caso, del cierre de L4.* p90 **8558** contra techo 8500. `--durations` señaló
    el test más caro de la suite —el guardián del PDF, **0,69 s**— y la causa estaba en

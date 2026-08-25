@@ -228,10 +228,27 @@ pasado de 3,2 s a **4,52 s** (n=3, medido al cerrar L3), y a ese ritmo llega a l
 ### EL PRIMER PASO CUANDO EL p90 SE PASA NO ES ELEGIR ENTRE LAS TRES: ES `--durations`
 
 **Las tres opciones de abajo —subir el techo, gastar una palanca, reestructurar— son
-las TRES CONCESIONES.** Y durante tres cierres seguidos se eligió entre ellas sin
-hacer antes la pregunta que las precede:
+las TRES CONCESIONES.** Antes de elegir entre ellas hay una pregunta que las precede:
 
 > **¿Hay algo que simplemente ESTÁ MAL?**
+
+**Y la historia de esa pregunta en este repo no es que no se hiciera nunca: es que se
+hizo una vez, funcionó, y no se convirtió en paso.** Eso es lo que justifica
+escribirla en el guion, y lo justifica mucho mejor que un caso suelto.
+
+| | Cuándo | Qué pasó |
+|---|---|---|
+| **primer antecedente** | cierre de **L2** | La palanca que se iba a gastar era `max_examples` 100→50, publicada **en L1** como *«ahorra 285 ms»*. En vez de accionarla, **se midió**: 990 ms a 100, 946 a 50, 935 a 25. **Vale 44 ms, no 285.** El coste no estaba donde se suponía |
+| **el que lo hace paso** | cierre de **L4** | p90 8558 contra techo 8500. `--durations` señaló el test más caro de la suite, y la causa estaba en el **script**: `pdftotext` ocho veces sobre los mismos bytes. **0,69 s → 0,36 s** |
+
+**Los dos son la misma pregunta y los separan dos hitos.** El de L2 evitó publicar
+un número falso y gastar una palanca que no existía; el de L4 evitó subir un techo
+que no había que subir. **Dos casos separados por dos hitos son un patrón, no una
+anécdota** — y un patrón es lo que justifica un paso del guion.
+
+**Lo que faltaba no era la idea, era el paso.** En L2 se hizo *porque se le ocurrió a
+alguien*, y una comprobación que se hace cuando a uno se le ocurre **no es una
+comprobación: es suerte.** Entre L2 y L4 la puerta apretó y no se volvió a hacer.
 
 ```bash
 uv run pytest tests/unit -q --durations=12    # ANTES de tocar el techo. Siempre.
@@ -242,8 +259,8 @@ tira la mitad de su valor. Un p90 que sube puede significar «la suite hace más
 trabajo» —y entonces sí, concesión— o puede significar «alguien escribió algo
 ineficiente», que no se arregla con ninguna de las tres.
 
-**El caso, medido, del cierre de L4.** El p90 dio **8558 contra un techo de 8500**,
-58 ms de más. `--durations` señaló el test más caro de toda la suite: el guardián del
+**El caso de L4, con el detalle, porque es el que le puso nombre al paso.** El p90
+dio **8558 contra un techo de 8500**, 58 ms de más. `--durations` señaló el test más caro de toda la suite: el guardián del
 PDF, **0,69 s**. La causa no estaba en el banco de pruebas sino en el **script**:
 `corregir_fixtures_l4.py` invocaba `pdftotext` **hasta ocho veces sobre los mismos
 bytes** —las 6 correcciones tocan 3 documentos, y cada comprobación abría el PDF otra
