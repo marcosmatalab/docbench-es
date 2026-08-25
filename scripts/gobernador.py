@@ -18,7 +18,13 @@ que devuelve (`vigilado: false`). No se afirma un grado que no se ha leído.
 
 `os.wait4` devuelve el `rusage` del hijo: `ru_utime + ru_stime` son **segundos de CPU
 reales**, y no los altera que el gobernador lo pare a mitad. El reloj sí — por eso el
-registro lleva `pausado_s` al lado, y por eso el número que se publica es el de CPU.
+registro lleva `pausado_s` y `trabajo_s = reloj - pausado` al lado.
+
+**Y hacen falta las dos, porque contestan preguntas distintas**: los segundos de CPU
+dicen *cuánto cómputo consume* —la pregunta de la factura en la nube—, y son
+invariantes al número de hilos; el reloj dice *si termina esta noche*, que es la
+pregunta de B5-bis, y depende de los hilos. El puente entre ellas es
+`hilos_efectivos = cpu_s / trabajo_s`, **medido** por unidad. Ver `runs/l5/termica.yaml`.
 """
 
 from __future__ import annotations
@@ -162,6 +168,10 @@ def correr(
                 print(f"      ✂ tope de {tope_s / 60:.0f} min · unidad CENSURADA", flush=True)
             time.sleep(LATIDO)
     reloj = time.perf_counter() - t0
+    # TRABAJO EFECTIVO: el reloj menos lo que el gobernador tuvo parado el proceso. Es
+    # el reloj que se publica, porque penalizar a un extractor por haber enfriado la
+    # máquina sería medir la refrigeración y no el extractor.
+    trabajo = max(reloj - pausado, 1e-9)
     p.returncode = os.waitstatus_to_exitcode(estado) if estado >= 0 else -1
     try:
         registro = json.loads(salida.read_text(encoding="utf-8") or "{}")
@@ -172,7 +182,13 @@ def correr(
         "documento": ident,
         "cpu_s": round(ru.ru_utime + ru.ru_stime, 3),
         "reloj_s": round(reloj, 3),
+        "trabajo_s": round(trabajo, 3),
         "pausado_s": round(pausado, 1),
+        # EL PUENTE ENTRE LAS DOS MONEDAS, y es MEDIDO y no configurado: `pdfplumber`
+        # es monohilo y `docling` no, así que el paralelismo que consigue cada uno es
+        # distinto y sólo esto permite reescalar el reloj a otro número de trabajadores.
+        #     reloj ~ segundos de CPU / hilos efectivos
+        "hilos_efectivos": round((ru.ru_utime + ru.ru_stime) / trabajo, 3),
         "pausas": pausas,
         "max_rss_mb": round(ru.ru_maxrss / 1024, 1),
         "rc": p.returncode,

@@ -693,7 +693,12 @@ def test_el_desglose_de_los_que_quedan_fuera_es_el_que_publica_limits() -> None:
     mandaba hacer.
     """
     limits = _plano((RAIZ / "LIMITS.md").read_text(encoding="utf-8"))
-    trozo = limits[limits.index("51. La suite no está medida por mutación") :][:700]
+    # Hasta donde EMPIEZA el límite 52, no 700 caracteres. La ventana fija dejó de
+    # cubrir la enumeración en cuanto ésta creció: `tope_area (2)` cayó fuera y el
+    # test acusó a LIMITS de no nombrarlo cuando sí lo nombraba, seis líneas después.
+    desde = limits.index("51. La suite no está medida por mutación")
+    hasta = limits.index("52. ", desde)
+    trozo = limits[desde:hasta]
     for fichero, n in fuera_por_fichero().items():
         corto = fichero.removeprefix("test_").removesuffix(".py")
         assert f"{corto} ({n})" in trozo, (

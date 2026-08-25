@@ -91,6 +91,17 @@ intervalo:
     Es un estimador de razon, y es el que corresponde a la formula: el total quiere el
     coste medio POR PAGINA de la banda, no la media de los coste/pagina por documento,
     que daria mas peso a los documentos cortos dentro de la banda.
+  resolucion: >
+    CON n PEQUENA LOS PERCENTILES SATURAN. La distribucion de remuestreos es discreta:
+    con n=6 por banda hay 462 multiconjuntos distintos, asi que los percentiles 2,5 y
+    97,5 caen en valores concretos y no se mueven aunque cambie la semilla. El intervalo
+    que salga NO es continuo, y su anchura es un escalon, no una medida fina. Descubierto
+    al escribir tests/unit/test_estimador_computo.py, que lo afirma en las dos
+    direcciones: satura con n=3 y deja de saturar con n=30.
+  lo_que_el_intervalo_NO_cubre: >
+    La incertidumbre de que la banda este bien elegida, la de que el coste sea estable
+    entre corridas de la misma maquina, y la del documento excluido. Solo cubre el
+    muestreo de documentos dentro de las bandas tal como estan definidas.
 
 # -------------------------------------------------------- EN QUE MONEDA DECIDE
 decide_en:

@@ -92,6 +92,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_barreras_documentos.py": "test_las_derivadas_publicadas_salen_de_su_fuente",
     "test_limite_lineas.py": "test_ningun_fichero_de_codigo_pasa_de_300_lineas",
     "test_reglas_parseables.py": "test_una_regla_rota_se_detecta_nombrandola",
+    "test_estimador_computo.py": "test_una_pendiente_positiva_delata_un_preregistro_falso",
     "test_boe_api.py": "test_bajar_una_url_que_ningun_sumario_ha_dado_es_violacion_de_politica",
     "test_boe.py": "test_fetch_de_una_ref_inventada_es_violacion_de_politica",
     "test_boe_xml.py": "test_solo_cuentan_los_spans_mayores_que_uno",

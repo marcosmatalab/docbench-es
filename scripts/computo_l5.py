@@ -50,14 +50,12 @@ sys.path.insert(0, str(RAIZ / "src"))
 
 from gobernador import Muestreo, Registro, Termica, correr, descansa  # noqa: E402
 from informe_computo import informe, numero  # noqa: E402
+from muestra_l5 import muestra, unidades  # noqa: E402
 from termometro import leer  # noqa: E402
-from unidad_computo import EXTRACTORES  # noqa: E402
 
 DOCS = RAIZ / "runs" / "l3" / "docs"
 SOBRE = RAIZ / "runs" / "l5" / "termica.yaml"
 PUNTO = RAIZ / "runs" / "l5" / "computo.json"
-BANDAS = {"corto": (1, 4), "medio": (5, 12), "largo": (13, 10_000)}
-POR_BANDA = 4
 
 
 @dataclass
@@ -92,42 +90,6 @@ class Estado:
             ),
             encoding="utf-8",
         )
-
-
-def muestra() -> list[tuple[str, int, str]]:
-    """~12 documentos, cuatro por banda. **Los más largos de cada banda**, a propósito:
-    si el coste escala con páginas, medir el extremo de cada banda da el techo de la
-    banda y no su suelo."""
-    man = json.loads((RAIZ / "runs" / "l3" / "manifiesto.json").read_text(encoding="utf-8"))
-    docs = [d for d in man["documentos"] if (DOCS / f"{d['external_id']}.pdf").exists()]
-    fuera = []
-    for banda, (lo, hi) in BANDAS.items():
-        dentro = sorted(
-            (d for d in docs if lo <= int(d["n_pages"]) <= hi),
-            key=lambda d: -int(d["n_pages"]),
-        )
-        fuera += [(d["external_id"], int(d["n_pages"]), banda) for d in dentro[:POR_BANDA]]
-    return fuera
-
-
-def unidades(docs: list[tuple[str, int, str]]) -> list[tuple[str, str, int, str]]:
-    """El orden de trabajo: por VUELTAS, no por extractor.
-
-    La primera vuelta son 12 unidades que ya cubren los cuatro extractores por las tres
-    bandas. Si esto se corta a la mitad —y está pensado para poder cortarse—, lo medido
-    sigue teniendo la forma completa en vez de cuatro extractores y una sola banda.
-    """
-    por_banda: dict[str, list[tuple[str, int, str]]] = {b: [] for b in BANDAS}
-    for ident, paginas, banda in docs:
-        por_banda[banda].append((ident, paginas, banda))
-    fuera = []
-    for vuelta in range(POR_BANDA):
-        for extractor in EXTRACTORES:
-            for banda in BANDAS:
-                if vuelta < len(por_banda[banda]):
-                    ident, paginas, _ = por_banda[banda][vuelta]
-                    fuera.append((extractor, ident, paginas, banda))
-    return fuera
 
 
 def sobre(vigilado: bool) -> tuple[Termica, dict[str, float]]:
