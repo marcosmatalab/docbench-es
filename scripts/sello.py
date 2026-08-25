@@ -19,6 +19,7 @@ mismo bug una capa por encima.
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -36,6 +37,35 @@ def _git(*orden: str) -> str:
     return salida.stdout.strip() if salida.returncode == 0 else "?"
 
 
+def trabajadores() -> str:
+    """Cuántos procesos levanta `pytest -n auto` AQUÍ. **Parte del sello desde L5.**
+
+    `auto` resuelve al número de núcleos, así que **el margen de la puerta dejó de ser
+    una propiedad del repo y pasó a serlo de la máquina**. El 1,67x medido en 8 núcleos
+    no se reproduce en un runner de dos, y quien lo intente no tendrá con qué
+    explicarse la diferencia.
+
+    Es la misma regla que `docs/metrics.md` ya aplica a la carga de la máquina —se
+    declara porque se midió que importa—: **una cifra que depende de una condición no
+    declarada no es reproducible, es irrepetible.**
+    """
+    entorno = os.environ.get("PYTEST_ADDOPTS", "")
+    # El entorno GANA: `pytest` mete `addopts` del `pyproject` primero y la línea de
+    # órdenes —donde va `PYTEST_ADDOPTS`— después, así que el último `-n` manda. Es
+    # como se mide en serie sin mover el árbol, y el sello tiene que reflejarlo.
+    if "-n 0" in entorno or "no:xdist" in entorno:
+        return "serie"
+    if "-n auto" not in _pyproject_addopts():
+        return "serie"
+    # `auto` de `xdist` resuelve a núcleos lógicos, que es lo que da `os.cpu_count`.
+    return f"{os.cpu_count() or '?'}w"
+
+
+def _pyproject_addopts() -> str:
+    config = (RAIZ / "pyproject.toml").read_text(encoding="utf-8")
+    return next((x for x in config.splitlines() if x.startswith("addopts")), "")
+
+
 def sello(n_tests: int | None = None) -> str:
     """`abc1234`, `abc1234+7` si hay 7 ficheros sin commitear, y el n si se pasa.
 
@@ -46,7 +76,13 @@ def sello(n_tests: int | None = None) -> str:
     corto = _git("rev-parse", "--short", "HEAD") or "(sin HEAD)"
     estado = _git("status", "--porcelain")
     if estado == "?":
-        return f"{corto}+? · {n_tests} tests" if n_tests is not None else f"{corto}+?"
+        return (
+            f"{corto}+? · {n_tests} tests · {trabajadores()}"
+            if n_tests is not None
+            else f"{corto}+?"
+        )
     sucios = len([x for x in estado.splitlines() if x])
     marca = f"{corto}+{sucios}" if sucios else corto
-    return f"{marca} · {n_tests} tests" if n_tests is not None else marca
+    if n_tests is None:
+        return f"{marca} · {trabajadores()}"
+    return f"{marca} · {n_tests} tests · {trabajadores()}"

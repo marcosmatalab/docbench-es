@@ -32,6 +32,15 @@ jobs:
       # comprueba en vez de suponerse, porque `requires-python = ">=3.12"` deja
       # pasar un 3.13 el dia que `ubuntu-latest` cambie su Python por defecto, y
       # mypy analizaria otra cosa que en local sin que nadie se entere.
+      # DESDE L5 LA PUERTA CORRE EN PARALELO (-n auto, ADR-0043), y `auto` resuelve
+      # al numero de NUCLEOS. O sea que el margen de la puerta dejo de ser una
+      # propiedad del repo y paso a serlo de la maquina: el 1,67x medido en 8 nucleos
+      # NO se reproduce en un runner de dos. Se imprime aqui para que los dos numeros
+      # —local y CI— no se lean nunca como el mismo instrumento.
+      - name: Cuantos trabajadores levanta pytest aqui
+        run: |
+          echo "nucleos del runner: $(nproc)"
+          uv run python -c "import os; print('pytest -n auto levantara', os.cpu_count(), 'trabajadores')"
       - name: CI corre el Python de .python-version
         run: |
           esperado=$(tr -d '[:space:]' < .python-version)
