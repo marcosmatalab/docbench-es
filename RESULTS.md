@@ -1936,3 +1936,86 @@ en hilos por unidad. Su cuello no será la CPU sino la RAM: `docling` pica **4,4
 unidad y hay 47 GB, así que salen del orden de **10 unidades a la vez**, no 28. No se
 mide ahora: se mide cuando haga falta, que es cuando entren los otros cuatro extractores
 y el presupuesto deje de dar. Su predicción se escribe entonces, antes de medirla.
+
+---
+
+## L5 · La puerta con el primer extractor real: la regresión de 25,5 s y su arreglo
+
+`uv run python scripts/medir_puerta.py --tandas 3 --por-tanda 3`, 26 ago 2026.
+El sello lo imprime el propio instrumento y **el árbol se verificó quieto** durante toda
+la serie: `medir_puerta.py` compara la huella de `git status --porcelain` entre corridas
+y descarta la serie entera si se movió — cosa que hizo, y por eso hay una serie previa
+que no se publica.
+
+### Antes: n=9, sello `b54ec82`, 14 CPU visibles
+
+| ms | valor |
+|---|---|
+| mínimo | 25 685 |
+| mediana | 25 949 |
+| **p90** | **27 611** |
+| máximo | 27 611 |
+
+σ=751 · medianas por tanda 25 725–26 918 · carga mediana **1,40**, rango 0,46–1,84 ·
+0 descartadas por `rc!=0`. **Techo 8500: margen −19 111 ms.** El instrumento salió con
+código 1, que es lo que hace desde L2.
+
+### La atribución, que es la mitad que importa
+
+Misma máquina, mismo día, en frío, `make clean` antes de cada una:
+
+| commit | qué es | mypy en frío | `make fast` en frío |
+|---|---|---|---|
+| `f89c5b6` | cierre de L4 | **3 576 ms** | **9 399 ms** |
+| `99be97d` | el commit ANTERIOR al primer extractor | **25 554 ms** | — |
+| `b54ec82` | el primer extractor y el corredor | 23 551 ms | 25 949 (mediana, n=9) |
+
+O sea que **la regresión no la trajo el hito que la encontró**: ya estaba en `99be97d`.
+Entró con B5-bis, que **no fue un cierre de hito y por tanto no re-midió la puerta**.
+
+### La causa, contada en ficheros y no en sospechas
+
+`mypy --strict src tests -v | grep -c "^LOG:  Parsing"` sobre `b54ec82`: **6 023
+ficheros**.
+
+| paquete | ficheros parseados |
+|---|---|
+| `transformers` | 2 241 |
+| `torch` | 1 549 |
+| `huggingface_hub` | 146 |
+| `docling` | 140 |
+| `numpy` | 131 |
+
+La cadena entra por una línea: `tests/unit/test_estimador_computo.py` →
+`estimar_computo` → `unidad_computo`, que importa `torch`, `docling` y `camelot`
+**dentro de funciones** —y mypy los sigue igual que los de arriba—.
+
+**Y a `transformers` lo trae `camelot`, no `docling`.** Con `torch` y `docling`
+saltados quedaban **3 904 ficheros y 18 319 ms**; el recuento por paquete dijo quién
+faltaba. De ahí la regla escrita en `pyproject.toml`: **la lista se decide mirando qué
+parsea mypy, no adivinando qué es pesado.**
+
+### Después: n=16, sello `e1652cf`, 14 CPU visibles
+
+`uv run python scripts/medir_puerta.py --tandas 4 --por-tanda 4`
+
+| ms | valor |
+|---|---|
+| mínimo | 6 243 |
+| mediana | 6 532 |
+| **p90** | **6 842** |
+| máximo | 7 655 |
+
+σ=324 · medianas por tanda 6 494–6 637 · carga mediana **1,72**, rango 0,60–2,55 ·
+0 descartadas. **Techo 8500: margen +1 658 ms**, y el instrumento sale con `rc=0`.
+mypy en frío pasa de 25 554 a **4 362 ms**.
+
+**Lo que este número NO es comparable con lo de L4.** Aquéllos se midieron con **8 CPU
+visibles** y 397 tests; éstos con **14** y 520. La configuración de la máquina es una
+condición declarada desde B5-bis precisamente por esto, y `f89c5b6` remedido hoy da
+9 399 ms contra los 8 006 que se publicaron entonces: **la máquina sola mueve el número
+un 17%**, así que las series de L4 y las de aquí no se ponen en la misma gráfica.
+
+**Lo que sigue sin haber**, y va en el límite 102: un guardián que avise **entre**
+cierres. `medir_puerta.py` funciona y hay que acordarse de correrlo; «acordarse» es
+justo lo que falló aquí, y la ventana que deja es un hito entero.
