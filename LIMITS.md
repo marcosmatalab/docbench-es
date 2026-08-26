@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 529 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 532 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **363 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **366 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
@@ -504,7 +504,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
     `limite_lineas` (2), `tope_area` (2), y los nueve que entran con el primer extractor
     real, su corredor y el aro del techo: `extractor_arnes` (14), `pdfplumber` (12),
-    `aro_del_techo` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
+    `aro_del_techo` (12), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (6)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
@@ -518,7 +518,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **526 de 529 tests protegidos por algo** —un
+    *el arnés*, no la protección: **529 de 532 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2003,8 +2003,17 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     dejar commitear. En frío y no a secas: medido sobre `99be97d`, con la regresión
     dentro, `make fast` daba **30 259 ms en frío y 2 781 en caliente**, así que vigilar
     la duración de un `make fast` cualquiera **habría dejado pasar los diez commits
-    igual**. Cuesta unos 7 s una vez por commit, `make frio`, y sus tres casos de rechazo
+    igual**. Cuesta unos 7 s una vez por commit, `make frio`, y sus casos de rechazo
     tienen test con su control positivo delante.
+
+    **Y lo que compara es el MÍNIMO de las corridas en frío de ese árbol, no la última**,
+    porque la primera versión —la última— se descubrió inservible al usarla: seis
+    corridas en frío del MISMO árbol dieron **6 367, 6 383, 6 819, 7 835, 9 236 y
+    9 661 ms** sobre un árbol cuya serie de n=40 da p90 6 866. Una de cada tres se pasa
+    del techo por contención de la máquina, y un aro que bloquea una de cada tres veces
+    sin motivo se acaba sorteando. El mínimo es **optimista y lo declara**; lo que no
+    puede esconder es lo único que este aro tiene que cazar: una regresión que multiplica
+    TODAS las corridas.
 
     **Lo que sigue sin haber, y es lo que queda de este límite: nada vigila la
     TENDENCIA.** El aro compara contra un techo fijo. Entre la línea de corte y el cierre

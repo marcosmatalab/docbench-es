@@ -530,9 +530,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 529 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 532 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **363 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **366 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -1350,7 +1350,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-529 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+532 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2047,6 +2047,21 @@ p90 13 659). Es un evento externo a la máquina, no una propiedad del árbol: se
 la serie entera y la segunda es la de la tabla. **`medir_puerta.py` no descarta
 atípicos** —sólo aborta si el árbol se mueve o si alguna corrida sale en rojo—, así que
 la decisión de repetir es de quien mide y por eso se escribe aquí.
+
+### El ruido de una sola corrida en frío, que decidió cómo es el aro del techo
+
+Seis corridas en frío del **mismo árbol**, medidas al montar el aro:
+
+    6 367 · 6 383 · 6 819 · 7 835 · 9 236 · 9 661 ms
+
+**Dos de las seis pasan del techo de 8500**, sobre un árbol cuya serie de n=40 da p90
+6 866 y máximo 6 885. O sea que la diferencia no es del árbol: es de la máquina, y una
+sola corrida no sirve para decidir contra un techo. Por eso `guard-commit.sh` compara el
+**mínimo** de las corridas en frío de ese árbol, y no la última.
+
+**El sesgo va declarado**: un mínimo es optimista. Lo que no puede esconder es una
+regresión que multiplica todas las corridas, que es lo que hay que cazar — las 40 de
+`b54ec82` estuvieron entre 25 685 y 27 611, sin una sola por debajo del techo.
 
 ### Lo que sigue sin haber
 

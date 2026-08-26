@@ -17,6 +17,17 @@
 # exige, por eso, es una medida **en frío**, que cuesta unos 7 s y se hace una vez por
 # commit con `make frio`.
 #
+# Y SE GUARDA EL MÍNIMO, NO LA ÚLTIMA. Medido nada más montar esto: seis corridas en
+# frío sobre el MISMO árbol dieron 6.367, 6.383, 6.819, 7.835, 9.236 y 9.661 ms, con una
+# serie de n=40 del mismo árbol en p90 6.866. O sea que **una sola corrida se pasa del
+# techo una de cada tres** por contención de la máquina, y un aro que bloquea una de
+# cada tres veces sin motivo se acaba sorteando, que es peor que no tenerlo.
+#
+# El mínimo es el estimador honesto del suelo —la contención sólo SUMA tiempo— y su
+# sesgo está declarado: es optimista. Lo que un mínimo NO puede esconder es lo único que
+# este aro tiene que cazar: una regresión que multiplica TODAS las corridas, como los
+# 25,5 s de LIMITS 102. Repetir `make frio` mejora el mínimo; no lo empeora.
+#
 #   registrar-puerta.sh --empieza   marca el instante y si las cachés estaban vacías
 #   registrar-puerta.sh --acaba     escribe huella, ms y frío/caliente
 #   registrar-puerta.sh --que       QUÉ registra y contra qué techo
@@ -53,11 +64,14 @@ case "${1:-}" in
     echo "frío = no existía ninguna de: ${CACHES[*]}"
     echo "techo (ADR-0022, local): $TECHO ms"
     echo "lo escribe: la receta de \`make fast\`, sólo si TODOS los pasos pasaron"
+    echo "lo que compara con el techo: el MINIMO de las corridas en frio de ESE arbol"
+    echo "por que el minimo: n=1 se pasa del techo una de cada tres por contencion"
+    echo "  (medido: 6367 6383 6819 7835 9236 9661 sobre un arbol con p90 6866 a n=40)"
     if [ -f "$REGISTRO" ]; then
-      read -r h ms estado < "$REGISTRO"
-      echo "última registrada: $ms ms, $estado, huella ${h:0:8}"
+      read -r h ms estado n < "$REGISTRO"
+      echo "registrado ahora: minimo $ms ms, $estado, n=${n:-0} corridas frias, huella ${h:0:8}"
     else
-      echo "última registrada: (ninguna)"
+      echo "registrado ahora: (nada)"
     fi
     exit 0 ;;
   --empieza)
@@ -79,11 +93,32 @@ case "${1:-}" in
     fi
     read -r t0 estado < "$INICIO"
     ms=$(( $(date +%s%3N) - t0 ))
-    printf '%s %s %s\n' "$huella" "$ms" "$estado" > "$REGISTRO"
     rm -f "$INICIO"
-    aviso=""
-    [ "$estado" = "frio" ] && [ "$ms" -gt "$TECHO" ] && aviso="  ·  PASA DEL TECHO de $TECHO"
-    echo "  puerta verde registrada · ${ms} ms en $estado$aviso"
+    # El mínimo, y SÓLO de este árbol: una medida rápida de otro no dice nada de éste.
+    minimo="$ms"; n=0; anterior_estado=caliente
+    if [ -f "$REGISTRO" ]; then
+      read -r h_prev ms_prev est_prev n_prev < "$REGISTRO" || true
+      if [ "$h_prev" = "$huella" ]; then
+        anterior_estado="${est_prev:-caliente}"
+        n="${n_prev:-0}"
+        [ "$anterior_estado" = "frio" ] && [ "$ms_prev" -lt "$minimo" ] 2>/dev/null && minimo="$ms_prev"
+      fi
+    fi
+    if [ "$estado" = "frio" ]; then
+      n=$((n + 1))
+    else
+      # Una corrida caliente NO toca el mínimo ni el estado: no mide lo mismo.
+      estado="$anterior_estado"
+      [ "$anterior_estado" = "frio" ] && minimo="${ms_prev:-$ms}"
+    fi
+    printf '%s %s %s %s\n' "$huella" "$minimo" "$estado" "$n" > "$REGISTRO"
+    if [ "$n" -gt 0 ]; then
+      aviso=""
+      [ "$minimo" -gt "$TECHO" ] && aviso="  ·  PASA DEL TECHO de $TECHO"
+      echo "  puerta verde registrada · ${ms} ms · mínimo en frío de $n para este árbol: ${minimo}$aviso"
+    else
+      echo "  puerta verde registrada · ${ms} ms en caliente · sin medida en frío de este árbol"
+    fi
     exit 0 ;;
   *)
     echo "uso: registrar-puerta.sh --empieza|--acaba|--que|--techo" >&2
