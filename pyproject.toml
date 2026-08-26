@@ -171,6 +171,35 @@ module = ["pdfplumber.*", "pymupdf4llm.*", "camelot.*", "torch.*", "docling.*"]
 ignore_missing_imports = true
 implicit_reexport = true
 
+# Y LO MISMO POR EL OTRO LADO: cuando SI estan instaladas, `torch` y `docling` traen
+# `py.typed`, asi que mypy las analiza enteras. Medido en frio el 26 ago 2026 sobre
+# b54ec82: **6.023 ficheros parseados, de los cuales 2.241 de `transformers`, 1.549 de
+# `torch` y 140 de `docling`** — y con ellos la puerta pasa de 3.576 ms (cierre de L4) a
+# 25.554 ms, tres veces el techo de 8500 de ADR-0022, durante diez commits sin que nadie
+# lo mirara.
+#
+# La cadena entra por UNA linea: tests/unit/test_estimador_computo.py -> estimar_computo
+# -> unidad_computo, que importa `torch` y `docling` DENTRO de una funcion. mypy sigue
+# los imports de dentro de las funciones igual que los de arriba.
+#
+# `follow_imports = "skip"` los deja en `Any`, que es **exactamente lo que ya pasa en CI**,
+# donde no estan instaladas. O sea que esto no relaja nada: iguala los dos entornos, que
+# es la misma correccion que el bloque de arriba y que `[tool.ruff] src`. Una puerta cuyo
+# COSTE depende de si un extra esta instalado esta midiendo la maquina otra vez.
+#
+# `camelot` entra en la lista por MEDICION y no por simetria: con `torch` y `docling`
+# saltados quedaban 3.904 ficheros y 18,3 s, y los 2.241 de `transformers` los traia
+# `camelot.parsers.base`. La regla que sale de aqui: **la lista se decide midiendo qué
+# parsea mypy, no adivinando qué es pesado.**
+#
+# `pdfplumber` y `pymupdf4llm` NO estan: son pequenas —no salen en el recuento— y
+# `pdfplumber` es la que envuelve un extractor de `src/`, donde el tipado si se quiere.
+# Que localmente sea mas estricto que en CI no puede poner rojo lo que aqui sale verde,
+# solo al reves.
+[[tool.mypy.overrides]]
+module = ["torch.*", "docling.*", "camelot.*"]
+follow_imports = "skip"
+
 [tool.pytest.ini_options]
 # `-n auto` desde L5. Para medir en serie sobre el MISMO arbol, sin moverlo:
 #     PYTEST_ADDOPTS="-n 0" make fast

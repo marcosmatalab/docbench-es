@@ -1949,3 +1949,55 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
 
     **Lo que sí protege el número publicado hoy**: los cuatro extractores de la campaña
     de los 616 son de este repo y están dentro del barrido.
+
+101. **LA HUELLA DEL SELLO DE UNA CORRIDA NO VE EL CONTENIDO DE UN FICHERO SIN SEGUIR.**
+    `extract.sello.arbol()` identifica el árbol con `commit`, `sucios` y una `huella` que
+    es el `sha256` de `git status --porcelain` más `git diff HEAD`. Con eso, editar un
+    fichero ya sucio —que **no mueve el recuento de sucios**— sí mueve la huella.
+
+    **Lo que se le escapa:** el CONTENIDO de un fichero sin seguir. `git diff` no lo ve;
+    `--porcelain` ve su nombre, así que un fichero nuevo se nota **al aparecer** y sus
+    ediciones posteriores no. Un módulo nuevo sin `git add`, editado a mitad de campaña,
+    pasaría por el mismo árbol.
+
+    **Es el mismo hueco que `stop-gate.sh`** tiene con el fixture recién creado, y por la
+    misma razón: lo que git no rastrea no tiene historia contra la que comparar. Y tiene
+    la misma mitigación: `git add` antes de medir. `.claude/hooks/huella-puerta.sh` sí
+    cubre el caso —incluye el contenido de los `.py` sin seguir— porque su trabajo es
+    otro: comparar dos instantes seguidos, no describir un árbol en un fichero.
+
+    **Cuándo importa de verdad:** poco, y hay que decirlo. La campaña de los 616 se corre
+    sobre un árbol commiteado, donde `sucios` es 0 y el `commit` basta.
+
+102. **LA PUERTA ESTUVO A 25,5 s —TRES VECES EL TECHO— DURANTE DIEZ COMMITS, Y NO LO VIO
+    NADIE.** Medido en frío el 26 ago 2026, `uv run python scripts/medir_puerta.py
+    --tandas 3 --por-tanda 3`, sello `b54ec82`, 14 CPU visibles, carga mediana 1,40:
+    **n=9, mínimo 25.685, mediana 25.949, p90 27.611 ms**, σ=751, 0 descartadas. Techo
+    8500 (ADR-0022): **margen −19.111 ms**.
+
+    **No lo trajo el hito que lo encontró.** Medido en la misma máquina y en frío:
+    `f89c5b6` (cierre de L4) da **mypy 3.576 ms** y `make fast` **9.399 ms**; `99be97d`
+    —el commit ANTERIOR al primer extractor— ya daba **mypy 25.554 ms**. O sea que entró
+    con B5-bis, que no fue un cierre de hito y por tanto **no re-midió la puerta**. El
+    instrumento funcionaba: `medir_puerta.py` sale con código 1 cuando el p90 pasa del
+    techo. Lo que faltó fue correrlo.
+
+    **La causa, medida y no supuesta.** `mypy --strict src tests` parseaba **6.023
+    ficheros**: 2.241 de `transformers`, 1.549 de `torch`, 146 de `huggingface_hub`, 140
+    de `docling`. La cadena entra por una línea —`test_estimador_computo` →
+    `estimar_computo` → `unidad_computo`, que importa `torch`, `docling` y `camelot`
+    **dentro de funciones**, y mypy sigue esos igual que los de arriba—. `camelot` es
+    quien arrastra `transformers`, lo cual **no se adivinó: se midió**, y de ahí la regla
+    que queda escrita en `pyproject.toml`: la lista se decide mirando qué parsea mypy.
+
+    **Y es la MISMA clase que ya mordió dos veces**: un resultado de la puerta que
+    depende de si un extra está instalado. Con los extras, mypy analiza torch y compañía;
+    sin ellos —CI— no. `follow_imports = "skip"` los deja en `Any`, que es exactamente lo
+    que ya pasa en CI, así que **no relaja nada: iguala los dos entornos**.
+
+    **Después del arreglo: mypy en frío 4.362 ms.** El número de la puerta entera va en
+    `RESULTS.md` con su comando.
+
+    **Lo que sigue sin haber**: un guardián que avise entre cierres. `medir_puerta.py`
+    hay que acordarse de correrlo, y «acordarse» es lo que falló aquí. La detección vive
+    hoy en el paso de `/cerrar`, y eso deja la ventana de un hito entero.
