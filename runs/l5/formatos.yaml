@@ -58,13 +58,28 @@ docling:
 
 # ------------------------------------------------- PENDIENTES DE MEDIR IGUAL
 pymupdf4llm:
-  devuelve: markdown, segun su nombre y su API. SIN COMPROBAR EJECUTANDOLO.
+  devuelve: >
+    `to_markdown()` -> una cadena de Markdown GFM. Con `page_chunks=True`, una por
+    pagina, con su metadata. Abrir desde `stream=` da EL MISMO resultado que desde una
+    ruta, comprobado.
   conversor: from_markdown
   formato_nativo: markdown
   expresses_spans: false
-  estado: >
-    PENDIENTE. `from_markdown` esta en «Construido y NO VALIDADO» de ESTADO.md, asi que
-    su primer consumidor real es este extractor y hay que esperar hallazgos.
+  como_se_supo: >
+    MEDIDO sobre BOE-A-2026-7446, cuya verdad congelada de L4 declara 3x8 con SIETE
+    combinadas: pymupdf4llm devuelve 2x8 y NINGUNA. No es un fallo, es lo que
+    `expresses_spans=false` significa: el formato no puede con rowspan y la cabecera de
+    dos niveles se aplana a una.
+  el_hallazgo: >
+    `from_markdown` estrenaba consumidor aqui, y trajo el suyo: deja el MARCADO dentro
+    del texto de la celda. 116 de 594 celdas (19,5%) sobre los cinco de conformidad, 86
+    con ** y 54 con <br>, contra una verdad que dice 'Numero' donde esto dice
+    '**Numero**'. Limite 103. NO SE HA TOCADO NADA: la decision es del usuario porque
+    cambia un numero publicable.
+  el_precio: >
+    NO_APLICABLE en el estrato de celdas combinadas, igual que pdfplumber, y su nota no
+    se enseña sin la cobertura evaluable al lado.
+  estado: ESCRITO Y EN VERDE, `docbench conform --extractor pymupdf4llm`
 
 camelot:
   devuelve: DataFrames de pandas, uno por tabla.

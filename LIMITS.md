@@ -492,19 +492,19 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 532 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 542 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **366 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **376 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
-    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
+    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
     `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
     `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
-    `limite_lineas` (2), `tope_area` (2), y los nueve que entran con el primer extractor
-    real, su corredor y el aro del techo: `extractor_arnes` (14), `pdfplumber` (12),
-    `aro_del_techo` (12), `diario` (9), `corredor` (7), `corpus_store` (7),
+    `limite_lineas` (2), `tope_area` (2), y los diez que entran con los dos primeros
+    extractores reales, el corredor y el aro del techo: `extractor_arnes` (14), `pdfplumber` (12),
+    `aro_del_techo` (12), `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (6)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
@@ -518,7 +518,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **529 de 532 tests protegidos por algo** —un
+    *el arnés*, no la protección: **539 de 542 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2019,3 +2019,42 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     TENDENCIA.** El aro compara contra un techo fijo. Entre la línea de corte y el cierre
     de L5 la puerta subió **852 ms de código** con 1 634 de margen: a ese ritmo, dos
     hitos más y el margen se acaba, y ningún guardián lo dirá hasta que ya haya pasado.
+
+103. **`from_markdown` DEJA EL MARCADO DENTRO DEL TEXTO DE LA CELDA, Y ESO TOCA UN
+    NÚMERO QUE SE VA A PUBLICAR.** Medido sobre los cinco documentos del conjunto de
+    conformidad, con `pymupdf4llm`: **116 de 594 celdas (19,5%)** salen con marcado de
+    Markdown dentro del texto — **86 con `**`** y **54 con `<br>`**.
+
+    **Contra qué se compara**, en la tabla más rica del conjunto (`BOE-A-2026-7446-t0`,
+    cuya verdad congelada declara *«el texto se copia tal como se ve»*):
+
+    | verdad de L4 | `from_markdown` |
+    |---|---|
+    | `Número` | `**Número**` |
+    | `Hito/ Objetivo` | `**Hito/**<br>**Objetivo**` |
+    | `Indicadores cualitativos para los hitos` | `**Indicadores cualitativos para**<br>**los hitos**` |
+
+    Quitando `**` y cambiando `<br>` por un espacio, **son idénticas**. O sea que la
+    diferencia es marcado, no contenido.
+
+    **Por qué es una asimetría entre conversores y no una peculiaridad de Markdown.**
+    `from_html` no tiene este problema porque lee el **texto del nodo**: un `<b>` de la
+    fuente desaparece solo. `from_markdown` lee la fuente, donde el marcado es inline. Los
+    dos conversores **no significan lo mismo por «texto de la celda»**, y eso penaliza a
+    quien emite Markdown en TEDS con contenido y en exactitud celda a celda — que son
+    números de nivel 1 y 2.
+
+    **No se ha tocado nada, y ésa es la mitad importante.** Repararlo dentro del extractor
+    sería normalización a favor de un extractor, que es lo que la regla de oro 7 llama
+    hacer trampas en silencio. Repararlo en el conversor es defendible —igualar lo que las
+    dos rutas entienden por texto— pero **cambia un número publicable**, así que es
+    decisión del usuario y no del hito. Lo fija
+    `tests/unit/test_pymupdf4llm.py::test_el_marcado_de_markdown_llega_al_texto_de_la_celda`,
+    que **se cae el día que se cierre este límite, y tiene que caerse**.
+
+    **Lo que NO está medido**: cuánto TEDS cuesta. Hace falta el nivel 1, que es lo
+    siguiente. El 19,5% es de celdas afectadas, no de puntos de métrica.
+
+    **A quién más le tocará**: `marker`, que también emite Markdown. `grobid` (TEI) y
+    `tesseract` (texto) tienen sus propios conversores sin validar y su propia sorpresa
+    pendiente.

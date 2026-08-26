@@ -53,6 +53,8 @@ CAUSA_POR_EXCEPCION: Final[dict[str, ExtractionFailure]] = {
     "PDFSyntaxError": "corrupt_pdf",
     "PSSyntaxError": "corrupt_pdf",
     "PSEOF": "corrupt_pdf",
+    "FileDataError": "corrupt_pdf",
+    "_Cifrado": "encrypted_pdf",
     "MemoryError": "out_of_memory",
 }
 """Excepción → causa del enum CERRADO de §6.9, **por nombre de clase**.
@@ -60,7 +62,9 @@ CAUSA_POR_EXCEPCION: Final[dict[str, ExtractionFailure]] = {
 Por nombre y no importando `pdfminer.pdfparser.PDFSyntaxError`: esa ruta cambia entre
 menores de `pdfminer.six`, y un extractor **no puede importar su biblioteca arriba** sin
 tumbar el descubrimiento del grupo entero (ADR-0036). `pdfminer` lo comparten
-`pdfplumber` y `camelot`, así que la tabla es de todos y no de uno.
+`pdfplumber` y `camelot`, así que la tabla es de todos y no de uno. `FileDataError` es
+de `pymupdf`, que envuelve los errores de MuPDF en una sola clase: la usan `pymupdf4llm`
+y `marker`.
 """
 
 

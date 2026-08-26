@@ -11,8 +11,8 @@ consumidor real**; los otros tres están escritos, tienen tests propios y **nadi
 los ha usado para producir nada**. Su primer consumidor llega con su extractor:
 `pymupdf4llm` y `marker` emiten Markdown, `grobid` TEI y `tesseract` texto plano.
 
-**`from_dataframe` salió de esta lista con `pdfplumber`, y la predicción se cumplió
-en el acto**: al preguntarse qué formato devolvía —el primer acto de escribir un
+**Van tres de tres.** `from_dataframe` salió con `pdfplumber` y la predicción se cumplió
+en el acto: al preguntarse qué formato devolvía —el primer acto de escribir un
 extractor— apareció que `"dataframe"` faltaba en `types.FORMATOS_SIN_SPANS`, así que
 una tabla de marco podía declararse capaz de `rowspan` y `is_wellformed()` la daba
 por buena. Segunda vez que el patrón acierta, y la primera con la predicción escrita.
@@ -30,7 +30,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 
-SIN_CONSUMIDOR = frozenset({"from_markdown", "from_tei", "from_text_heuristic"})
+SIN_CONSUMIDOR = frozenset({"from_tei", "from_text_heuristic"})
 """Los conversores de §9.1 que nadie usa todavía. Cada uno sale con SU extractor."""
 
 CAMPOS_SIN_LECTOR = frozenset({"page_span", "caption"})
@@ -159,8 +159,11 @@ def test_from_html_si_tiene_consumidor_y_por_eso_no_esta_en_la_lista() -> None:
     """
     assert "from_html" not in SIN_CONSUMIDOR
     assert "from_dataframe" not in SIN_CONSUMIDOR
-    assert len(SIN_CONSUMIDOR) == 3
+    assert "from_markdown" not in SIN_CONSUMIDOR
+    assert len(SIN_CONSUMIDOR) == 2
     generador = _llamadas(RAIZ / "scripts" / "pubtabnet_golden.py")
     assert "from_html" in generador, "el generador del golden lo usa de verdad"
     extractor = _llamadas(RAIZ / "src" / "docbench_es" / "extract" / "pdfplumber.py")
     assert "from_dataframe" in extractor, "pdfplumber lo usa de verdad, no de boquilla"
+    md = _llamadas(RAIZ / "src" / "docbench_es" / "extract" / "pymupdf4llm.py")
+    assert "from_markdown" in md, "pymupdf4llm lo usa de verdad, no de boquilla"

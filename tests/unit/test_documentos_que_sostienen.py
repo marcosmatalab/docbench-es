@@ -55,7 +55,18 @@ subir el tope es la respuesta NO por defecto y sólo vale después de haber saca
 Si vuelve a pasarse, la respuesta por defecto sigue siendo sacar, no subir.
 """
 
-ACUMULAN = ("RESULTS.md", "LIMITS.md", "ESTADO.md", "CHANGELOG.md", "MANUAL.md")
+ACUMULAN = (
+    "RESULTS.md",
+    "LIMITS.md",
+    "ESTADO.md",
+    "CHANGELOG.md",
+    "MANUAL.md",
+    # Entró con L5: el análisis de lo que se decidió NO hacer todavía, con sus números.
+    # Acumula por construcción —cada decisión aplazada añade su párrafo— y por eso lo
+    # dice en su propia cabecera. Sin esta línea, nada impediría ponerle un tope y
+    # empezar a recortar justo el registro que explica por qué no se hizo algo.
+    "docs/despues-de-la-tabla.md",
+)
 
 
 @pytest.mark.parametrize("nombre", sorted(SOSTIENEN))
