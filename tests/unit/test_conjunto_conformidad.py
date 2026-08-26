@@ -23,6 +23,7 @@ las tiene, esto se cae nombrándolo.
 from __future__ import annotations
 
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -34,16 +35,40 @@ from conjunto_conformidad import conjunto, veredictos_posibles  # noqa: E402
 
 
 def test_lo_declarado_cuadra_con_la_verdad_congelada_de_l4() -> None:
-    """Documento a documento, y nombrando al que no cuadre."""
+    """Documento a documento, y nombrando al que no cuadre. **Corre SIEMPRE.**
+
+    Todo lo que compara sale de ficheros **versionados** —los fixtures congelados de L4
+    y `runs/l3/manifiesto.json`—, así que esto se puede comprobar en cualquier clon y en
+    CI. Es la mitad que sostiene el número publicado *«veredictos que este conjunto puede
+    producir»*; la otra mitad, los bytes del PDF, es la única que no se puede.
+
+    Cubre cuatro cosas y no una: que el fixture **exista**, que los spans cuadren con lo
+    declarado, que la forma declarada sea la real, y que las páginas sean las del
+    manifiesto. Las tres últimas son números tecleados en un YAML, y un número tecleado
+    se queda viejo.
+    """
     elegidos = conjunto()
     assert elegidos, "el conjunto está vacío: no protegería nada"
-    descuadran = [
-        f"{e.tabla}: declara combinadas={e.declara_combinadas} y la verdad trae "
-        f"{e.spans_en_la_verdad} spans"
-        for e in elegidos
-        if not e.cuadra
-    ]
-    assert not descuadran, "\n  ".join(descuadran)
+    descuadran = [e.por_que_no() for e in elegidos if not e.cuadra]
+    assert not descuadran, "\n  " + "\n  ".join(descuadran)
+
+
+def test_un_fixture_que_desaparece_no_pasa_en_silencio() -> None:
+    """**El control negativo del caso que se colaba.**
+
+    Antes, `cuadra` era sólo `declara == (spans > 0)`. Un fixture borrado daba `spans=0`,
+    así que **un documento declarado «sin combinadas» seguía cuadrando** aunque su
+    fichero de verdad ya no existiera. La comprobación no comprobaba.
+
+    Aquí se fabrica ese caso exacto y se exige que `cuadra` sea falso y que el motivo
+    nombre el fichero.
+    """
+    real = next(e for e in conjunto() if not e.declara_combinadas)
+    huerfano = replace(real, fixture_existe=False, spans_en_la_verdad=0)
+
+    assert not huerfano.cuadra, "un fixture que no existe no puede cuadrar"
+    assert huerfano.tabla in huerfano.por_que_no()
+    assert "no existe" in huerfano.por_que_no()
 
 
 def test_todos_los_elegidos_tienen_su_pdf() -> None:

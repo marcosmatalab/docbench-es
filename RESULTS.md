@@ -530,9 +530,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 449 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 452 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **283 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **286 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -540,7 +540,7 @@ Los **283 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), 
 `test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
 `test_comparar_verdad` (5), `test_types` (6), `test_sellar_xml` (4),
 `test_estimador_computo` (6), `test_extractor_contrato` (37), `test_extractor_conformidad` (13),
-`test_conjunto_conformidad` (4), `test_errors` (3), `test_sin_consumidor` (3),
+`test_conjunto_conformidad` (5), `test_formatos_spans` (2), `test_errors` (3), `test_sin_consumidor` (3),
 `test_reglas_parseables` (3), `test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
@@ -862,9 +862,9 @@ que el margen sigue siendo de más de dos segundos.
 > aborta con `rc=2` sin imprimir un solo tiempo. Comprobado moviendo el árbol a
 > propósito a mitad de una serie corta: dijo qué fichero fue y descartó la serie.
 
-### Qué fracción de la suite está protegida por algo: 446 de 449
+### Qué fracción de la suite está protegida por algo: 449 de 452
 
-**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 449» mide *el
+**Por qué hay dos contabilidades y no una.** «El arnés cubre 166 de 452» mide *el
 arnés*. No mide la protección: hay ficheros fuera del arnés que llevan su control
 negativo **dentro**, y contarlos como desprotegidos exagera el hueco tanto como
 ignorarlo lo esconde. Publicar sólo la cobertura del arnés era el mismo error que
@@ -1350,7 +1350,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-449 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+452 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 

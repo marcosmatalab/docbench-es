@@ -95,6 +95,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_extractor_contrato.py": "test_al_que_le_falta_un_solo_miembro_no_cumple",
     "test_conjunto_conformidad.py": "test_un_conjunto_sin_combinadas_lo_dice_en_vez_de_callarselo",
     "test_extractor_conformidad.py": "test_el_bueno_pasa",
+    "test_formatos_spans.py": "test_from_dataframe_no_expresa_spans_y_la_lista_lo_dice",
     "test_estimador_computo.py": "test_una_pendiente_positiva_delata_un_preregistro_falso",
     "test_boe_api.py": "test_bajar_una_url_que_ningun_sumario_ha_dado_es_violacion_de_politica",
     "test_boe.py": "test_fetch_de_una_ref_inventada_es_violacion_de_politica",

@@ -199,7 +199,7 @@ def test_un_extractor_que_declara_la_api_en_init_no_pasa_sobre_la_clase() -> Non
 
 @pytest.mark.parametrize(
     ("formato", "espera"),
-    [("html", True), ("tei", True), ("dataframe", True), ("markdown", False), ("text", False)],
+    [("html", True), ("tei", True), ("dataframe", False), ("markdown", False), ("text", False)],
 )
 def test_expresa_spans_se_deriva_del_formato_en_las_dos_direcciones(
     formato: str, espera: bool
@@ -207,9 +207,13 @@ def test_expresa_spans_se_deriva_del_formato_en_las_dos_direcciones(
     """**Regla de oro 4, en su origen.** `.claude/rules/extractores.md`: lo fija el
     conversor según el formato, no el extractor.
 
-    Se afirma en las DOS direcciones —los tres que sí y los dos que no— porque una
+    Se afirma en las DOS direcciones —los dos que sí y los tres que no— porque una
     función que devolviera siempre `True` pasaría un test que sólo mirase HTML, y su
     consecuencia sería puntuar con un cero a quien no podía competir.
+
+    **`dataframe` es `False`, y esta línea llegó a decir `True`.** Lo tecleé desde una
+    constante que estaba mal y el error se propagó hasta aquí; lo delató escribir el
+    primer extractor y preguntarse qué devuelve `pdfplumber`. Ver LIMITS 98.
 
     Los cinco son `types.FORMATOS_CANONICOS` al completo: si aparece un sexto, este test
     no lo cubre y hay que decidir de qué lado cae.
@@ -248,7 +252,7 @@ def test_un_formato_desconocido_no_concede_spans_por_defecto(desconocido: str) -
         (False, "tei", False, False, "SIN_EVIDENCIA"),
         (False, "html", False, True, "COHERENTE"),
         (True, "html", False, True, "COHERENTE"),
-        (True, "dataframe", True, True, "COHERENTE"),
+        (True, "dataframe", True, True, "CONTRADICCION"),
         (False, "markdown", False, False, "COHERENTE"),
     ],
 )

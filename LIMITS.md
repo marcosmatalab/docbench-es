@@ -492,20 +492,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 449 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 452 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **283 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **286 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
     `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
-    `conjunto_conformidad` (4), `sin_consumidor` (3), `reglas_parseables` (3),
+    `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
     `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **63,0% hoy** — y 65 de los 283 entraron de golpe con
+    12,4% al cerrar L2, **63,3% hoy** — y 65 de los 286 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -515,7 +515,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **446 de 449 tests protegidos por algo** —un
+    *el arnés*, no la protección: **449 de 452 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -789,7 +789,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —446 de 449— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —449 de 452— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1840,8 +1840,66 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     elegidos tengan PDF; no es un aprobado, es que aquí no se puede mirar»*—. Es la
     misma postura que `NO_EJECUTADA` en las suites de conformidad, trasladada a `pytest`.
 
-    **Lo que esto deja sin cubrir, y hay que decirlo claro**: en CI esa precondición
-    **no se comprueba nunca**. Si alguien mete en `runs/l5/conformidad.yaml` un documento
-    que no existe en el corpus, CI seguirá verde y sólo se enterará quien corra la
-    conformidad de verdad. Lo que sí se comprueba en todas partes es que lo declarado
-    cuadre con la verdad congelada de L4, porque **los fixtures sí se versionan**.
+    **Y el hueco es más pequeño de lo que esta entrada declaró primero.** La
+    precondición eran **dos cosas metidas en un test**, y sólo una necesita el corpus:
+
+    | | ¿se puede comprobar en CI? |
+    |---|---|
+    | el fixture del documento existe, sus spans son los declarados, su forma y sus páginas también | **sí** — sale de `runs/l4/fixtures/` y `runs/l3/manifiesto.json`, los dos versionados |
+    | el PDF está en disco | no — son 1.000 documentos ajenos |
+
+    Con las dos juntas, un cambio en la primera —alguien toca el conjunto, o un fixture
+    deja de tener los spans que se le suponen— no lo cazaba nadie hasta que alguien
+    corriera con corpus. **Partidas en dos tests**, la que sostiene el número publicado
+    —*«veredictos que este conjunto puede producir»*— corre siempre.
+
+    Y al partirlas apareció un tercero que se colaba: `cuadra` era sólo
+    `declara == (spans > 0)`, así que **un fixture borrado daba `spans=0` y un documento
+    declarado «sin combinadas» seguía cuadrando**. Un fichero desaparecido pasaba en
+    silencio. Ahora `fixture_existe` va primero, con su control negativo.
+
+    **Lo que queda sin cubrir es sólo esto**: en CI no se comprueba que los bytes del PDF
+    estén. Si alguien mete un documento que no está en el corpus, CI seguirá verde y se
+    enterará quien corra la conformidad de verdad — pero su forma declarada y sus spans
+    sí se habrán comprobado antes.
+
+98. **`dataframe` NO ESTABA EN `FORMATOS_SIN_SPANS`, Y EL AGUJERO APUNTABA A `camelot`.**
+    `core.canonical._dataframe` pone `expresses_spans=False` **en su primera línea** y
+    explica por qué —un `DataFrame` es una rejilla rectangular, y un `MultiIndex` se
+    *pinta* como cabecera combinada pero el objeto no distingue «combinada» de
+    «repetida»—. `types.FORMATOS_SIN_SPANS` decía `{"markdown", "text"}`.
+
+    **Cuatro hitos con el código y la lista diciendo cosas distintas.** Medido:
+
+    ```python
+    CanonicalTable(..., expresses_spans=True, source_format="dataframe").is_wellformed()
+    # -> (True, [])      ← la da por buena
+    ```
+
+    `_spans_declarados` existe para cazar exactamente esa mentira y no la cazaba, porque
+    consultaba la lista y la lista estaba incompleta.
+
+    **A quién le habría tocado**: `camelot` devuelve marcos y es **uno de los cuatro
+    extractores de la campaña de los 616**. Declarándose capaz habría competido en el
+    estrato de celdas combinadas —el que se sobremuestrea y se declara titular— cobrando
+    ceros *como si hubiera competido y perdido*. Es el sesgo que `expresses_spans` existe
+    para impedir, y LIMITS 35 ya dice que `camelot` tiene que salir `NO_APLICABLE` en el
+    63% de las tablas.
+
+    **Y yo lo propagué**: al escribir `FORMATOS_CON_SPANS` puse `dataframe` entre los que
+    sí, copiándolo del complemento de una lista mala en vez de preguntarle al conversor.
+    Dos tests míos afirmaban lo incorrecto por lo mismo.
+
+    **Lo delató escribir el primer extractor** y preguntarse qué formato devuelve
+    `pdfplumber`. No lo delató ningún guardián.
+
+    **Arreglado en las dos mitades.** Las listas quedan `CON = {html, tei}` y
+    `SIN = {markdown, dataframe, text}`; y `tests/unit/test_formatos_spans.py` **ejecuta
+    los cinco conversores** sobre una tabla mínima y exige que lo que declaran coincida
+    con lo que dice `types`. La lista deja de ser una copia que se puede quedar vieja y
+    pasa a ser una afirmación comprobada. Con su control negativo: se restauran las
+    listas viejas y el test se cae nombrando `dataframe`.
+
+    Lo que queda sin cubrir: `tei` se da por capaz sin ejercitar una celda combinada de
+    verdad —el test usa una tabla sin spans y sólo mira la bandera—, así que se comprueba
+    que el conversor lo *declara*, no que lo *sepa hacer*.
