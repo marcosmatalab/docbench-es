@@ -492,19 +492,19 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 414 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 430 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **248 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **264 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
-    `comparar_verdad` (5), `types` (5), `sellar_xml` (4), `errors` (3),
-    `estimador_computo` (6), `extractor_contrato` (20), `sin_consumidor` (3), `reglas_parseables` (3),
+    `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
+    `estimador_computo` (6), `extractor_contrato` (35), `sin_consumidor` (3), `reglas_parseables` (3),
     `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **59,9% hoy** — y 65 de los 248 entraron de golpe con
+    12,4% al cerrar L2, **61,4% hoy** — y 65 de los 264 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -514,7 +514,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **411 de 414 tests protegidos por algo** —un
+    *el arnés*, no la protección: **427 de 430 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -788,7 +788,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —411 de 414— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —427 de 430— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1754,3 +1754,72 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     del entorno; nadie ha comprobado si `pytest`, `lint-imports` o los guardianes de
     `scripts/` también. La puerta se ha verificado entera en los dos entornos —`rc=0` en
     ambos— pero eso es un resultado de hoy, no una propiedad garantizada.
+
+95. **`expresa_spans` FALLABA ABIERTO, Y ABIERTO ERA LA DIRECCIÓN CARA.** La primera
+    versión preguntaba `native_format not in FORMATOS_SIN_SPANS` sobre un `str` sin
+    acotar, así que **el valor por defecto de lo desconocido era conceder spans**.
+    Medido, no supuesto:
+
+    | entrada | daba | por qué importa |
+    |---|---|---|
+    | `"markdow"` | `True` | una letra de menos |
+    | `"Markdown"` | `True` | una mayúscula |
+    | `"md"` | `True` | el mismo formato, otro nombre |
+    | `""` | `True` | la cadena vacía |
+
+    Y conceder spans indebidamente es **exactamente el modo de fallo que la función
+    existe para impedir**: el extractor cobra un cero en el estrato de celdas combinadas
+    —el que se sobremuestrea y se declara titular— *como si hubiera competido y
+    perdido*, cuando lo que pasó es que su formato no llegaba. Un formato desconocido
+    tragado como «sí puede» es un error tragado, y la regla de oro 6 lo prohíbe.
+
+    No era remoto: `Extraction.native_format` es `str` a secas, así que nada impide una
+    mayúscula en un adaptador de once líneas.
+
+    **Arreglado en dos mitades.** Lista **positiva** `FORMATOS_CON_SPANS`, enumerada a
+    mano —derivarla como el complemento sería el mismo fallo una capa arriba, porque un
+    sexto formato canónico entraría solo en el grupo de los que sí—; y `expresa_spans`
+    **levanta** ante cualquier formato fuera de `FORMATOS_CANONICOS`. Es la misma postura
+    que este repo ya toma con `HallazgoTabla.SOURCE_FORMAT_DESCONOCIDO`: un formato que
+    nadie declaró es una condición **detectada**, no un valor por defecto.
+
+    **Por qué NO se tipó `native_format` como `Literal`**, que era la salida más limpia
+    en apariencia: haría el caso imposible por construcción y con eso **desaparecería el
+    chequeo en ejecución que el repo tiene puesto a propósito**. `source_format` es `str`
+    *para que* `SOURCE_FORMAT_DESCONOCIDO` signifique algo, y el caso real es un formato
+    que llega de fuera, no de código tipado.
+
+    Lo que queda sin cubrir: nadie comprueba que `Extraction.native_format` y
+    `CanonicalTable.source_format` coincidan. Un extractor podría declarar `html` y
+    producir tablas con `source_format="markdown"`.
+
+96. **EL CONTRASTE DE `expresses_spans` NO ES UNA IGUALDAD, Y TIENE CUATRO DESENLACES.**
+    La regla obvia —exigir que lo declarado coincida con lo que el formato permite—
+    **deja el incentivo al revés**: un extractor cuyo parser aplana los `rowspan` y lo
+    declara honestamente con `False` fallaría por honesto, y le saldría más barato
+    declarar `True` y cobrar el cero, que al menos pasa la suite.
+
+    La corrección obvia es la desigualdad —`declarado ≤ permitido`— y **también se queda
+    corta**. Este repo ya tenía la regla entera en `types._invariantes._spans_declarados`
+    para `CanonicalTable`, con su razón escrita: *«declararse incapaz trayendo celdas
+    combinadas también miente, y de esa se aprovecharía quien quisiera esconderse en
+    NO_APLICABLE»*.
+
+    | declarado | el formato | vio combinadas | veredicto |
+    |---|---|---|---|
+    | `True` | **no** permite | — | `CONTRADICCION` |
+    | `False` | — | **sí** | `ESCONDIDO` |
+    | `False` | permite | no | `SIN_EVIDENCIA` |
+    | resto | | | `COHERENTE` |
+
+    **`SIN_EVIDENCIA` no es un aprobado**, y por eso es un valor propio: si la muestra no
+    traía ni un documento con celdas combinadas, no se distingue *«su parser las
+    aplana»* de *«no le tocó ninguna»*. Es la tercera severidad que la suite de entidad
+    ya usa —`NO_EJECUTADA`—: un aro por el que no se ha pasado no está superado.
+
+    Escrito en `extract._spans.veredicto_de_spans` **antes de que exista la suite que lo
+    aplica**, para que sea una decisión y no un cambio de criterio a toro pasado.
+
+    Lo que queda sin cubrir: **cuántos documentos con celdas combinadas hacen falta**
+    para que `SIN_EVIDENCIA` pase a ser un aprobado. Hoy basta con uno, y uno es poco;
+    el número correcto no está medido y sale de la muestra de conformidad, que no existe.

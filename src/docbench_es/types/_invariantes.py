@@ -29,15 +29,10 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from docbench_es.types._area import TOPE_AREA
+from docbench_es.types._formatos import FORMATOS_CANONICOS, FORMATOS_SIN_SPANS
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para el tipado; en runtime sería circular
     from docbench_es.types._tabla import CanonicalCell, CanonicalTable
-
-FORMATOS_CANONICOS = ("html", "markdown", "dataframe", "tei", "text")
-"""Los cinco de §6.2. Un sexto valor es un conversor que nadie declaró."""
-
-FORMATOS_SIN_SPANS = frozenset({"markdown", "text"})
-"""Los que no pueden con `rowspan` por construcción del formato (ADR-0006)."""
 
 
 class HallazgoTabla(StrEnum):

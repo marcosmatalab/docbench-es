@@ -17,7 +17,13 @@ from pathlib import Path
 import pytest
 
 from docbench_es import types
-from docbench_es.types import ExtractionFailure, StructureMetrics
+from docbench_es.types import (
+    FORMATOS_CANONICOS,
+    FORMATOS_CON_SPANS,
+    FORMATOS_SIN_SPANS,
+    ExtractionFailure,
+    StructureMetrics,
+)
 
 RAIZ = Path(__file__).resolve().parents[2]
 PAQUETE_TYPES = RAIZ / "src" / "docbench_es" / "types"
@@ -157,3 +163,30 @@ def test_nadie_de_fuera_importa_los_submodulos_privados_de_types() -> None:
             culpables[str(fichero.relative_to(RAIZ))] = privados
 
     assert culpables == {}
+
+
+def test_los_dos_grupos_de_formatos_particionan_los_canonicos() -> None:
+    """**El aro que obliga a decidir cuando llegue un sexto formato.**
+
+    `FORMATOS_CON_SPANS` podría derivarse como `canónicos - sin_spans`, y sería el mismo
+    conjunto hoy y el bug de mañana: un formato nuevo entraría solo en el grupo de los
+    que **sí** pueden con `rowspan`, o sea que lo desconocido se concedería spans por
+    defecto — que es exactamente el fallo abierto que `expresa_spans` acaba de cerrar,
+    una capa más arriba.
+
+    Enumerando los dos grupos a mano, un formato sin clasificar **no cae en ninguno** y
+    este test se pone rojo nombrándolo. Se afirma en las dos direcciones: que cubren
+    todo y que no se solapan. Sólo lo primero dejaría pasar un formato en ambos, y sólo
+    lo segundo dejaría pasar uno en ninguno.
+    """
+    canonicos = set(FORMATOS_CANONICOS)
+    sin_clasificar = canonicos - FORMATOS_CON_SPANS - FORMATOS_SIN_SPANS
+    assert not sin_clasificar, (
+        f"formatos canónicos que nadie ha clasificado: {sorted(sin_clasificar)}. "
+        "Decide si pueden con rowspan y mételos en uno de los dos grupos; NO se decide "
+        "por defecto"
+    )
+    en_los_dos = FORMATOS_CON_SPANS & FORMATOS_SIN_SPANS
+    assert not en_los_dos, f"formatos en los dos grupos a la vez: {sorted(en_los_dos)}"
+    inventados = (FORMATOS_CON_SPANS | FORMATOS_SIN_SPANS) - canonicos
+    assert not inventados, f"clasificados pero no canónicos: {sorted(inventados)}"

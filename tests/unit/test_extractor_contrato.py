@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING, get_type_hints
 import pytest
 
 from docbench_es.core.policy import ExtractorDeclarado, exigir_egress_permitido
-from docbench_es.errors import PolicyViolation
+from docbench_es.errors import ContractViolation, PolicyViolation
 from docbench_es.extract.base import (
     DECLARACIONES,
     METODOS,
@@ -40,6 +40,7 @@ from docbench_es.extract.base import (
     cumple_la_forma,
     descriptor,
     expresa_spans,
+    veredicto_de_spans,
 )
 from docbench_es.types import FORMATOS_CANONICOS
 
@@ -80,6 +81,35 @@ class _Falso:
         raise NotImplementedError
 
 
+def sin(miembro: str, **extra: object) -> type:
+    """Un impostor de `_Falso` **construido sin** ese miembro. Nunca heredándolo.
+
+    ## Por qué esto es una función y no tres líneas repetidas
+
+    Porque el atajo obvio —heredar de `_Falso` y `delattr` el miembro— **produce un
+    impostor completo disfrazado de incompleto**: el atributo sigue en la clase base y
+    `hasattr` lo encuentra. Cayó **tres veces en la misma sesión**, y un tropiezo que
+    vuelve tres veces no se arregla acordándose: se arregla quitando la ocasión.
+
+    Aquí no hay nada que recordar. Y el `assert` de abajo hace que un miembro mal
+    escrito reviente en vez de construir un impostor al que no le falta nada — que es la
+    otra forma de que este molde mienta.
+    """
+    assert miembro in vars(_Falso), f"`{miembro}` no está en `_Falso`: el molde está mal"
+    miembros = {k: v for k, v in vars(_Falso).items() if not k.startswith("__")}
+    del miembros[miembro]
+    return type(f"Sin{miembro.title()}", (), {**miembros, **extra})
+
+
+def test_el_molde_de_impostores_quita_de_verdad_lo_que_dice_que_quita() -> None:
+    """**El control del mecanismo.** Sin esto, `sin()` podría devolver la clase entera y
+    todos los controles negativos de abajo pasarían en verde sin comprobar nada — que es
+    literalmente lo que pasaba con `delattr`."""
+    assert hasattr(_Falso, "benchcore_api")
+    assert not hasattr(sin("benchcore_api"), "benchcore_api")
+    assert hasattr(sin("benchcore_api"), "id"), "quitó de más"
+
+
 def test_el_protocol_declara_los_seis_miembros_y_los_tres_metodos() -> None:
     """§7.2 al pie de la letra. Si el manual gana un campo, esto se cae y lo nombra."""
     anotados = set(get_type_hints(Extractor))
@@ -101,13 +131,7 @@ def test_al_que_le_falta_un_solo_miembro_no_cumple(quitado: str) -> None:
     verde significaría «no encontré nada» en vez de «cumple». Se quita uno cada vez
     porque quitar todos a la vez no distingue entre comprobar seis y comprobar uno.
     """
-    # Se CONSTRUYE sin el miembro. Quitárselo a una subclase con `delattr` no vale:
-    # el miembro sigue heredado y `hasattr` lo encuentra igual. La primera versión de
-    # este test hacía eso y pasaba en verde contra impostores completos.
-    assert quitado in vars(_Falso), f"{quitado} no está en `_Falso`: el molde está mal"
-    miembros = {k: v for k, v in vars(_Falso).items() if k != quitado and not k.startswith("__")}
-    cojo = type("Cojo", (), miembros)
-    assert not isinstance(cojo(), Extractor), f"le falta `{quitado}` y aun así pasa"
+    assert not isinstance(sin(quitado)(), Extractor), f"le falta `{quitado}` y aun así pasa"
 
 
 def test_el_puente_a_la_puerta_de_egress_traduce_los_dos_campos() -> None:
@@ -162,15 +186,10 @@ def test_un_extractor_que_declara_la_api_en_init_no_pasa_sobre_la_clase() -> Non
     impostor pasaría.
     """
 
-    # Construido SIN el miembro, no heredándolo y borrándolo: `del` sobre una subclase
-    # deja el atributo de la base intacto. Es la TERCERA vez en esta sesión que ese
-    # atajo produce un impostor completo disfrazado de incompleto.
     def _init(self: object) -> None:
         self.benchcore_api = "1.0"  # type: ignore[attr-defined]
 
-    miembros = {k: v for k, v in vars(_Falso).items() if not k.startswith("__")}
-    del miembros["benchcore_api"]
-    tarde = type("_Tarde", (), {**miembros, "__init__": _init})
+    tarde = sin("benchcore_api", __init__=_init)
 
     forma = cumple_la_forma(tarde)
     assert not forma.cumple and forma.faltan == ("benchcore_api",), str(forma)
@@ -199,3 +218,51 @@ def test_expresa_spans_se_deriva_del_formato_en_las_dos_direcciones(
         "los formatos canónicos han cambiado: este test cubre cinco y hay que revisarlo"
     )
     assert expresa_spans(formato) is espera
+
+
+@pytest.mark.parametrize("desconocido", ["markdow", "Markdown", "md", "MARKDOWN", "", "lo-que-sea"])
+def test_un_formato_desconocido_no_concede_spans_por_defecto(desconocido: str) -> None:
+    """**El control negativo del fallo abierto, que es el que importa aquí.**
+
+    La primera versión preguntaba `not in FORMATOS_SIN_SPANS` sobre un `str` sin acotar,
+    así que **todo lo desconocido concedía spans** — una letra de menos, una mayúscula,
+    otro nombre para el mismo formato, la cadena vacía. Y conceder spans indebidamente es
+    la dirección cara: el extractor cobra un cero en el estrato titular como si hubiera
+    competido, cuando lo que pasó es que su formato no llegaba.
+
+    Se prueban seis formas de equivocarse y no una, porque un solo caso no distingue
+    «levanta ante lo desconocido» de «levanta ante esta cadena concreta».
+    """
+    with pytest.raises(ContractViolation, match="desconocido"):
+        expresa_spans(desconocido)
+
+
+@pytest.mark.parametrize(
+    ("declarado", "formato", "combinadas", "espera"),
+    [
+        (True, "markdown", False, "CONTRADICCION"),
+        (True, "text", True, "CONTRADICCION"),
+        (False, "html", True, "ESCONDIDO"),
+        (False, "tei", True, "ESCONDIDO"),
+        (False, "html", False, "SIN_EVIDENCIA"),
+        (True, "html", False, "COHERENTE"),
+        (True, "dataframe", True, "COHERENTE"),
+        (False, "markdown", False, "COHERENTE"),
+    ],
+)
+def test_el_contraste_tiene_cuatro_desenlaces_y_no_dos(
+    declarado: bool, formato: str, combinadas: bool, espera: str
+) -> None:
+    """**La regla, afirmada antes de que exista la suite que la aplica.**
+
+    Las dos casillas que una igualdad se comería son las que sostienen el incentivo:
+
+    * `ESCONDIDO` — declararse incapaz **trayendo** celdas combinadas es refugiarse en
+      `NO_APLICABLE`. Es la razón que `types._invariantes._spans_declarados` ya tenía
+      escrita para `CanonicalTable`, y aquí se aplica al extractor entero.
+    * `SIN_EVIDENCIA` — declararse incapaz con un formato que sí puede, y no haber visto
+      ni una combinada, **no es un aprobado**: no distingue «su parser las aplana» de
+      «no le tocó ninguna». Exigir igualdad haría fallar por honesto a un extractor que
+      aplana, y le saldría más barato declarar `True` y cobrar el cero.
+    """
+    assert veredicto_de_spans(declarado, formato, combinadas) == espera

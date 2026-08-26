@@ -103,9 +103,16 @@ ignore = ["N818"]
 # quiso separar el bloque de imports. Se revierte el fichero y se le exime la regla:
 # la alternativa era re-sellar por comodidad, que es exactamente lo que el congelado
 # prohibe. `git checkout` de un congelado es siempre la respuesta correcta.
-"tests/unit/test_comparar_verdad.py" = ["I001"]
-"scripts/comparar_verdad.py" = ["I001"]
-"src/docbench_es/truth/derived.py" = ["I001"]
+#
+# CUANDO CADUCA: estas tres exenciones mueren con el sello que las justifica. El dia que
+# `runs/l4/congelacion_comparador.json` se re-corte por una razon legitima —y re-cortar
+# un sello es una decision del usuario, no una comodidad—, hay que BORRAR estas tres
+# lineas en el mismo commit. Si no, los tres ficheros quedan fuera del orden de imports
+# para siempre y nadie se acuerda de por que. Lo hace cumplir
+# tests/unit/test_congelados_l4.py, que se pondria rojo antes.
+"tests/unit/test_comparar_verdad.py" = ["I001"]   # sellado en congelacion_comparador.json
+"scripts/comparar_verdad.py" = ["I001"]           # sellado en congelacion_comparador.json
+"src/docbench_es/truth/derived.py" = ["I001"]     # sellado en congelacion_comparador.json
 # Los dobles de test implementan un Protocol: sus argumentos existen para
 # cumplir la firma, no para usarse.
 "tests/**" = ["ARG002", "ARG001"]

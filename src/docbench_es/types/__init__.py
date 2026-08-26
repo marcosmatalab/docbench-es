@@ -42,12 +42,13 @@ from docbench_es.types._documento import (
     ExtractionFailure,
     RawDoc,
 )
-from docbench_es.types._glosario import ConfusablePair, Glossary, Term
-from docbench_es.types._invariantes import (
+from docbench_es.types._formatos import (
     FORMATOS_CANONICOS,
+    FORMATOS_CON_SPANS,
     FORMATOS_SIN_SPANS,
-    HallazgoTabla,
 )
+from docbench_es.types._glosario import ConfusablePair, Glossary, Term
+from docbench_es.types._invariantes import HallazgoTabla
 from docbench_es.types._tabla import CanonicalCell, CanonicalTable
 from docbench_es.types._verdad import (
     AnswerResult,
@@ -60,6 +61,7 @@ from docbench_es.types._verdad import (
 
 __all__ = [
     "FORMATOS_CANONICOS",
+    "FORMATOS_CON_SPANS",
     "FORMATOS_SIN_SPANS",
     "TOPE_AREA",
     "AnswerMetrics",

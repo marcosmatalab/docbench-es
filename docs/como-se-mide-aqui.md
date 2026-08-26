@@ -30,7 +30,7 @@ suma escritos a mano se quedan viejos en silencio mientras el número del que sa
 se actualiza. Hay un comando que los recalcula y está en la puerta.
 
 **4 · Lo que NO se mide se publica igual de fuerte que lo que sí.**
-Hay 94 límites numerados, cada uno con su fecha y el hito en que se descubrió. No son
+Hay 96 límites numerados, cada uno con su fecha y el hito en que se descubrió. No son
 una lista de disculpas: varias veces han sido la parte más útil del resultado. Un
 banco que sólo publica lo que le sale bien mide su propia suerte.
 

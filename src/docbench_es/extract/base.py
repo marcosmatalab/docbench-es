@@ -42,9 +42,15 @@ es un extractor malo: es una comparación amañada sin querer, que es la peor cl
 
 Por eso **no se elige**: `.claude/rules/extractores.md` lo dice sin margen —*«lo fija el
 conversor canónico según el formato de origen, no el extractor; un extractor no puede
-declararse capaz de algo que su formato no permite»*—. `expresa_spans()` lo deriva aquí,
-y la conformidad comprueba que lo declarado coincide con lo derivado del `native_format`
-que el extractor devuelve **de verdad**, no del que dice que devuelve.
+declararse capaz de algo que su formato no permite»*—. `extract._spans.expresa_spans()`
+lo deriva, y la conformidad contrasta contra el `native_format` que el extractor devuelve
+**de verdad**, no contra el que dice que devuelve.
+
+**Y el contraste NO es una igualdad**, que es la trampa fácil. La regla, con sus cuatro
+desenlaces, está escrita en `veredicto_de_spans` **antes de que exista la suite que la
+aplica**, para que sea una decisión y no un cambio de criterio a toro pasado. En una
+línea: declararse por debajo del formato es legítimo, pero **sólo si los datos lo
+confirman**; y no haber visto ni una celda combinada no confirma nada.
 
 **`runs_locally` sí se cree**, y está declarado que sí: `core.policy` lo dice en su
 propio docstring. La puerta de egress recibe descriptores, no extractores, porque el
@@ -85,7 +91,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal, Protocol, runtime_checkable
 
 from docbench_es.core.policy import ExtractorDeclarado
-from docbench_es.types import FORMATOS_SIN_SPANS
+from docbench_es.extract._spans import VeredictoSpans, expresa_spans, veredicto_de_spans
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipar
     from benchcore.types import Cost, ProbeResult
@@ -96,9 +102,11 @@ __all__ = [
     "Extractor",
     "FamiliaExtractor",
     "Forma",
+    "VeredictoSpans",
     "cumple_la_forma",
     "descriptor",
     "expresa_spans",
+    "veredicto_de_spans",
 ]
 
 FamiliaExtractor = Literal["parser", "ocr", "vlm", "hibrido"]
@@ -189,21 +197,6 @@ class Forma:
             f"{veredicto} · {len(self.comprobados)} miembros comprobados "
             f"({len(DECLARACIONES)} declaraciones + {len(METODOS)} métodos)"
         )
-
-
-def expresa_spans(native_format: str) -> bool:
-    """Si ese formato puede con `rowspan`/`colspan`. **Se deriva, no se declara.**
-
-    Markdown y texto plano no pueden por construcción del formato (ADR-0006), y la
-    lista vive en `types.FORMATOS_SIN_SPANS` — una sola vez, porque una segunda copia
-    de «qué formatos pierden los spans» es una copia que se queda vieja.
-
-    Un extractor que ponga `expresses_spans=True` devolviendo Markdown no está siendo
-    optimista: está pidiendo que se le puntúe un cero en el estrato de celdas
-    combinadas como si hubiera competido. Por eso el valor sale de aquí y la conformidad
-    contrasta, en vez de creerse el atributo.
-    """
-    return native_format not in FORMATOS_SIN_SPANS
 
 
 def cumple_la_forma(cls: type) -> Forma:
