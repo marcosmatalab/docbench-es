@@ -1939,39 +1939,36 @@ y el presupuesto deje de dar. Su predicción se escribe entonces, antes de medir
 
 ---
 
-## L5 · La puerta con el primer extractor real: la regresión de 25,5 s y su arreglo
-
-`uv run python scripts/medir_puerta.py --tandas 3 --por-tanda 3`, 26 ago 2026.
-El sello lo imprime el propio instrumento y **el árbol se verificó quieto** durante toda
-la serie: `medir_puerta.py` compara la huella de `git status --porcelain` entre corridas
-y descarta la serie entera si se movió — cosa que hizo, y por eso hay una serie previa
-que no se publica.
+## L5 · La puerta: la regresión de 25,5 s, su arreglo, y contra qué se compara
 
 ### Antes: n=9, sello `b54ec82`, 14 CPU visibles
+
+`uv run python scripts/medir_puerta.py --tandas 3 --por-tanda 3`, 26 ago 2026.
 
 | ms | valor |
 |---|---|
 | mínimo | 25 685 |
 | mediana | 25 949 |
 | **p90** | **27 611** |
-| máximo | 27 611 |
 
-σ=751 · medianas por tanda 25 725–26 918 · carga mediana **1,40**, rango 0,46–1,84 ·
-0 descartadas por `rc!=0`. **Techo 8500: margen −19 111 ms.** El instrumento salió con
-código 1, que es lo que hace desde L2.
+σ=751 · carga mediana **1,40** · 0 descartadas por `rc!=0`. **Techo 8500: margen
+−19 111 ms**, y el instrumento salió con código 1, que es lo que hace desde L2.
 
-### La atribución, que es la mitad que importa
+> **n=9 y no n=40, y eso es una desviación del protocolo de esta casa.** Se declara en
+> vez de esconderse: **esta serie no se publica como la medida de la puerta**, sólo como
+> la constatación de que pasaba del techo por un factor de tres, para lo cual n=9 sobra.
+> La medida buena es la de abajo, con sus 40.
 
-Misma máquina, mismo día, en frío, `make clean` antes de cada una:
+### La atribución del salto: tres mediciones, misma máquina, mismo día, en frío
 
 | commit | qué es | mypy en frío | `make fast` en frío |
 |---|---|---|---|
 | `f89c5b6` | cierre de L4 | **3 576 ms** | **9 399 ms** |
-| `99be97d` | el commit ANTERIOR al primer extractor | **25 554 ms** | — |
+| `99be97d` | el commit ANTERIOR al primer extractor | **25 554 ms** | 30 259 ms |
 | `b54ec82` | el primer extractor y el corredor | 23 551 ms | 25 949 (mediana, n=9) |
 
-O sea que **la regresión no la trajo el hito que la encontró**: ya estaba en `99be97d`.
-Entró con B5-bis, que **no fue un cierre de hito y por tanto no re-midió la puerta**.
+**La regresión no la trajo el hito que la encontró**: ya estaba en `99be97d`. Entró con
+B5-bis, que **no fue un cierre de hito y por tanto no re-midió la puerta**.
 
 ### La causa, contada en ficheros y no en sospechas
 
@@ -1993,29 +1990,67 @@ La cadena entra por una línea: `tests/unit/test_estimador_computo.py` →
 **Y a `transformers` lo trae `camelot`, no `docling`.** Con `torch` y `docling`
 saltados quedaban **3 904 ficheros y 18 319 ms**; el recuento por paquete dijo quién
 faltaba. De ahí la regla escrita en `pyproject.toml`: **la lista se decide mirando qué
-parsea mypy, no adivinando qué es pesado.**
+parsea mypy, no adivinando qué es pesado.** Después del arreglo, mypy en frío **4 362 ms**.
 
-### Después: n=16, sello `e1652cf`, 14 CPU visibles
+### Después: n=40, sello `0f9816c` **sin `+N`**, 14 CPU visibles
 
-`uv run python scripts/medir_puerta.py --tandas 4 --por-tanda 4`
+`uv run python scripts/medir_puerta.py --tandas 10 --por-tanda 4`, 26 ago 2026.
 
 | ms | valor |
 |---|---|
-| mínimo | 6 243 |
-| mediana | 6 532 |
-| **p90** | **6 842** |
-| máximo | 7 655 |
+| mínimo | 6 177 |
+| mediana | 6 507 |
+| **p90** | **6 866** |
+| máximo | 6 885 |
 
-σ=324 · medianas por tanda 6 494–6 637 · carga mediana **1,72**, rango 0,60–2,55 ·
-0 descartadas. **Techo 8500: margen +1 658 ms**, y el instrumento sale con `rc=0`.
-mypy en frío pasa de 25 554 a **4 362 ms**.
+σ=178 · medianas por tanda 6 425–6 582 · carga mediana **2,48**, rango 0,17–2,84 ·
+0 descartadas. **Techo 8500: margen +1 634 ms.**
 
-**Lo que este número NO es comparable con lo de L4.** Aquéllos se midieron con **8 CPU
-visibles** y 397 tests; éstos con **14** y 520. La configuración de la máquina es una
-condición declarada desde B5-bis precisamente por esto, y `f89c5b6` remedido hoy da
-9 399 ms contra los 8 006 que se publicaron entonces: **la máquina sola mueve el número
-un 17%**, así que las series de L4 y las de aquí no se ponen en la misma gráfica.
+### CONTRA QUÉ SE COMPARA ESTE 6 866, QUE NO ES CONTRA EL 8 006
 
-**Lo que sigue sin haber**, y va en el límite 102: un guardián que avise **entre**
-cierres. `medir_puerta.py` funciona y hay que acordarse de correrlo; «acordarse» es
-justo lo que falló aquí, y la ventana que deja es un hito entero.
+**El 8 006 de L4 se midió EN SERIE**, antes de ADR-0043. La LÍNEA DE CORTE de este
+mismo documento dice que a partir de ahí la serie mide otro instrumento, y **su primer
+uso real es éste**. El compañero de comparación es el **4 905** del mismo árbol
+`1cc8ce8` en paralelo.
+
+**Y ni siquiera ése, en crudo.** El 4 905 se midió el 25 ago con **8 CPU visibles**;
+hoy hay 14, y la máquina es una condición declarada desde B5-bis. Así que `1cc8ce8` se
+ha vuelto a medir HOY, con el mismo protocolo, para separar máquina de código:
+
+| serie (n=40, paralelo, en frío) | mediana | **p90** | σ | qué aporta |
+|---|---|---|---|---|
+| `1cc8ce8`, 25 ago, **8 CPU** | 4 643 | **4 905** | 186 | lo publicado en la línea de corte |
+| `1cc8ce8`, **26 ago, 14 CPU** | 5 584 | **6 014** | 316 | el MISMO árbol, esta máquina |
+| `0f9816c`, 26 ago, 14 CPU | 6 507 | **6 866** | 178 | L5 dentro |
+
+```bash
+git checkout --detach 1cc8ce8 && uv run python scripts/medir_puerta.py --tandas 10 --por-tanda 4
+git checkout main            && uv run python scripts/medir_puerta.py --tandas 10 --por-tanda 4
+```
+
+**El +1 961 del p90 se reparte así: +1 109 de máquina y +852 de código.** Y el de
+máquina es el mayor de los dos, lo cual **no era la lectura esperada** —14 CPU deberían
+ir más rápido que 8, no más lento—: lo que hay medido es que el mismo árbol tarda hoy
+1 109 ms más, y no se sabe por qué. Va a la deuda, no a una explicación inventada.
+
+**La lectura honesta, entonces:** la puerta **ha subido** 852 ms de código sobre la
+línea de corte, que es lo que tiene que pasar cuando entran `extract/`, `corpus.store`
+y la CLI —**+2 403 líneas en `src/` y +2 776 en `tests/` desde `1cc8ce8`**— y sigue con
+**1 634 ms de margen** bajo el techo. No «bajó»: eso sería comparar con el instrumento
+de antes de la línea de corte.
+
+### Una serie descartada, y por qué se dice
+
+La primera medida de `1cc8ce8` de hoy salió con **cuatro corridas consecutivas de
+13 659 a 16 164 ms** entre las tandas 4 y 5, con el resto entre 5 372 y 6 204 (σ=2 824,
+p90 13 659). Es un evento externo a la máquina, no una propiedad del árbol: se repitió
+la serie entera y la segunda es la de la tabla. **`medir_puerta.py` no descarta
+atípicos** —sólo aborta si el árbol se mueve o si alguna corrida sale en rojo—, así que
+la decisión de repetir es de quien mide y por eso se escribe aquí.
+
+### Lo que sigue sin haber
+
+Un guardián que avise **entre** cierres ya existe desde este hito: `make fast` registra
+su duración y `guard-commit.sh` exige una medida **en frío** bajo el techo para dejar
+commitear. Lo que no hay es nada que vigile la **tendencia**: 852 ms más por hito agotan
+el margen en dos hitos, y eso no lo dice ningún aro. Va en el límite 102.

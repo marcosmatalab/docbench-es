@@ -1998,6 +1998,15 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Después del arreglo: mypy en frío 4.362 ms.** El número de la puerta entera va en
     `RESULTS.md` con su comando.
 
-    **Lo que sigue sin haber**: un guardián que avise entre cierres. `medir_puerta.py`
-    hay que acordarse de correrlo, y «acordarse» es lo que falló aquí. La detección vive
-    hoy en el paso de `/cerrar`, y eso deja la ventana de un hito entero.
+    **CERRADO EN EL MISMO HITO, y la corrección importa.** `make fast` registra ahora su
+    duración y `guard-commit.sh` exige una medida **en frío** por debajo del techo para
+    dejar commitear. En frío y no a secas: medido sobre `99be97d`, con la regresión
+    dentro, `make fast` daba **30 259 ms en frío y 2 781 en caliente**, así que vigilar
+    la duración de un `make fast` cualquiera **habría dejado pasar los diez commits
+    igual**. Cuesta unos 7 s una vez por commit, `make frio`, y sus tres casos de rechazo
+    tienen test con su control positivo delante.
+
+    **Lo que sigue sin haber, y es lo que queda de este límite: nada vigila la
+    TENDENCIA.** El aro compara contra un techo fijo. Entre la línea de corte y el cierre
+    de L5 la puerta subió **852 ms de código** con 1 634 de margen: a ese ritmo, dos
+    hitos más y el margen se acaba, y ningún guardián lo dirá hasta que ya haya pasado.
