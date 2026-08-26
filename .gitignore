@@ -83,6 +83,12 @@ runs/*/*
 !runs/censos/
 !runs/censos/*.json
 .claude/.ultima-puerta
+# Y sus dos hermanos, que escribe la propia receta de `make fast`. Son marcas LOCALES:
+# la duracion y el frio/caliente son de ESTA maquina, no del repositorio. Versionarlos
+# ademas rompia `medir_puerta.py`, que aborta la serie si el arbol se mueve — y se movia
+# en cada corrida, porque cada corrida los reescribe. Cazado a la primera.
+.claude/.ultima-puerta.txt
+.claude/.puerta-inicio
 .env
 
 .import_linter_cache/
