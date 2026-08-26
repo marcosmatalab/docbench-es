@@ -2058,3 +2058,37 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **A quién más le tocará**: `marker`, que también emite Markdown. `grobid` (TEI) y
     `tesseract` (texto) tienen sus propios conversores sin validar y su propia sorpresa
     pendiente.
+
+104. **`pymupdf4llm` HACE OCR Y `pdfplumber` NO, ASÍ QUE SU COSTE NO SE COMPARA COMO SI
+    LOS DOS FUERAN PARSERS.** Medido sobre los 12 documentos del humo de la campaña
+    —668 páginas—, contando las líneas que la propia biblioteca escribe en `stdout`:
+
+    ```
+    uv run docbench run --extractors all --poblacion runs/l5/humo_campana.json \
+      --salida <dir> --offline 2>&1 | grep -c "OCR on page"
+    ```
+
+    | | pasadas de OCR | reloj sobre los 12 | tablas |
+    |---|---|---|---|
+    | `pdfplumber` | **0** | 34,7 s | 121 |
+    | `pymupdf4llm` | **264 de 668 páginas (39,5%)** | 195,2 s | 118 |
+
+    **5,6× más lento, y haciendo un trabajo distinto.** §16 los pone a los dos en la
+    familia *parser de texto*, y sobre estos documentos uno de los dos está leyendo
+    páginas que el otro no puede leer.
+
+    **La causa NO está establecida**, y decirlo importa: puede ser que los anexos largos
+    del BOE vengan escaneados —lo cual sería una propiedad del corpus que nadie ha
+    medido— o que `pymupdf` 1.28 dispare OCR con un criterio más ancho. Son dos
+    conclusiones distintas y sólo una se puede achacar al extractor.
+
+    **Qué contamina si no se dice.** Dos columnas del nivel 1: el **coste por éxito**, que
+    saldría 5,6× peor para `pymupdf4llm` sin decir que incluye OCR; y la **cobertura**,
+    porque una página sin capa de texto que uno lee y el otro no es una diferencia de
+    alcance, no de calidad. `pdfplumber` no la declara como fallo —no llega a
+    `no_text_layer` mientras el documento tenga alguna página con texto—, así que hoy esa
+    diferencia **no aparece en ninguna cifra**.
+
+    **Lo mínimo antes de publicar la tabla**: contar cuántas páginas del corpus no tienen
+    capa de texto, que es un censo barato y contesta la pregunta de la causa. Mientras no
+    esté, la fila de `pymupdf4llm` lleva esta nota al lado.
