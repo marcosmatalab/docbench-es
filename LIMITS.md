@@ -492,19 +492,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 430 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 449 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **264 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **283 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
     `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
-    `estimador_computo` (6), `extractor_contrato` (35), `sin_consumidor` (3), `reglas_parseables` (3),
+    `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
+    `conjunto_conformidad` (4), `sin_consumidor` (3), `reglas_parseables` (3),
     `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **61,4% hoy** — y 65 de los 264 entraron de golpe con
+    12,4% al cerrar L2, **63,0% hoy** — y 65 de los 283 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -514,7 +515,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **427 de 430 tests protegidos por algo** —un
+    *el arnés*, no la protección: **446 de 449 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -788,7 +789,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     existe no es comprobar que la afirmación sobre ello sea cierta.
 
 60. **«Protegido» se verifica por EXISTENCIA, no por fuerza.** La segunda
-    contabilidad —427 de 430— cuenta como protegido el test cuyo fichero es suite
+    contabilidad —446 de 449— cuenta como protegido el test cuyo fichero es suite
     objetivo de un mutante **o** declara un control negativo en
     `CONTROLES_NEGATIVOS`. De esa declaración,
     `test_cada_control_negativo_declarado_existe_de_verdad` comprueba por AST que
@@ -1456,7 +1457,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     comprueba que `runs/l5/computo.yaml` tenga una clave `regla:`, ni que la regla
     que contiene sea la que se aplicó. Eso lo sostiene el cierre del hito, a mano.
 
-84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 27 de 44.** `make fast` corre
+84. **LA PUERTA NO TIPA LOS SCRIPTS HUÉRFANOS: 27 de 45.** `make fast` corre
     `mypy --strict src tests`. `scripts/` entra sólo por `mypy_path`, así que se tipa
     **lo que un test alcance** —directa o transitivamente— y nada más.
 
@@ -1471,9 +1472,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **67** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **68** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **44** que quedan, **huérfanos: 27 de 44**. Entre ellos `derivadas.py`
+    nada—, y de los **45** que quedan, **huérfanos: 27 de 45**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
@@ -1823,3 +1824,24 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Lo que queda sin cubrir: **cuántos documentos con celdas combinadas hacen falta**
     para que `SIN_EVIDENCIA` pase a ser un aprobado. Hoy basta con uno, y uno es poco;
     el número correcto no está medido y sale de la muestra de conformidad, que no existe.
+
+97. **UN TEST DE LA CONFORMIDAD DEPENDÍA DEL CORPUS LOCAL, Y EL CORPUS NO SE
+    VERSIONA.** `test_todos_los_elegidos_tienen_su_pdf` comprobaba que los cinco
+    documentos del conjunto de conformidad tuvieran su PDF en `runs/l3/docs/`. Aquí
+    pasaba; **en un clon limpio ponía la puerta roja**, porque los 1.000 PDF del corpus
+    son documentos ajenos y no están en el repo.
+
+    Es la misma familia que los límites 92 y 94 —`mypy` y `ruff` dependiendo del
+    entorno— en su tercera aparición del día, y la encontró el mismo procedimiento:
+    correr la puerta en un clon frío antes de empujar.
+
+    **Arreglado con un salto explícito**, no con un borrado: si el corpus no está, el
+    test se salta **diciendo que no es un aprobado** —*«NO se ha comprobado que los
+    elegidos tengan PDF; no es un aprobado, es que aquí no se puede mirar»*—. Es la
+    misma postura que `NO_EJECUTADA` en las suites de conformidad, trasladada a `pytest`.
+
+    **Lo que esto deja sin cubrir, y hay que decirlo claro**: en CI esa precondición
+    **no se comprueba nunca**. Si alguien mete en `runs/l5/conformidad.yaml` un documento
+    que no existe en el corpus, CI seguirá verde y sólo se enterará quien corra la
+    conformidad de verdad. Lo que sí se comprueba en todas partes es que lo declarado
+    cuadre con la verdad congelada de L4, porque **los fixtures sí se versionan**.

@@ -60,10 +60,13 @@ def test_todo_el_modelo_de_datos_es_inmutable() -> None:
     # Exacto, no `>= 25`: con el suelo holgado se podían borrar tres estructuras
     # de `__all__` y el test seguía en verde diciendo que no faltaba ninguna.
     # Comprobado quitando `TedsReport`, `GlossaryContribution` y `RoutingPlan`.
-    # 28 = las dataclasses de §6; las otras 4 entradas de `__all__` son alias de
-    # tipo (`ExtractionFailure`, `TruthMode`…), que no son dataclass.
-    assert len(encontrados) == 28, (
-        f"§6 define 28 dataclasses y hay {len(encontrados)}: si es un cambio "
+    # 29 = las dataclasses de §6; las otras entradas de `__all__` son alias de tipo
+    # (`ExtractionFailure`, `TruthMode`, `Severidad`…), que no son dataclass.
+    # 28 -> 29 el 26 ago 2026: entra `Hallazgo` (§6.10). Subió desde
+    # `entity/_comprobaciones.py` cuando `extract.conformance` necesitó el mismo tipo;
+    # copiarlo habría sido la tercera declaración del concepto. Ver ADR-0044.
+    assert len(encontrados) == 29, (
+        f"§6 define 29 dataclasses y hay {len(encontrados)}: si es un cambio "
         f"querido, actualiza el número aquí y di por qué en el commit"
     )
 

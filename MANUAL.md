@@ -921,6 +921,32 @@ ExtractionFailure = Literal[
 
 ---
 
+### 6.10 El vocabulario de las suites de conformidad
+
+```python
+Severidad = Literal["FALLA", "AVISO", "NO_EJECUTADA"]
+
+@dataclass(frozen=True)
+class Hallazgo:
+    comprobacion: str
+    severidad: Severidad
+    detalle: str
+```
+
+Lo comparten `entity.conformance` y `extract.conformance`. Vive en `types` —y no en
+cualquiera de las dos— porque un tipo que usan dos módulos hermanos no pertenece a
+ninguno; **ADR-0044**.
+
+**`NO_EJECUTADA` es la razón de que este tipo exista** y no se use
+`benchcore.conform.Finding`, que tiene la misma forma exacta y sólo dos severidades.
+`benchcore.conform` mira la **forma** del contrato, y la forma siempre se puede mirar.
+Estas suites **ejecutan** el sujeto contra documentos, y ahí un aro puede quedarse **sin
+correr**: si `discover` no trae ni un documento, la idempotencia de `fetch` no falla, es
+que no se ha comprobado. Contarlo como aprobado sería publicar como observado algo que
+no se observó.
+
+Por eso **`NO_EJECUTADA` pesa como `FALLA`**: `pasa` exige cero de las dos.
+
 ## 7. Las interfaces
 
 ### 7.1 `EntityAdapter` — siete métodos

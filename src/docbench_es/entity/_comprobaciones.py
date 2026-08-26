@@ -5,7 +5,8 @@ se iban a 330. La partición no es arbitraria — **`conformance` es la polític
 (qué severidad hace fallar, qué se considera «sin comprobar») y esto es **la
 mecánica** (qué se le pide a cada método).
 
-`Hallazgo` y `Severidad` viven aquí porque los producen estas funciones, y
+`Hallazgo` y `Severidad` ya NO viven aquí: subieron a `types` cuando la conformidad
+de extractores necesitó los mismos (ADR-0044). Lo que vive aquí es quien los produce, y
 `conformance` los reexporta: son parte de su API pública, no de la de un módulo
 con guion bajo delante.
 """
@@ -13,18 +14,22 @@ con guion bajo delante.
 from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
-from dataclasses import dataclass
 from datetime import date
 from hashlib import sha256
 from itertools import islice
-from typing import Literal, get_args
+from typing import get_args
 
 from docbench_es.entity.base import EntityAdapter
-from docbench_es.types import DocRef, RawDoc, TruthMode
+from docbench_es.types import DocRef, Hallazgo, RawDoc, Severidad, TruthMode
 
 __all__ = ["MIEMBROS", "Hallazgo", "Severidad"]
 
-Severidad = Literal["FALLA", "AVISO", "NO_EJECUTADA"]
+
+# `Severidad` y `Hallazgo` VIVEN EN `types`, no aquí. Se declaraban en este fichero
+# hasta que `extract.conformance` necesitó los mismos: copiarlos habría sido la tercera
+# declaración del mismo concepto —el límite 81 con `tasa_descarte`—, y leerlos desde un
+# módulo privado de otro paquete tampoco. Se reexportan para no mover a nadie de sitio.
+# ADR-0044.
 
 MIEMBROS: tuple[str, ...] = (
     "id",
@@ -41,15 +46,6 @@ MIEMBROS: tuple[str, ...] = (
     "strata",
 )
 """Los cinco atributos y los siete métodos de §7.1, para poder decir **cuál** falta."""
-
-
-@dataclass(frozen=True)
-class Hallazgo:
-    """Una comprobación con su resultado y el porqué, en castellano."""
-
-    comprobacion: str
-    severidad: Severidad
-    detalle: str
 
 
 def _forma(adaptador: object) -> Hallazgo | None:

@@ -70,7 +70,7 @@ VeredictoSpans = Literal["COHERENTE", "CONTRADICCION", "ESCONDIDO", "SIN_EVIDENC
 
 
 def veredicto_de_spans(
-    declarado: bool, native_format: str, vio_celdas_combinadas: bool
+    declarado: bool, native_format: str, vio_celdas_combinadas: bool, hubo_ocasion: bool
 ) -> VeredictoSpans:
     """La regla del contraste, **escrita antes de que exista la suite que la aplica**.
 
@@ -90,19 +90,31 @@ def veredicto_de_spans(
 
     ## Los cuatro desenlaces
 
-    | declarado | el formato | se vieron combinadas | veredicto |
-    |---|---|---|---|
-    | `True` | **no** permite | — | `CONTRADICCION` — pide competir donde no puede |
-    | `False` | — | **sí** | `ESCONDIDO` — se refugia en `NO_APLICABLE` trayéndolas |
-    | `False` | permite | no | `SIN_EVIDENCIA` — honesto o muestra pobre, no se sabe |
-    | resto | | | `COHERENTE` |
+    | declarado | el formato | emitió combinadas | hubo ocasión | veredicto |
+    |---|---|---|---|---|
+    | `True` | **no** permite | — | — | `CONTRADICCION` — pide competir donde no puede |
+    | `False` | — | **sí** | — | `ESCONDIDO` — se refugia en `NO_APLICABLE` trayéndolas |
+    | `False` | permite | no | **no** | `SIN_EVIDENCIA` — no se sabe |
+    | `False` | permite | no | **sí** | `COHERENTE` — las aplana, y está comprobado |
+    | resto | | | | `COHERENTE` |
 
-    **`SIN_EVIDENCIA` no es un aprobado**, y por eso es un valor propio y no `COHERENTE`.
-    Si la muestra no traía ni un documento con celdas combinadas, no se puede distinguir
-    *«su parser las aplana»* de *«no le tocó ninguna»*. Es la tercera severidad que la
-    suite de entidad ya tiene —`NO_EJECUTADA`—: un aro por el que no se ha pasado no
-    está superado, y contarlo como aprobado sería publicar como observado algo que no se
-    observó.
+    ## `hubo_ocasion` es el dato que separa al honesto del no medido
+
+    **Sin él, un extractor que de verdad aplana los `rowspan` jamás podría aprobar**: se
+    quedaría en `SIN_EVIDENCIA` para siempre por hacer lo que declara. `hubo_ocasion`
+    dice si el conjunto de conformidad traía **al menos un documento con celdas
+    combinadas en la verdad de referencia**. Con ocasión y sin emitirlas, el `False` está
+    confirmado; sin ocasión, no se ha comprobado nada.
+
+    **`SIN_EVIDENCIA` no es un aprobado**, y por eso es un valor propio y no `COHERENTE`:
+    no distingue *«su parser las aplana»* de *«no le tocó ninguna»*. Es la tercera
+    severidad que la suite de entidad ya tiene —`NO_EJECUTADA`—: un aro por el que no se
+    ha pasado no está superado, y contarlo como aprobado sería publicar como observado
+    algo que no se observó.
+
+    Y de ahí sale una obligación sobre el conjunto: **se elige, no se toma**. Si no trae
+    ni una celda combinada, TODO extractor sale `SIN_EVIDENCIA` y el veredicto no
+    discrimina nada — una comprobación cuyo verde no significa lo que parece.
 
     Levanta si el formato es desconocido, por `expresa_spans`: lo desconocido no se
     decide por defecto ni aquí ni allí.
@@ -111,6 +123,6 @@ def veredicto_de_spans(
         return "CONTRADICCION"
     if not declarado and vio_celdas_combinadas:
         return "ESCONDIDO"
-    if not declarado and expresa_spans(native_format):
+    if not declarado and expresa_spans(native_format) and not hubo_ocasion:
         return "SIN_EVIDENCIA"
     return "COHERENTE"

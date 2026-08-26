@@ -70,6 +70,7 @@ runs/*/*
 !runs/*/computo_base_2hilos.json
 !runs/*/computo_A_28hilos.json
 !runs/*/computo_A_28hilos.log
+!runs/*/conformidad.yaml
 !runs/*/humo.json
 !runs/*/resello_comparador.json
 # LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO

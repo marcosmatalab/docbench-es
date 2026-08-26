@@ -1,0 +1,99 @@
+# EL CONJUNTO DE CONFORMIDAD DE EXTRACTORES · escrito ANTES de escribir la suite
+#
+# SE ELIGE, NO SE TOMA. Y la razon no es de gusto: veredicto_de_spans devuelve
+# SIN_EVIDENCIA cuando el extractor declara expresses_spans=False, su formato si permite
+# spans, y NO HUBO OCASION de demostrarlo. Si este conjunto no trajera ni una celda
+# combinada, TODO extractor saldria SIN_EVIDENCIA para siempre y el veredicto no
+# discriminaria nada: una comprobacion cuyo verde no significa lo que parece, que es el
+# limite 77 otra vez.
+
+hito: L5
+usa: extract.conformance
+decide: contra que documentos se ejecuta la suite de conformidad de un extractor
+
+# ------------------------------------------------- QUE TIENE QUE PODER PASAR
+# El conjunto declara QUE CASILLAS DEL VEREDICTO PUEDE PRODUCIR, igual que todo
+# guardian de este repo declara su denominador. Un conjunto que solo puede emitir dos
+# de los cuatro veredictos lo tiene que decir el mismo.
+puede_producir:
+  CONTRADICCION: >
+    SI. No depende del conjunto sino del extractor: se declara capaz con un formato que
+    no puede. Cualquier documento sirve.
+  ESCONDIDO: >
+    SI, y ES ESTE CONJUNTO QUIEN LO HACE POSIBLE: hace falta que el extractor EMITA
+    celdas combinadas, y para eso el documento tiene que traerlas.
+  COHERENTE: >
+    SI, en sus dos formas: declararse capaz y serlo, y declararse incapaz habiendo
+    tenido ocasion de demostrarlo.
+  SIN_EVIDENCIA: >
+    SI, pero solo si alguien corre la suite con un subconjunto que no traiga combinadas.
+    Con el conjunto entero NO deberia salir, y que salga es senal de que el conjunto se
+    ha degradado. Lo comprueba tests/unit/test_conjunto_conformidad.py.
+
+# ------------------------------------------------------------ LOS ELEGIDOS
+# La verdad de referencia de L4 dice cuales traen celdas combinadas: son 8 de 30, y esos
+# 8 fixtures estan CONGELADOS, asi que «trae combinadas» no es una opinion.
+# Comando: uv run python scripts/conjunto_conformidad.py
+con_celdas_combinadas:
+  - id: BOE-A-2026-7446
+    tabla: BOE-A-2026-7446-t0
+    paginas: 4
+    forma: 3x8 con 7 spans
+    por_que: >
+      La mas DENSA en spans por celda de las 30: 7 combinadas en una tabla de 3x8. Un
+      extractor que aplane algo aqui se nota en el acto.
+  - id: BOE-A-2026-6971
+    tabla: BOE-A-2026-6971-t3
+    paginas: 4
+    forma: 25x4 con 10 spans
+    por_que: >
+      La que MAS spans absolutos tiene, y en una tabla larga. Cubre el caso de spans
+      repartidos por muchas filas, que es otra forma de fallar que la densa no cubre.
+  - id: BOE-A-2026-6077
+    tabla: BOE-A-2026-6077-t4
+    paginas: 12
+    forma: 5x4 con 1 span
+    por_que: >
+      EL CASO MINIMO: una sola celda combinada. Es el que distingue «detecta spans» de
+      «detecta tablas muy irregulares», y el que un extractor mediocre se come.
+
+sin_celdas_combinadas:
+  - id: BOE-A-2026-5593
+    tabla: BOE-A-2026-5593-t1
+    paginas: 2
+    forma: 6x3 sin spans
+    por_que: tabla pequena y regular. Que COHERENTE pueda salir sin depender de los spans.
+  - id: BOE-A-2026-7189
+    tabla: BOE-A-2026-7189-t0
+    paginas: 2
+    forma: 29x2 sin spans
+    por_que: >
+      Larga y estrecha. Cubre que un extractor no invente combinadas donde no las hay,
+      que es el falso positivo de deteccion de spans.
+
+# ------------------------------------------------------------- EL PRESUPUESTO
+coste:
+  documentos: 5
+  paginas: 24
+  por_que_tan_pocas: >
+    La suite corre POR EXTRACTOR y en cada cierre. Con el coste/pagina medido en B5-bis
+    para el mas caro —docling, 2,77 s/pagina en la banda <=10— son del orden de un minuto
+    por extractor. Un aro que cuesta una tarde no se corre, y un aro que no se corre no
+    es un aro.
+  lo_que_esto_NO_cubre: >
+    Cinco documentos no miden calidad de nada. Este conjunto existe para que el CONTRATO
+    se pueda comprobar, no para puntuar: la puntuacion sale de la campana de los 616.
+
+# ------------------------------------------------------------------ LIMITES
+no_cubre:
+  - >
+    Documentos ESCANEADOS. Los cinco son nacidos digitales, asi que la conformidad de un
+    extractor de OCR se comprueba sobre documentos donde el OCR no hace falta. Cuando
+    entre tesseract habra que anadir uno y volver a declarar que puede producir el
+    conjunto.
+  - >
+    Tablas que cruzan pagina. Ninguna de las cinco lo hace, asi que page_span no se
+    ejercita. Es un hueco declarado, no cubierto.
+  - >
+    Y no dice CUANTOS documentos con combinadas hacen falta para que SIN_EVIDENCIA pase
+    a COHERENTE. Hoy basta con uno, y uno es poco; el numero correcto no esta medido.

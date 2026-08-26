@@ -36,6 +36,7 @@ from docbench_es.types._campana import (
     StructureMetrics,
     TedsReport,
 )
+from docbench_es.types._conformidad import Hallazgo, Severidad
 from docbench_es.types._documento import (
     DocRef,
     Extraction,
@@ -79,6 +80,7 @@ __all__ = [
     "Glossary",
     "GlossaryContribution",
     "GlossaryMetrics",
+    "Hallazgo",
     "HallazgoTabla",
     "LicenseDecl",
     "PrivacyDecl",
@@ -89,6 +91,7 @@ __all__ = [
     "RoutingPlan",
     "RoutingRule",
     "SamplingPlan",
+    "Severidad",
     "Stratum",
     "StructureMetrics",
     "TedsReport",

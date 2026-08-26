@@ -238,31 +238,36 @@ def test_un_formato_desconocido_no_concede_spans_por_defecto(desconocido: str) -
 
 
 @pytest.mark.parametrize(
-    ("declarado", "formato", "combinadas", "espera"),
+    ("declarado", "formato", "emitio", "ocasion", "espera"),
     [
-        (True, "markdown", False, "CONTRADICCION"),
-        (True, "text", True, "CONTRADICCION"),
-        (False, "html", True, "ESCONDIDO"),
-        (False, "tei", True, "ESCONDIDO"),
-        (False, "html", False, "SIN_EVIDENCIA"),
-        (True, "html", False, "COHERENTE"),
-        (True, "dataframe", True, "COHERENTE"),
-        (False, "markdown", False, "COHERENTE"),
+        (True, "markdown", False, True, "CONTRADICCION"),
+        (True, "text", True, True, "CONTRADICCION"),
+        (False, "html", True, True, "ESCONDIDO"),
+        (False, "tei", True, False, "ESCONDIDO"),
+        (False, "html", False, False, "SIN_EVIDENCIA"),
+        (False, "tei", False, False, "SIN_EVIDENCIA"),
+        (False, "html", False, True, "COHERENTE"),
+        (True, "html", False, True, "COHERENTE"),
+        (True, "dataframe", True, True, "COHERENTE"),
+        (False, "markdown", False, False, "COHERENTE"),
     ],
 )
 def test_el_contraste_tiene_cuatro_desenlaces_y_no_dos(
-    declarado: bool, formato: str, combinadas: bool, espera: str
+    declarado: bool, formato: str, emitio: bool, ocasion: bool, espera: str
 ) -> None:
     """**La regla, afirmada antes de que exista la suite que la aplica.**
 
-    Las dos casillas que una igualdad se comería son las que sostienen el incentivo:
+    Las tres casillas que una igualdad se comería son las que sostienen el incentivo:
 
     * `ESCONDIDO` — declararse incapaz **trayendo** celdas combinadas es refugiarse en
       `NO_APLICABLE`. Es la razón que `types._invariantes._spans_declarados` ya tenía
       escrita para `CanonicalTable`, y aquí se aplica al extractor entero.
-    * `SIN_EVIDENCIA` — declararse incapaz con un formato que sí puede, y no haber visto
-      ni una combinada, **no es un aprobado**: no distingue «su parser las aplana» de
-      «no le tocó ninguna». Exigir igualdad haría fallar por honesto a un extractor que
-      aplana, y le saldría más barato declarar `True` y cobrar el cero.
+    * `SIN_EVIDENCIA` — declararse incapaz sin que el conjunto ofreciera **ni una**
+      celda combinada no es un aprobado: no distingue «su parser las aplana» de «no le
+      tocó ninguna».
+    * Y la que hace que el honesto pueda aprobar: **mismo caso con ocasión → COHERENTE**.
+      Las dos filas de `html` con `emitio=False` sólo se diferencian en `ocasion`, y dan
+      veredictos distintos. Sin ese dato, un extractor que de verdad aplana se quedaría
+      en `SIN_EVIDENCIA` para siempre por hacer lo que declara.
     """
-    assert veredicto_de_spans(declarado, formato, combinadas) == espera
+    assert veredicto_de_spans(declarado, formato, emitio, ocasion) == espera
