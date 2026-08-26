@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 520 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 529 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **354 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **363 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
@@ -502,10 +502,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
     `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
     `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
-    `limite_lineas` (2), `tope_area` (2), y los ocho que entran con el primer extractor
-    real y su corredor: `extractor_arnes` (14), `pdfplumber` (12), `diario` (9),
-    `corredor` (7), `corpus_store` (7), `extract_registry` (7), `conjunto` (6) y
-    `cli` (6)— **no tienen ningún
+    `limite_lineas` (2), `tope_area` (2), y los nueve que entran con el primer extractor
+    real, su corredor y el aro del techo: `extractor_arnes` (14), `pdfplumber` (12),
+    `aro_del_techo` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
+    `extract_registry` (7), `conjunto` (6) y `cli` (6)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
     12,4% al cerrar L2, **63,3% hoy** — y 65 de los 286 entraron de golpe con
@@ -518,7 +518,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **517 de 520 tests protegidos por algo** —un
+    *el arnés*, no la protección: **526 de 529 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,

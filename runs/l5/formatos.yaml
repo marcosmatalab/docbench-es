@@ -1,0 +1,90 @@
+# QUE DECLARA EL CONVERSOR DE CADA EXTRACTOR, Y SI COINCIDE CON `types`
+#
+# EL PRIMER ACTO DE ESCRIBIR UN EXTRACTOR ES PREGUNTARLE A SU CONVERSOR. No es una
+# formula: es lo que encontro el agujero de cuatro hitos —`dataframe` faltaba en
+# `types.FORMATOS_SIN_SPANS`, asi que una tabla de marco podia declararse capaz de
+# `rowspan` y `is_wellformed()` la daba por buena, apuntando a camelot (limite 98)—.
+# No lo delato ningun guardian: lo delato ir a escribir el consumidor.
+#
+# Este fichero se rellena ANTES de escribir cada extractor, con lo MEDIDO, no con lo
+# supuesto. Y la decision se toma aqui: si un extractor no encaja en ninguno de los
+# cinco formatos canonicos, eso es un HALLAZGO y no un detalle de integracion.
+
+hito: L5
+decide: que conversor recibe la salida de cada extractor, y que `expresses_spans` sale
+comando: uv run pytest tests/unit/test_pdfplumber.py -k conversor
+
+# ------------------------------------------------------------------ MEDIDOS
+pdfplumber:
+  devuelve: >
+    `page.extract_tables()` -> list[list[str | None]], una rejilla rectangular.
+  conversor: from_dataframe
+  formato_nativo: dataframe
+  expresses_spans: false
+  como_se_supo: >
+    Leyendo la firma y ejecutando el conversor. `types.FORMATOS_SIN_SPANS` lo incluye
+    desde el arreglo del limite 98, y tests/unit/test_pdfplumber.py lo comprueba
+    EJECUTANDO from_dataframe, no consultando la lista.
+  el_precio: >
+    NO_APLICABLE en el estrato de celdas combinadas, y su nota no se enseña sin la
+    cobertura evaluable al lado. Regla de oro 4.
+  estado: ESCRITO Y EN VERDE, `docbench conform --extractor pdfplumber`
+
+docling:
+  devuelve: >
+    Un modelo propio, `TableItem`, con `data.table_cells` que traen `row_span`,
+    `col_span` y los cuatro offsets de fila y columna. Y `export_to_html(doc=...)`,
+    que emite `rowspan` y `colspan` de verdad.
+  conversor: from_html
+  formato_nativo: html
+  expresses_spans: true
+  como_se_supo: >
+    MEDIDO antes de escribir una linea del extractor, sobre BOE-A-2026-7446, que es el
+    documento cuya verdad congelada de L4 declara 3x8 con 7 celdas combinadas.
+    docling devuelve exactamente 3x8 y SIETE combinadas, y su HTML trae rowspan="2" y
+    colspan="2". O sea que declarar `expresses_spans=true` no es optimismo: es lo que
+    hace.
+  por_que_importaba_mirarlo_antes: >
+    Es la clase exacta del agujero de camelot, y sobre el extractor MAS CARO de la
+    campaña. Si docling se declarase capaz y su camino de conversion perdiera los spans,
+    entraria en el estrato titular cobrando ceros como si hubiera competido.
+  lo_que_esto_NO_dice: >
+    Que los acierte. Dice que los EXPRESA, que es lo unico que gobierna `expresses_spans`.
+    Si los pone mal, eso sale en el TEDS, que es donde tiene que salir.
+  y_una_ventaja_que_no_se_buscaba: >
+    from_html es el UNICO conversor con consumidor validado desde L1 —el golden de
+    PubTabNet y la verdad derivada de L4—, asi que docling no estrena conversor.
+  estado: DECIDIDO, sin escribir
+
+# ------------------------------------------------- PENDIENTES DE MEDIR IGUAL
+pymupdf4llm:
+  devuelve: markdown, segun su nombre y su API. SIN COMPROBAR EJECUTANDOLO.
+  conversor: from_markdown
+  formato_nativo: markdown
+  expresses_spans: false
+  estado: >
+    PENDIENTE. `from_markdown` esta en «Construido y NO VALIDADO» de ESTADO.md, asi que
+    su primer consumidor real es este extractor y hay que esperar hallazgos.
+
+camelot:
+  devuelve: DataFrames de pandas, uno por tabla.
+  conversor: from_dataframe
+  formato_nativo: dataframe
+  expresses_spans: false
+  estado: >
+    PENDIENTE de escribir, pero su conversor YA quedo validado con pdfplumber, que pasa
+    por el mismo `from_dataframe`. Es el unico de los cuatro que no estrena conversor
+    ademas de docling.
+  ojo: >
+    Es quien arrastra `transformers` a mypy (limite 102), asi que su entrada no puede
+    tocar el techo de la puerta.
+
+# ---------------------------------------------------------------- EL LIMITE
+no_cubre:
+  - >
+    Que el formato sea el correcto NO dice que el extractor sea bueno. `expresses_spans`
+    gobierna una sola cosa: si su TEDS sale NO_APLICABLE o cero en el estrato de celdas
+    combinadas. La nota la decide el banco.
+  - >
+    De los cinco conversores, `from_tei` y `from_text_heuristic` siguen sin consumidor y
+    sin fecha: son de grobid y tesseract, que no estan en esta campaña.

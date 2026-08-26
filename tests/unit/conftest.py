@@ -126,6 +126,7 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_conjunto.py": "test_el_conjunto_bueno_se_monta_y_dice_su_denominador",
     "test_corredor.py": "test_reanudar_sobre_otro_arbol_se_rechaza",
     "test_diario.py": "test_una_causa_que_no_es_del_enum_cerrado_no_se_reconstruye",
+    "test_aro_del_techo.py": "test_una_medida_caliente_no_vale_por_buena_que_sea",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

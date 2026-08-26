@@ -14,6 +14,16 @@
 # que la última puerta verde registrada es de ESTE árbol, con la misma huella que
 # escribe `stop-gate.sh`. Si el árbol cambió desde ese verde, no hay verde para él.
 #
+# Y DESDE L5 VIGILA TAMBIÉN EL TECHO, porque verde y rápida son dos cosas. La puerta
+# estuvo a 25,5 s —tres veces el techo de 8500— durante diez commits con
+# `medir_puerta.py` funcionando: aquél sólo se corre al cerrar hito, y entre cierre y
+# cierre pasa el trabajo. LIMITS 102.
+#
+# LA MEDIDA TIENE QUE SER EN FRÍO, y no es un matiz: sobre `99be97d`, con la regresión
+# dentro, `make fast` daba 30.259 ms en frío y 2.781 en caliente. Vigilar la duración de
+# un `make fast` cualquiera habría dejado pasar los diez commits igual. Por eso lo que
+# se exige es `make frio`, que cuesta unos 7 s una vez por commit.
+#
 #   .claude/hooks/guard-commit.sh --cuantos   -> QUÉ vigila y contra qué compara
 set -uo pipefail
 
@@ -21,6 +31,8 @@ DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 cd "$DIR" || exit 0
 
 MARCA=".claude/.ultima-puerta"
+REGISTRO=".claude/.ultima-puerta.txt"
+TECHO=$(.claude/hooks/registrar-puerta.sh --techo 2>/dev/null || echo 8500)
 
 #   UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER NADA.
 # Este guardián publica su denominador como los demás: qué órdenes intercepta, qué
@@ -32,7 +44,9 @@ if [ "${1:-}" = "--cuantos" ]; then
   # que no declara, porque el de más se cree.
   echo "intercepta: git commit, en cualquier punto de una cadena. NO --dry-run."
   echo "NO intercepta: git merge, rebase ni cherry-pick, que también crean commits"
-  echo "compara contra: $MARCA"
+  echo "compara contra: $MARCA y $REGISTRO"
+  echo "exige ademas: medida EN FRIO (\`make frio\`) por debajo de $TECHO ms"
+  "$DIR/.claude/hooks/registrar-puerta.sh" --que | sed 's/^/  /'
   echo "la huella cubre:"
   "$DIR/.claude/hooks/huella-puerta.sh" --que | sed 's/^/  /'
   if [ -f "$MARCA" ] && [ "$(cat "$MARCA")" = "$("$DIR/.claude/hooks/huella-puerta.sh")" ]; then
@@ -74,5 +88,31 @@ cambiado desde entonces. No se commitea con la puerta sin comprobar.
 
 Y se mira el código de salida, no la última línea: \`make fast | tail -3 && git commit\`
 devuelve el código de \`tail\`, que siempre es 0. Así entró 05ddcdc en rojo."
+fi
+
+# --- El techo, en cada commit y no sólo al cerrar hito -----------------------
+[ -f "$REGISTRO" ] || bloquea "HAY VERDE PERO NO HAY MEDIDA DE LA PUERTA, y verde y rápida
+son dos cosas distintas. Corre la puerta EN FRÍO, que es la que cuenta contra el techo:
+
+    make frio > /tmp/puerta.txt 2>&1; echo \$?
+
+Cuesta unos 7 s. En caliente NO vale: con la regresión de LIMITS 102 dentro, \`make fast\`
+daba 2.781 ms en caliente y 30.259 en frío."
+
+read -r H_REG MS ESTADO < "$REGISTRO"
+if [ "$H_REG" != "$AHORA" ] || [ "$ESTADO" != "frio" ]; then
+  bloquea "LA ÚLTIMA MEDIDA DE LA PUERTA ES ${ESTADO:-desconocida} y hace falta una EN FRÍO
+de ESTE árbol. En caliente la puerta no ve su propia regresión: medido sobre 99be97d,
+2.781 ms en caliente contra 30.259 en frío, con tres veces el techo dentro.
+
+    make frio > /tmp/puerta.txt 2>&1; echo \$?"
+fi
+if [ "$MS" != "-" ] && [ "$MS" -gt "$TECHO" ] 2>/dev/null; then
+  bloquea "LA PUERTA PASA DEL TECHO: ${MS} ms en frío contra ${TECHO} de ADR-0022.
+
+Verde no es suficiente: la puerta estuvo a 25,5 s durante diez commits con todos los
+tests en verde, y eso es lo que LIMITS 102 cuenta. O se arregla la causa —mírala con
+\`uv run mypy --strict src tests -v | grep -c \"^LOG:  Parsing\"\`, que es lo que la
+encontró la última vez— o se re-justifica el techo en ADR-0022, EN EL MISMO COMMIT."
 fi
 exit 0

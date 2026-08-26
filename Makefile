@@ -4,7 +4,7 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -o pipefail -c
 
-.PHONY: help quickstart fast full test bench report arch types lint fix cov clean
+.PHONY: help quickstart fast frio full test bench report arch types lint fix cov clean
 .DEFAULT_GOAL := help
 
 help:  ## esta ayuda
@@ -15,6 +15,7 @@ quickstart:  ## de clone a una tabla: 20 documentos versionados, 4 extractores l
 	  --level 1 --extractors pymupdf4llm,pdfplumber,camelot,docling --offline
 
 fast:  ## LA PUERTA: lint + tipos + arquitectura + nucleo puro. < 90 s, sin red, sin Docker
+	@.claude/hooks/registrar-puerta.sh --empieza
 	uv run ruff check .
 	uv run ruff format --check .
 	uv run mypy --strict src tests
@@ -27,7 +28,15 @@ fast:  ## LA PUERTA: lint + tipos + arquitectura + nucleo puro. < 90 s, sin red,
 # la receta se detiene en el primer comando que devuelve distinto de cero. (Y este
 # comentario no puede decir «make <palabra>»: scripts/referencias.py lo leeria como
 # un objetivo del Makefile y lo daria por roto. Cazado por el propio barrido.)
-	@.claude/hooks/huella-puerta.sh > .claude/.ultima-puerta && echo "  puerta verde registrada"
+	@.claude/hooks/registrar-puerta.sh --acaba
+
+frio:  ## LA PUERTA EN FRIO, que es la que cuenta contra el techo. La exige el aro del commit
+# EN FRIO NO ES UN DETALLE. Medido sobre 99be97d, con la regresion de mypy dentro:
+# en frio 30.259 ms, en caliente 2.781 ms. Registrar la duracion de un `make fast`
+# cualquiera habria dejado pasar los diez commits igual, porque 2.781 no pasa de 8500.
+# Cuesta unos 7 s y se hace UNA vez por commit. Ver LIMITS 102.
+	@$(MAKE) --no-print-directory clean
+	@$(MAKE) --no-print-directory fast
 
 full: fast quickstart  ## + contratos, hostiles, secretos, degradacion, deriva y e2e. Con Docker
 	uv run pytest tests/contract tests/hostile tests/security tests/degradation tests/drift -q

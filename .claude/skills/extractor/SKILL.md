@@ -12,11 +12,37 @@ allowed-tools: Read, Glob, Grep, Bash, Write, Edit
 
 !`ls -1 src/docbench_es/extract/ 2>/dev/null | grep -v __ | sed 's/.py$//'`
 
+## PASO 0, ANTES DE ESCRIBIR NADA: PREGÚNTALE A SU CONVERSOR
+
+**¿Qué formato devuelve esta biblioteca DE VERDAD, qué conversor de `core.canonical` lo
+recibe, y lo que ese conversor declara coincide con lo que dice `types`?**
+
+No es una formalidad: **es la pregunta que encontró el agujero de cuatro hitos**.
+`"dataframe"` faltaba en `types.FORMATOS_SIN_SPANS`, así que una tabla de marco podía
+declararse capaz de `rowspan` y `is_wellformed()` la daba por buena — apuntando a
+`camelot`, que compite en la campaña. No lo delató ningún guardián: lo delató ir a
+escribir el consumidor (LIMITS 98).
+
+Se contesta **ejecutando**, no leyendo la documentación de la biblioteca, y se escribe en
+`runs/l5/formatos.yaml` **antes** de escribir el extractor. Si la biblioteca devuelve
+algo que no encaja en ninguno de los cinco formatos canónicos, **eso es un hallazgo y no
+un detalle de integración**: párate y dilo.
+
+Y `expresses_spans` **no se teclea**: se deriva con `expresa_spans(FORMATO_NATIVO)`, como
+en `src/docbench_es/extract/pdfplumber.py`. Así, copiar ese fichero y cambiar el formato no puede mentir
+por descuido.
+
 ## Lo que hay que hacer, y nada más
 
 1. **Un fichero**: `src/docbench_es/extract/$nombre.py`, por debajo de **150 líneas**.
 2. **Una línea** en `pyproject.toml`, entry point `docbench.extractor`.
 3. **Un test** en `tests/contract/` que lo mete en la suite de conformidad.
+4. **Su fila** en `runs/l5/formatos.yaml`, con lo medido en el paso 0.
+
+**Y el import de la biblioteca va DENTRO de las funciones.** El registro falla cerrado:
+un módulo que reviente al importarse tumba el descubrimiento del grupo entero, y
+`extract-local` no se instala en la puerta. Lo comprueba
+`tests/unit/test_extract_registry.py`, por AST y sobre los extractores registrados.
 
 ## Lo que tiene que declarar bien, y aquí está el 90% de los errores
 

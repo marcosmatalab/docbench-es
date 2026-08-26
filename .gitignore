@@ -73,6 +73,10 @@ runs/*/*
 !runs/*/conformidad.yaml
 !runs/*/humo.json
 !runs/*/resello_comparador.json
+# La tabla de «que declara el conversor de cada extractor», que se rellena ANTES de
+# escribir cada uno. Es un pre-registro, como computo.yaml: si no esta versionado, no
+# se escribio antes de medir.
+!runs/*/formatos.yaml
 # LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO
 # contra 4.468 de prosa, así que `docs/` parecía 55.000 líneas de documentación
 # escrita a mano. Son artefactos de medición: viven con los demás artefactos.
