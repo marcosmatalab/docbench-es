@@ -20,21 +20,17 @@ mismo bug una capa por encima.
 from __future__ import annotations
 
 import os
-import subprocess
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from docbench_es.extract.sello import cpus_visibles
+from docbench_es.extract.sello import git as _git
 
 RAIZ = Path(__file__).resolve().parents[1]
 
-
-def _git(*orden: str) -> str:
-    """La salida de `git`, y **`?` si git falla**, nunca cadena vacía.
-
-    Con `check=False` y sin mirar el código, un `git status` que reventara devolvía
-    `""`, que se cuenta como cero ficheros sucios: **un árbol sucio con cara de
-    limpio**, que es justo lo que el sello existe para no dejar pasar.
-    """
-    salida = subprocess.run(["git", *orden], cwd=RAIZ, capture_output=True, text=True, check=False)
-    return salida.stdout.strip() if salida.returncode == 0 else "?"
+__all__ = ["cpus_visibles", "sello", "trabajadores"]
 
 
 def trabajadores() -> str:
@@ -61,20 +57,11 @@ def trabajadores() -> str:
     return f"{os.cpu_count() or '?'}w"
 
 
-def cpus_visibles() -> int:
-    """Cuántas CPU lógicas ve ESTE proceso. **Condición de máquina, como la carga.**
-
-    No es una propiedad de la máquina sino de cómo está configurada: en WSL2 lo fija
-    `processors` en `C:\\Users\\<usuario>\\.wslconfig`, y el 2026-08-25 valía **8 con 32
-    lógicos en el anfitrión** —un 9950X3D de 16 núcleos—. Cualquier medida de reloj
-    tomada con 8 y comparada con una tomada con 32 es una comparación entre máquinas
-    distintas, aunque el hardware sea el mismo.
-
-    Se separa de `trabajadores()` porque aquélla contesta *cuántos procesos levanta
-    `pytest`* y ésta *cuántas CPU hay*: coinciden por casualidad cuando `-n auto` está
-    puesto, y dejan de coincidir en cuanto alguien mide en serie.
-    """
-    return os.cpu_count() or 0
+# `cpus_visibles` y `git` viven en `docbench_es.extract.sello` y se reexportan aquí.
+# **Eran dos implementaciones de «qué árbol es éste y qué máquina lo mide»**, una para
+# los documentos y otra para las corridas, y dos copias sólo tienen dos futuros: quedarse
+# viejas o obligar a acordarse. Lo que SÍ es de aquí es `trabajadores()`, que es
+# específico de `pytest` y no tiene nada que hacer en `src/`.
 
 
 def _pyproject_addopts() -> str:

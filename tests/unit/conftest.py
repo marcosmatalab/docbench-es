@@ -117,6 +117,15 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_guardianes_l4.py": "test_re_congelar_aborta_sin_correccion_registrada",
     "test_guardianes_por_glob.py": "test_si_el_glob_se_rompe_el_recuento_lo_delata",
     "test_documentos_que_sostienen.py": "test_un_documento_que_acumula_no_lleva_tope",
+    # L5 · el primer extractor real, su registro, su arnés y el almacén que los alimenta
+    "test_extract_registry.py": "test_el_control_negativo_de_lo_anterior_detecta_un_import_arriba",
+    "test_cli.py": "test_hay_al_menos_un_subcomando_y_se_dicen_cuales",
+    "test_pdfplumber.py": "test_expresses_spans_no_esta_tecleado_sino_derivado",
+    "test_extractor_arnes.py": "test_el_control_negativo_del_desenvolver_no_inventa_causas",
+    "test_corpus_store.py": "test_carga_un_documento_entero_con_lo_que_dice_el_manifiesto",
+    "test_conjunto.py": "test_el_conjunto_bueno_se_monta_y_dice_su_denominador",
+    "test_corredor.py": "test_reanudar_sobre_otro_arbol_se_rechaza",
+    "test_diario.py": "test_una_causa_que_no_es_del_enum_cerrado_no_se_reconstruye",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

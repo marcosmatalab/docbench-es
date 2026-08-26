@@ -43,14 +43,14 @@ dev = [
 benchcore = { git = "https://github.com/marcosmatalab/benchcore", branch = "main" }
 
 [project.scripts]
-# EL ENTRY POINT SE RETIRA HASTA L5, que es quien escribe la CLI.
-# El ejecutable estaba declarado apuntando a un modulo de CLI que no existe, y
-# lanzarlo reventaba con ModuleNotFoundError: un ejecutable prometido que no existe es
-# exactamente lo que la regla que gobierna este repo llama el fallo más grave.
-# Las dos salidas eran retirarlo o crear un `main.py` con un `--help` que dijera
-# «todavía no»; se elige retirarlo porque este repo tiene una sección entera de
-# «Construido y NO VALIDADO» por adelantarse, y un stub es exactamente eso.
-# Encontrado en la auditoría en frío de `a0d85ed`. Vuelve con L5 y con su CLI.
+# VUELVE EN L5, CON SU CLI, que es la condicion que se puso al retirarlo.
+# Se retiro en la auditoria en frio de `a0d85ed` porque apuntaba a un modulo que no
+# existia y lanzarlo reventaba con ModuleNotFoundError: un ejecutable prometido que no
+# existe es exactamente lo que la regla que gobierna este repo llama el fallo mas grave.
+# Ahora `src/docbench_es/cli/main.py` existe y cada subcomando declarado tiene codigo
+# detras.
+# Lo hace cumplir tests/unit/test_cli.py, que ejecuta el `--help` de cada uno.
+docbench = "docbench_es.cli.main:app"
 
 # Los adaptadores propios entran por el MISMO mecanismo que los de un cliente.
 # Los dos grupos de entry points nacen VACIOS a proposito, y cada linea vuelve
@@ -62,16 +62,25 @@ benchcore = { git = "https://github.com/marcosmatalab/benchcore", branch = "main
 #   docbench.entity     generico-pdf   -> cuando exista su fichero; ADR-0032 solo
 #                                         garantiza que el contrato no le cierra
 #                                         la puerta, no lo construye
-#   docbench.extractor  oracle, pymupdf4llm, docling -> vuelven en L5
+#   docbench.extractor  oracle, pymupdf4llm, camelot, docling, marker, unstructured,
+#                       grobid, tesseract -> cada uno CON SU FICHERO, en L5
 #
-# `boe` ya volvio: su fichero existe y pasa la suite de conformidad.
+# `boe` y `pdfplumber` ya volvieron: sus ficheros existen y pasan su conformidad.
 
 [project.entry-points."docbench.entity"]
 boe = "docbench_es.entity.boe:BoeAdapter"
+
+[project.entry-points."docbench.extractor"]
+# UNA LINEA POR EXTRACTOR, y ninguna sin su fichero. El descubrimiento falla CERRADO:
+# una linea que apunte a un modulo inexistente no rompe su propia carga, rompe la del
+# GRUPO ENTERO, y la campana se quedaria sin ningun concursante.
+# Por eso tambien: el modulo del extractor NO puede importar su biblioteca arriba.
+# `extract-local` no se instala en la puerta, asi que un import de nivel de modulo
+# dejaria este grupo indescubrible en CI: lo comprueba tests/unit/test_extract_registry.py
+pdfplumber = "docbench_es.extract.pdfplumber:PdfplumberExtractor"
 #
-# Sin ninguna linea, el grupo se descubre sin error y devuelve cero adaptadores,
-# que es exactamente la verdad de hoy. El nombre del grupo no se pierde: vive en
-# `docbench_es.entity.registry.GRUPO` y en ADR-0036.
+# El nombre del grupo no se pierde: vive en `docbench_es.extract.registry.GRUPO` y en
+# `docbench_es.entity.registry.GRUPO`, y en ADR-0036.
 
 [tool.ruff]
 # DONDE ESTA EL CODIGO DE PRIMERA PARTE, DICHO Y NO ADIVINADO. Sin esto, `ruff` infiere

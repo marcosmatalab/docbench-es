@@ -1,1 +1,4 @@
-"""cli: vacio en L0. Lo rellena L5, con la CLI, que aparece con la primera campana de nivel 1."""
+"""§8 · `docbench`. Entra en L5 con `conform`, y crece un subcomando por hito.
+
+La regla del paquete: **ningún subcomando declarado sin implementación detrás.**
+"""

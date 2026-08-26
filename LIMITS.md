@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 452 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 520 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **286 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **354 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (8),
@@ -502,7 +502,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
     `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
     `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
-    `limite_lineas` (2) y `tope_area` (2)— **no tienen ningún
+    `limite_lineas` (2), `tope_area` (2), y los ocho que entran con el primer extractor
+    real y su corredor: `extractor_arnes` (14), `pdfplumber` (12), `diario` (9),
+    `corredor` (7), `corpus_store` (7), `extract_registry` (7), `conjunto` (6) y
+    `cli` (6)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
     12,4% al cerrar L2, **63,3% hoy** — y 65 de los 286 entraron de golpe con
@@ -515,7 +518,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **449 de 452 tests protegidos por algo** —un
+    *el arnés*, no la protección: **517 de 520 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1903,3 +1906,46 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     Lo que queda sin cubrir: `tei` se da por capaz sin ejercitar una celda combinada de
     verdad —el test usa una tabla sin spans y sólo mira la bandera—, así que se comprueba
     que el conversor lo *declara*, no que lo *sepa hacer*.
+
+99. **UN `page_range` INVÁLIDO ENTRA EN LA TASA DE FALLO DEL EXTRACTOR, Y ES UN ERROR
+    DEL ARNÉS.** `Extractor.extract` **nunca lanza** —lo dice §7.2 y lo hace cumplir el
+    aro `extract_no_lanza`—, así que un rango de páginas imposible (`(0, 5)`,
+    `(7, 3)`) no puede salir por una excepción: sale como
+    `Extraction(failed=True, failure_reason="provider_error")`.
+
+    **El precio:** un error de quien LLAMA queda registrado como un fallo del
+    extractor, y la tasa de fallo por extractor es un resultado publicado. Con dos
+    extractores llamados con rangos distintos, la comparación se torcería.
+
+    **Por qué no hay una causa mejor.** El enum de §6.9 es **cerrado** y sus ocho
+    valores describen fallos del DOCUMENTO o del proveedor; ninguno dice «el llamador
+    pidió algo imposible». Abrir el enum para esto sería peor: un enum con una casilla
+    de «otro» deja de servir para contar.
+
+    **Por qué hoy no contamina nada, medido:** la campaña de estructura de los 616
+    llama con `page_range=None` —el documento entero— en el 100% de las unidades, así
+    que el caso no puede dispararse. El rango existe para el muestreo por páginas de los
+    documentos largos, que llega con L12b.
+
+    **Cuándo hay que volver a mirarlo:** el día que una campaña use rangos. Entonces el
+    corredor tiene que validarlos **antes** de llamar al extractor y contar un rango
+    malo como error del plan, no como fallo del extractor.
+    `tests/unit/test_pdfplumber.py::test_un_page_range_invalido_no_lanza_pero_queda_declarado_en_limits`
+
+100. **LA BARRERA DE LOS CONVERSORES SIN VALIDAR CUBRE ESTE REPO, NO EL EXTRACTOR DE UN
+    CLIENTE.** `tests/unit/test_sin_consumidor.py` recorre por AST **todo** `src/` y
+    **todos** los `scripts/`, así que ve cualquier llamada literal a `from_markdown`,
+    `from_tei` o `from_text_heuristic` en código de este repositorio.
+
+    **Lo que cambió en L5:** ya existe `docbench_es.extract.registry`, o sea que los
+    extractores se cargan por entry points. Eso **no** abre un agujero mientras vivan en
+    `src/` —se recorren todos, se carguen como se carguen—, pero un extractor de un
+    cliente vive en **su** paquete, y esta barrera no lo ve. Si ese extractor usara un
+    conversor no validado, su número saldría igual y esta comprobación seguiría verde.
+
+    **No es una regresión**: la barrera nunca cubrió código de terceros. Lo que cambia
+    es que ahora hay una vía real por la que ese código entra, así que el límite se
+    escribe en vez de darse por entendido.
+
+    **Lo que sí protege el número publicado hoy**: los cuatro extractores de la campaña
+    de los 616 son de este repo y están dentro del barrido.

@@ -24,6 +24,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from docbench_es.extract.conjunto import veredictos_posibles as _veredictos
+
 RAIZ = Path(__file__).resolve().parents[1]
 PLAN = RAIZ / "runs" / "l5" / "conformidad.yaml"
 FIXTURES = RAIZ / "runs" / "l4" / "fixtures"
@@ -129,19 +132,12 @@ def conjunto() -> list[Elegido]:
 def veredictos_posibles(elegidos: list[Elegido]) -> set[str]:
     """Qué casillas de `VeredictoSpans` puede emitir este conjunto. **Su denominador.**
 
-    `CONTRADICCION` y la mitad de `COHERENTE` no dependen del conjunto: salen de lo que
-    el extractor declare. Las dos que sí dependen son `ESCONDIDO` —hace falta que el
-    documento traiga combinadas para que el extractor pueda emitirlas— y la forma de
-    `COHERENTE` que confirma un `False` honesto, que necesita lo mismo.
+    **La regla no vive aquí: vive en `docbench_es.extract.conjunto`**, que es lo que corre
+    de verdad cuando alguien pasa un extractor por la suite. Esto era una segunda copia
+    —misma decisión escrita dos veces— y una copia sólo tiene dos futuros: quedarse vieja
+    o obligar a acordarse. Se delega, y lo que queda aquí es el puente desde `Elegido`.
     """
-    hay_ocasion = any(e.spans_en_la_verdad > 0 for e in elegidos)
-    posibles = {"CONTRADICCION", "COHERENTE"}
-    if hay_ocasion:
-        posibles.add("ESCONDIDO")
-    else:
-        # Sin ocasión, el `False` honesto no se puede confirmar NUNCA.
-        posibles.add("SIN_EVIDENCIA")
-    return posibles
+    return set(_veredictos(any(e.spans_en_la_verdad > 0 for e in elegidos)))
 
 
 def main() -> int:

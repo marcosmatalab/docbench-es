@@ -39,7 +39,8 @@ bugs que encuentra el que lo CONSUME — L1 cerró en verde y L2 descubrió que
 
 | Qué | Primer consumidor real | Barrera |
 |---|---|---|
-| `from_markdown`, `from_dataframe`, `from_tei`, `from_text_heuristic` | **L5**: `pymupdf4llm`/`marker` → Markdown, `camelot` → DataFrame, `grobid` → TEI, `tesseract` → texto | `tests/unit/test_sin_consumidor.py`, por AST |
+| `from_markdown`, `from_tei`, `from_text_heuristic` | **L5, uno por extractor**: `pymupdf4llm`/`marker` → Markdown, `grobid` → TEI, `tesseract` → texto | `tests/unit/test_sin_consumidor.py`, por AST |
+| ~~`from_dataframe`~~ **VALIDADO el 2026-08-26** por `extract.pdfplumber`, y la predicción se cumplió al escribirlo: apareció que `dataframe` faltaba en `FORMATOS_SIN_SPANS` (límite 98) | — | — |
 | Campos `page_span` y `caption` | Sin fecha. `page_span` además no está medido (LIMITS 32) | Idem |
 
 **Ninguna cifra publicada puede pasar por ellos**, y lo impide un test, no una
@@ -165,7 +166,7 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 452 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 520 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 

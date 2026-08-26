@@ -6,11 +6,16 @@ que encuentra el hito que lo CONSUME. Caso medido: L1 cerró en verde con
 marcaba como cabecera un `<td>` dentro de `<thead>` — el **100%** de las
 cabeceras de PubTabNet mal marcadas.
 
-De los cinco conversores de §9.1, **sólo `from_html` tiene consumidor real**. Los
-otros cuatro están escritos, tienen tests propios y **nadie los ha usado para
-producir nada**. Su primer consumidor real llega en **L5**, con los ocho
-extractores: `pymupdf4llm` y `marker` emiten Markdown, `camelot` DataFrames,
-`grobid` TEI y `tesseract` texto plano.
+De los cinco conversores de §9.1, **`from_html` y `from_dataframe` ya tienen
+consumidor real**; los otros tres están escritos, tienen tests propios y **nadie
+los ha usado para producir nada**. Su primer consumidor llega con su extractor:
+`pymupdf4llm` y `marker` emiten Markdown, `grobid` TEI y `tesseract` texto plano.
+
+**`from_dataframe` salió de esta lista con `pdfplumber`, y la predicción se cumplió
+en el acto**: al preguntarse qué formato devolvía —el primer acto de escribir un
+extractor— apareció que `"dataframe"` faltaba en `types.FORMATOS_SIN_SPANS`, así que
+una tabla de marco podía declararse capaz de `rowspan` y `is_wellformed()` la daba
+por buena. Segunda vez que el patrón acierta, y la primera con la predicción escrita.
 
 Hasta entonces se marcan **NO VALIDADOS** y **ninguna cifra publicada puede pasar
 por ellos**. Esto no es una nota en `LIMITS.md`: es un test que lo impide, porque
@@ -25,8 +30,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 
-SIN_CONSUMIDOR = frozenset({"from_markdown", "from_dataframe", "from_tei", "from_text_heuristic"})
-"""Los cuatro conversores de §9.1 que nadie usa todavía. Su hito es L5."""
+SIN_CONSUMIDOR = frozenset({"from_markdown", "from_tei", "from_text_heuristic"})
+"""Los conversores de §9.1 que nadie usa todavía. Cada uno sale con SU extractor."""
 
 CAMPOS_SIN_LECTOR = frozenset({"page_span", "caption"})
 """Campos de `CanonicalTable` que ninguna métrica lee. `page_span` además no está
@@ -95,11 +100,12 @@ def test_ninguna_ruta_que_publica_un_numero_toca_los_conversores_sin_validar() -
     `benchcore.registry` no se importa desde `src/`. Verificado por AST sobre
     `src/` y sobre TODOS los `scripts/**.py`, no una lista escrita a mano.
 
-    *Cuándo deja de valer*: **en L5**. `pyproject.toml` ya declara entry points
-    para `docbench.extractor`, y un extractor que resolviera su conversor por
-    nombre quedaría fuera del alcance de este test. Ese día hay que cambiar la
-    comprobación —de sitios de llamada a inspección del registro— o aceptar que
-    la barrera dejó de existir y decirlo.
+    *Qué cambió en L5, y hay que decirlo*: **ya existe
+    `docbench_es.extract.registry`**, o sea que los extractores se cargan por entry
+    points. Eso NO abre el agujero mientras los extractores vivan en `src/` —se
+    recorren todos, se carguen como se carguen—, pero sí estrecha lo que este test
+    garantiza: **cubre los extractores de este repo, no el de un cliente**. El de un
+    cliente vive en su paquete, y esta barrera no lo ve. LIMITS 100.
     """
     culpables: dict[str, set[str]] = {}
     fuentes = [
@@ -152,6 +158,9 @@ def test_from_html_si_tiene_consumidor_y_por_eso_no_esta_en_la_lista() -> None:
     dos tests de arriba pasarían en verde sin comprobar nada.
     """
     assert "from_html" not in SIN_CONSUMIDOR
-    assert len(SIN_CONSUMIDOR) == 4
+    assert "from_dataframe" not in SIN_CONSUMIDOR
+    assert len(SIN_CONSUMIDOR) == 3
     generador = _llamadas(RAIZ / "scripts" / "pubtabnet_golden.py")
     assert "from_html" in generador, "el generador del golden lo usa de verdad"
+    extractor = _llamadas(RAIZ / "src" / "docbench_es" / "extract" / "pdfplumber.py")
+    assert "from_dataframe" in extractor, "pdfplumber lo usa de verdad, no de boquilla"

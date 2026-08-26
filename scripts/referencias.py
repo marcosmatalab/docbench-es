@@ -64,7 +64,6 @@ DECLARADAS: dict[str, str] = {
     "tests/fixtures/tablas": "lo crea L6; CLAUDE.md ya dice que crearlo la primera vez sí se puede",
     "tests/fixtures/quickstart": "lo crea L7, mismo párrafo de CLAUDE.md",
     "tests/fixtures/quickstart/plan.yaml": "el plan congelado de `make quickstart`, L7",
-    "docbench": "el entry point se RETIRÓ de pyproject en L4 y vuelve con la CLI, en L5",
     "docs/entity-guide.md": "la skill `entidad` lo lee «si ya existe»: guardado en el propio texto",
     "runs/2026-Q4/plan.yaml": "ruta de EJEMPLO en la ayuda de `make bench`; la escribe quien mide",
     "runs/2026-Q4": "misma ruta de ejemplo, sin el fichero",
