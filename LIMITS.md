@@ -1475,9 +1475,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **68** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **69** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **45** que quedan, **huérfanos: 27 de 45**. Entre ellos `derivadas.py`
+    nada—, y de los **46** que quedan, **huérfanos: 28 de 46**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 

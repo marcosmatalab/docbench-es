@@ -1,0 +1,70 @@
+# EL HUMO DE LA CAMPAÑA · doce documentos, los cuatro extractores, ANTES de los 616
+#
+# NO ES EL HUMO DE humo.yaml. Aquel es B6: un extractor sobre las 30 tablas de L4 con
+# TEDS contra la verdad derivada, o sea la METRICA. Este mira otra cosa: que la corrida
+# TERMINE.
+
+hito: L5
+paso: humo-de-la-campana
+comando: >
+  uv run docbench run --extractors all --poblacion runs/l5/humo_campana.json
+  --salida runs/l5/humo_campana --offline
+documentos: runs/l5/humo_campana.json   # congelados por scripts/humo_campana.py
+
+# --------------------------------------------------------------- POR QUE EXISTE
+por_que: >
+  La campaña de los 616 tiene que ser UNA sola corrida con los cuatro extractores
+  dentro: el corredor rechaza reanudar sobre otro arbol, y filas de commits distintos
+  no son una tabla sino cuatro medidas puestas al lado. La consecuencia es que si el
+  cuarto extractor revienta en el documento 400, se pierde la corrida entera.
+  Doce documentos con los cuatro cuestan minutos. Es un seguro barato sobre cuatro horas.
+
+# ------------------------------------------------------- COMO SE ELIGIERON LOS 12
+seleccion:
+  regla: >
+    Los DOS PRIMEROS POR IDENTIFICADOR de cada una de las seis celdas: tres bandas de
+    paginas (<=10, 11-50, >50) por con/sin tabla. Determinista, sin semilla.
+  por_que_no_al_azar: >
+    Porque no es una muestra y no lo pretende. Su trabajo es tocar los sitios donde un
+    extractor nuevo se rompe de FORMAS DISTINTAS, y eso son celdas, no sorteos.
+  la_banda_larga: >
+    Es donde aparecen el agotamiento de memoria y los tiempos de corte, y son el 36,6%
+    del computo aunque sean 38 documentos. El elegido mas largo tiene 309 paginas.
+  los_sin_tabla: >
+    Son el control negativo de deteccion: donde se ve un extractor que INVENTA tablas.
+    En los que si las tienen, eso no se ve.
+  celdas_cubiertas: 6 de 6, y el script sale con codigo 1 si alguna se queda corta
+
+# ------------------------------------------------------------------- LO QUE NO ES
+NO_SE_PUBLICA_COMO_NUMERO: >
+  Doce documentos elegidos por cobertura no miden nada. Ni TEDS, ni coste, ni tasa de
+  fallo. Lo unico que se mira es si TERMINA y con que causas.
+
+# ------------------------------------------- QUE LO HARIA PARAR, ESCRITO ANTES
+parar_si:
+  - id: revienta
+    umbral: cualquier extractor lanza una excepcion en vez de devolver failed=True
+    significa: >
+      Rompe el contrato de §7.2 y se lleva por delante la campaña entera, ademas de
+      borrar del informe su propia tasa de fallo.
+    obliga: no se lanzan los 616 hasta arreglarlo
+  - id: memoria
+    umbral: una unidad de la banda >50 no cabe en la RAM disponible
+    significa: docling pica 4,4 GB por unidad; 309 paginas es otra cosa
+    obliga: >
+      medir el pico ANTES de los 616 y decidir el paralelismo entre unidades, que es la
+      palanca conocida y no accionada de B5-bis
+  - id: tasa_de_fallo_alta
+    umbral: mas de 2 de 12 fallidas en un mismo extractor
+    significa: no es un documento dificil, es el adaptador
+    obliga: mirar la causa antes de gastar cuatro horas multiplicandola por 51
+  - id: cero_tablas
+    umbral: un extractor devuelve 0 tablas en los 6 documentos CON tabla
+    significa: el adaptador no esta conectado a lo que cree
+    obliga: parar. Un extractor a cero no compite, no pierde
+
+# ------------------------------------------------------------------ LO MEDIDO YA
+con_un_solo_extractor:
+  pdfplumber: >
+    12 de 12, 121 tablas, 34,0 s de reloj, 0 fallos. Con los cuatro sera mas, y el
+    numero que importa de ese ensayo no es el reloj: es que ninguno reviente.
