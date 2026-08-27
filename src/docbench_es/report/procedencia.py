@@ -30,7 +30,19 @@ __all__ = ["CAMPOS", "bloque", "difieren"]
 
 CAMPOS = ("commit", "sucios", "huella")
 """Los tres que `extract.sello.arbol()` produce. Se comparan **los tres**: el commit solo
-engaña sobre un árbol sucio, y el recuento de sucios engaña más fino."""
+engaña sobre un árbol sucio, y el recuento de sucios engaña más fino.
+
+**Pero no discriminan lo mismo, y presentarlos juntos como «la huella del árbol» hace
+creer que el tercero identifica el árbol.** No lo hace:
+
+* `commit` — QUÉ commit. Es el único que distingue un árbol limpio de otro árbol limpio;
+* `sucios` — CUÁNTOS ficheros sin commitear;
+* `huella` — `sha256` del `status --porcelain` más el `diff HEAD`. Discrimina **limpio de
+  sucio**, y cuando está sucio, **qué** diff. Sobre CUALQUIER árbol limpio vale siempre
+  `01ba4719c80b6fe9`, que es `sha256("\n")[:16]`.
+
+Sin decirlo, la salida se lee como una contradicción: dos árboles con la MISMA huella y
+un «no son el mismo árbol» debajo. Los dos son limpios; el commit es lo que los separa."""
 
 
 def difieren(
@@ -59,6 +71,14 @@ def bloque(corrida: Mapping[str, object], informe: Mapping[str, object] | None) 
         "",
         f"**Puntuación** — informe de `{informe.get('commit')}`, "
         f"{informe.get('sucios')} ficheros sin commitear, huella `{informe.get('huella')}`.",
+        "",
+        "**Qué discrimina cada campo**, porque no es lo mismo y verlos juntos hace creer "
+        "que la huella identifica el árbol: `commit` dice **qué** commit y es el único "
+        "que separa un árbol limpio de otro; `sucios`, **cuántos** ficheros sin "
+        "commitear; y `huella` separa **limpio de sucio** —y, si está sucio, qué diff—, "
+        "así que sobre cualquier árbol limpio vale siempre `01ba4719c80b6fe9`. **Dos "
+        "huellas iguales no dicen que sea el mismo árbol: dicen que los dos están "
+        "limpios.**",
         "",
     ]
     movido = difieren(corrida, informe)

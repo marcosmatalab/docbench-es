@@ -133,6 +133,10 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_censo_capa_texto.py": "test_encuentra_una_pagina_sin_capa_de_texto",
     "test_docling.py": "test_no_hay_ninguna_llamada_a_extract_en_este_fichero",
     "test_metricas_regimen.py": "test_un_censo_con_intervalo_tampoco",
+    # El control de `procedencia` tiene que ser un arbol SUCIO: la afirmacion util del
+    # modulo es «no difieren», y un `difieren()` vacio la cumpliria siempre. Con el arbol
+    # sucio los tres campos tienen que moverse, y eso es lo que un vacio no puede fingir.
+    "test_procedencia.py": "test_un_arbol_sucio_si_mueve_la_huella",
     "test_nivel1.py": "test_el_documento_que_no_cuadra_no_cuenta_como_cero",
     "test_tabla_nivel1.py": "test_un_no_aplicable_se_imprime_n_a_y_nunca_cero",
 }

@@ -64,8 +64,10 @@ carga() {
 }
 
 ms_monotonicos() {
-  # MILISEGUNDOS MONOTONICOS, NO `date`. Y no es preferencia de estilo: aqui habia un
-  # reloj de PARED midiendo una DURACION, y un reloj de pared salta.
+  # MILISEGUNDOS DE CLOCK_MONOTONIC, y por UNA sola definicion: scripts/reloj.py, que
+  # llaman tambien medir_puerta.py y fast.yml. Aqui hubo primero un `date +%s%3N` —reloj
+  # de PARED midiendo una DURACION— y despues un /proc/uptime, que es BOOTTIME y cuenta
+  # el tiempo suspendido. El porque de las dos correcciones esta en scripts/reloj.py.
   #
   # MEDIDO EN ESTA MAQUINA el 27 ago 2026, con la campaña de los 616 corriendo. Dos
   # observaciones del MISMO proceso, separadas por un rato:
@@ -85,7 +87,9 @@ ms_monotonicos() {
   # `scripts/medir_puerta.py` ya usaba `time.monotonic_ns()`, asi que la serie de n=40
   # que se publica estaba a salvo. El ARO —el que decide si se puede commitear— no lo
   # estaba, y son DOS INSTRUMENTOS QUE MIDEN LO MISMO. Ahora leen el mismo tipo de reloj.
-  awk '{print int($1*1000)}' /proc/uptime
+  # Si no esta el reloj no se INVENTA una duracion: se devuelve vacio y quien llama
+  # registra `sin-medir`. Es la misma regla que la marca de arranque ausente.
+  [ -f scripts/reloj.py ] && python3 scripts/reloj.py
 }
 
 esta_frio() {
@@ -114,7 +118,12 @@ case "${1:-}" in
     mkdir -p .claude
     estado=caliente
     esta_frio && estado=frio
-    printf '%s %s\n' "$(ms_monotonicos)" "$estado" > "$INICIO"
+    # Sin reloj la marca nace INVALIDA a proposito: un `-` no es un entero, asi que el
+    # guardian de `--acaba` la rechaza y se registra `sin-medir`. Escribir el campo vacio
+    # dejaria una marca de UN solo campo, y quien la lea por posicion lee el estado como
+    # si fuera el instante.
+    t0=$(ms_monotonicos); [ -z "$t0" ] && t0="-"
+    printf '%s %s\n' "$t0" "$estado" > "$INICIO"
     exit 0 ;;
   --acaba)
     mkdir -p .claude
@@ -129,6 +138,7 @@ case "${1:-}" in
     fi
     read -r t0 estado < "$INICIO"
     ahora=$(ms_monotonicos)
+    [ -z "$ahora" ] && ahora=-1
     # UNA MARCA QUE NO PUEDE SER DE ESTE ARRANQUE NO SE RESTA: se descarta. El uptime
     # sólo crece dentro de un arranque, así que `t0 > ahora` significa una de dos, y las
     # dos invalidan la medida igual:

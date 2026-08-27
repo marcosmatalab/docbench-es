@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 628 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 632 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **462 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **466 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -505,7 +505,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `nivel1` (14), `tabla_nivel1` (15), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (14), `tabla_nivel1` (15), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
@@ -521,7 +521,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **625 de 628 tests protegidos por algo** —un
+    *el arnés*, no la protección: **629 de 632 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1478,9 +1478,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **70** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **71** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **47** que quedan, **huérfanos: 28 de 47**. Entre ellos `derivadas.py`
+    nada—, y de los **48** que quedan, **huérfanos: 28 de 48**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 

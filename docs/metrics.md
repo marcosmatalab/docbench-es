@@ -470,6 +470,33 @@ toca ningún glifo visible»— recorta tiempo sin recortar cobertura. Y si aun 
 no cupiera, lo que se mueve de sitio es la suite lenta a `full`, con su límite
 declarado en `LIMITS.md`. **Un test borrado no aparece en ningún número.**
 
+### La serie de CI empieza HOY, y antes de hoy no había ninguna
+
+`fast.yml` cronometra la puerta contra un **techo de crecimiento** de 21.000 ms y escribe
+`puerta_ms=` en el resumen del paso. **Nadie lo cosechaba.** O sea que la alarma de
+crecimiento de CI no podía ver crecimiento: comparaba cada corrida contra un techo fijo y
+tiraba el número. Es el límite 77 aplicado a CI, y se descubrió al buscar con qué comparar
+la primera medida del reloj nuevo.
+
+No se puede reconstruir hacia atrás —los logs de las corridas anteriores ya no exponen la
+línea— así que **la serie empieza con un solo punto y se dice**. Una serie que empieza hoy
+vale; una que no empieza nunca, no.
+
+| Fecha | Commit | `puerta_ms` | Instrumento | Nota |
+|---|---|---|---|---|
+| 2026-08-27 | `8b2def5` | **12.630 ms** | `/proc/uptime` | Primer punto. Antes no hay serie porque no se cosechaba |
+
+**Y este primer punto lleva una advertencia que la propia serie necesita:** se midió con
+`/proc/uptime`, que **es BOOTTIME** y cuenta el tiempo suspendido. Desde el commit
+siguiente el instrumento es `scripts/reloj.py` (`CLOCK_MONOTONIC`), que es el mismo que
+usan `medir_puerta.py` y el aro del commit. En un runner que no se suspenda los dos dan lo
+mismo; si alguna vez se suspende, no. **Un cambio de instrumento dentro de una serie es
+justo lo que la vuelve ilegible si no está declarado**, y por eso está aquí y no en un
+comentario.
+
+Lo que falta —que CI escriba su número donde se acumule solo, en vez de a mano— va con su
+hito. Mientras tanto, este punto se copia a mano y el método es éste.
+
 ### La puerta en caliente busca MENOS que en frío, y eso hace más fuerte el verde de CI
 
 `hypothesis` guarda en `.hypothesis/` lo que ya ha explorado. Eso acelera las

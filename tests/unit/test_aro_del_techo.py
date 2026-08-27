@@ -59,10 +59,17 @@ def _techo_del_instrumento() -> int:
 
 
 def _proyecto(tmp_path: Path, registro: str | None, huella_al_dia: bool = True) -> Path:
-    """Un proyecto de juguete con los tres hooks y las marcas que se le pidan."""
+    """Un proyecto de juguete con los tres hooks, **el reloj** y las marcas que se pidan.
+
+    `scripts/reloj.py` se copia porque el hook DEPENDE de él desde que los tres
+    instrumentos comparten una sola definición del reloj. Un arnés que no reproduce las
+    dependencias reales del hook prueba otro hook.
+    """
     (tmp_path / ".claude" / "hooks").mkdir(parents=True)
     for nombre in ("guard-commit.sh", "registrar-puerta.sh", "huella-puerta.sh"):
         shutil.copy(HOOKS / nombre, tmp_path / ".claude" / "hooks" / nombre)
+    (tmp_path / "scripts").mkdir()
+    shutil.copy(RAIZ / "scripts" / "reloj.py", tmp_path / "scripts" / "reloj.py")
     huella = subprocess.run(
         [str(tmp_path / ".claude" / "hooks" / "huella-puerta.sh")],
         capture_output=True,
@@ -156,6 +163,8 @@ def test_frio_exige_que_no_quede_ninguna_cache(
     la cifra saldría optimista. `.hypothesis` no es velocidad: es lo ya explorado."""
     (tmp_path / ".claude").mkdir()
     shutil.copy(REGISTRAR, tmp_path / "registrar-puerta.sh")
+    (tmp_path / "scripts").mkdir()
+    shutil.copy(RAIZ / "scripts" / "reloj.py", tmp_path / "scripts" / "reloj.py")
     for c in caches:
         (tmp_path / c).mkdir()
     subprocess.run(
@@ -225,41 +234,47 @@ def _sin_comentarios(texto: str) -> str:
     return "\n".join(x for x in texto.splitlines() if not x.lstrip().startswith("#"))
 
 
-def test_los_tres_instrumentos_de_la_puerta_leen_un_reloj_monotonico() -> None:
-    """**Un reloj de pared no puede medir una duración**, y aquí había dos que lo hacían.
+def test_los_tres_instrumentos_de_la_puerta_llaman_a_la_misma_definicion() -> None:
+    """**Una definición del reloj, tres llamantes.** No tres que hoy coinciden.
 
-    La puerta la cronometran TRES instrumentos: `medir_puerta.py` para la serie que se
-    publica, el hook para el aro que decide si se puede commitear, y el `fast.yml` de CI.
-    `medir_puerta.py` ya usaba `time.monotonic_ns()`; los otros dos usaban `date +%s`, o
-    sea el reloj de pared. **Dos instrumentos que miden lo mismo con relojes distintos.**
+    La puerta la cronometran `medir_puerta.py` (la serie que se publica), el hook (el aro
+    que decide si se puede commitear) y `fast.yml` (CI). Han pasado por dos versiones
+    malas de esto y las dos enseñan lo mismo:
 
-    Medido el 27 ago 2026 en la máquina de desarrollo. Dos observaciones del mismo
-    proceso: el reloj de pared avanzó **1.647 s** (12:01:03 → 12:28:30) mientras el
-    proceso envejecía **1.483 s** (`etimes` 4380 → 5863). **164 s inventados** por
-    resincronización de WSL2 con el anfitrión, que `/proc/uptime` no vio. Si hubieran
-    caído dentro de un `make fast`, el aro habría registrado 164.000 ms.
+    1. tres RELOJES distintos — `medir_puerta.py` con `time.monotonic_ns()`, los otros dos
+       con `date`, que es el reloj de PARED y no puede medir una duración;
+    2. tres LECTURAS distintas del mismo tipo de reloj — `/proc/uptime` en los hooks, que
+       **es BOOTTIME** (`fs/proc/uptime.c` → `ktime_get_boottime_ts64()`) y por tanto
+       cuenta el tiempo suspendido, mientras `CLOCK_MONOTONIC` se para.
 
-    Esto NO arregla ningún número malo conocido —los rojos vistos son excursiones de
-    segundos, no de minutos, y decir «era el reloj» sería inventarse una causa—. Arregla el
-    DIAGNÓSTICO: con un reloj de pared, un número raro del aro tiene **dos** explicaciones
-    posibles, contención y reloj, y no se pueden separar. Con monotónico queda una.
+    La segunda es la peligrosa: **en la máquina donde se escribió no falla.** Medido el 27
+    ago 2026 en WSL2, `BOOTTIME - MONOTONIC = 0,000 s` con 41.028 s (11,40 h) de reloj de
+    pared que la VM no contó en NINGÚN reloj — el anfitrión congela la VM entera, el kernel
+    invitado no se ejecuta y no recorre su ruta de suspensión. Los tres relojes coincidían
+    **por un accidente de plataforma**. En un portátil que se suspenda de verdad, no.
 
-    Es la clase que se olvida: **un instrumento que funciona el 99% de las veces.**
+    Es la misma razón por la que la huella del árbol no se copió: dos definiciones de la
+    misma magnitud se van por su lado, y la que se va es la que nadie mira.
     """
+    reloj = RAIZ / "scripts" / "reloj.py"
+    assert reloj.exists(), "no existe la definición única del reloj"
+    assert "time.monotonic()" in reloj.read_text(encoding="utf-8")
+
     instrumento = (RAIZ / "scripts" / "medir_puerta.py").read_text(encoding="utf-8")
-    assert "time.monotonic_ns()" in instrumento
-    assert "time.time()" not in instrumento, "la serie publicada mediría con reloj de pared"
+    assert "from reloj import ms" in instrumento, "la serie publicada no usa la definición"
+    assert "time.monotonic" not in instrumento, "se quedó una segunda definición dentro"
 
     for ruta in (
         RAIZ / ".claude" / "hooks" / "registrar-puerta.sh",
         RAIZ / ".github" / "workflows" / "fast.yml",
     ):
         vivo = _sin_comentarios(ruta.read_text(encoding="utf-8"))
-        assert "/proc/uptime" in vivo, f"{ruta.name} no lee un reloj monotónico"
-        assert "date +%s" not in vivo, (
-            f"{ruta.name} cronometra con `date`, que es el reloj de PARED. "
-            "Usa: awk '{print int($1*1000)}' /proc/uptime"
-        )
+        assert "scripts/reloj.py" in vivo, f"{ruta.name} no llama a la definición única"
+        for prohibido in ("date +%s", "/proc/uptime"):
+            assert prohibido not in vivo, (
+                f"{ruta.name} cronometra con `{prohibido}` en vez de scripts/reloj.py. "
+                "`date` es reloj de pared; /proc/uptime es boottime y cuenta la suspensión."
+            )
 
 
 def test_una_marca_de_arranque_que_no_es_de_este_arranque_no_se_resta() -> None:

@@ -46,12 +46,12 @@ import shutil
 import statistics
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 
 sys.path.insert(0, str(RAIZ / "scripts"))
+from reloj import ms  # noqa: E402
 from sello import sello  # noqa: E402
 
 CACHES = (
@@ -146,11 +146,11 @@ def movimiento(antes: str, ahora: str, corrida: int, tanda: int) -> str | None:
 def _una_corrida() -> tuple[int, int, float]:
     _en_frio()
     carga = _carga()
-    inicio = time.monotonic_ns()
+    inicio = ms()
     resultado = subprocess.run(
         ["make", "fast"], cwd=RAIZ, capture_output=True, text=True, check=False
     )
-    return (time.monotonic_ns() - inicio) // 1_000_000, resultado.returncode, carga
+    return ms() - inicio, resultado.returncode, carga
 
 
 def main() -> int:
