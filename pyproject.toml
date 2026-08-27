@@ -62,11 +62,11 @@ docbench = "docbench_es.cli.main:app"
 #   docbench.entity     generico-pdf   -> cuando exista su fichero; ADR-0032 solo
 #                                         garantiza que el contrato no le cierra
 #                                         la puerta, no lo construye
-#   docbench.extractor  oracle, docling, marker, unstructured,
+#   docbench.extractor  oracle, marker, unstructured,
 #                       grobid, tesseract -> cada uno CON SU FICHERO, en L5
 #
-# `boe`, `pdfplumber`, `pymupdf4llm` y `camelot` ya volvieron: sus ficheros existen y
-# pasan su conformidad.
+# `boe`, `pdfplumber`, `pymupdf4llm`, `camelot` y `docling` ya volvieron: sus ficheros
+# existen y pasan su conformidad.
 
 [project.entry-points."docbench.entity"]
 boe = "docbench_es.entity.boe:BoeAdapter"
@@ -81,6 +81,7 @@ boe = "docbench_es.entity.boe:BoeAdapter"
 pdfplumber = "docbench_es.extract.pdfplumber:PdfplumberExtractor"
 pymupdf4llm = "docbench_es.extract.pymupdf4llm:Pymupdf4llmExtractor"
 camelot = "docbench_es.extract.camelot:CamelotExtractor"
+docling = "docbench_es.extract.docling:DoclingExtractor"
 #
 # El nombre del grupo no se pierde: vive en `docbench_es.extract.registry.GRUPO` y en
 # `docbench_es.entity.registry.GRUPO`, y en ADR-0036.

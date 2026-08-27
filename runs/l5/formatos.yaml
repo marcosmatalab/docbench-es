@@ -54,7 +54,12 @@ docling:
   y_una_ventaja_que_no_se_buscaba: >
     from_html es el UNICO conversor con consumidor validado desde L1 —el golden de
     PubTabNet y la verdad derivada de L4—, asi que docling no estrena conversor.
-  estado: DECIDIDO, sin escribir
+  los_hilos: >
+    OMP/MKL/OPENBLAS/TORCH a 2, puestos al IMPORTAR el modulo y no al extraer —OpenMP y
+    BLAS los leen cuando torch se carga—, y viajando en la version: docling 2.121.0+2h+ad1.
+    Es la configuracion en la que B5-bis midio el presupuesto de 2,53 h (limite 89). Dos
+    corridas con hilos distintos no son la misma fila.
+  estado: ESCRITO Y EN VERDE, `docbench conform --extractor docling`
 
 # ------------------------------------------------- PENDIENTES DE MEDIR IGUAL
 pymupdf4llm:
