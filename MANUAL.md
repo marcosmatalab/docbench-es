@@ -837,6 +837,12 @@ class CampaignResult:
 # ── Los agregados por nivel, y los tres objetos de salida ────────────────
 # Se usan arriba y en §9. Van aquí para que §6 sea de verdad completo.
 
+# El régimen y el agregado VIAJAN DENTRO de la métrica (ADR-0045). Los encontró el
+# PASO 0 de su primer productor, en L5: este tipo se declaró en L0 y nadie lo había
+# rellenado nunca.
+Regimen  = Literal["CENSO", "MUESTRA"]          # censo -> SIN intervalo (ADR-0015)
+Agregado = Literal["POR_DOCUMENTO", "PONDERADO_POR_PAGINA", "POR_TABLA"]
+
 @dataclass(frozen=True)
 class StructureMetrics:            # nivel 1, por extractor
     teds: float | None             # None = NO_APLICABLE, nunca 0
@@ -844,8 +850,13 @@ class StructureMetrics:            # nivel 1, por extractor
     cell_f1: float | None          # None = NO_APLICABLE, igual que teds
     evaluable_coverage: float      # sobre cuántas tablas se pudo calcular
     failures: Mapping[ExtractionFailure, int]   # enum cerrado como CLAVE, no str
-    ci: tuple[float, float]
-    n_documents: int
+    n_documents: int               # SOBRE CUANTOS: 338, no 616 ni 1.000
+    agregado: Agregado             # los tres dan numeros distintos
+    regimen: Regimen               # y por tanto si `ci` va o no va
+    ci: tuple[float, float] | None = None       # el de `teds`. None <=> CENSO
+    # __post_init__ ata regimen y ci EN LAS DOS DIRECCIONES: MUESTRA sin ci no se
+    # construye, y CENSO con ci tampoco. Sin la segunda, un intervalo ausente y uno
+    # olvidado se leen igual.
 
 @dataclass(frozen=True)
 class AnswerMetrics:               # nivel 2, por extractor

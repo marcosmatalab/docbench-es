@@ -1,0 +1,93 @@
+# COMO SE EMPAREJA UNA TABLA EXTRAIDA CON SU TABLA DE REFERENCIA
+# Escrito ANTES de escribir el codigo que empareja, y ANTES de ver un solo TEDS.
+#
+# `core.teds.teds_batch` recibe tripletas `(clave, predicha, real)` y dice en su propio
+# docstring que emparejar es trabajo de quien llama. Nadie lo ha decidido todavia, y es
+# una decision que mueve el titular: con el mismo extractor y la misma verdad, dos reglas
+# de emparejado dan dos TEDS distintos.
+
+hito: L5
+decide: que tabla extraida se compara con que tabla de la verdad derivada
+usa: core.teds.teds_batch, core.cellmatch
+
+# ------------------------------------------------- LO QUE NO SE PUEDE USAR, Y POR QUE
+no_se_puede_emparejar_por_pagina: >
+  La verdad de L5 es DERIVED: sale del XML del BOE, y el XML NO TIENE PAGINAS. El limite
+  32 lo dice desde L1: «page_span no es derivable de un XML, lo pone quien llama». Asi
+  que el `page_span` del lado de la verdad no es informacion, es un relleno — y
+  emparejar por el seria emparejar por un campo inventado.
+
+# --------------------------------------------------------------------- LA REGLA
+regla:
+  cual: POR ORDEN, Y SOLO CUANDO LOS RECUENTOS COINCIDEN
+  definicion: >
+    Si el extractor devuelve N tablas para un documento y la verdad tiene M:
+    · N == M  -> se emparejan por orden de aparicion, la k-esima con la k-esima, y el
+                 documento puntua TEDS.
+    · N != M  -> el documento NO PUNTUA TEDS. Sale NO_APLICABLE, nunca 0,00, y su
+                 discrepancia se cuenta en la columna de deteccion.
+  por_que_solo_con_recuentos_iguales: >
+    Porque el modo de fallo del emparejado por orden es CATASTROFICO Y SISTEMATICO: un
+    extractor que se salta la primera tabla compara su tabla 2 contra la 1 de la verdad,
+    su 3 contra la 2, y saca notas ruinosas en TODAS por un solo fallo de deteccion.
+    Eso no mide calidad de extraccion: mide un desalineamiento. Publicarlo como TEDS
+    seria un cero falso con mas decimales.
+  por_que_NO_APLICABLE_y_no_cero: >
+    Decision B3, y la regla de oro 4. «No se pudo comparar» y «se comparo y salio mal»
+    son cosas distintas, y un 0,00 solo puede significar que se midio cero. La cobertura
+    evaluable va SIEMPRE al lado del agregado, que es lo que impide leer la nota de un
+    extractor con cobertura del 40% como si fuera la de uno con cobertura del 95%.
+
+# ------------------------------------------------------- LA ALTERNATIVA DESCARTADA
+descartada:
+  cual: emparejado voraz por maximo TEDS
+  que_seria: >
+    Para cada tabla predicha, buscar entre las M de la verdad la que le da mas nota, y
+    quedarse con esa. Es lo que hacen algunos bancos.
+  por_que_no:
+    - >
+      SE PUNTUA A SI MISMO. La asignacion se elige MAXIMIZANDO la metrica que luego se
+      publica: un extractor que emite las tablas en desorden sale igual de bien que uno
+      que las emite en orden, y el desorden es un defecto real para quien consume la
+      salida.
+    - >
+      Cuesta N x M evaluaciones de TEDS por documento. Con 28,7 tablas por documento en
+      la banda >50, son ~823 arboles por documento y por extractor.
+    - >
+      Y el numero deja de ser reproducible por lectura: para saber que se comparo con
+      que hay que reejecutar la optimizacion.
+
+# ------------------------------------------- LO QUE SE PUBLICA AL LADO, Y NO ES ADORNO
+deteccion:
+  columnas:
+    documentos_con_recuento_igual: cuantos de los 338 tienen N == M. ES la cobertura.
+    tablas_de_mas: sum(max(0, N - M)) sobre los 338
+    tablas_de_menos: sum(max(0, M - N)) sobre los 338
+  por_que: >
+    Porque «cuantas tablas encuentra» NO ES CALIDAD y no ordena a nadie. Un extractor que
+    parte una tabla en tres encuentra mas; uno que fusiona dos encuentra menos y puede
+    estar acertando. Sin la verdad al lado, el recuento es un numero que se lee como
+    calidad sin serlo — la misma clase que un 0,00 de anclaje.
+    Con la verdad al lado, deja de ser un recuento y pasa a ser un ACUERDO, que si
+    significa algo.
+  y_por_eso_la_tabla_del_humo_no_ordena_a_nadie: >
+    121, 118, 118 y 112 tablas sobre los 12 del humo NO dicen que pdfplumber sea mejor.
+    Dicen cuantos objetos devolvio cada uno. Va escrito aqui para que no se cuele como
+    titular.
+
+# ------------------------------------------------------------------ SI SALE MAL
+si_la_cobertura_sale_muy_baja: >
+  ES UN RESULTADO, NO UNA RAZON PARA CAMBIAR LA REGLA. Significaria que los extractores
+  no coinciden con la referencia ni en CUANTAS tablas hay, que es un hallazgo mas gordo
+  que cualquier TEDS. Se publica la cobertura, se publica la deteccion, y se dice.
+  Cambiar la regla despues de ver el numero es elegir el que conviene.
+
+# ------------------------------------------------------------------ LO QUE NO CUBRE
+no_cubre:
+  - >
+    Tablas que cruzan pagina. La verdad derivada no las marca y ningun extractor las
+    reconstruye: si una tabla real sale partida en dos en la extraccion, cuenta como
+    recuento distinto y el documento no puntua. Es conservador y esta declarado.
+  - >
+    El ORDEN de la verdad derivada es el del XML. Se supone que es el de lectura, y no
+    esta comprobado contra el PDF para los 338 — solo para las 30 de L4.

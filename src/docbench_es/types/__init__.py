@@ -25,10 +25,12 @@ from benchcore.types import (
 
 from docbench_es.types._area import TOPE_AREA
 from docbench_es.types._campana import (
+    Agregado,
     AnswerMetrics,
     CampaignResult,
     GlossaryContribution,
     GlossaryMetrics,
+    Regimen,
     RoutingPlan,
     RoutingRule,
     SamplingPlan,
@@ -65,6 +67,7 @@ __all__ = [
     "FORMATOS_CON_SPANS",
     "FORMATOS_SIN_SPANS",
     "TOPE_AREA",
+    "Agregado",
     "AnswerMetrics",
     "AnswerResult",
     "CampaignResult",
@@ -88,6 +91,7 @@ __all__ = [
     "ProbeStatus",
     "Question",
     "RawDoc",
+    "Regimen",
     "RoutingPlan",
     "RoutingRule",
     "SamplingPlan",

@@ -87,8 +87,12 @@ def test_los_mapas_de_un_resultado_tampoco_se_pueden_mutar() -> None:
         cell_f1=0.93,
         evaluable_coverage=0.75,
         failures={"timeout": 1},
-        ci=(0.89, 0.93),
         n_documents=120,
+        # Desde ADR-0045 el régimen y el agregado son OBLIGATORIOS, y `ci` sólo va con
+        # `MUESTRA`. Este doble es una muestra, así que lleva el suyo.
+        agregado="POR_DOCUMENTO",
+        regimen="MUESTRA",
+        ci=(0.89, 0.93),
     )
 
     with pytest.raises(TypeError):
