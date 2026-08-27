@@ -39,10 +39,12 @@ sin_biblioteca = pytest.mark.skipif(
 )
 
 TABLA_GFM = """
-|**Número**|Hito/**<br>**Objetivo|
+|**Número**|**Hito/**<br>**Objetivo**|
 |---|---|
 |242|C15.I5|
 """
+"""La cabecera real de `BOE-A-2026-7446` tal como la emite `pymupdf4llm`, copiada de la
+corrida. La verdad congelada de L4 dice `Número` y `Hito/ Objetivo`."""
 
 
 def _doc(datos: bytes, ident: str = "PDF-1") -> RawDoc:
@@ -87,23 +89,21 @@ def test_expresses_spans_no_esta_tecleado_sino_derivado() -> None:
     assert isinstance(asignaciones[0].value, ast.Call), "lo fija el conversor, no el extractor"
 
 
-def test_el_marcado_de_markdown_llega_al_texto_de_la_celda(pytestconfig: pytest.Config) -> None:
-    """**Fija un LÍMITE DECLARADO, no una conducta deseada.** LIMITS 103.
+def test_el_marcado_de_markdown_ya_no_llega_al_texto_de_la_celda() -> None:
+    """**LIMITS 103, cerrado — y este test es lo que queda de él.**
 
-    La verdad congelada de L4 dice `'Número'` donde esto dice `'**Número**'`, y
-    `'Hito/ Objetivo'` donde dice `'Hito/**<br>**Objetivo'`. Medido: **116 de 594 celdas
-    (19,5%)** sobre los cinco documentos de conformidad — 86 con `**`, 54 con `<br>`.
+    Llegaban **116 de 594 celdas (19,5%)** con marcado dentro sobre los cinco documentos
+    de conformidad: 86 con `**`, 54 con `<br>`. Era una asimetría entre conversores del
+    mismo repo —`from_html` lee el TEXTO del nodo y `from_markdown` leía la fuente—, o
+    sea un sesgo sistemático **entre familias**: quien emitía HTML cobraba texto limpio
+    gratis y quien emitía Markdown cobraba un cero por el formato de su salida.
 
-    `from_html` no tiene este problema porque lee el TEXTO del nodo; `from_markdown` lee
-    la fuente. Son dos conversores que no significan lo mismo por «texto de la celda».
-
-    **El día que se cierre 103, este test se cae, y tiene que caerse**: es el recordatorio
-    de que la decisión se tomó, no de que estuviera bien.
+    Se comprueba contra las cadenas EXACTAS de la verdad congelada de L4, no contra una
+    forma inventada aquí: `Número` y `Hito/ Objetivo`.
     """
-    _ = pytestconfig
     textos = [c.text for c in from_markdown(TABLA_GFM)[0].cells]
-    assert "**Número**" in textos, textos
-    assert any("<br>" in t for t in textos), textos
+    assert textos[:2] == ["Número", "Hito/ Objetivo"], textos
+    assert not any("**" in t or "<br>" in t for t in textos), textos
 
 
 def test_las_seis_declaraciones_dicen_lo_que_deben() -> None:

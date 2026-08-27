@@ -85,3 +85,34 @@ no_cubre: >
   Ninguna de las dos arregla que el agregado sea un numero solo. La tabla POR BANDAS es
   la que ensena la dependencia con la longitud, y el agregado es una comodidad. Si algun
   dia hay que elegir entre publicar el agregado o las bandas, se publican las bandas.
+
+# =============================================================================
+# LA UNIDAD DE COBERTURA ES LA PAGINA, NO EL DOCUMENTO · anadido el 26 ago 2026
+# =============================================================================
+# Escrito ANTES de congelar el diseño de la tabla, y lo abre un numero: sobre los 12
+# documentos del humo —668 paginas—, `pymupdf4llm` hizo 264 pasadas de OCR y `pdfplumber`
+# ninguna (limite 104). O sea que sobre los MISMOS documentos, uno leyo paginas que el
+# otro no pudo leer.
+unidad_de_cobertura:
+  decision: la PAGINA
+  regla: >
+    Si un extractor no puede leer una pagina, esa pagina es NO_APLICABLE PARA EL. La
+    comparacion de calidad ocurre sobre las paginas que los dos pudieron leer, y la
+    diferencia se declara AL LADO.
+  por_que_no_el_documento: >
+    Comparar 118 tablas contra 121 cuando uno vio 668 paginas y el otro 404 es comparar
+    sobre denominadores distintos sin decirlo. Es el 2.283 otra vez: la cobertura
+    evaluable de L4 se publico porque el denominador no era el que parecia.
+  lo_que_esto_impide: >
+    Un cero falso. Hoy `pdfplumber` pierde las paginas escaneadas de un documento y
+    registra CERO fallos, porque `no_text_layer` solo salta si el documento entero se
+    queda sin texto. B3 existe literalmente para prohibir eso: «un 0,00 solo puede
+    significar que se midio cero».
+  lo_que_hace_falta_antes: >
+    El censo de paginas sin capa de texto del corpus. Sin el no se sabe si las 264 son
+    paginas escaneadas —y entonces pymupdf4llm lee lo que pdfplumber no puede— o paginas
+    digitales —y entonces pymupdf4llm esta haciendo trabajo innecesario y encima peor—.
+    Son conclusiones opuestas y solo el censo las separa.
+  y_la_promesa_que_protege: >
+    La tasa de fallo por extractor es lo que el README promete en su punto 5 CON ESTE
+    HITO. Publicarla con ceros silenciosos seria incumplir una promesa con hito asignado.

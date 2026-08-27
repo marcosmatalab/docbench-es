@@ -47,6 +47,19 @@ bugs que encuentra el que lo CONSUME — L1 cerró en verde y L2 descubrió que
 **Ninguna cifra publicada puede pasar por ellos**, y lo impide un test, no una
 nota. Ver LIMITS 49.
 
+**LA PREDICCIÓN DE ESTA SECCIÓN LLEVA CUATRO CONFIRMACIONES, Y TRES SON DE CONVERSORES.**
+*«El hito que ESCRIBE un módulo no encuentra los bugs que encuentra el que lo CONSUME»*:
+
+| conversor | quién lo estrenó | qué le encontró |
+|---|---|---|
+| `from_html` | L2, el árbol de TEDS | marcaba mal el **100%** de las cabeceras de PubTabNet |
+| `from_dataframe` | L5, `pdfplumber` | `dataframe` faltaba en `FORMATOS_SIN_SPANS` (LIMITS 98) |
+| `from_markdown` | L5, `pymupdf4llm` | el marcado llegaba al texto de la celda, **19,5%** (LIMITS 103) |
+| `holes` | L1→su propia auditoría | dos implementaciones de «posición cubierta» que difieren |
+
+**Los tres de conversores los encontró el CONSUMIDOR, ninguno un guardián.** Quedan dos
+sin estrenar —`from_tei` y `from_text_heuristic`—, y ninguno está en la campaña de L5.
+
 ## Deuda abierta
 
 0. **Lo que L1 deja atado a hitos posteriores, y no es opcional.** Sale del
@@ -167,7 +180,7 @@ nota. Ver LIMITS 49.
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 542 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 561 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 

@@ -14,6 +14,20 @@ eso las seis rechazadas van declaradas con nombre igual que las seis aplicadas.
 Una normalización que no está escrita aquí no existe: `NORMALIZACIONES` es lo que
 lee `docs/metrics.md` y lo que comprueba un test de la puerta.
 
+**EL ALCANCE DE ESE REGISTRO, dicho para que no se lea de más.** Aquí está lo que se
+le hace al texto **ya extraído**, y es lo mismo para los cinco formatos. **Sacar el
+texto del formato de origen NO es normalización: es parseo**, y lo hace cada
+conversor — `from_html` con un parser de HTML desde L1, así que un `<b>` desaparece
+solo y un `<br>` sale como espacio; `from_markdown` con su tabla `INLINE`, así que
+`**x**` sale como `x`. Que este registro no los liste no es un hueco: es que no son
+suyos. Lo que sí obliga la regla de oro 7 es que cada conversor enumere lo que
+reconoce, y el de Markdown lo hace en `INLINE` **incluido lo que NO reconoce**.
+
+La distinción hizo falta escribirla el día que `from_markdown` se puso a la par de
+`from_html` (LIMITS 103): sin ella, «quito el `**`» parece una normalización nueva y
+no registrada, cuando es exactamente lo contrario — quitar una inconsistencia entre
+dos conversores del mismo repo.
+
 **La decisión más cara del hito es R4: aquí NO se tocan los números** (ADR-0017,
 que contradice el docstring de §9.1 y se transcribió al manual en el mismo
 commit). Consecuencia que hay que leer entera para que no parezca incoherencia:

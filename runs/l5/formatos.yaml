@@ -71,11 +71,11 @@ pymupdf4llm:
     `expresses_spans=false` significa: el formato no puede con rowspan y la cabecera de
     dos niveles se aplana a una.
   el_hallazgo: >
-    `from_markdown` estrenaba consumidor aqui, y trajo el suyo: deja el MARCADO dentro
-    del texto de la celda. 116 de 594 celdas (19,5%) sobre los cinco de conformidad, 86
-    con ** y 54 con <br>, contra una verdad que dice 'Numero' donde esto dice
-    '**Numero**'. Limite 103. NO SE HA TOCADO NADA: la decision es del usuario porque
-    cambia un numero publicable.
+    `from_markdown` estrenaba consumidor aqui, y trajo el suyo: dejaba el MARCADO dentro
+    del texto de la celda. 116 de 594 celdas (19,5%) sobre los cinco de conformidad.
+    ARREGLADO EN EL CONVERSOR y antes de medir nada con el —0 de 594 despues, las mismas
+    594—, porque era una asimetria con from_html y un sesgo entre familias, no un detalle
+    de formato. Limite 103.
   el_precio: >
     NO_APLICABLE en el estrato de celdas combinadas, igual que pdfplumber, y su nota no
     se enseña sin la cobertura evaluable al lado.
