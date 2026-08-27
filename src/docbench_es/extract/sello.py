@@ -64,6 +64,23 @@ def cpus_visibles() -> int:
     return os.cpu_count() or 0
 
 
+def modelo_de_cpu() -> str:
+    """El modelo de CPU, de `/proc/cpuinfo`. **Se declara porque el coste es tiempo.**
+
+    Un coste por página de una herramienta local sin la máquina al lado no es un número:
+    es un número de esta máquina presentado como si fuera de cualquiera. Entró al sello el
+    27 ago 2026, así que **las corridas anteriores no lo traen** — y el informe lo dice en
+    vez de leerlo de la máquina que informa, que puede no ser la que corrió.
+    """
+    try:
+        for linea in Path("/proc/cpuinfo").read_text(encoding="utf-8").splitlines():
+            if linea.startswith("model name"):
+                return linea.split(":", 1)[1].strip()
+    except OSError:
+        pass
+    return "(desconocido)"
+
+
 def carga() -> float:
     """El `load average` de un minuto. Se declara porque **se midió que importa**."""
     return round(os.getloadavg()[0], 2)
@@ -91,6 +108,24 @@ def arbol(cwd: Path | None = None) -> dict[str, str | int]:
     }
 
 
+def sucios(cwd: Path | None = None) -> tuple[str, ...]:
+    """Los ficheros que `git status --porcelain` ve movidos, **por nombre**.
+
+    No entra en el sello: entra en el MENSAJE del guardián que rechaza reanudar. Bloquear
+    con «el árbol cambió» obliga a investigar o a sortear el guardián; bloquear con la
+    lista delante es accionable. Es la misma lección que la carga en el aro del techo:
+    **sigue bloqueando igual, sólo dice dónde mirar.**
+
+    Y por eso NO decide nada: el guardián compara el árbol entero a propósito. Estrecharlo
+    a «la ruta de extracción» sería un guardián que se fía de su propio criterio sobre qué
+    importa, y así es como se acaba protegiendo cero ficheros.
+    """
+    estado = git("status", "--porcelain", cwd=cwd)
+    if estado == "?":
+        return ("(git no contestó)",)
+    return tuple(linea[3:] for linea in estado.splitlines() if linea)
+
+
 def _huella(ruta: Path) -> str:
     if not ruta.exists():
         return "(no existe)"
@@ -106,6 +141,7 @@ def sello_de_corrida(
         "empezada": datetime.now(tz=UTC).isoformat(),
         **arbol(),
         "cpus": cpus_visibles(),
+        "cpu": modelo_de_cpu(),
         "carga": carga(),
         "entradas": {
             nombre: {"ruta": str(r), "sha256": _huella(r)} for nombre, r in entradas.items()

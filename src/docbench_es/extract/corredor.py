@@ -38,7 +38,7 @@ from typing import TYPE_CHECKING
 
 from docbench_es.errors import ContractViolation
 from docbench_es.extract.diario import Diario
-from docbench_es.extract.sello import arbol, sello_de_corrida
+from docbench_es.extract.sello import arbol, sello_de_corrida, sucios
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipar
     from collections.abc import Callable, Sequence
@@ -95,9 +95,15 @@ def sellar(destino: Path, que: str, entradas: dict[str, Path], extra: dict[str, 
         movido = {k: (antes.get(k), v) for k, v in ahora_arbol.items() if antes.get(k) != v}
         if movido:
             raise ContractViolation(
-                f"la corrida de {ruta} empezó sobre otro árbol: {movido}. Una campaña "
-                f"medida mitad sobre un árbol y mitad sobre otro no es una campaña. "
-                f"Deja el árbol quieto, o borra {destino} y empieza de nuevo"
+                f"la corrida de {ruta} empezó sobre otro árbol: {movido}.\n"
+                f"Movidos ahora ({len(sucios())}): {', '.join(sucios()) or '(ninguno)'}\n"
+                f"Una campaña medida mitad sobre un árbol y mitad sobre otro no es una "
+                f"campaña. Para reanudar SIN perder el diario —que está en {destino} y "
+                f"lo ignora git, así que ni `stash` ni `checkout` lo tocan—:\n"
+                f"  git stash push -u && git checkout {antes.get('commit')}\n"
+                f"  <reanuda la campaña>\n"
+                f"  git checkout - && git stash pop\n"
+                f"O borra {destino} y empieza de nuevo"
             )
         return ruta
     ruta.write_text(json.dumps(ahora, indent=1, ensure_ascii=False), encoding="utf-8")

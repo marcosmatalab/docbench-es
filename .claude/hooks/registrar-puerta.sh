@@ -52,6 +52,42 @@ TECHO=8500
 # de lo ya explorado.
 CACHES=(.mypy_cache .pytest_cache .ruff_cache .hypothesis)
 
+carga() {
+  # El `load average` de un minuto. Se registra porque SIN EL un rojo del techo no se
+  # puede leer: «esta maquina se ha vuelto lenta» y «esta maquina esta ocupada» son
+  # diagnosticos opuestos con el MISMO sintoma. Paso al medir con la campaña de los 616
+  # corriendo: el minimo en frio no bajaba de 8.941 ms y la causa no estaba en el arbol.
+  #
+  # Y NO ES UNA EXCUSA: el aro bloquea igual. Lo que hace la carga es decirle a quien lee
+  # si tiene que re-medir en maquina quieta o si tiene que ir a mirar el codigo.
+  cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo "?"
+}
+
+ms_monotonicos() {
+  # MILISEGUNDOS MONOTONICOS, NO `date`. Y no es preferencia de estilo: aqui habia un
+  # reloj de PARED midiendo una DURACION, y un reloj de pared salta.
+  #
+  # MEDIDO EN ESTA MAQUINA el 27 ago 2026, con la campaña de los 616 corriendo. Dos
+  # observaciones del MISMO proceso, separadas por un rato:
+  #     el reloj de pared avanzo   1647 s   (12:01:03 -> 12:28:30)
+  #     el proceso envejecio       1483 s   (etimes 4380 -> 5863)
+  # O sea 164 s que el reloj de pared se invento, por resincronizacion de WSL2 con el
+  # anfitrion. `etimes` y `/proc/uptime`, que cuentan ticks, no se enteraron. Si esos
+  # 164 s hubieran caido DENTRO de un `make fast`, el aro habria registrado 164 000 ms.
+  #
+  # LO QUE ESTO ARREGLA NO ES UN NUMERO MALO CONOCIDO. Los bloqueos de 13.957 ms y las
+  # cuatro corridas de 13.659 a 16.164 que se descartaron son excursiones de 7 a 10 s, y
+  # el salto medido es de 163: los ordenes de magnitud NO cuadran, asi que decir «era el
+  # reloj» seria inventarse una causa. Lo que arregla es el DIAGNOSTICO futuro: con un
+  # reloj de pared, un numero raro del aro tiene DOS explicaciones posibles —contencion
+  # y reloj— y no se pueden separar. Con monotonico solo queda una.
+  #
+  # `scripts/medir_puerta.py` ya usaba `time.monotonic_ns()`, asi que la serie de n=40
+  # que se publica estaba a salvo. El ARO —el que decide si se puede commitear— no lo
+  # estaba, y son DOS INSTRUMENTOS QUE MIDEN LO MISMO. Ahora leen el mismo tipo de reloj.
+  awk '{print int($1*1000)}' /proc/uptime
+}
+
 esta_frio() {
   for c in "${CACHES[@]}"; do [ -e "$c" ] && return 1; done
   return 0
@@ -68,8 +104,8 @@ case "${1:-}" in
     echo "por que el minimo: n=1 se pasa del techo una de cada tres por contencion"
     echo "  (medido: 6367 6383 6819 7835 9236 9661 sobre un arbol con p90 6866 a n=40)"
     if [ -f "$REGISTRO" ]; then
-      read -r h ms estado n < "$REGISTRO"
-      echo "registrado ahora: minimo $ms ms, $estado, n=${n:-0} corridas frias, huella ${h:0:8}"
+      read -r h ms estado n c < "$REGISTRO"
+      echo "registrado ahora: minimo $ms ms, $estado, n=${n:-0} frias, carga ${c:-?}, huella ${h:0:8}"
     else
       echo "registrado ahora: (nada)"
     fi
@@ -78,7 +114,7 @@ case "${1:-}" in
     mkdir -p .claude
     estado=caliente
     esta_frio && estado=frio
-    printf '%s %s\n' "$(date +%s%3N)" "$estado" > "$INICIO"
+    printf '%s %s\n' "$(ms_monotonicos)" "$estado" > "$INICIO"
     exit 0 ;;
   --acaba)
     mkdir -p .claude
@@ -87,17 +123,32 @@ case "${1:-}" in
     if [ ! -f "$INICIO" ]; then
       # Sin marca de arranque no se INVENTA una duración: se registra sin ella, y el
       # aro del commit la tratará como «no medida», que es lo que es.
-      printf '%s - sin-medir\n' "$huella" > "$REGISTRO"
+      printf '%s - sin-medir 0 %s\n' "$huella" "$(carga)" > "$REGISTRO"
       echo "  puerta verde registrada (sin duración: faltaba la marca de arranque)"
       exit 0
     fi
     read -r t0 estado < "$INICIO"
-    ms=$(( $(date +%s%3N) - t0 ))
+    ahora=$(ms_monotonicos)
+    # UNA MARCA QUE NO PUEDE SER DE ESTE ARRANQUE NO SE RESTA: se descarta. El uptime
+    # sólo crece dentro de un arranque, así que `t0 > ahora` significa una de dos, y las
+    # dos invalidan la medida igual:
+    #   · la marca la dejó la versión vieja de este hook, que guardaba `date +%s%3N`
+    #     —epoch de PARED, del orden de 1,79e12 frente a 3,2e7 de uptime—;
+    #   · o la máquina se reinició entre `--empieza` y `--acaba`, y el uptime volvió a 0.
+    # Sin esto, la primera daría un `ms` NEGATIVO de doce cifras y el aro lo registraría
+    # como si fuera una duración. Es la misma regla que la marca ausente: no se INVENTA.
+    if ! [ "$t0" -ge 0 ] 2>/dev/null || [ "$t0" -gt "$ahora" ]; then
+      printf '%s - sin-medir 0 %s\n' "$huella" "$(carga)" > "$REGISTRO"
+      rm -f "$INICIO"
+      echo "  puerta verde registrada (sin duración: la marca de arranque no es de este arranque)"
+      exit 0
+    fi
+    ms=$(( ahora - t0 ))
     rm -f "$INICIO"
     # El mínimo, y SÓLO de este árbol: una medida rápida de otro no dice nada de éste.
     minimo="$ms"; n=0; anterior_estado=caliente
     if [ -f "$REGISTRO" ]; then
-      read -r h_prev ms_prev est_prev n_prev < "$REGISTRO" || true
+      read -r h_prev ms_prev est_prev n_prev _c_prev < "$REGISTRO" || true
       if [ "$h_prev" = "$huella" ]; then
         anterior_estado="${est_prev:-caliente}"
         n="${n_prev:-0}"
@@ -111,11 +162,12 @@ case "${1:-}" in
       estado="$anterior_estado"
       [ "$anterior_estado" = "frio" ] && minimo="${ms_prev:-$ms}"
     fi
-    printf '%s %s %s %s\n' "$huella" "$minimo" "$estado" "$n" > "$REGISTRO"
+    ahora_carga=$(carga)
+    printf '%s %s %s %s %s\n' "$huella" "$minimo" "$estado" "$n" "$ahora_carga" > "$REGISTRO"
     if [ "$n" -gt 0 ]; then
       aviso=""
       [ "$minimo" -gt "$TECHO" ] && aviso="  ·  PASA DEL TECHO de $TECHO"
-      echo "  puerta verde registrada · ${ms} ms · mínimo en frío de $n para este árbol: ${minimo}$aviso"
+      echo "  puerta verde registrada · ${ms} ms · carga ${ahora_carga} · mínimo en frío de $n: ${minimo}$aviso"
     else
       echo "  puerta verde registrada · ${ms} ms en caliente · sin medida en frío de este árbol"
     fi

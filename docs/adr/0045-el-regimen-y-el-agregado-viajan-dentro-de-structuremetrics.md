@@ -55,8 +55,12 @@ posibles y que dan **tres números distintos**:
 Los tres son legítimos. Un `teds=0,87` publicado sin decir cuál **es el 2.283 otra vez**:
 un número cuyo denominador no vive en el artefacto que lo transporta.
 
-Y `n_documents` tenía el mismo problema en pequeño: 338, no 616 ni 1.000, y tiene que
-salir del censo y no de teclearlo.
+Y `n_documents` tenía el mismo problema en pequeño. **Precisado al escribir el productor**,
+que es cuando se ve: `n_documents` son **los documentos que PUNTÚAN**, no los 338 con
+tabla. Es la unidad de remuestreo del bootstrap —regla de oro 3—, y `AnswerMetrics` ya lo
+dice así de los suyos. La población con tabla y los que puntúan **no son el mismo número**
+en cuanto el emparejado descarta alguno, y llamarlos igual sería el 2.283 otra vez: el
+recuento de la población va en `report.nivel1.Deteccion`, al lado y con su nombre.
 
 ## Decisión
 

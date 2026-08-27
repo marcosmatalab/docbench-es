@@ -100,7 +100,7 @@ son dos cosas distintas. Corre la puerta EN FRÍO, que es la que cuenta contra e
 Cuesta unos 7 s. En caliente NO vale: con la regresión de LIMITS 102 dentro, \`make fast\`
 daba 2.781 ms en caliente y 30.259 en frío."
 
-read -r H_REG MS ESTADO N_FRIAS < "$REGISTRO"
+read -r H_REG MS ESTADO N_FRIAS CARGA < "$REGISTRO"
 if [ "$H_REG" != "$AHORA" ] || [ "$ESTADO" != "frio" ]; then
   bloquea "LA ÚLTIMA MEDIDA DE LA PUERTA ES ${ESTADO:-desconocida} y hace falta una EN FRÍO
 de ESTE árbol. En caliente la puerta no ve su propia regresión: medido sobre 99be97d,
@@ -111,13 +111,16 @@ fi
 if [ "$MS" != "-" ] && [ "$MS" -gt "$TECHO" ] 2>/dev/null; then
   bloquea "LA PUERTA PASA DEL TECHO: ${MS} ms contra ${TECHO} de ADR-0022, y eso es el
 MÍNIMO de ${N_FRIAS:-?} corridas en frío de este árbol, no una corrida con mala suerte.
+Carga de la máquina en la última: ${CARGA:-?}.
 
 Verde no es suficiente: la puerta estuvo a 25,5 s durante diez commits con todos los
 tests en verde, y eso es lo que LIMITS 102 cuenta. O se arregla la causa —mírala con
 \`uv run mypy --strict src tests -v | grep -c \"^LOG:  Parsing\"\`, que es lo que la
 encontró la última vez— o se re-justifica el techo en ADR-0022, EN EL MISMO COMMIT.
 
-Si crees que fue contención de la máquina, repite \`make frio\`: el registro se queda con
-el MÍNIMO, así que una corrida buena lo baja y una mala no lo sube."
+Si la carga de arriba es alta, la máquina estaba ocupada y la medida no dice nada del
+árbol: espera a que termine lo que esté corriendo y repite \`make frio\`. El registro se
+queda con el MÍNIMO, así que una corrida buena lo baja y una mala no lo sube. Y ojo — la
+carga NO es una excusa: el aro bloquea igual, sólo te dice dónde mirar."
 fi
 exit 0

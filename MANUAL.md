@@ -850,7 +850,8 @@ class StructureMetrics:            # nivel 1, por extractor
     cell_f1: float | None          # None = NO_APLICABLE, igual que teds
     evaluable_coverage: float      # sobre cuántas tablas se pudo calcular
     failures: Mapping[ExtractionFailure, int]   # enum cerrado como CLAVE, no str
-    n_documents: int               # SOBRE CUANTOS: 338, no 616 ni 1.000
+    n_documents: int               # los que PUNTUAN, no la poblacion: es la
+                                   # unidad de remuestreo del bootstrap (regla 3)
     agregado: Agregado             # los tres dan numeros distintos
     regimen: Regimen               # y por tanto si `ci` va o no va
     ci: tuple[float, float] | None = None       # el de `teds`. None <=> CENSO
@@ -1190,6 +1191,8 @@ docbench-es/
 │   │   └── recommend.py         enrutado por tipo de documento y presupuesto
 │   │
 │   ├── report/
+│   │   ├── nivel1.py            de las extracciones y la verdad a StructureMetrics.
+│   │   │                      El emparejado esta pre-registrado, no se decide ahi
 │   │   ├── tables.py · cards.py · curves.py
 │   │   └── sinks/               onepager_pdf.py · xlsx.py · csv.py · html.py
 │   │                                teams.py · azure_devops.py · github_summary.py

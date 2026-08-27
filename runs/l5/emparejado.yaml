@@ -75,6 +75,60 @@ deteccion:
     Dicen cuantos objetos devolvio cada uno. Va escrito aqui para que no se cuele como
     titular.
 
+# ============================================================================
+# EL SESGO DE SUPERVIVENCIA QUE TRAE ESTA REGLA, Y COMO SE CIERRA
+# Anadido el 27 ago 2026, CON LA CORRIDA TRABAJANDO Y ANTES DE VER UN SOLO TEDS.
+# ============================================================================
+sesgo_de_supervivencia:
+  cual: >
+    Con N != M el documento sale NO_APLICABLE. Correcto — pero mira A QUIEN BENEFICIA:
+    un extractor que DETECTA MAL las tablas falla el recuento en mas documentos, y esos
+    documentos salen de SU cuenta. Asi que su TEDS se calcula solo sobre los documentos
+    donde ACERTO EL RECUENTO, que son sus documentos faciles. CUANTO PEOR DETECTA, MAS SE
+    LE EXCLUYE, Y MEJOR PINTA LO QUE QUEDA.
+  y_va_a_pasar_seguro: >
+    Medido en el humo, sobre los MISMOS 12 documentos: 121, 118, 118 y 112 tablas. Los
+    cuatro fallan el recuento en documentos DISTINTOS, asi que cada uno puntuaria sobre un
+    subconjunto distinto ELEGIDO POR EL MISMO. Comparar cuatro TEDS calculados asi es el
+    2.283 con otra cara.
+  lo_que_NO_basta: >
+    Que `evaluable_coverage` viaje pegado a `teds` —decidido en §6 y antes de esto— hace
+    el sesgo LEGIBLE, no lo quita. Y la cifra que se cita es la comparacion entre
+    extractores, no el TEDS suelto.
+
+# --------------------------------------------------------- LOS DOS AGREGADOS
+# No es una segunda medida: son las MISMAS puntuaciones con dos denominadores.
+agregados_publicados:
+  por_extractor:
+    sobre: su propio conjunto evaluable, con su cobertura al lado
+    contesta: >
+      "¿que tal va CUANDO acierta el recuento?"
+    por_que_se_publica: >
+      Porque un extractor que acierta poco pero bien es informacion real, y perderla por
+      protegerse del sesgo seria tirar el dato para salvar la comparacion.
+  cara_a_cara:
+    sobre: >
+      LA INTERSECCION: los documentos donde TODOS los extractores comparados acertaron el
+      recuento. Mismo subconjunto para todos, n declarado.
+    contesta: >
+      "¿cual es mejor?" — y es la UNICA que puede contestarla.
+    por_que: >
+      Mata la objecion de supervivencia para el numero que se cita. Con el mismo
+      denominador para los cuatro, «mejor» vuelve a significar algo.
+  y_la_n_de_la_interseccion_es_un_dato: >
+    Si de 338 documentos los cuatro coinciden en el recuento en 150, eso dice algo sobre
+    la dificultad del corpus que NINGUNA nota de TEDS dice. Se publica siempre, tambien
+    —y sobre todo— si sale baja.
+
+# ------------------------------------------------ LO QUE NO SE VA A AFIRMAR
+lo_que_no_se_afirma_con_esto: >
+  UN RANKING. La cara a cara pone a los cuatro sobre el mismo denominador, que es
+  necesario, pero NO es suficiente: decir «A es mejor que B» exige la comparacion pareada
+  con su potencia, que es literalmente lo que L6 existe para hacer (McNemar y bootstrap
+  agrupado por documento, ADR-0009). Hasta entonces se publican los numeros y su n, y no
+  se ordena a nadie.
+  Elegir umbral de n AHORA seria inventarse una potencia sin calcularla.
+
 # ------------------------------------------------------------------ SI SALE MAL
 si_la_cobertura_sale_muy_baja: >
   ES UN RESULTADO, NO UNA RAZON PARA CAMBIAR LA REGLA. Significaria que los extractores

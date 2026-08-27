@@ -74,10 +74,21 @@ jobs:
         env:
           TECHO_MS: 21000
         run: |
-          inicio=$(date +%s%N)
+          # MILISEGUNDOS MONOTONICOS, no `date`: un reloj de PARED no puede medir una
+          # DURACION. Medido el 27 ago 2026 en la maquina de desarrollo: en un intervalo
+          # en que un proceso envejecio 1483 s (etimes), el reloj de pared avanzo 1647.
+          # 164 s inventados por resincronizacion de WSL2 con el anfitrion, que
+          # `/proc/uptime` no vio. Un runner de GitHub es una
+          # VM y tambien resincroniza con su anfitrion. No arregla ningun numero malo
+          # conocido —los rojos vistos son excursiones de segundos, no de minutos—:
+          # arregla el DIAGNOSTICO, porque con `date` un numero raro tiene dos causas
+          # posibles, contencion y reloj, y no se pueden separar.
+          # `scripts/medir_puerta.py` ya usaba `time.monotonic_ns()`; esto y el aro del
+          # commit (`.claude/hooks/registrar-puerta.sh`) leen ahora el mismo tipo de reloj.
+          inicio=$(awk '{print int($1*1000)}' /proc/uptime)
           make fast
-          fin=$(date +%s%N)
-          ms=$(( (fin - inicio) / 1000000 ))
+          fin=$(awk '{print int($1*1000)}' /proc/uptime)
+          ms=$(( fin - inicio ))
           echo "puerta: ${ms} ms · techo de crecimiento ${TECHO_MS} ms · presupuesto del manual 90000 ms"
           echo "puerta_ms=${ms}" >> "$GITHUB_STEP_SUMMARY"
           if [ "$ms" -gt 90000 ]; then

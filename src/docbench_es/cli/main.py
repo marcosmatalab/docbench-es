@@ -16,6 +16,7 @@ from __future__ import annotations
 import typer
 
 from docbench_es.cli import conform as _conform
+from docbench_es.cli import report as _report
 from docbench_es.cli import run as _run
 
 app = typer.Typer(
@@ -38,6 +39,7 @@ def raiz() -> None:
 
 app.command("conform")(_conform.conform)
 app.command("run")(_run.run)
+app.command("report")(_report.report)
 
 if __name__ == "__main__":  # pragma: no cover - se entra por el entry point
     app()

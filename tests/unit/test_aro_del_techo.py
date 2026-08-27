@@ -108,23 +108,27 @@ def test_los_dos_techos_son_el_mismo_numero() -> None:
 def test_una_medida_fria_por_debajo_del_techo_deja_commitear(tmp_path: Path) -> None:
     """**El control positivo.** Sin él, los tests de «bloquea» pasarían con un aro que
     bloqueara siempre, que es un aro inútil de la otra manera."""
-    assert _decide(_proyecto(tmp_path, "HUELLA 6430 frio 3")) == "PASA"
+    assert _decide(_proyecto(tmp_path, "HUELLA 6430 frio 3 0.42")) == "PASA"
 
 
 def test_una_medida_caliente_no_vale_por_buena_que_sea(tmp_path: Path) -> None:
     """**El caso que motiva todo esto.** 2.781 ms en caliente está muy por debajo del
     techo, y debajo de ellos había una puerta de 30 s."""
-    razon = _decide(_proyecto(tmp_path, "HUELLA 2781 caliente 0"))
+    razon = _decide(_proyecto(tmp_path, "HUELLA 2781 caliente 0 0.42"))
     assert "EN FRÍO" in razon, razon
     assert "make frio" in razon
 
 
 def test_una_medida_fria_por_encima_del_techo_bloquea(tmp_path: Path) -> None:
     """Verde no es suficiente: la puerta estuvo verde los diez commits."""
-    razon = _decide(_proyecto(tmp_path, "HUELLA 25949 frio 4"))
+    razon = _decide(_proyecto(tmp_path, "HUELLA 25949 frio 4 0.42"))
     assert "PASA DEL TECHO" in razon, razon
     assert "25949" in razon and "8500" in razon
     assert "MÍNIMO de 4" in razon, "el aro dice sobre cuántas corridas decide"
+    assert "Carga de la máquina" in razon, (
+        "y dice la carga: «se ha vuelto lenta» y «está ocupada» son diagnósticos "
+        "opuestos con el mismo síntoma, y sin la carga no se distinguen"
+    )
 
 
 def test_sin_ninguna_medida_tampoco_se_commitea(tmp_path: Path) -> None:
@@ -137,7 +141,7 @@ def test_sin_ninguna_medida_tampoco_se_commitea(tmp_path: Path) -> None:
 def test_una_medida_de_otro_arbol_no_vale(tmp_path: Path) -> None:
     """La huella del registro se compara igual que la del verde: una medida rápida de
     otro árbol no dice nada de éste."""
-    proyecto = _proyecto(tmp_path, "otro-arbol 100 frio 9")
+    proyecto = _proyecto(tmp_path, "otro-arbol 100 frio 9 0.42")
     assert _decide(proyecto) != "PASA"
 
 
@@ -182,7 +186,8 @@ def _registrar(proyecto: Path, ms: int, frio: bool) -> tuple[int, str, int]:
     t0, estado = inicio.read_text().split()
     inicio.write_text(f"{int(t0) - ms} {estado}\n", encoding="utf-8")
     subprocess.run([hook, "--acaba"], check=True, env=entorno, capture_output=True)
-    _, minimo, estado, n = (proyecto / ".claude" / ".ultima-puerta.txt").read_text().strip().split()
+    registro = (proyecto / ".claude" / ".ultima-puerta.txt").read_text().strip().split()
+    _, minimo, estado, n, _carga = registro
     return int(minimo), estado, int(n)
 
 
@@ -212,3 +217,59 @@ def test_repetir_en_frio_baja_el_minimo_y_lo_dice(tmp_path: Path) -> None:
     assert _decide(proyecto) != "PASA", "9600 pasa del techo y tiene que bloquear"
     _registrar(proyecto, 6400, frio=True)
     assert _decide(proyecto) == "PASA"
+
+
+def _sin_comentarios(texto: str) -> str:
+    """El fichero sin sus líneas de comentario. Un `date +%s` **explicado** en un comentario
+    no es un instrumento; uno ejecutándose sí."""
+    return "\n".join(x for x in texto.splitlines() if not x.lstrip().startswith("#"))
+
+
+def test_los_tres_instrumentos_de_la_puerta_leen_un_reloj_monotonico() -> None:
+    """**Un reloj de pared no puede medir una duración**, y aquí había dos que lo hacían.
+
+    La puerta la cronometran TRES instrumentos: `medir_puerta.py` para la serie que se
+    publica, el hook para el aro que decide si se puede commitear, y el `fast.yml` de CI.
+    `medir_puerta.py` ya usaba `time.monotonic_ns()`; los otros dos usaban `date +%s`, o
+    sea el reloj de pared. **Dos instrumentos que miden lo mismo con relojes distintos.**
+
+    Medido el 27 ago 2026 en la máquina de desarrollo. Dos observaciones del mismo
+    proceso: el reloj de pared avanzó **1.647 s** (12:01:03 → 12:28:30) mientras el
+    proceso envejecía **1.483 s** (`etimes` 4380 → 5863). **164 s inventados** por
+    resincronización de WSL2 con el anfitrión, que `/proc/uptime` no vio. Si hubieran
+    caído dentro de un `make fast`, el aro habría registrado 164.000 ms.
+
+    Esto NO arregla ningún número malo conocido —los rojos vistos son excursiones de
+    segundos, no de minutos, y decir «era el reloj» sería inventarse una causa—. Arregla el
+    DIAGNÓSTICO: con un reloj de pared, un número raro del aro tiene **dos** explicaciones
+    posibles, contención y reloj, y no se pueden separar. Con monotónico queda una.
+
+    Es la clase que se olvida: **un instrumento que funciona el 99% de las veces.**
+    """
+    instrumento = (RAIZ / "scripts" / "medir_puerta.py").read_text(encoding="utf-8")
+    assert "time.monotonic_ns()" in instrumento
+    assert "time.time()" not in instrumento, "la serie publicada mediría con reloj de pared"
+
+    for ruta in (
+        RAIZ / ".claude" / "hooks" / "registrar-puerta.sh",
+        RAIZ / ".github" / "workflows" / "fast.yml",
+    ):
+        vivo = _sin_comentarios(ruta.read_text(encoding="utf-8"))
+        assert "/proc/uptime" in vivo, f"{ruta.name} no lee un reloj monotónico"
+        assert "date +%s" not in vivo, (
+            f"{ruta.name} cronometra con `date`, que es el reloj de PARED. "
+            "Usa: awk '{print int($1*1000)}' /proc/uptime"
+        )
+
+
+def test_una_marca_de_arranque_que_no_es_de_este_arranque_no_se_resta() -> None:
+    """El uptime sólo crece dentro de un arranque, así que `t0 > ahora` significa o una
+    marca de la versión vieja del hook —epoch de pared, ~1,79e12 frente a ~3,2e7— o un
+    reinicio entre `--empieza` y `--acaba`. Las dos invalidan la medida igual.
+
+    Sin esto, la primera daba un `ms` **negativo de doce cifras** y el aro lo registraba
+    como si fuera una duración. Es la misma regla que la marca ausente: **no se inventa.**
+    """
+    hook = (RAIZ / ".claude" / "hooks" / "registrar-puerta.sh").read_text(encoding="utf-8")
+    assert '[ "$t0" -gt "$ahora" ]' in hook, "el hook no descarta una marca imposible"
+    assert hook.count("sin-medir") >= 2, "descartarla tiene que registrar `sin-medir`"
