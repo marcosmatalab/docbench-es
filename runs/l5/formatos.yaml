@@ -82,17 +82,36 @@ pymupdf4llm:
   estado: ESCRITO Y EN VERDE, `docbench conform --extractor pymupdf4llm`
 
 camelot:
-  devuelve: DataFrames de pandas, uno por tabla.
+  devuelve: >
+    Una `TableList`; cada `Table` trae un DataFrame en `.df` y su numero de pagina en
+    `.page`. `read_pdf` acepta bytes, asi que no hace falta fichero temporal.
   conversor: from_dataframe
   formato_nativo: dataframe
   expresses_spans: false
-  estado: >
-    PENDIENTE de escribir, pero su conversor YA quedo validado con pdfplumber, que pasa
-    por el mismo `from_dataframe`. Es el unico de los cuatro que no estrena conversor
-    ademas de docling.
+  como_se_supo: >
+    MEDIDO sobre BOE-A-2026-7446: camelot devuelve 3x8, LA MISMA FORMA que la verdad
+    congelada, con las siete combinadas aplanadas y su hueco como celda vacia. Y las
+    etiquetas de columna de su marco son ENTEROS POSICIONALES —comprobado, `_son_posiciones`
+    da True—, asi que from_dataframe declara que no hay cabecera y NO inventa una fila:
+    0 celdas con is_header, que es lo que limite 36 dice que hay que evitar.
+  flavor: >
+    LATTICE, y se pasa explicito aunque sea el valor por defecto porque es una DECISION
+    DE MEDICION: lattice busca lineas dibujadas y stream agrupa por espacios en blanco.
+    Sobre el BOE, cuyas tablas llevan lineas, stream encontraria mas cosas y mas de ellas
+    serian inventadas. Elegirlo despues de ver los numeros seria elegir el que conviene.
+    Va en la VERSION publicada: camelot 2.0.0+lattice+ad1.
+  las_dos_trampas: >
+    `pages='1'` es el valor por defecto de read_pdf —sin pasar "all" lee la primera
+    pagina y nada mas, y no falla ni avisa: solo publica menos tablas—; y
+    `pages_processed` sale de lo DECLARADO, porque camelot solo devuelve paginas CON
+    tabla. Las dos con test por AST, porque el sintoma de ejecutar es «menos tablas», que
+    es indistinguible de «documento con menos tablas».
+  no_estrena_conversor: >
+    from_dataframe lo valido pdfplumber dos dias antes. Los tres hallazgos de conversor
+    de este hito salieron de ESTRENAR uno, asi que aqui se esperaban menos. No hubo.
   ojo: >
-    Es quien arrastra `transformers` a mypy (limite 102), asi que su entrada no puede
-    tocar el techo de la puerta.
+    Es quien arrastra `transformers` a mypy (limite 102), y por eso esta en los saltados.
+  estado: ESCRITO Y EN VERDE, `docbench conform --extractor camelot`
 
 # ---------------------------------------------------------------- EL LIMITE
 no_cubre:
