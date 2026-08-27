@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 571 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 577 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **405 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **411 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -502,9 +502,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
     `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
     `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
-    `limite_lineas` (2), `tope_area` (2), y los doce que entran con los TRES primeros
-    extractores reales, el corredor, el aro del techo y el texto de celda: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (12), `camelot` (10),
+    `limite_lineas` (2), `tope_area` (2), y los trece que entran con los TRES primeros
+    extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
+    capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (12), `camelot` (10), `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (6)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
@@ -519,7 +520,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **568 de 571 tests protegidos por algo** —un
+    *el arnés*, no la protección: **574 de 577 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1476,9 +1477,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **69** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **70** scripts,
     **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **46** que quedan, **huérfanos: 28 de 46**. Entre ellos `derivadas.py`
+    nada—, y de los **47** que quedan, **huérfanos: 28 de 47**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
@@ -2069,36 +2070,45 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `pdfplumber`, `from_markdown` con `pymupdf4llm`— y **los tres los encontró el
     consumidor, ninguno un guardián**.
 
-104. **`pymupdf4llm` HACE OCR Y `pdfplumber` NO, ASÍ QUE SU COSTE NO SE COMPARA COMO SI
-    LOS DOS FUERAN PARSERS.** Medido sobre los 12 documentos del humo de la campaña
-    —668 páginas—, contando las líneas que la propia biblioteca escribe en `stdout`:
+104. **`pymupdf4llm` HACE OCR SOBRE PÁGINAS QUE YA TIENEN CAPA DE TEXTO: ES COSTE, NO
+    ALCANCE.** El censo lo resolvió, que era lo que faltaba.
 
-    ```
-    uv run docbench run --extractors all --poblacion runs/l5/humo_campana.json \
-      --salida <dir> --offline 2>&1 | grep -c "OCR on page"
-    ```
+    | medida | valor |
+    |---|---|
+    | páginas del corpus **sin** capa de texto | **0 de 10.298** |
+    | pasadas de OCR de `pymupdf4llm` sobre los 12 del humo | **264 de 668 (39,5%)** |
+    | pasadas de OCR de `pdfplumber` sobre los mismos 12 | **0** |
+    | reloj sobre los 12 | 195,2 s contra 34,7 s — **5,6×** |
 
-    | | pasadas de OCR | reloj sobre los 12 | tablas |
-    |---|---|---|---|
-    | `pdfplumber` | **0** | 34,7 s | 121 |
-    | `pymupdf4llm` | **264 de 668 páginas (39,5%)** | 195,2 s | 118 |
+    Reproducir: `uv run python scripts/censo_capa_texto.py` para el censo, y la corrida
+    del humo filtrando `OCR on page` para las pasadas.
 
-    **5,6× más lento, y haciendo un trabajo distinto.** §16 los pone a los dos en la
-    familia *parser de texto*, y sobre estos documentos uno de los dos está leyendo
-    páginas que el otro no puede leer.
+    Instrumento del censo: **`pypdf`**, que `pyproject.toml` declara desde L3 como
+    preparación de corpus y **no** como extractor del banco. Preguntarle a un concursante
+    si el examen estaba en blanco no vale. Y su sesgo va en la dirección buena: `pypdf`
+    extrae peor que `pymupdf`, así que «sin capa» es un **techo**; que dé **cero** cierra
+    la pregunta sin margen.
 
-    **La causa NO está establecida**, y decirlo importa: puede ser que los anexos largos
-    del BOE vengan escaneados —lo cual sería una propiedad del corpus que nadie ha
-    medido— o que `pymupdf` 1.28 dispare OCR con un criterio más ancho. Son dos
-    conclusiones distintas y sólo una se puede achacar al extractor.
+    **Las dos explicaciones que había, y cuál era.** Si esas páginas no tuvieran capa de
+    texto, `pymupdf4llm` estaría leyendo lo que `pdfplumber` no puede y la diferencia
+    sería de **alcance**. La tienen todas. Así que es de **coste**, y de trabajo **peor**:
+    el OCR de una página digital es peor que leer su capa.
 
-    **Qué contamina si no se dice.** Dos columnas del nivel 1: el **coste por éxito**, que
-    saldría 5,6× peor para `pymupdf4llm` sin decir que incluye OCR; y la **cobertura**,
-    porque una página sin capa de texto que uno lee y el otro no es una diferencia de
-    alcance, no de calidad. `pdfplumber` no la declara como fallo —no llega a
-    `no_text_layer` mientras el documento tenga alguna página con texto—, así que hoy esa
-    diferencia **no aparece en ninguna cifra**.
+    **Qué deja de ser un problema, y hay que decirlo.** El *cero falso* que temía la
+    primera versión de este límite —`pdfplumber` perdiendo páginas escaneadas sin
+    registrar fallo— **no se da en este corpus**: no hay páginas que perder. La decisión
+    de contar la cobertura **por página** (`runs/l5/ponderacion.yaml`) sigue siendo la
+    correcta por diseño, pero hoy no es lo que sostiene ninguna cifra.
 
-    **Lo mínimo antes de publicar la tabla**: contar cuántas páginas del corpus no tienen
-    capa de texto, que es un censo barato y contesta la pregunta de la causa. Mientras no
-    esté, la fila de `pymupdf4llm` lleva esta nota al lado.
+    **Qué sigue siendo un problema.** La fila de coste de `pymupdf4llm` incluye OCR
+    redundante, y **la fila no lo dice sola**. Va con su nota, o el 5,6× se lee como
+    *«este parser es más lento»* cuando lo que pasa es *«este parser hace otra cosa
+    además»*.
+
+    **Lo que NO se hace: apagarlo.** `to_markdown` no expone una palanca documentada, y
+    aunque la expusiera, apagarla sería configurar a un concursante. El banco mide la
+    biblioteca **como viene**, y publica lo que hace.
+
+    **Y el recuento no se puede hacer desde Python**: las líneas las escribe una capa en C
+    directamente al descriptor 1, así que `contextlib.redirect_stdout` sólo capturó 3 de
+    las 264. La cifra sale del log de la corrida, que es el instrumento honesto aquí.

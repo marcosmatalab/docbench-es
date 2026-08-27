@@ -1,0 +1,36 @@
+{
+ "instrumento": "pypdf.PdfReader.extract_text por pagina",
+ "umbral_pobre": 10,
+ "documentos": 1000,
+ "paginas": 10298,
+ "paginas_sin_texto": 0,
+ "paginas_pobres": 0,
+ "documentos_con_alguna_pagina_sin_texto": 0,
+ "documentos_enteros_sin_texto": 0,
+ "documentos_ilegibles": 0,
+ "por_banda": {
+  "<=10": {
+   "documentos": 776,
+   "paginas": 3199,
+   "sin_texto": 0,
+   "pobres": 0,
+   "documentos_con_alguna_sin_texto": 0
+  },
+  "11-50": {
+   "documentos": 186,
+   "paginas": 3329,
+   "sin_texto": 0,
+   "pobres": 0,
+   "documentos_con_alguna_sin_texto": 0
+  },
+  ">50": {
+   "documentos": 38,
+   "paginas": 3770,
+   "sin_texto": 0,
+   "pobres": 0,
+   "documentos_con_alguna_sin_texto": 0
+  },
+  "(ilegible)": {}
+ },
+ "por_documento": []
+}

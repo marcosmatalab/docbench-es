@@ -71,6 +71,17 @@ def con_tabla(celdas: tuple[bytes, bytes, bytes, bytes] = (b"A", b"B", b"C", b"D
     return _ensamblar(b"0.7 w\n" + b"\n".join(lineas + textos))
 
 
+def sin_capa_de_texto() -> bytes:
+    """Una página con líneas dibujadas y **ni un operador de texto**.
+
+    Es el control negativo del censo de capa de texto: sin una página así, un censo que
+    devolviera siempre cero saldría verde y no estaría midiendo nada.
+    """
+    lineas = [b"20 %d m 180 %d l S" % (y, y) for y in (20, 50, 80)]
+    lineas += [b"%d 20 m %d 80 l S" % (x, x) for x in (20, 100, 180)]
+    return _ensamblar(b"0.7 w\n" + b"\n".join(lineas))
+
+
 def roto() -> bytes:
     """Bytes que dicen ser un PDF y no lo son. Es lo que come el aro hostil."""
     return b"%PDF-1.4\nesto no es un PDF\n%%EOF"
