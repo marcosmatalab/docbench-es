@@ -63,8 +63,23 @@ parar_si:
     significa: el adaptador no esta conectado a lo que cree
     obliga: parar. Un extractor a cero no compite, no pierde
 
-# ------------------------------------------------------------------ LO MEDIDO YA
-con_un_solo_extractor:
-  pdfplumber: >
-    12 de 12, 121 tablas, 34,0 s de reloj, 0 fallos. Con los cuatro sera mas, y el
-    numero que importa de ese ensayo no es el reloj: es que ninguno reviente.
+# ------------------------------------------------------------------ LO CORRIDO
+# 27 ago 2026, sobre el commit 27115f6, arbol limpio.
+#   uv run docbench run --extractors all --poblacion runs/l5/humo_campana.json ... --offline
+con_los_cuatro:
+  pdfplumber:  12 de 12 · 121 tablas ·  35,2 s · 0 fallos
+  camelot:     12 de 12 · 118 tablas ·  85,4 s · 0 fallos
+  pymupdf4llm: 12 de 12 · 118 tablas · 185,9 s · 0 fallos
+  docling:     12 de 12 · 112 tablas · 220,9 s · 0 fallos
+  total: 48 unidades, 527 s de reloj, CERO fallos
+  diarios: 9,7 MB para 12 documentos por 4 extractores
+  las_cuatro_condiciones_de_parada:
+    revienta: NO. Ninguno lanzo; las 48 unidades devolvieron Extraction.
+    memoria: NO. La banda >50 —572 de las 668 paginas, con una de 309— cabe.
+    tasa_de_fallo_alta: NO. 0 de 12 en los cuatro.
+    cero_tablas: NO. Los cuatro encuentran mas de 100 en los seis documentos con tabla.
+  y_lo_que_este_numero_NO_es: >
+    Una proyeccion. Los 12 se eligieron por COBERTURA DE CELDAS y estan sesgados a
+    documentos largos —572 de sus 668 paginas son de la banda >50—, asi que escalar sus
+    527 s a los 616 seria exactamente lo que este fichero dice que no se haga. El
+    presupuesto sigue siendo el pre-registrado de B5-bis: 4,01 h.
