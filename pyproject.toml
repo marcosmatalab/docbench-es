@@ -211,7 +211,42 @@ module = ["torch.*", "docling.*", "camelot.*", "pymupdf.*"]
 follow_imports = "skip"
 
 [tool.pytest.ini_options]
-# `-n auto` desde L5. Para medir en serie sobre el MISMO arbol, sin moverlo:
+# `-n auto` desde L5, y desde el 27 ago 2026 el `auto` esta MEDIDO en vez de supuesto.
+#
+# LO PRIMERO, PORQUE ESTABA MAL EN ESTE REPO: `-n auto` de pytest-xdist levanta un
+# trabajador por nucleo FISICO **si `psutil` esta instalado**, y si no cae a los LOGICOS.
+# Aqui psutil SI esta —lo arrastran pymupdf4llm, accelerate y unstructured, o sea los
+# extras de EXTRACTORES, no el grupo `dev`— asi que `auto` son 7, no 14.
+#
+# Y de ahi que `-n auto` NO signifique lo mismo aqui que en CI, que instala con
+# `uv sync --only-group dev` y por tanto no tiene psutil: alli `auto` son los LOGICOS.
+# La misma cadena, dos numeros, y lo que decide cual es una dependencia de otra cosa.
+# El paso de CI que lo anunciaba decia `os.cpu_count()`: acertaba en CI y era falso aqui.
+# Ahora dice cual de los dos casos es, y por que.
+#
+# Medido en frio, la fase de pytest DENTRO de una secuencia completa (un desglose por
+# fases con una limpieza entre cada una cobra el arranque en frio dos veces), 3 muestras
+# por valor, reposo estricto antes de cada una y orden rotado entre rondas:
+#
+#     -n  4   mediana 4075 ms
+#     -n  6           3443
+#     -n  7           2951      <- lo que hace `auto` en esta maquina
+#     -n  8           2853      <- el mejor, y son 98 ms
+#     -n 10           2868
+#     -n 14           3157
+#
+# CONCLUSION: `auto` ya esta en la parte plana de la curva. Los 98 ms que separan 7 de 8
+# son 1,2% de una puerta de ~8.100 ms y sus rangos SE SOLAPAN (7: 2916-2979, 8:
+# 2851-2919) con n=3. Forzar 8 exigiria pisar `auto` con un numero fijo, que en un runner
+# de CI de 2-4 nucleos seria peor, y no lo pagan 98 ms. **No se toca.**
+#
+# Lo que SI aporta esto: `auto` deja de ser un valor por defecto y pasa a ser una
+# eleccion medida con su condicion —14 CPU visibles, 7 fisicos, AMD Ryzen 9 9950X3D—. Si
+# la maquina cambia, se vuelve a medir; no es una constante del proyecto. Y queda medido
+# que 4 y 6 son MUCHO peores y 14 tambien, o sea que la curva tiene fondo y `auto` cae
+# dentro.
+#
+# Para medir en serie sobre el MISMO arbol, sin moverlo:
 #     PYTEST_ADDOPTS="-n 0" make fast
 addopts = "-q --strict-markers --strict-config -n auto"
 # `pytest` a secas NO debe recoger tests/e2e, que necesita red.

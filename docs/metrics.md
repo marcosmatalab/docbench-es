@@ -485,6 +485,14 @@ vale; una que no empieza nunca, no.
 | Fecha | Commit | `puerta_ms` | Instrumento | Nota |
 |---|---|---|---|---|
 | 2026-08-27 | `8b2def5` | **12.630 ms** | `/proc/uptime` | Primer punto. Antes no hay serie porque no se cosechaba |
+| 2026-08-27 | `804ee53` | **14.218 ms** | `scripts/reloj.py` (`CLOCK_MONOTONIC`) | Primero con el instrumento definitivo |
+
+**Los dos puntos NO se restan.** Entre uno y otro cambiaron **tres** cosas a la vez —el
+instrumento, el código y el runner que tocara—, así que los +1.588 ms no se pueden atribuir
+a ninguna. Con `n=1` por commit no hay forma, y decir «creció un 12%» sería exactamente el
+error que acabo de cometer con la puerta local: comparar dos medidas que difieren en más de
+una variable. La serie empieza a significar algo cuando haya puntos suficientes del mismo
+instrumento.
 
 **Y este primer punto lleva una advertencia que la propia serie necesita:** se midió con
 `/proc/uptime`, que **es BOOTTIME** y cuenta el tiempo suspendido. Desde el commit

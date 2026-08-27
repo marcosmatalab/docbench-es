@@ -40,7 +40,28 @@ jobs:
       - name: Cuantos trabajadores levanta pytest aqui
         run: |
           echo "nucleos del runner: $(nproc)"
-          uv run python -c "import os; print('pytest -n auto levantara', os.cpu_count(), 'trabajadores')"
+          # `-n auto` de xdist NO SIGNIFICA LO MISMO AQUI QUE EN LOCAL, y la causa es
+          # una dependencia de otro sitio: xdist cuenta nucleos FISICOS **si psutil esta
+          # instalado**, y si no cae a los LOGICOS. `psutil` no lo trae el grupo `dev`
+          # —lo arrastran pymupdf4llm, accelerate y unstructured, o sea los extras de
+          # EXTRACTORES—, asi que aqui, con `uv sync --only-group dev`, no esta.
+          #
+          #   local (con extras): 7 fisicos de 14 logicos -> auto = 7
+          #   CI   (solo dev):    sin psutil              -> auto = logicos
+          #
+          # Aqui ponia `os.cpu_count()` a secas, que acierta EN CI y es falso en local.
+          # Se pregunta a quien decide, y se dice cual de los dos casos es este.
+          uv run python -c "
+          import os
+          try:
+              import psutil
+              fisicos = psutil.cpu_count(logical=False)
+          except ImportError:
+              fisicos = None
+          logicos = os.cpu_count()
+          n = fisicos if fisicos else logicos
+          print('logicos:', logicos, '· fisicos:', fisicos if fisicos else '(psutil ausente)')
+          print('pytest -n auto levantara', n, 'trabajadores')"
       - name: CI corre el Python de .python-version
         run: |
           esperado=$(tr -d '[:space:]' < .python-version)
