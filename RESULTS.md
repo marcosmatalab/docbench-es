@@ -2417,9 +2417,11 @@ uv run python scripts/mutantes/matar.py; echo $?          # los 28 mueren
 uv run python scripts/mutantes/matar.py --tabla; echo $?  # qué test mata a cuál, 3 reps
 ```
 
-**Sello de las dos corridas: `833e419`, árbol limpio, sin `+N`** — la plana sobre
-**201 tests** (la unión de las suites objetivo) y la de `--tabla` sobre **638** (la suite
-entera), **cada una con el suyo y con su propio control negativo a 0**. Hasta este cierre
+**Sello de las dos corridas: `5550ca2`, árbol limpio, sin `+N`** — la plana sobre
+**207 tests** (la unión de las suites objetivo) y la de `--tabla` sobre **652** (la suite
+entera), **cada una con el suyo y con su propio control negativo a 0**. Re-medidas tras
+las correcciones del escrutinio: la suite creció y los denominadores con ella, y las dos
+columnas de abajo **no se movieron**. Hasta este cierre
 `--tabla` no imprimía ninguno de los dos y su tabla se publicaba bajo el sello de la otra
 corrida: dos corridas presentadas como una, que es el error que este documento ya tiene
 registrado dos veces más abajo.
