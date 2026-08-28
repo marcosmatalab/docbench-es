@@ -216,7 +216,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 636 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 201 de 638 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -240,8 +240,8 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
    escondería.
 
-   **Lo que sigue siendo verdad y hay que vigilar:** «los 22 mutantes mueren» dice
-   cada vez menos sobre el conjunto — hoy habla del **51,7%** de la suite. Los
+   **Lo que sigue siendo verdad y hay que vigilar:** «los 28 mutantes mueren» dice
+   cada vez menos sobre el conjunto — hoy habla del **31,5%** de la suite. Los
    mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
 
@@ -361,7 +361,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    9 escapes de 19 contra 0 y 8 hoy.
 
    **Dos de esos puntos ciegos ya se cobraron su pieza**, y por eso la cifra no es
-   teórica: la forma de `ESTADO.md`:15 —«22 mutantes, todos mueren»— se escapaba
+   teórica: la forma de `ESTADO.md`:15 —«28 mutantes, todos mueren»— se escapaba
    entera, en el documento que el hook `SessionStart` inyecta en cada sesión; y el
    mensaje de error enumeraba sólo lo que veía, así que **corregir lo enumerado
    dejaba `ESTADO.md` en verde mintiendo**. Los dos están tapados; los siete de

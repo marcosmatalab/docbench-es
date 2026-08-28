@@ -470,8 +470,8 @@ por familia sí, y el censo se pone rojo si alguna queda a cero.
 
 ### Los mutantes
 
-**Son 22 mutantes, no 18**: los tres de `recuentos` entraron con el guardián de
-números y esta línea no se actualizó entonces. Las cuatro casillas de `siempre_ok`
+**Son 28 mutantes, no 22**: los seis del instrumento de L5 entraron en el paso 2 de
+su cierre, y antes los tres de `recuentos` con el guardián de números. Las cuatro casillas de `siempre_ok`
 × `siempre_roto` están completas sobre las dos funciones que L2 construye.
 `siempre_roto` no es simetría decorativa: es el único que caza al test que sólo
 afirma la mitad tranquilizadora —«esto BAJA la nota»—, que un 0,0 constante
@@ -525,14 +525,14 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 166 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 201 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 636 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 201 de 638 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **470 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **437 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -543,9 +543,9 @@ Los **470 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), 
 `test_conjunto_conformidad` (5), `test_formatos_spans` (2), `test_errors` (3), `test_sin_consumidor` (3),
 `test_reglas_parseables` (3), `test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
-invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
-que **esos 22** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 470 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+invariantes de tipos y las barreras por AST. Así que «los 28 mutantes mueren» dice
+que **esos 28** huecos están tapados, **no** que la suite esté medida. Algunos de
+esos 437 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 > **Aquí ponía «esos 218», y 218 era el resto cuando la suite tenía 384**, o sea el
@@ -566,7 +566,7 @@ diferencia es información: **SIEMPRE** es la intersección —muere en las tres
 **ALGUNA VEZ** es la unión. *Un asesino intermitente no es un asesino*: depende de
 que un sorteo de `hypothesis` salga bien.
 
-**Son 22 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
+**Son 28 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
 
 | De dónde salen | Cuáles |
 |---|---|
@@ -576,6 +576,7 @@ que un sorteo de `hypothesis` salga bien.
 | **El paso 2 de `/cerrar`** (3) | `teds_siempre_cero`, `cellmatch_siempre_ok`, `cellmatch_siempre_roto` |
 | **La auditoría en frío del guardián** (3) | `recuentos_todo_vale`, `recuentos_sin_claude`, `recuentos_plano_flojo` |
 | **El arreglo del grupo de filas** (1) | `seccion_sin_cerrar` |
+| **El paso 2 de L5 · el INSTRUMENTO del titular** (6) | `emparejado_sin_recuento`, `fallos_no_se_cuentan`, `cobertura_siempre_llena`, `cara_a_cara_la_union`, `delta_siempre_cero`, `no_aplicable_impreso_cero` |
 
 > **Aquí ponía «Son 21 mutantes, no 12: … añadieron seis», y 12 + 6 = 18.** El
 > guardián de recuentos había actualizado el dígito de 18 a 21 —porque el patrón
@@ -625,7 +626,7 @@ saber por qué. Aquí se ve que las tres diferencias tienen nombre y tasa.
 > [límite 50](LIMITS.md). Para afinar un caso concreto:
 > `uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE`.
 
-**La afirmación, recontada contra esta tabla:** sobre los 22 mutantes existentes,
+**La afirmación, recontada contra esta tabla:** sobre los 28 mutantes existentes,
 la propiedad de normalización **no es la única asesina de ninguno**; es asesina
 **determinista** de `normalizador_agresivo` —donde además hay otros ocho— y
 aparece **esporádicamente** sobre otros dos, `n3_incompleta` y
@@ -1356,8 +1357,8 @@ desde ese commit exacto.
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-636 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **201 de
+638 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 

@@ -131,6 +131,20 @@ def test_los_fallos_se_cuentan_por_causa_y_no_se_pierden() -> None:
     assert fila.n_extracciones == 2
 
 
+def test_dos_causas_de_fallo_distintas_no_se_funden_en_un_total() -> None:
+    """**El enum es cerrado para esto**: la tasa de fallo se publica POR CAUSA. Un total
+    de «2 fallos» oculta cuál es el modo de fallo, que es lo único accionable de la
+    columna — y es la mitad de la regla de oro 6 que un recuento sí satisface.
+
+    Segundo asesino de `fallos_no_se_cuentan`, que hasta aquí lo mataba un solo test.
+    """
+    a = replace(_ex("D2"), failed=True, failure_reason="corrupt_pdf")
+    b = replace(_ex("D3"), failed=True, failure_reason="timeout")
+    fila = medir([_ex("D1", PERFECTA), a, b], {"D1": (PERFECTA,)}, {"D1": 1})
+    assert dict(fila.metricas.failures) == {"corrupt_pdf": 1, "timeout": 1}
+    assert fila.n_extracciones == 3, "los fallidos cuentan como intentos"
+
+
 def test_el_regimen_y_el_agregado_salen_declarados() -> None:
     """ADR-0045: la población con tabla es un censo, así que **sin intervalo**, y el
     agregado primario es por documento. Los dos viajan dentro de la métrica."""

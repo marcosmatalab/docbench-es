@@ -492,9 +492,11 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 636 tests.** Los
-    **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **470 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+51. **La suite no está medida por mutación: el arnés cubre 201 de 638 tests.** Los
+    **28 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
+    árbol de TEDS, el lote y —desde el paso 2 de L5— **el instrumento que emite la
+    tabla**: el emparejado, el recuento de fallos, la cobertura, la intersección, el
+    delta y el `n/a`. Los **437 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -505,13 +507,13 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (17), `tabla_nivel1` (16), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **73,9% hoy** — y 66 de los 470 entraron de golpe con
+    12,4% al cerrar L2, **68,5% hoy** — y 66 de los 437 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (9) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -521,7 +523,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **633 de 636 tests protegidos por algo** —un
+    *el arnés*, no la protección: **635 de 638 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,

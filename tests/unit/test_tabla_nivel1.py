@@ -136,6 +136,17 @@ def test_la_cara_a_cara_imprime_los_dos_denominadores_y_el_delta_con_su_signo() 
     assert "no un factor de corrección" in texto
 
 
+def test_sin_nota_propia_la_cara_a_cara_dice_n_a_en_las_dos_columnas() -> None:
+    """Un extractor puede tener nota sobre la intersección y **ninguna sobre su propio
+    conjunto**: entonces no hay resta que hacer y las dos columnas lo dicen. Un 0,0000
+    ahí publicaría «no le cuesta nada» donde lo que pasa es que no se midió.
+
+    Segundo asesino de `no_aplicable_impreso_cero`, que hasta aquí lo mataba un solo test.
+    """
+    texto = tabla_nivel1({"a": _fila(teds=None, n_documents=0), "b": _fila()}, {})
+    assert "| `a` | 0,9123 | n/a | n/a |" in texto, texto
+
+
 def test_sin_interseccion_la_tabla_dice_que_no_hay_comparacion() -> None:
     """No es un empate ni un cero: es que no se pueden comparar. Y es un resultado sobre
     el corpus, no un fallo de la tabla."""

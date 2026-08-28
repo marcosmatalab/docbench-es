@@ -104,6 +104,27 @@ def _por_documento(
     return fuera
 
 
+def _emparejar(
+    pred: Sequence[CanonicalTable], gold: Sequence[CanonicalTable]
+) -> list[tuple[CanonicalTable, CanonicalTable]] | None:
+    """La regla PRE-REGISTRADA de `runs/l5/emparejado.yaml`, en una función y con nombre.
+
+    **Por orden, y sólo cuando los recuentos coinciden.** `None` significa «este documento
+    no puntúa» —`NO_APLICABLE`, nunca 0,00— y no es lo mismo que una lista vacía.
+
+    Está separada de `medir` porque es **la decisión que mueve el titular**, no un detalle
+    de implementación: con la misma verdad y el mismo extractor, otra regla da otro TEDS.
+    Una decisión así tiene que poder romperse a propósito y verse el rojo, y para eso hace
+    falta que sea una unidad con nombre — el mutante `emparejado_sin_recuento` la sustituye
+    por el emparejado por orden a secas, que es la alternativa que `emparejado.yaml`
+    descarta por catastrófica: un extractor que se salta la primera tabla compara su 2 con
+    la 1 de la verdad y saca notas ruinosas en todas por un solo fallo de detección.
+    """
+    if len(pred) != len(gold):
+        return None
+    return list(zip(pred, gold, strict=True))
+
+
 def _f1_del_documento(pares: Sequence[tuple[CanonicalTable, CanonicalTable]]) -> float | None:
     """Media de los F1 de las tablas del documento. `None` si ninguna es evaluable.
 
@@ -144,10 +165,11 @@ def medir(
             continue
         tablas_verdad += len(gold)
         pred = tuple(t for ex in por_doc.get(clave, ()) for t in ex.tables)
-        if len(pred) == len(gold):
+        pares = _emparejar(pred, gold)
+        if pares is not None:
             igual += 1
-            tripletas += [(clave, p, g) for p, g in zip(pred, gold, strict=True)]
-            pares_f1[clave] = list(zip(pred, gold, strict=True))
+            tripletas += [(clave, p, g) for p, g in pares]
+            pares_f1[clave] = pares
         else:
             de_mas += max(0, len(pred) - len(gold))
             de_menos += max(0, len(gold) - len(pred))

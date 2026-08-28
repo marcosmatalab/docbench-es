@@ -77,6 +77,20 @@ PLAN = [
     ("recuentos_todo_vale", "tests/unit/test_recuentos.py"),
     ("recuentos_sin_claude", "tests/unit/test_recuentos.py"),
     ("recuentos_plano_flojo", "tests/unit/test_recuentos.py"),
+    # L5 · EL INSTRUMENTO QUE EMITE EL TITULAR, no el que lo calcula. Hasta aquí el
+    # arnés cubría `canonical`, `teds`, `cellmatch` y los recuentos, o sea la
+    # aritmética; ninguno de los 22 tocaba el código que decide QUÉ se compara con
+    # QUÉ, con qué denominador y cómo se imprime. Los seis de abajo rompen, uno por
+    # uno, las decisiones pre-registradas de las que cuelga la primera tabla:
+    # el emparejado, el recuento de fallos, la cobertura, la intersección, el delta
+    # y el `n/a`. Cada uno haría mentir a una columna publicada sin que la tabla
+    # pareciera rara, que es la clase de fallo que este repo llama la más grave.
+    ("emparejado_sin_recuento", "tests/unit/test_nivel1.py"),
+    ("fallos_no_se_cuentan", "tests/unit/test_nivel1.py"),
+    ("cobertura_siempre_llena", "tests/unit/test_nivel1.py"),
+    ("cara_a_cara_la_union", "tests/unit/test_nivel1.py tests/unit/test_tabla_nivel1.py"),
+    ("delta_siempre_cero", "tests/unit/test_nivel1.py tests/unit/test_tabla_nivel1.py"),
+    ("no_aplicable_impreso_cero", "tests/unit/test_tabla_nivel1.py"),
 ]
 
 
