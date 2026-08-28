@@ -1191,6 +1191,8 @@ docbench-es/
 │   │   └── recommend.py         enrutado por tipo de documento y presupuesto
 │   │
 │   ├── report/
+│   │   ├── cara_a_cara.py       las mismas puntuaciones sobre la INTERSECCION,
+│   │   │                      que es la unica cuenta que compara sin sesgo
 │   │   ├── nivel1.py            de las extracciones y la verdad a StructureMetrics.
 │   │   │                      El emparejado esta pre-registrado, no se decide ahi
 │   │   ├── tables.py · cards.py · curves.py

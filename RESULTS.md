@@ -530,9 +530,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 632 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 634 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **466 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **468 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -1350,7 +1350,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-632 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+634 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2069,3 +2069,154 @@ Un guardián que avise **entre** cierres ya existe desde este hito: `make fast` 
 su duración y `guard-commit.sh` exige una medida **en frío** bajo el techo para dejar
 commitear. Lo que no hay es nada que vigile la **tendencia**: 852 ms más por hito agotan
 el margen en dos hitos, y eso no lo dice ningún aro. Va en el límite 102.
+
+---
+
+## L5 · LA PRIMERA TABLA · 2.464 unidades sobre 616 documentos
+
+`uv run docbench run --extractors all --offline` y luego
+`uv run docbench report --campaign runs/l5/campana --salida runs/l5/nivel1.md`.
+La tabla entera, con sus notas, en [`runs/l5/nivel1.md`](runs/l5/nivel1.md); su sello, en
+`runs/l5/nivel1.md.sello.json`.
+
+### EL TITULAR NO ES UNA NOTA: ES 82 DE 338
+
+> **Sólo en 82 de los 338 documentos con tabla (24,3%) los cuatro extractores coinciden
+> con la referencia en CUÁNTAS TABLAS HAY.**
+
+En el 76% restante, al menos uno de los cuatro discrepa en el **paso previo a cualquier
+métrica de calidad**. No es un detalle del emparejado: es el resultado más citable del
+hito, y es lo que hace que las notas de abajo se lean con su cobertura al lado o no se
+lean.
+
+**Y dónde está el desacuerdo, que es lo que lo convierte en diagnóstico:**
+
+| páginas | población | coinciden los cuatro | acuerdo |
+|---|---:|---:|---:|
+| una página | 9 | 9 | **100,0%** |
+| 2-10 | 183 | 46 | 25,1% |
+| 11-50 | 114 | 12 | **10,5%** |
+| >50 | 32 | 15 | 46,9% |
+
+**La lectura fácil sería «la discrepancia crece con la longitud», Y ES FALSA.** El mínimo
+está en la banda **11-50**, no en la de más de 50, y los documentos largos **recuperan
+hasta el 46,9%**. Lo único monótono es el arranque: donde el recuento es trivial —una
+página, o hay una tabla o no la hay— los cuatro coinciden **siempre**, y eso descarta que
+el problema sea de una herramienta concreta.
+
+**Dos cautelas sobre esa fila del 100%**, y van delante: su **n es 9**, así que no
+sostiene ninguna tasa; y es la banda donde acertar es más barato. Sirve para lo que sirve
+—decir que el desacuerdo aparece con la complejidad y no con el extractor— y no para más.
+
+**Y el 46,9% de la banda larga NO está explicado.** Esos 32 documentos tienen 917 tablas
+—28,7 por documento—, así que coincidir en el recuento exacto debería ser *más* difícil,
+no menos. Se publica sin explicación en vez de con una inventada.
+
+### La corrida
+
+| | |
+|---|---|
+| sello | `819c06f`, **0 ficheros sin commitear**, huella `01ba4719c80b6fe9` |
+| máquina | 14 CPU visibles, carga 1,39 al arrancar, **un solo proceso, secuencial** |
+| unidades | **2.464** = 616 documentos × 4 extractores |
+| completadas | **2.464 de 2.464**, 616 líneas en cada uno de los cuatro diarios |
+| **fallos** | **0, 0, 0 y 0** — contados recorriendo los diarios, no leyendo el resumen |
+| reloj | **8.272 s = 2,30 h** |
+
+**La tasa de fallo es cero en los cuatro, y un cero hay que atacarlo.** Lo que sostiene
+que sea real y no un error tragado: el aro `extract_no_lanza` de la suite de conformidad
+pasa para los cuatro contra un PDF deliberadamente corrupto —o sea que **saben** devolver
+`failed=True`—, y `Extraction.__post_init__` impide construir un fallo sin causa. El cero
+dice «ninguno de los 616 documentos rompió a ninguno de los cuatro», que sobre un corpus
+nacido digital y con capa de texto en el **100%** de sus 10.298 páginas (censo, LIMITS
+104) es lo esperable.
+
+### La predicción pre-registrada, confrontada
+
+| | horas |
+|---|---:|
+| pre-registrado en `runs/l5/poblacion.yaml` | **4,01** |
+| real | **2,30** |
+| error del estimador | **−43%** |
+
+`scripts/poblacion_l5.py` proyecta desde el coste/página medido en B5-bis. **Sobreestimó
+un 43%**, y la dirección importa: es la segunda vez que un estimador de este repo falla
+—en L3 fueron −23,5%, +47,3% y −29,8% sobre el tamaño en disco— y las dos veces por
+extrapolar de una muestra pequeña a una población con otra forma.
+
+**A mitad de corrida, las dos proyecciones lineales dieron:** por documento **2,83 h**,
+por página **2,30 h**. La de página acertó al segundo decimal, y la razón estaba
+declarada antes de saber el resultado: la corrida va en orden de población —primero los
+338 con tabla, 17,5 páginas de media, luego los 278 sin, 12,3—, así que la de documento
+era pesimista por construcción.
+
+**La hipótesis del 43%, que sigue siendo hipótesis:** B5-bis midió **un proceso por
+unidad** y pagó la carga de modelos de `docling` **108 veces**; el corredor la paga
+**una**. Se contrasta comparando el s/página de `docling` de aquí con el de B5-bis, y no
+está hecho.
+
+### La tabla, y lo que cada columna NO dice
+
+| extractor | TEDS | TEDS-S | F1 celda | TEDS/pág. | cobertura | acuerdo | +/- tablas | fallos | latencia |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `camelot` | 0,8684 | 0,8701 | 0,9343 | 0,8987 | 29,6% | 40,8% | +684/-22 | 0 | 854 ms |
+| `docling` | 0,9053 | 0,9150 | 0,8547 | 0,8984 | 38,0% | 40,5% | +671/-28 | 0 | 3613 ms |
+| `pdfplumber` | 0,8699 | 0,8701 | 0,9425 | 0,9017 | 29,6% | 40,5% | +709/-22 | 0 | 404 ms |
+| `pymupdf4llm` | 0,8936 | 0,9134 | 0,7372 | 0,9541 | 23,6% | 33,7% | +618/-111 | 0 | 2363 ms |
+
+**Alfabético, nunca por nota**, aquí y en el fichero: ordenar por nota *es* ordenar, diga
+lo que diga el texto de al lado. **Agregado** POR_DOCUMENTO (primario de
+`ponderacion.yaml`); `TEDS/pág.` es el secundario. **Régimen CENSO**: los 338 son la
+población entera, así que **sin intervalo** (ADR-0015).
+
+**Las coberturas son distintas entre extractores —23,6% a 38,0%—, así que las cuatro
+notas de la primera columna NO son comparables entre sí.** Ése es el sesgo de
+supervivencia que `runs/l5/emparejado.yaml` declara antes de medir: quien detecta peor
+falla el recuento en más documentos, ésos salen de su cuenta, y su nota acaba calculada
+sobre sus documentos fáciles.
+
+### La cara a cara · las mismas puntuaciones sobre el mismo denominador
+
+Sobre los **82** de la intersección, que es la única cuenta que puede contestar «cuál es
+mejor» — y aun así **no lo contesta**: eso exige la comparación pareada con su potencia,
+que es L6 (ADR-0009).
+
+| extractor | TEDS sobre la intersección |
+|---|---:|
+| `camelot` | 0,8581 |
+| `docling` | 0,9354 |
+| `pdfplumber` | 0,8599 |
+| `pymupdf4llm` | 0,9375 |
+
+**Y el orden cambia respecto a la primera tabla**, que es exactamente por lo que existe:
+`pymupdf4llm` pasa de la cobertura más baja (23,6%) a la nota más alta de la
+intersección. Sobre su propio conjunto su nota estaba deprimida por *qué* documentos
+puntuaban, no por cómo los puntuaba.
+
+### Coste · las cuatro herramientas locales, sobre 616 documentos y 8.733 páginas
+
+| extractor | s/página | s/documento | reloj total | euros |
+|---|---:|---:|---:|---:|
+| `camelot` | 0,125 | 1,77 | 0,303 h | 0,00 € |
+| `docling` | 0,433 | 6,13 | 1,050 h | 0,00 € |
+| `pdfplumber` | 0,059 | 0,83 | 0,143 h | 0,00 € |
+| `pymupdf4llm` | 0,330 | 4,68 | 0,801 h | 0,00 € |
+
+**`n` = 616 y 8.733: la campaña entera, y NO es la n del TEDS**, que se cuenta sobre el
+conjunto evaluable de cada uno y es más pequeña y distinta para cada uno. Por eso el
+coste va en su propio bloque y no en dos columnas más: **misma fila implica mismo
+denominador**.
+
+**Cero euros es un cero MEDIDO**, no un dato que falte: los cuatro corren en local. Un
+`NO_APLICABLE` diría otra cosa.
+
+**Y `pdfplumber` es 7,3× más barato que `docling` con 3,5 puntos menos de TEDS en la cara
+a cara.** Eso es una curva coste-calidad con cuatro puntos, no un ranking — y es la forma
+de leer esta tabla.
+
+### Los dos árboles, dicho en vez de callado
+
+Las extracciones son de `819c06f` y la puntuación de un commit posterior. **No invalida la
+tabla: invalida atarla a un commit solo.** Quien quiera reproducirla exacta necesita los
+dos, y el aritmético vive en `report.nivel1` y `core`, que son puros: se vuelve al commit
+del informe y se relanza `docbench report` sobre los mismos diarios.

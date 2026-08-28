@@ -99,7 +99,7 @@ def report(
         {"sello_de_la_corrida": sello, **{n: campana / f"{n}.jsonl" for n in versiones}},
         {"campana": str(campana)},
     )
-    texto = tabla_nivel1(filas, versiones, crudo, mio)
+    texto = tabla_nivel1(filas, versiones, crudo, mio, paginas)
     typer.echo(texto)
 
     movido = difieren(crudo, mio)

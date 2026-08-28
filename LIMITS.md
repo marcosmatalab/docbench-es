@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 632 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 634 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **466 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **468 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -505,7 +505,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (14), `tabla_nivel1` (15), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (16), `tabla_nivel1` (15), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
@@ -521,7 +521,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **629 de 632 tests protegidos por algo** —un
+    *el arnés*, no la protección: **631 de 634 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2113,3 +2113,60 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Y el recuento no se puede hacer desde Python**: las líneas las escribe una capa en C
     directamente al descriptor 1, así que `contextlib.redirect_stdout` sólo capturó 3 de
     las 264. La cifra sale del log de la corrida, que es el instrumento honesto aquí.
+
+105. **EL TECHO DE CI NO PUEDE SONAR: SU UMBRAL ESTÁ DENTRO DEL RUIDO DE SU PROPIO
+    INSTRUMENTO.** Medido con los tres únicos puntos que hay, y **el tercero es el que lo
+    dice**:
+
+    | fecha | commit | ms | nota |
+    |---|---|---:|---|
+    | 2026-08-27 | `8b2def5` | 12.630 | primer punto |
+    | 2026-08-27 | `804ee53` | 14.218 | primero con el instrumento definitivo |
+    | 2026-08-27 | `59ccd53` | 18.044 | **la puerta NO cambió respecto al anterior** |
+
+    Entre el segundo y el tercero sólo cambiaron comentarios, un documento y el paso que
+    informa de los trabajadores: mismo código efectivo, **+3.826 ms**. Recorrido de la
+    serie: **43%**. Y el techo de crecimiento de CI son **21.000 ms**, o sea un **16%**
+    sobre el peor punto observado.
+
+    **Un umbral del 16% sobre un instrumento cuyo ruido vale un 43% no distingue
+    crecimiento de qué runner te tocó.** Es el límite 77 con otra cara —un guardián cuyo
+    verde no significa lo que parece—, y esta vez sobre una máquina que **nadie controla**:
+    el techo local vigila una máquina propia, en reposo y con protocolo; el de CI vigila
+    una que cambia entre corridas y sobre la que no se puede imponer nada.
+
+    **Se declara y NO se arregla ahora, y la razón es de prioridad, no de pereza.** El
+    techo de CI es una alarma **secundaria**: la primaria es el aro local con su protocolo
+    de mínimo en frío, y la **bloqueante** es el presupuesto de 90 s del manual, que sigue
+    con 5× de margen. Las dos salidas conocidas —mediana de *k* corridas por push, que
+    multiplica el tiempo de CI por *k*; o normalizar contra una carga de referencia
+    cronometrada en el mismo trabajo, que es mecanismo nuevo— van a
+    `docs/despues-de-la-tabla.md`.
+
+    **Y los tres puntos no son un fracaso de la serie: son su primera medida.** Una serie
+    que empieza midiendo su propio ruido empieza mejor que una que empieza midiendo el
+    objeto y descubre el ruido cuando ya ha publicado.
+
+106. **UN CONTROL PROTEGE CONTRA CONFUSIÓN DE VARIABLES; NO PROTEGE CONTRA UNA LÍNEA BASE
+    QUE NO SE MIDIÓ.** Son dos aros distintos, y en el barrido de `-n` sólo había uno.
+
+    El barrido estaba **bien diseñado**: orden rotado para que la deriva térmica no cayera
+    siempre en el mismo brazo, predicción escrita antes, y el mismo árbol quieto. Y la
+    predicción salió **falsa** de todas formas, por una razón que ningún control atrapa:
+    **la línea base estaba supuesta**. El repo llevaba escrito que `-n auto` levanta un
+    trabajador por CPU —14 aquí—, y `auto` levanta **7**. Nadie lo había comprobado.
+
+    Con la línea base equivocada, el brazo «como está hoy» no era el que se creía, así que
+    la comparación medía otra cosa desde antes de empezar. Un control cruzado, una
+    aleatorización o más repeticiones **no habrían cambiado nada**: los tres protegen del
+    ruido y de la confusión entre variables, y aquí el error estaba en la definición de una
+    de ellas.
+
+    **La regla que sale de aquí, y es el PASO 0 aplicado a las mediciones:** *antes de
+    medir contra algo, mide qué es ese algo.* Es la misma forma que ya funciona con los
+    conversores —*antes de escribir el extractor, pregúntale a su conversor qué declara*— y
+    ha encontrado cuatro bugs en cuatro intentos.
+
+    **Lo que queda sin cubrir:** ningún guardián lo hace cumplir. Es una regla de método,
+    como *«primero el código, segundo el test, nunca el golden»*, y vive en el guion de
+    quien mide. Un test no puede saber qué línea base debería haberse medido.

@@ -180,7 +180,7 @@ sin estrenar —`from_tei` y `from_text_heuristic`—, y ninguno está en la cam
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 632 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 634 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 

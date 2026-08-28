@@ -21,14 +21,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from docbench_es.report.cara_a_cara import cara_a_cara
 from docbench_es.report.coste import tabla_coste
-from docbench_es.report.nivel1 import cara_a_cara
 from docbench_es.report.procedencia import bloque
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipar
     from collections.abc import Mapping
 
-    from docbench_es.report.nivel1 import CaraACara, Nivel1
+    from docbench_es.report.cara_a_cara import CaraACara
+    from docbench_es.report.nivel1 import Nivel1
 
 __all__ = ["tabla_cara_a_cara", "tabla_nivel1"]
 
@@ -88,6 +89,7 @@ def tabla_nivel1(
     versiones: Mapping[str, str],
     sello: Mapping[str, object] | None = None,
     arbol_informe: Mapping[str, object] | None = None,
+    paginas: Mapping[str, int] | None = None,
 ) -> str:
     """La tabla, con su nota al pie. **La nota es parte de la tabla, no un adorno.**
 
@@ -113,7 +115,7 @@ def tabla_nivel1(
             "",
             *lineas,
             "",
-            *tabla_cara_a_cara(cara_a_cara(filas)),
+            *tabla_cara_a_cara(cara_a_cara(filas, paginas)),
             "",
             *tabla_coste(filas, sello or {}),
             "",
@@ -161,9 +163,38 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
         f"{len(cc.extractores)} extractores coinciden con la referencia en algo tan "
         "básico como CUÁNTAS tablas hay.",
         "",
+        *_por_banda(cc),
         "**Esto no es un ranking.** Mismo denominador es necesario y no suficiente: "
         "decir «A es mejor que B» exige la comparación pareada con su potencia, que es "
         "lo que hace L6 (ADR-0009). Aquí van los números y su n; no se ordena a nadie.",
+    ]
+
+
+def _por_banda(cc: CaraACara) -> list[str]:
+    """**Dónde está el desacuerdo, que es lo que convierte el titular en diagnóstico.**
+
+    Un 24% de acuerdo dice que hay un problema. El desglose dice si es de la herramienta
+    o del documento: coincidir siempre en los de una página y casi nunca en los largos
+    significa que la discrepancia crece con la LONGITUD, y entonces mirar al extractor es
+    mirar donde no es.
+    """
+    if not cc.por_banda:
+        return []
+    filas = [
+        f"| {banda} | {total} | {n} | {_pct(n / total) if total else 'n/a'} |"
+        for banda, (n, total) in cc.por_banda.items()
+    ]
+    return [
+        "**Y DÓNDE está el desacuerdo**, que es lo que lo convierte en diagnóstico:",
+        "",
+        # La POBLACIÓN va antes que la parte, y no es estética: `scripts/derivadas.py`
+        # comprueba cada porcentaje contra la PRIMERA columna numérica de su fila. Con la
+        # parte delante, el barrido calcula la fracción del revés y se pone rojo — cazado
+        # al publicar esta misma tabla.
+        "| páginas | población | coinciden los cuatro | acuerdo |",
+        "|---|---:|---:|---:|",
+        *filas,
+        "",
     ]
 
 

@@ -486,6 +486,19 @@ vale; una que no empieza nunca, no.
 |---|---|---|---|---|
 | 2026-08-27 | `8b2def5` | **12.630 ms** | `/proc/uptime` | Primer punto. Antes no hay serie porque no se cosechaba |
 | 2026-08-27 | `804ee53` | **14.218 ms** | `scripts/reloj.py` (`CLOCK_MONOTONIC`) | Primero con el instrumento definitivo |
+| 2026-08-27 | `59ccd53` | **18.044 ms** | `scripts/reloj.py` (`CLOCK_MONOTONIC`) | Sin cambio funcional en la puerta respecto al anterior |
+
+**Y el tercer punto mide el RUIDO, que es lo primero que hacía falta saber.** Entre
+`804ee53` y `59ccd53` la puerta no cambió: sólo comentarios, un documento y el paso que
+informa de los trabajadores. Mismo instrumento, mismo código efectivo, y **+3.826 ms**.
+Con los tres puntos, el recorrido es 12.630 – 18.044: un **43%**.
+
+Eso no es un detalle del método: **es el método diciendo que la alarma no puede sonar.**
+El techo de crecimiento de CI son 21.000 ms, o sea un 16% por encima del peor punto
+observado, mientras el propio ruido del runner vale un 43%. Una alarma cuyo umbral está
+DENTRO del ruido de su instrumento no distingue crecimiento de sorteo de runner: o se
+suben los puntos por corrida —mediana de k, no n=1—, o el techo de CI no vigila nada.
+Va a la lista de después de la tabla, con su límite mientras tanto.
 
 **Los dos puntos NO se restan.** Entre uno y otro cambiaron **tres** cosas a la vez —el
 instrumento, el código y el runner que tocara—, así que los +1.588 ms no se pueden atribuir
@@ -775,3 +788,94 @@ anclaba la búsqueda en el prefijo común de las dos versiones y **falló en 2 d
 11**: `'Ayuntamiento de'` cayó en otro ayuntamiento de la misma tabla y `'...'` en una
 línea de relleno. Un ancla que puede caer en el sitio equivocado no es evidencia; se
 sustituyó por la búsqueda de la cadena entera, que no tiene ese modo de fallo.
+
+---
+
+## L5 · El nivel 1: qué mide cada columna, y con qué denominador
+
+Todas las cifras salen de `uv run docbench report --campaign runs/l5/campana`, que **lee y
+no mide**: la aritmética vive en `report.nivel1`, `report.cara_a_cara` y `core`, que son
+puros. Por eso la tabla se puede **regenerar sobre los diarios viejos** sin volver a correr
+las 2,30 h.
+
+### El acuerdo de recuento · 82 de 338
+
+**Qué mide:** en cuántos documentos los cuatro extractores devuelven **el mismo número de
+tablas** que la verdad derivada. No mide calidad: mide el paso previo.
+
+**Denominador:** los **338** documentos con al menos una tabla en la verdad. Los 662 sin
+ninguna no entran —salen `NO_APLICABLE`, nunca 0,00— y su tasa de falso positivo es otra
+medida, con otro régimen (ADR-0045).
+
+**Régimen:** censo. **No lleva intervalo** (ADR-0015).
+
+**Resolución e incertidumbre:** es un recuento exacto sobre la población entera, así que su
+incertidumbre no es muestral. Lo que sí tiene es **una dependencia declarada**: cambia si
+cambia la verdad derivada, y `derivar` descarta las tablas con hallazgos fatales —el XML
+del BOE los produce de verdad, LIMITS 30—. Un documento cuya verdad pierde una tabla cambia
+de banda de acuerdo sin que el extractor haya hecho nada distinto.
+
+**El desglose por banda lleva su propia cautela:** la fila de **una página** tiene **n=9**,
+así que su 100% no sostiene ninguna tasa. Y el patrón **no es monótono** —100%, 25,1%,
+10,5%, 46,9%—, así que la lectura «crece con la longitud» está descartada por los propios
+datos.
+
+### El TEDS agregado · por documento, y por página al lado
+
+**Fórmula:** TEDS de un documento = media de los TEDS de sus tablas emparejadas; TEDS
+agregado = media sobre documentos. Es el primario de `runs/l5/ponderacion.yaml`, elegido
+**antes de medir**, porque el documento es la unidad de muestreo **y la de remuestreo**
+(regla de oro 3).
+
+**El secundario** —ponderado por páginas— no es una segunda medida: son los mismos TEDS con
+otros pesos, y se publica al lado para que nadie tenga que fiarse de la elección.
+
+**Caso degenerado:** sin un solo documento evaluable, el agregado es `None`, **nunca cero**.
+Y `StructureMetrics.__post_init__` rechaza una nota sobre 0 documentos.
+
+**Lo que este número NO permite:** ordenar extractores. Sus coberturas van del **23,6%** al
+**38,0%**, así que las cuatro notas están calculadas sobre subconjuntos distintos, cada uno
+elegido por el propio extractor. Para eso está la cara a cara.
+
+### La cara a cara · el mismo denominador para todos
+
+**Qué mide:** el TEDS de cada extractor **sobre los 82 documentos de la intersección**,
+donde todos acertaron el recuento.
+
+**Por qué hace falta:** el sesgo de supervivencia declarado en `runs/l5/emparejado.yaml`.
+Y se ve en el resultado: **el orden cambia** respecto a la primera tabla.
+
+**Lo que sigue sin permitir:** afirmar «A es mejor que B». Mismo denominador es necesario y
+no suficiente; la comparación pareada con su potencia es **L6** (ADR-0009).
+
+### El coste · s/página y s/documento
+
+**Denominador:** **616 documentos y 8.733 páginas** — la campaña entera, incluidos los que
+no puntúan. **No es la n del TEDS**, y por eso el coste va en su propio bloque: misma fila
+implica mismo denominador.
+
+**Instrumento:** `time.perf_counter` alrededor de cada `extract`, sumado por extractor. La
+resolución del reloj es de microsegundos y las unidades duran segundos, así que el error
+del instrumento es despreciable frente a la varianza de la máquina.
+
+**Condición de máquina, declarada:** 14 CPU visibles, carga 1,39 al arrancar, **un solo
+proceso y secuencial** —un documento y un extractor cada vez—. Un coste por página de una
+herramienta local sin la máquina al lado no es un número: es un número de esta máquina
+presentado como si fuera de cualquiera.
+
+**Cero euros es un cero MEDIDO** (`Cost.measured=True`), no un dato que falte.
+`Cost.unknown()` diría lo contrario y contaminaría cualquier total que lo sumara.
+
+### El reloj de la campaña contra su predicción
+
+**Pre-registrado:** 4,01 h, de `scripts/poblacion_l5.py` sobre el coste/página de B5-bis.
+**Real:** 8.272 s = **2,30 h**. Error del estimador: **−43%**.
+
+**Cómo se midió el real:** `time` alrededor de `docbench run`, n=1. No es una estimación
+—es el reloj de una corrida concreta— así que no lleva intervalo; lo que lleva es su
+condición de máquina, arriba.
+
+**Lo que NO está establecido:** por qué falló el estimador. La hipótesis con nombre es que
+B5-bis midió **un proceso por unidad** y pagó la carga de modelos de `docling` 108 veces
+mientras el corredor la paga una. **No está comprobado**, y se comprueba comparando el
+s/página de `docling` de aquí con el de B5-bis.

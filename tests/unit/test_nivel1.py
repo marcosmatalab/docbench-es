@@ -20,7 +20,8 @@ from dataclasses import replace
 
 from benchcore.types import Cost
 
-from docbench_es.report.nivel1 import cara_a_cara, medir
+from docbench_es.report.cara_a_cara import cara_a_cara
+from docbench_es.report.nivel1 import medir
 from docbench_es.types import CanonicalCell, CanonicalTable, DocRef, Extraction
 
 
@@ -209,3 +210,26 @@ def test_con_un_solo_extractor_la_interseccion_es_su_propio_conjunto() -> None:
 def test_la_cara_a_cara_sin_extractores_no_revienta() -> None:
     cc = cara_a_cara({})
     assert (cc.n, cc.poblacion, cc.extractores) == (0, 0, ())
+
+
+def test_el_acuerdo_se_desglosa_por_banda_de_paginas() -> None:
+    """**Lo que convierte el titular en diagnóstico.** «Coinciden en el 24%» dice que hay
+    un problema; el desglose dice si es de la herramienta o de la longitud del documento.
+
+    Aquí los dos extractores coinciden en el corto y discrepan en el largo: el acuerdo
+    sale 100% en la banda de una página y 0% en la de más de 50.
+    """
+    verdades = {"CORTO": (PERFECTA,), "LARGO": (PERFECTA,)}
+    paginas = {"CORTO": 1, "LARGO": 90}
+    uno = medir([_ex("CORTO", PERFECTA), _ex("LARGO", PERFECTA)], verdades, paginas)
+    otro = medir([_ex("CORTO", PERFECTA), _ex("LARGO", PERFECTA, OTRA)], verdades, paginas)
+    cc = cara_a_cara({"uno": uno, "otro": otro}, paginas)
+    assert cc.por_banda["una página"] == (1, 1)
+    assert cc.por_banda[">50"] == (0, 1)
+
+
+def test_sin_paginas_el_desglose_sale_vacio_en_vez_de_inventarse_una_banda() -> None:
+    """El desglose es información AÑADIDA, no parte del número: sin páginas la cara a cara
+    sigue valiendo y `por_banda` no se inventa nada."""
+    fila = medir([_ex("D1", PERFECTA)], {"D1": (PERFECTA,)}, {"D1": 1})
+    assert cara_a_cara({"solo": fila}).por_banda == {}

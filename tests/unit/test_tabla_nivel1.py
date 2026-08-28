@@ -50,6 +50,7 @@ def _fila(**cambios: object) -> Nivel1:
         n_extracciones=616,
         paginas=8733,
         por_documento=dict.fromkeys((f"D{i}" for i in range(300)), 0.9123),
+        poblacion_documentos=tuple(f"D{i}" for i in range(338)),
     )
 
 
