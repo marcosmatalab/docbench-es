@@ -151,6 +151,19 @@ def _tabla_de_asesinos(reps: int = 3, solo: str = "") -> int:
 
         --reps 10 --solo normalizador_agresivo    # afinar la tasa de uno
     """
+    # EL SELLO Y EL CONTROL NEGATIVO, TAMBIÉN AQUÍ. Esta tabla se publicaba bajo el
+    # sello que imprime la corrida SIN `--tabla`, o sea el de OTRA corrida hecha minutos
+    # antes: exactamente «dos corridas presentadas como una», que es el error que
+    # `RESULTS.md` ya documenta dos veces —el `0717b70 · 164 tests` de L3 junto a un
+    # `0 de 166`, y las cifras de una corrida posterior metidas en la fila de L2—.
+    # Cuesta una corrida más de la suite entera sobre ~290 s. Y el control negativo va
+    # sobre `tests/unit` porque es lo que recorre esta tabla, no la unión de las suites
+    # objetivo: un control sobre otro conjunto no controla esto.
+    fallan, pasan = _corre_sin_mutar("tests/unit")
+    print(f"sello: {sello(fallan + pasan)} · control negativo: {fallan} muertes")
+    if fallan:
+        print("EL ÁRBOL SIN MUTAR YA FALLA. La tabla de mutantes no vale nada hasta arreglarlo.")
+        return 1
     print(f"{'mutante':<28}{'siempre':>9}{'alguna vez':>12}   único asesino, si lo hay")
     unicos: list[str] = []
     for mutante, _ in PLAN:
