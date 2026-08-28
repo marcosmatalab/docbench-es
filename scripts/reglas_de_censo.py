@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -24,6 +25,23 @@ from rota import Rota  # noqa: E402
 # Los que ACUMULAN: un ADR o un diario registran el estado de un momento, y
 # actualizarles una cifra sería reescribir la historia.
 ACUMULAN = ("RESULTS.md", "ESTADO.md", "LIMITS.md", "CHANGELOG.md", "MANUAL.md")
+
+
+@lru_cache(maxsize=1)
+def _cuantos_limites() -> int:
+    """Cuántas entradas numeradas tiene `LIMITS.md` **hoy**, leído UNA vez por corrida.
+
+    Estaba dentro de la regla, que se aplica **una vez por documento**: nueve lecturas y
+    nueve barridos del fichero más grande del repo para obtener el mismo número. Mismo
+    caso que `huerfanos.reparto`, y la misma cura.
+    """
+    return len(
+        set(
+            re.findall(
+                r"^(\d+)\. ", (RAIZ / "LIMITS.md").read_text(encoding="utf-8"), flags=re.MULTILINE
+            )
+        )
+    )
 
 
 def limites_declarados(texto: str, documento: str) -> list[Rota]:
@@ -42,13 +60,7 @@ def limites_declarados(texto: str, documento: str) -> list[Rota]:
     """
     if documento.startswith("docs/adr/") or documento in ACUMULAN:
         return []
-    reales = len(
-        set(
-            re.findall(
-                r"^(\d+)\. ", (RAIZ / "LIMITS.md").read_text(encoding="utf-8"), flags=re.MULTILINE
-            )
-        )
-    )
+    reales = _cuantos_limites()
     fuera: list[Rota] = []
     for m in re.finditer(r"[Hh]ay (\d+) l[íi]mites numerados", texto):
         linea = texto[: m.start()].count("\n") + 1

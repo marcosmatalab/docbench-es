@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import ast
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -37,8 +38,21 @@ def importados(ruta: Path) -> set[str]:
     return fuera
 
 
+@lru_cache(maxsize=1)
 def reparto() -> tuple[list[str], list[str], list[str]]:
-    """(alcanzables, huérfanos, mutantes), por sus nombres de módulo."""
+    """(alcanzables, huérfanos, mutantes), por sus nombres de módulo.
+
+    **Cacheada, y por la misma razón que el `lru_cache` de `pdftotext` en L4**: recorre
+    `tests/` y `scripts/` enteros parseando el AST de cada fichero —~90 ms—, y
+    `reglas_de_censo.huerfanos_declarados` la llamaba **una vez por documento**, o sea
+    nueve veces sobre un árbol que no cambia dentro de la corrida. Ese bucle era el
+    **test más caro de toda la suite**: 0,79 s de
+    `test_las_derivadas_publicadas_salen_de_su_fuente`.
+
+    El precio de cachear: si alguien escribiera un fichero *durante* la corrida, esto no
+    lo vería. Ningún consumidor lo hace —los dos leen y no escriben— y el árbol quieto es
+    precondición de la medida de la puerta, no un supuesto de esta función.
+    """
     scripts = {p.stem: p for p in (RAIZ / "scripts").rglob("*.py") if p.name != "__init__.py"}
     alcanzables: set[str] = set()
     frontera: set[str] = set()

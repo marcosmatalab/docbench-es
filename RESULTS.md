@@ -2292,3 +2292,56 @@ Las extracciones son de `819c06f` y la puntuación de un commit posterior. **No 
 tabla: invalida atarla a un commit solo.** Quien quiera reproducirla exacta necesita los
 dos, y el aritmético vive en `report.nivel1` y `core`, que son puros: se vuelve al commit
 del informe y se relanza `docbench report` sobre los mismos diarios.
+
+### EL ATAQUE AL INSTRUMENTO · seis mutantes contra las columnas de esa tabla
+
+**Los 22 mutantes de antes no tocaban nada de esto.** Apuntaban a `canonical`, `teds`,
+`cellmatch`, la clave y los recuentos —o sea a **la aritmética**—, y ninguno al código que
+decide **qué se compara con qué, con qué denominador y cómo se imprime**. Ése es el que
+emite la tabla de arriba, así que «los 22 mutantes mueren» no decía **nada** sobre ella.
+
+```bash
+uv run python scripts/mutantes/matar.py; echo $?          # los 28 mueren
+uv run python scripts/mutantes/matar.py --tabla; echo $?  # qué test mata a cuál, 3 reps
+```
+
+**Sello de las dos corridas: `833e419`, árbol limpio, sin `+N`** — la plana sobre
+**201 tests** (la unión de las suites objetivo) y la de `--tabla` sobre **638** (la suite
+entera), **cada una con el suyo y con su propio control negativo a 0**. Hasta este cierre
+`--tabla` no imprimía ninguno de los dos y su tabla se publicaba bajo el sello de la otra
+corrida: dos corridas presentadas como una, que es el error que este documento ya tiene
+registrado dos veces más abajo.
+
+| mutante | qué columna publicada haría mentir | SIEMPRE | ALGUNA VEZ |
+|---|---|---:|---:|
+| `emparejado_sin_recuento` | **las cuatro a la vez**: empareja por orden aunque los recuentos no cuadren | 7 | 7 |
+| `cara_a_cara_la_union` | la cara a cara: puntúa sobre la **unión** rellenando con 0,00 | 4 | 4 |
+| `delta_siempre_cero` | el delta: «pasar al denominador común no le cuesta nada a nadie» | 3 | 3 |
+| `fallos_no_se_cuentan` | la de fallos: sale **0** pase lo que pase | 2 | 2 |
+| `cobertura_siempre_llena` | la cobertura evaluable: **1,0** siempre | 2 | 2 |
+| `no_aplicable_impreso_cero` | el `n/a` del Markdown, impreso `0,0000` | 2 | 2 |
+
+**El primero es el que justifica el paso.** `emparejado.yaml` descarta el emparejado por
+orden a secas *por catastrófico*, y el mutante lo restaura: con él **todo documento
+puntúa**, el acuerdo de recuento sube al 100%, la cobertura se infla, los `NO_APLICABLE`
+desaparecen —y con ellos la distinción entre «no se pudo comparar» y «se comparó y salió
+mal»— y el TEDS pasa a medir **desalineamiento**. Ninguna de las cuatro columnas se vería
+rara: saldrían todas mejor.
+
+**Y el último es el que no se puede cazar mirando el objeto.** La aritmética puede estar
+perfecta —`teds=None`, régimen y agregado en su sitio— y la tabla publicada mentir igual,
+porque **lo que se lee es el Markdown**. Sólo lo mata un test que mire el texto.
+
+**Dos nacieron con UN SOLO asesino**, que es una garantía sostenida por una sola
+aserción: `fallos_no_se_cuentan` y `no_aplicable_impreso_cero`. Se les escribió el segundo
+en el acto, y **son aserciones distintas, no una copia**: que dos causas de fallo no se
+fundan en un total, y que las dos columnas de la cara a cara digan `n/a` cuando falta un
+lado de la resta. Por eso los dos figuran hoy con 2 y no con 1.
+
+**El único punto único de fallo que queda es `n3_incompleta`**, el de L2, con su razón
+medida y declarada allí. Ninguno de los seis nuevos lo es.
+
+**Lo que esto NO dice.** El arnés pasa a cubrir **201 de 638 tests**: «los 28 mutantes
+mueren» habla de esos 28 huecos, no de la suite. La segunda contabilidad —**635 de 638
+protegidos por algo**— y por qué hacen falta las dos, en el límite 51 y en la deuda 7 de
+`ESTADO.md`.
