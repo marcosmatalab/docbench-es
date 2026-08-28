@@ -820,6 +820,28 @@ así que su 100% no sostiene ninguna tasa. Y el patrón **no es monótono** —1
 10,5%, 46,9%—, así que la lectura «crece con la longitud» está descartada por los propios
 datos.
 
+**Qué ordena entonces el acuerdo: NO ESTÁ MEDIDO, y el candidato va declarado.** La
+hipótesis con nombre es que el factor no sea la longitud del documento sino la
+**morfología de sus tablas** —las de un presupuesto o un convenio de más de 50 páginas son
+grandes, regladas y de página completa, donde el recuento no admite duda; las de un
+documento de 11 a 50 son pequeñas y embebidas en prosa, donde «¿esto es una tabla o es
+maquetación?» es genuinamente ambiguo—.
+
+**Cómo se mide, con lo que ya está en el disco y sin volver a correr la campaña:** por
+cada uno de los 338 documentos, la **mediana de celdas por tabla** —`n_rows × n_cols` de
+cada tabla de su verdad derivada— y el acuerdo cruzado contra bandas de ese tamaño en vez
+de contra páginas. `docbench report` ya deriva la verdad de los 616 en cada corrida, así
+que el dato está a mano: lo que falta es el corte de bandas —**declarado antes de
+mirarlo**, como se declararon las de páginas— y su fila en la tabla.
+
+**El criterio, escrito antes de medirlo:** si el cruce por tamaño sale **monótono**, el
+candidato queda en pie; si sale tan no-monótono como el de páginas, **queda descartado** y
+el factor sigue sin nombre. Ninguno de los dos resultados es un fracaso del desglose.
+
+**Precio, por analogía**: es el mismo trabajo que costó el desglose por páginas con otro
+eje —el corte, el cruce y su test—, o sea **menos de una hora**. Está sin hacer y el hueco
+es LIMITS 107.
+
 ### El TEDS agregado · por documento, y por página al lado
 
 **Fórmula:** TEDS de un documento = media de los TEDS de sus tablas emparejadas; TEDS
@@ -845,6 +867,21 @@ donde todos acertaron el recuento.
 **Por qué hace falta:** el sesgo de supervivencia declarado en `runs/l5/emparejado.yaml`.
 Y se ve en el resultado: **el orden cambia** respecto a la primera tabla.
 
+**El delta, y por qué es una columna del informe y no una resta a mano.** Junto al TEDS
+sobre la intersección se publica el de cada extractor **sobre su propio conjunto** y la
+resta de los dos. No es una tercera medida —son las mismas puntuaciones por documento con
+dos denominadores—, pero restar a mano las dos cifras publicadas da un número **que
+ningún comando reproduce**: están redondeadas a cuatro decimales y la resta de dos
+redondeos no es el redondeo de la resta. Por eso la calcula `report.cara_a_cara` sobre los
+valores sin redondear y la imprime `report.tables`.
+
+**Lo que ese delta contesta, y era una pregunta abierta:** `emparejado.yaml` declaró la
+**dirección** del sesgo antes de medir —todos los deltas negativos, y más negativos cuanto
+menor la cobertura—. Medido, **dos de cuatro salen positivos**, y el más positivo es el
+del extractor de cobertura más baja. El mecanismo es real; su signo no es predecible ni
+por extractor, y por eso la cara a cara es un **denominador** y no un factor de
+corrección: un sesgo de dirección conocida se corregiría con una fórmula.
+
 **Lo que sigue sin permitir:** afirmar «A es mejor que B». Mismo denominador es necesario y
 no suficiente; la comparación pareada con su potencia es **L6** (ADR-0009).
 
@@ -868,8 +905,16 @@ presentado como si fuera de cualquiera.
 
 ### El reloj de la campaña contra su predicción
 
-**Pre-registrado:** 4,01 h, de `scripts/poblacion_l5.py` sobre el coste/página de B5-bis.
-**Real:** 8.272 s = **2,30 h**. Error del estimador: **−43%**.
+**Pre-registrado:** 4,01 h = 14.436 s, de `scripts/poblacion_l5.py` sobre el coste/página
+de B5-bis. **Real:** 8.272 s = **2,30 h**.
+
+**Error, con su fórmula, porque hay dos y no dicen lo mismo:** contra lo medido
+—`(predicho − real) / real`, que es la convención con la que L3 publicó sus tres
+proyecciones— es **+74,5%**; la fracción de la predicción que sobraba
+—`(real − predicho) / predicho`— es **−42,7%**. Este segundo se publicó solo y con la
+etiqueta «sobreestimó un 43%», que es la lectura que no aguanta: sobreestimar se mide
+contra lo medido. **Resolución:** el pre-registrado va con dos decimales de hora, ±18 s,
+que mueve los dos porcentajes ±0,2 puntos.
 
 **Cómo se midió el real:** `time` alrededor de `docbench run`, n=1. No es una estimación
 —es el reloj de una corrida concreta— así que no lleva intervalo; lo que lleva es su

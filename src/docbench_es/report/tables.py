@@ -75,6 +75,12 @@ def _pct(valor: float) -> str:
     return f"{100 * valor:.1f}%".replace(".", ",")
 
 
+def _delta(valor: float | None) -> str:
+    """**Con el signo siempre delante**, que es lo único que se lee de esta columna, y
+    `n/a` cuando falta un lado de la resta: un 0,0000 diría «no le cuesta nada»."""
+    return "n/a" if valor is None else f"{valor:+.4f}".replace(".", ",")
+
+
 def _fallos(fila: Nivel1) -> str:
     """Las causas con su recuento, o `0`. **Nunca vacío**: un hueco se lee como «no se
     miró», y la tasa de fallo por extractor es un resultado publicado (regla de oro 6)."""
@@ -139,7 +145,10 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
             "todos.** Eso no es un empate, es que **no se pueden comparar** — y es un "
             "resultado sobre la dificultad del corpus, no un fallo de la tabla.",
         ]
-    filas = [f"| `{n}` | {_num(v)} |" for n, v in sorted(cc.teds.items())]
+    filas = [
+        f"| `{n}` | {_num(v)} | {_num(cc.suyo.get(n))} | {_delta(cc.delta(n))} |"
+        for n, v in sorted(cc.teds.items())
+    ]
     return [
         "### Cara a cara · el mismo denominador para todos",
         "",
@@ -149,15 +158,25 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
         "**Alfabético, no por nota.** El mismo denominador hace la comparación posible; "
         "no la resuelve.",
         "",
-        "| extractor | TEDS sobre la intersección |",
-        "|---|---:|",
+        "| extractor | TEDS sobre la intersección | TEDS sobre su conjunto | delta |",
+        "|---|---:|---:|---:|",
         *filas,
         "",
         "**Por qué hace falta esta segunda cuenta.** La de arriba tiene un sesgo de "
         "supervivencia declarado (`runs/l5/emparejado.yaml`): un extractor que detecta "
         "mal falla el recuento en más documentos, ésos salen de SU cuenta, y su nota "
-        "acaba calculada sobre **sus documentos fáciles**. Cuanto peor detecta, más se "
-        "le excluye y mejor pinta lo que queda.",
+        "acaba calculada sobre **otro subconjunto, elegido por él mismo**.",
+        "",
+        "**Y la columna `delta` es la razón por la que esto es un DENOMINADOR y no un "
+        "factor de corrección.** `emparejado.yaml` declaró la dirección del sesgo antes "
+        "de medir —cuanto peor detecta, mejor pinta lo que queda, o sea deltas negativos "
+        "y más negativos cuanto menor la cobertura—. El signo que sale en esa columna es "
+        "el medido, y se publica coincida o no con lo declarado: un sesgo de dirección "
+        "conocida se corregiría con una fórmula; uno cuyo signo hay que mirar extractor "
+        "por extractor sólo se evita midiendo a todos sobre el mismo conjunto.",
+        "",
+        "**El delta no es una tercera medida**: es la resta de las dos columnas de al "
+        "lado, o sea las mismas puntuaciones por documento con dos denominadores.",
         "",
         f"**Y este {cc.n} es un dato en sí**: dice en cuántos documentos los "
         f"{len(cc.extractores)} extractores coinciden con la referencia en algo tan "
@@ -177,6 +196,11 @@ def _por_banda(cc: CaraACara) -> list[str]:
     o del documento: coincidir siempre en los de una página y casi nunca en los largos
     significa que la discrepancia crece con la LONGITUD, y entonces mirar al extractor es
     mirar donde no es.
+
+    **En L5 no salió así**: el acuerdo baja hasta su mínimo en la banda intermedia y
+    recupera en la larga, así que las páginas no son el factor que lo ordena. Por eso el
+    desglose se imprime sin conclusión pegada — la lectura la pone quien mira los números,
+    y la de este corpus está en `docs/metrics.md`.
     """
     if not cc.por_banda:
         return []

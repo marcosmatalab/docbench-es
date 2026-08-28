@@ -492,9 +492,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 166 de 634 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 166 de 636 tests.** Los
     **22 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS y el lote. Los **468 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    árbol de TEDS y el lote. Los **470 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -505,15 +505,15 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (16), `tabla_nivel1` (15), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `nivel1` (17), `tabla_nivel1` (16), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **63,3% hoy** — y 65 de los 286 entraron de golpe con
+    12,4% al cerrar L2, **73,9% hoy** — y 66 de los 470 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
-    `documentos_que_sostienen` (8) y `reglas_parseables` (3), que son candados de
+    `documentos_que_sostienen` (9) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
     controles negativos viven dentro —se manipula un fixture y se exige que la huella
     deje de cuadrar, se le da al guardián de la re-congelación una huella movida sin
@@ -521,7 +521,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **631 de 634 tests protegidos por algo** —un
+    *el arnés*, no la protección: **633 de 636 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2170,3 +2170,72 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Lo que queda sin cubrir:** ningún guardián lo hace cumplir. Es una regla de método,
     como *«primero el código, segundo el test, nunca el golden»*, y vive en el guion de
     quien mide. Un test no puede saber qué línea base debería haberse medido.
+
+107. **QUÉ ORDENA EL ACUERDO DE RECUENTO: NO ESTÁ MEDIDO, Y LA LECTURA FÁCIL YA ESTÁ
+    DESCARTADA.** El desglose por banda de páginas de L5 sale **no monótono** —100% con
+    n=9, 25,1%, 10,5% y 46,9%—: el mínimo está en la banda intermedia y los documentos
+    largos **recuperan**, con 28,7 tablas por documento, donde acertar el recuento exacto
+    debería ser más difícil. Así que la banda de páginas **no es** el factor que ordena el
+    acuerdo, y cuál lo es no se sabe.
+
+    **El candidato, declarado y sin comprobar:** la **morfología de las tablas** en vez de
+    la longitud del documento. Las de un presupuesto o un convenio de más de 50 páginas son
+    grandes, regladas y de página completa, y ahí «¿esto es una tabla?» no admite duda; las
+    de un documento de 11 a 50 son pequeñas y embebidas en prosa, y ahí la pregunta es
+    genuinamente ambigua.
+
+    **Cómo se decide, y con qué criterio escrito antes:** se cruza el acuerdo contra el
+    **tamaño mediano de tabla en celdas** —`n_rows × n_cols` de la verdad derivada, mediana
+    por documento— en vez de contra las páginas. Monótono deja el candidato en pie; tan no
+    monótono como éste **lo descarta** y el factor sigue sin nombre. No hace falta volver a
+    correr la campaña: `docbench report` ya deriva la verdad de los 616 documentos. Precio
+    por analogía con el desglose por páginas, que es el mismo trabajo con otro eje: **menos
+    de una hora**. El método, en [`docs/metrics.md`](docs/metrics.md).
+
+    **Lo que NO se hace mientras tanto, y es el punto:** publicar el candidato como
+    explicación. El 46,9% va sin explicar en [`RESULTS.md`](RESULTS.md) —*«se publica sin
+    explicación en vez de con una inventada»*—, y un candidato con su cruce declarado es
+    más honesto que una explicación, no un sustituto de haberlo medido.
+
+108. **LA DIRECCIÓN DEL SESGO DE SUPERVIVENCIA NO ES PREDECIBLE, ASÍ QUE NO SE PUEDE
+    CORREGIR: SÓLO EVITAR.** `runs/l5/emparejado.yaml` declaró el mecanismo **y su
+    dirección** antes de ver un TEDS: un extractor que detecta mal falla el recuento en más
+    documentos, ésos salen de su cuenta, *«cuanto peor detecta, más se le excluye, y mejor
+    pinta lo que queda»*. La consecuencia comprobable es que al pasar al denominador común
+    todas las notas bajan, y bajan más las de menos cobertura.
+
+    **Medido en L5: dos de los cuatro deltas salen positivos**, y el más positivo es el del
+    extractor de cobertura más baja —el que la predicción señalaba como el más inflado—. La
+    tabla, en [`RESULTS.md`](RESULTS.md). Y la lectura contraria tampoco se sostiene: si la
+    intersección fuera sin más «los documentos fáciles», subirían los cuatro, y dos bajan.
+
+    **El mecanismo es real; lo que no era predecible es el signo.** Y eso es lo que
+    convierte la cara a cara en un **denominador** en vez de un factor de corrección: un
+    sesgo de dirección conocida se corrige con una fórmula; uno cuyo signo hay que mirar
+    extractor por extractor sólo se evita midiendo a todos sobre el mismo conjunto.
+
+    **Lo que sigue sin medirse, y es lo que hace de esto un límite:** *por qué* sube el que
+    sube. La cara a cara pone a los cuatro sobre el mismo denominador y con eso basta para
+    comparar, pero no dice qué tienen los 82 que hace subir a dos y bajar a otros dos. Sin
+    eso, el delta de un extractor **no es extrapolable** a otra campaña ni a otro corpus:
+    es un dato de ésta.
+
+109. **LA PRIMERA TABLA DE L5 TAMPOCO ES REPRODUCIBLE EN UN CLON FRÍO, Y POR PARTIDA
+    DOBLE.** Es el límite 74 un hito más adelante, y con un factor más. El comando que
+    publica `RESULTS.md` —`uv run docbench report --campaign runs/l5/campana`— necesita
+    dos cosas que no están en el repo: los **cuatro diarios de la campaña**, 143 MB de
+    `.jsonl` que `.gitignore` deja fuera por peso, y **`runs/l3/docs`** —362 MB de PDF y
+    XML—, porque la verdad se deriva en cada corrida en vez de guardarse.
+
+    **Lo que sí es reproducible, y no es poco:** el aritmético. `report.nivel1`,
+    `report.cara_a_cara` y `core` son puros y los cubre la suite, así que **sobre los
+    mismos diarios** el informe sale idéntico —comprobado al añadir la columna `delta`:
+    ninguna de las cifras publicadas se movió—. Lo que no se puede hacer en un clon frío
+    es **conseguir los diarios** sin volver a correr las 2,30 h con el corpus delante.
+
+    **Y lo que no se declara aquí es una promesa de arreglarlo.** Versionar 143 MB de
+    diarios no cabe en un repo, y recortarlos a una muestra los haría dejar de ser la
+    corrida que se publica. La salida conocida —los 20 documentos congelados de L7 y su
+    tabla, que **sí** viajan en el repo— es lo que hace `make quickstart` reproducible, y
+    ésa es la que este proyecto ya tiene planeada. Hasta entonces, quien quiera reproducir
+    la tabla de L5 necesita esta máquina o rehacer la cosecha.

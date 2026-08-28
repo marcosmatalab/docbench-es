@@ -186,6 +186,29 @@ def test_la_cara_a_cara_puntua_a_todos_sobre_la_interseccion() -> None:
     assert cc.poblacion == 2
 
 
+def test_la_cara_a_cara_publica_los_dos_denominadores_y_su_resta() -> None:
+    """**El delta es lo que impide leer la intersección como una corrección del sesgo.**
+
+    `runs/l5/emparejado.yaml` declaró la dirección antes de medir: pasar al denominador
+    común baja la nota, y más la de quien menos cobertura tiene. Aquí sale **positivo**
+    justo para el que detecta BIEN — su conjunto propio incluye el documento difícil y la
+    intersección no—, así que el signo no está fijado por construcción. Por eso se publica
+    medido en vez de suponerse.
+    """
+    mala = _tabla("z", "z", "z", "z", filas=2)
+    verdades = {"FACIL": (PERFECTA,), "DIFICIL": (PERFECTA,)}
+    paginas = {"FACIL": 1, "DIFICIL": 1}
+    bueno = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", mala)], verdades, paginas)
+    malo = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", PERFECTA, OTRA)], verdades, paginas)
+
+    cc = cara_a_cara({"bueno": bueno, "malo": malo})
+    assert cc.suyo == {"bueno": bueno.metricas.teds, "malo": malo.metricas.teds}
+    subida = cc.delta("bueno")
+    assert subida is not None and subida > 0, "el delta PUEDE salir positivo"
+    assert cc.delta("malo") == 0.0
+    assert cc.delta("no_lo_hay") is None, "sin los dos lados no hay resta, y no es 0,0"
+
+
 def test_la_n_de_la_interseccion_se_publica_aunque_sea_cero() -> None:
     """Sin intersección **no hay empate: no hay comparación**, y eso es un resultado sobre
     la dificultad del corpus, no un fallo de la tabla."""

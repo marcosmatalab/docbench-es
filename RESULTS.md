@@ -530,13 +530,13 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 166 de 634 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 166 de 636 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **468 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **470 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
-`test_guardianes_l4` (7), `test_guardianes_por_glob` (9), `test_documentos_que_sostienen` (8), `test_policy` (7),
+`test_guardianes_l4` (7), `test_guardianes_por_glob` (9), `test_documentos_que_sostienen` (9), `test_policy` (7),
 `test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
 `test_comparar_verdad` (5), `test_types` (6), `test_sellar_xml` (4),
 `test_estimador_computo` (6), `test_extractor_contrato` (37), `test_extractor_conformidad` (13),
@@ -545,8 +545,15 @@ Los **468 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), 
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 22 mutantes mueren» dice
 que **esos 22** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 218 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 470 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
+
+> **Aquí ponía «esos 218», y 218 era el resto cuando la suite tenía 384**, o sea el
+> tamaño con el que cerró L4. La enumeración de al lado se actualizaba con el guardián de
+> recuentos y esta cifra no, porque su fraseo —«esos N»— es de los que se le escapan
+> (LIMITS 54). Es la enésima aparición del límite 55, y la regla que ya está escrita
+> —**cuando una cifra vive en una lista, la prosa la cita, no la repite**— es la que se
+> incumplió aquí.
 
 **Han ido saliendo tres ficheros de esta lista** conforme se les escribía mutante:
 `test_teds_limites` (`teds_siempre_cero`), `test_teds_batch` (`batch_sobrescribe`)
@@ -1350,7 +1357,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **166 de
-634 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+636 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2112,6 +2119,22 @@ sostiene ninguna tasa; y es la banda donde acertar es más barato. Sirve para lo
 —28,7 por documento—, así que coincidir en el recuento exacto debería ser *más* difícil,
 no menos. Se publica sin explicación en vez de con una inventada.
 
+**Y el candidato, DECLARADO Y SIN COMPROBAR, escrito así para que no pase por
+explicación:** que el factor no sea la longitud del documento sino la **morfología de sus
+tablas**. Un documento del BOE de más de 50 páginas suele ser un presupuesto, un convenio
+o un anexo —tablas grandes, regladas, de página completa, donde «¿esto es una tabla?» no
+admite duda—, mientras que uno de 11 a 50 mezcla prosa con tablas pequeñas embebidas, que
+es donde la pregunta es genuinamente ambigua. Si eso fuera así, el acuerdo no debería
+ordenarse por páginas sino por **tamaño de tabla**.
+
+**Cómo se decide, con datos que ya están en el disco y sin volver a correr la campaña:**
+se cruza el acuerdo contra el **tamaño mediano de tabla en celdas** —`n_rows × n_cols` de
+cada tabla de la verdad derivada, mediana por documento— en vez de contra las páginas. El
+criterio, escrito antes de mirarlo: si el candidato es bueno, ese cruce sale **monótono**;
+si sale tan no-monótono como éste, **el candidato queda descartado** y el factor sigue sin
+nombre. **No está hecho**: el método y su precio están en [`docs/metrics.md`](docs/metrics.md)
+y el hueco es el límite 107.
+
 ### La corrida
 
 | | |
@@ -2133,16 +2156,32 @@ nacido digital y con capa de texto en el **100%** de sus 10.298 páginas (censo,
 
 ### La predicción pre-registrada, confrontada
 
-| | horas |
-|---|---:|
-| pre-registrado en `runs/l5/poblacion.yaml` | **4,01** |
-| real | **2,30** |
-| error del estimador | **−43%** |
+| | horas | segundos |
+|---|---:|---:|
+| pre-registrado en `runs/l5/poblacion.yaml` | **4,01** | 14.436 |
+| real | **2,30** | **8.272** |
+| **error contra lo medido**, `(predicho − real) / real` | | **+74,5%** |
+| sobra de la predicción, `(real − predicho) / predicho` | | −42,7% |
 
-`scripts/poblacion_l5.py` proyecta desde el coste/página medido en B5-bis. **Sobreestimó
-un 43%**, y la dirección importa: es la segunda vez que un estimador de este repo falla
-—en L3 fueron −23,5%, +47,3% y −29,8% sobre el tamaño en disco— y las dos veces por
-extrapolar de una muestra pequeña a una población con otra forma.
+`scripts/poblacion_l5.py` proyecta desde el coste/página medido en B5-bis, y **sobreestimó
+el reloj de la campaña en un 74,5%** sobre lo que costó de verdad.
+
+> **Aquí ponía «error del estimador −43%» y «sobreestimó un 43%», a secas, y las dos
+> frases juntas se leen mal.** El −43% es cierto y es la segunda fila de arriba: qué
+> fracción de la predicción sobraba. Lo que no es cierto es «sobreestimó un 43%», porque
+> **sobreestimar se mide contra lo medido**, y contra lo medido son 74,5 puntos. Y la
+> comparación con L3 estaba hecha entre convenciones distintas: los −23,5%, +47,3% y
+> −29,8% de L3 salen de una columna que se llama literalmente *«error contra lo medido»*.
+> Poner un −43% al lado de un +47,3% invitaba a leer «éste falló menos», y con el mismo
+> divisor **falló más**. Se publican las dos filas con su fórmula.
+>
+> **Resolución:** el pre-registrado se publicó con dos decimales de hora, o sea ±18 s, que
+> mueve los dos porcentajes ±0,2 puntos.
+
+**Y es la segunda vez que un estimador de este repo falla por el mismo mecanismo** —L3
+proyectó **533 MB** de corpus contra **361,9 MB** reales, +47,3% contra lo medido—: los
+dos extrapolaron una tasa medida en una muestra pequeña **con otra forma** que la
+población. El patrón, con las dos confirmaciones y lo que sale de él, en `ESTADO.md`.
 
 **A mitad de corrida, las dos proyecciones lineales dieron:** por documento **2,83 h**,
 por página **2,30 h**. La de página acertó al segundo decimal, y la razón estaba
@@ -2150,7 +2189,7 @@ declarada antes de saber el resultado: la corrida va en orden de población —p
 338 con tabla, 17,5 páginas de media, luego los 278 sin, 12,3—, así que la de documento
 era pesimista por construcción.
 
-**La hipótesis del 43%, que sigue siendo hipótesis:** B5-bis midió **un proceso por
+**La hipótesis del sobrecoste, que sigue siendo hipótesis:** B5-bis midió **un proceso por
 unidad** y pagó la carga de modelos de `docling` **108 veces**; el corredor la paga
 **una**. Se contrasta comparando el s/página de `docling` de aquí con el de B5-bis, y no
 está hecho.
@@ -2192,6 +2231,38 @@ que es L6 (ADR-0009).
 `pymupdf4llm` pasa de la cobertura más baja (23,6%) a la nota más alta de la
 intersección. Sobre su propio conjunto su nota estaba deprimida por *qué* documentos
 puntuaban, no por cómo los puntuaba.
+
+### El sesgo de supervivencia se declaró CON DIRECCIÓN, y la dirección no se cumplió
+
+`runs/l5/emparejado.yaml` lo escribió el 27 ago 2026, con la corrida trabajando y antes de
+ver un solo TEDS: *«cuanto peor detecta, más se le excluye, y mejor pinta lo que queda»*.
+Su consecuencia comprobable es que al pasar al denominador común **todas** las notas
+bajan, y bajan más las de menos cobertura. El salto lo emite ahora el propio informe —una
+columna, no una resta a mano— y sale así:
+
+| extractor | cobertura | sobre su conjunto | sobre los 82 | delta |
+|---|---:|---:|---:|---:|
+| `camelot` | 29,6% | 0,8684 | 0,8581 | **-0,0104** |
+| `docling` | 38,0% | 0,9053 | 0,9354 | **+0,0301** |
+| `pdfplumber` | 29,6% | 0,8699 | 0,8599 | **-0,0100** |
+| `pymupdf4llm` | 23,6% | 0,8936 | 0,9375 | **+0,0440** |
+
+**Dos suben y dos bajan, y no se ordenan por cobertura:** el delta más positivo es el del
+extractor con la cobertura **más baja** de los cuatro, que es justo el que la predicción
+señalaba como el más inflado. Y la otra lectura fácil también cae: **si la intersección
+fuera simplemente «los documentos fáciles», subirían los cuatro**, y dos bajan.
+
+**El mecanismo sigue siendo real; lo que no era predecible es su SIGNO.** Y de ahí sale
+por qué esto es un denominador y no un factor de corrección: un sesgo de dirección
+conocida se corrige con una fórmula, uno cuyo signo hay que mirar extractor por extractor
+sólo se evita midiendo a todos sobre el mismo conjunto. **La cara a cara no está para
+arreglar un sesgo conocido: está porque el sesgo no se conoce ni en su signo.**
+
+**Los deltas no son una tercera medida** —son las mismas puntuaciones por documento con
+dos denominadores— y **no llevan intervalo**: régimen CENSO por los dos lados (ADR-0015).
+Su comando es el mismo de la tabla, `uv run docbench report --campaign runs/l5/campana`.
+Y no se restan a mano: hacerlo daba **-0,0103** y **+0,0439** por restar cifras ya
+redondeadas a cuatro decimales, dos deltas que ningún comando reproduce.
 
 ### Coste · las cuatro herramientas locales, sobre 616 documentos y 8.733 páginas
 

@@ -60,6 +60,42 @@ nota. Ver LIMITS 49.
 **Los tres de conversores los encontró el CONSUMIDOR, ninguno un guardián.** Quedan dos
 sin estrenar —`from_tei` y `from_text_heuristic`—, y ninguno está en la campaña de L5.
 
+## EL SEGUNDO PATRÓN: LOS ESTIMADORES FALLAN POR EXTRAPOLAR DE UNA MUESTRA PEQUEÑA
+
+Van **dos confirmaciones, en dos hitos distintos y con el mismo mecanismo**, así que deja
+de ser una anécdota y pasa a ser algo que mirar antes de publicar la siguiente estimación.
+
+| hito | qué se estimó | pre-registrado | medido | error contra lo medido | de qué muestra extrapolaba |
+|---|---|---:|---:|---:|---|
+| L3 | tamaño del corpus en disco | 533 MB | **361,9 MB** | **+47,3%** | KB/página de 50 documentos de **6,1 páginas** de media, aplicado a un corpus de **10,30** |
+| L5 | reloj de la campaña | 4,01 h | **2,30 h** | **+74,5%** | s/página de B5-bis, medido **un proceso por unidad**, aplicado a un corredor que carga los modelos una vez |
+
+**Las dos van con la MISMA convención**, `(predicho − real) / real`, y eso hace falta
+decirlo: el error de L5 se publicó primero como «−43%» —la fracción de la predicción que
+sobraba— y puesto al lado del +47,3% de L3 invitaba a leer «éste falló menos» cuando con
+el mismo divisor **falló más**. Las dos filas y su fórmula, en `RESULTS.md`.
+
+**El mecanismo, idéntico las dos veces:** una tasa medida sobre una muestra pequeña **con
+otra forma que la población** —documentos más cortos allí, un régimen de proceso distinto
+aquí—, multiplicada por el tamaño de la población. Ninguno de los dos fallos fue un
+descuido: la corrección de L3 a 533 MB fue deliberada y razonada, y el modelo de coste de
+L5 salía de una medición real.
+
+**Y las dos veces ganó el estimador más simple.** En L3 la primera proyección (277 MB,
+−23,5%) acertó más que la corregida en dos factores; en L5 la proyección lineal por
+página acertó al segundo decimal mientras la de por documento no. Descomponer una
+proyección **no la mejora** si uno de los factores no es constante en el eje sobre el que
+se proyecta.
+
+**Lo que sale de aquí, y no es «estimar mejor»:** una estimación de este repo se publica
+**con la forma de la muestra de la que extrapola** —n, y en qué se diferencia de la
+población— y se confronta con la medida real en el mismo hito. Las dos están confrontadas
+y publicadas, con su dirección y su porcentaje; ninguna desapareció del documento.
+
+**Ningún guardián lo hace cumplir**, igual que el límite 106: es una regla de método. Lo
+que sí es comprobable —que el número publicado no se quede viejo— ya lo vigila
+`scripts/derivadas.py`.
+
 ## Deuda abierta
 
 0. **Lo que L1 deja atado a hitos posteriores, y no es opcional.** Sale del
@@ -180,7 +216,7 @@ sin estrenar —`from_tei` y `from_text_heuristic`—, y ninguno está en la cam
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 166 de 634 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 166 de 636 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 

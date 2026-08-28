@@ -123,6 +123,19 @@ def test_la_cara_a_cara_sale_debajo_y_con_su_n() -> None:
     assert "no es un ranking" in texto.lower()
 
 
+def test_la_cara_a_cara_imprime_los_dos_denominadores_y_el_delta_con_su_signo() -> None:
+    """**El salto entre denominadores sale del informe, no de una resta a mano.**
+
+    Y el signo va delante siempre: es lo único que se lee de esa columna, porque el sesgo
+    de supervivencia se declaró con dirección y la dirección es lo que hay que comprobar.
+    """
+    texto = tabla_nivel1({"a": _fila(teds=0.8), "b": _fila(teds=0.95)}, {})
+    assert "| extractor | TEDS sobre la intersección | TEDS sobre su conjunto | delta |" in texto
+    assert "| `a` | 0,9123 | 0,8000 | +0,1123 |" in texto, texto
+    assert "| `b` | 0,9123 | 0,9500 | -0,0377 |" in texto, texto
+    assert "no un factor de corrección" in texto
+
+
 def test_sin_interseccion_la_tabla_dice_que_no_hay_comparacion() -> None:
     """No es un empate ni un cero: es que no se pueden comparar. Y es un resultado sobre
     el corpus, no un fallo de la tabla."""
