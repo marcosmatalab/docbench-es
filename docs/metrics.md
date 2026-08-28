@@ -419,7 +419,7 @@ sino **la pendiente**.
 | — | **LÍNEA DE CORTE · la puerta pasa a `-n auto` (ADR-0043)** | | | **A partir de aquí la serie mide OTRO INSTRUMENTO.** Las dos medidas del mismo árbol `1cc8ce8`: **en serie p90 8170**, **en paralelo p90 4905**. Factor 1,67× sobre la puerta entera, contra 1,88× sobre `pytest` solo — `ruff`, `mypy` y `lint-imports` no se paralelizan. σ sube de 127 a 186, como ADR-0043 predijo antes de medir |
 | L5 | **6507 ms** (n=40, p90 6866, σ=178) | 6177 – 6885 | 529 | `extract/` con el primer extractor real, su registro, su corredor y su diario; `corpus.store`; la CLI. **+2403 líneas en `src/`** desde la línea de corte. Sello `0f9816c`, 14 CPU. **Se compara con el 4905 de la línea de corte, no con el 8006 de L4** — y de los +1961 del p90, **+1109 son de máquina** (el mismo `1cc8ce8` remedido hoy da 6014) y **+852 de código**. Por el camino, la regresión de mypy de LIMITS 102 |
 
-**Techo vigente: 8500 ms local · 21000 ms en CI** (ADR-0022), y no aparecía en esta tabla
+**Techo vigente: 8200 ms local · 21000 ms en CI** (ADR-0022), y no aparecía en esta tabla
 pese a ser el número contra el que se lee la última columna.
 
 > **CORREGIDO en la auditoría en frío de `a0d85ed`, y son dos cosas.** Primera: la

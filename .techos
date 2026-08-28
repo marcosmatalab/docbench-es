@@ -29,5 +29,18 @@
 # EL VALOR NO SE SUBE DESPUÉS DE ROMPERLO PARA QUE DEJE DE AVISAR (ADR-0022). Se
 # re-justifica al cerrar cada hito, con las 40 corridas y la fórmula, y con el signo
 # que salga: puede BAJAR.
-TECHO_LOCAL_MS=8500
+#
+# Y BAJÓ, el 28 ago 2026 al cerrar L5: de 8500 a 8200. Es la primera vez en la vida del
+# proyecto. El p90 de L5 salió 7845 contra los 8006 con los que cerró L4, y la fórmula
+# —p90 + incremento proyectado + una desviación— da 8183 en el escenario adverso. La
+# regla estaba PRE-REGISTRADA antes de medir, en ADR-0022, precisamente para que bajar
+# no dependiera de que a alguien le apeteciera.
+#
+# EL DE CI NO BAJÓ, y es una DESVIACIÓN DECLARADA de esa misma regla: la fórmula da
+# 19 000, y LIMITS 105 tiene medido que el ruido del instrumento de CI vale un 43%
+# mientras 19 000 sobre el peor punto observado (18 044) deja un 5,3%. O sea que un
+# techo de 19 000 sonaría por el runner que te toque, y ADR-0022 dice que una alarma que
+# se pone roja por el motivo equivocado enseña a ignorar el color. Se deja en 21 000 y
+# se dice que la fórmula NO se aplicó ahí. Está en LIMITS 105 con sus dos salidas.
+TECHO_LOCAL_MS=8200
 TECHO_CI_MS=21000

@@ -1941,6 +1941,56 @@ y el presupuesto deje de dar. Su predicción se escribe entonces, antes de medir
 
 ---
 
+## L5 · LA PUERTA AL CERRAR · n=40, y **el techo BAJA por primera vez**
+
+```bash
+uv run python scripts/medir_puerta.py; echo $?     # rc=0 · el techo sale de `.techos`
+```
+
+| | ms |
+|---|---:|
+| mínimo | 7505 |
+| mediana | **7722** |
+| **p90** | **7845** |
+| máximo | **8003** |
+| desviación típica | 119 · coef. variación **1,5%** |
+| medianas por tanda | 7600 – 7814 |
+
+**n=40 en 10 tandas, cero descartadas**, sello `372b82f` —árbol limpio—, carga mediana
+3,05 con rango 0,83 a 4,67. **El máximo va al lado del p90 siempre** (ADR-0022): «el techo
+son 8200» no significa «ninguna corrida pasa de 8200», significa que el p90 no pasa.
+
+**Y el techo baja de 8500 a 8200**, que es la primera vez en la vida del proyecto. No es
+una concesión al revés: es la fórmula del ADR aplicada con el signo que salió, y **la regla
+que lo permite se pre-registró antes de medir** —el mismo día, unas horas antes— justo para
+que bajar no dependiera de que a alguien le apeteciera. El tramo que la dispara: 7845 está
+por debajo de los **8006** con los que cerró L4.
+
+| | L4 cerrado | L5 cerrado | delta |
+|---|---:|---:|---:|
+| p90 | 8006 | **7845** | **−161** |
+| mediana | 7628 | **7722** | +94 |
+| σ | 195 | **119** | −76 |
+| tests | 384 | **652** | +268 |
+| techo | 8500 | **8200** | **−300** |
+
+**Y la mediana SUBE mientras el p90 BAJA**, que parece contradictorio y no lo es: σ cayó de
+195 a 119, o sea que la distribución se estrechó. Un p90 es la cola, y la cola se ha
+recogido más de lo que ha subido el centro. Publicar sólo el p90 diría «la puerta mejoró»;
+publicar sólo la mediana diría lo contrario. **Las dos, y la σ que las reconcilia.**
+
+**De dónde sale el −161 con +268 tests dentro.** El arreglo de `huerfanos.reparto()` quitó
+**527 ms** al test más caro de la suite —`derivadas.py` de 0,701 s a 0,174 s—, y salió del
+paso que ADR-0022 pone **antes** de las tres concesiones: `--durations`. Atribuible a los
+tests: **+366 ms**, o sea **1,37 ms/test** de marginal, con su supuesto declarado en el
+ADR. Es la tercera vez que ese paso evita tocar el techo, y la primera que lo baja.
+
+**La carga, dicha porque cambia cómo se lee.** Mediana 3,05 y rango 0,83–4,67: **la crea la
+propia serie**, que encadena 40 corridas con 14 trabajadores sin pausa. Medido aparte el
+mismo día: con la máquina de verdad en reposo —carga 0,24 al empezar— el mínimo en frío de
+n=4 dio **7696**, y con carga 1,5–4,2 daba 8025–8779. **El campo `carga` de una serie no
+certifica máquina en reposo**: certifica lo que la serie hace consigo misma.
+
 ## L5 · La puerta: la regresión de 25,5 s, su arreglo, y contra qué se compara
 
 ### Antes: n=9, sello `b54ec82`, 14 CPU visibles

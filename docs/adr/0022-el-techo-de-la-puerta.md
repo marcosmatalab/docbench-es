@@ -7,7 +7,7 @@ debajo** de esa promesa
 ## Techo vigente
 
 <!-- TECHO-VIGENTE: lo comprueba scripts/derivadas.py contra `.techos`. NO se teclea. -->
-**Techo vigente: 8500 ms local · 21000 ms en CI.** La fuente única es
+**Techo vigente: 8200 ms local · 21000 ms en CI.** La fuente única es
 [`.techos`](../../.techos); esta línea **se comprueba contra ella** en cada `make fast`,
 por `scripts/derivadas.py`.
 
@@ -72,6 +72,64 @@ techo **no** baja, y eso también se publica.
 
 **Lo que este pre-registro NO promete:** que el techo vaya a bajar. Promete que **si la
 fórmula lo dice, se baja**, y que la fórmula se aplica con el signo que salga.
+
+## EL TECHO DE L7: 8200 LOCAL · 21 000 EN CI. **LA PRIMERA VEZ QUE BAJA**
+
+Al cerrar L5, con el protocolo de las 40 corridas y **la regla pre-registrada de arriba**,
+escrita antes de medir.
+
+| | ms |
+|---|---:|
+| mínimo | 7505 |
+| mediana | **7722** |
+| **p90** | **7845** |
+| máximo | **8003** |
+| desviación típica | 119 (coef. variación 1,5%) |
+| medianas por tanda | 7600 – 7814 |
+
+n=40 en 10 tandas, **cero descartadas**, sello `372b82f`, carga mediana 3,05 (rango
+0,83–4,67). `uv run python scripts/medir_puerta.py`.
+
+**El tramo que dispara la regla:** 7845 está **por debajo de 8006**, que es el p90 con el
+que cerró L4. O sea el primer tramo de los tres declarados: la puerta bajó en el hito más
+grande del release, y el techo se recalcula.
+
+### La fórmula, con sus tres escenarios y el marginal medido
+
+    techo = p90 medido (7845) + incremento proyectado + una desviación (119)
+
+**El marginal por test, medido en vez de supuesto.** De L4 a L5 el p90 fue de 8006 a 7845,
+o sea **−161 ms**, y dentro va el arreglo de `huerfanos.reparto()` que quitó **527 ms** al
+test más caro. Atribuible a los **+268 tests**: **+366 ms**, o sea **1,37 ms/test**.
+*(Supuesto declarado: que los 527 ms del script se traducen 1:1 a reloj de pared. Es una
+cota superior del crédito, porque ese test estaba en el camino crítico pero la suite corre
+en paralelo. Con menos crédito, el marginal sale menor y el techo también.)*
+
+**Y el siguiente hito es L7, no L6** (ADR-0042).
+
+| Escenario | Cuenta | Incremento | Techo |
+|---|---|---:|---:|
+| por tests | ~40 tests de congelado × 1,37 ms | +55 | 8019 |
+| por horas | 366 ms / 16 h × 8 h | +183 | 8147 |
+| **por analogía con L4**, el otro hito que congela fixtures | **+219** | | **8183** |
+
+**El techo local pasa a 8200**, el adverso redondeado **hacia arriba**. El p90 de hoy deja
+**355 ms** de margen bajo él.
+
+### EL DE CI NO BAJA, Y ES UNA DESVIACIÓN DECLARADA DE ESTA MISMA REGLA
+
+La fórmula da `8200 × 2,3 = 18 860`, o sea **19 000**. **No se aplica**, y la razón es una
+medición y no una preferencia: [`LIMITS.md`](../../LIMITS.md) 105 tiene medido que el
+**recorrido del instrumento de CI es del 43%** sobre sus tres únicos puntos —12 630,
+14 218 y 18 044, los dos últimos con el mismo código efectivo—, y un techo de 19 000 sobre
+el peor punto observado deja un **5,3%**. Sonaría por el runner que toque, y este mismo ADR
+dice que *«una puerta que se pone roja por motivos equivocados enseña a ignorar el color»*.
+
+**Se dice en vez de callarlo:** el pre-registro decía «con el signo que salga» y **aquí no
+se ha seguido**. Lo que se hace en su lugar es lo que LIMITS 105 ya tenía escrito: el techo
+de CI queda pendiente de una de sus dos salidas —mediana de *k* corridas por push, o
+normalizar contra una carga de referencia—, que viven en `docs/despues-de-la-tabla.md`. Un
+techo de CI honesto necesita primero un instrumento de CI que discrimine.
 
 ## Contexto
 
