@@ -1,0 +1,33 @@
+# LA FUENTE ÚNICA DE LOS TECHOS DE LA PUERTA · ADR-0022
+#
+# Formato KEY=VALOR a propósito: lo lee `bash` con `source`, lo lee Python con tres
+# líneas y lo lee GitHub Actions con un `grep` a `$GITHUB_ENV`. Un formato que necesite
+# una biblioteca para leerse tendría copias donde esa biblioteca no está.
+#
+# POR QUÉ EXISTE ESTE FICHERO, con el caso medido delante.
+# El techo vivía en SEIS sitios: este hook, `scripts/medir_puerta.py`,
+# `tests/unit/test_aro_del_techo.py` como literal, `.github/workflows/fast.yml`,
+# la prosa de ADR-0022 y las órdenes publicadas en `RESULTS.md`. El test comparaba
+# DOS de ellos entre sí y clavaba el literal, y su propio docstring decía que una
+# copia sin comprobar es un bug esperando. Lo que pasó fue lo que ese test NO mira:
+# las dos copias comprobadas **no se separaron entre ellas, se separaron JUNTAS**
+# del ADR —que fijó 9000 local para L4 mientras las dos seguían en 8500— y el test
+# siguió verde todo L5. Un test de dos copias protege contra que se separen; no
+# protege contra que las dos estén viejas. Es la forma del límite 106.
+#
+# QUÉ LEE ESTE FICHERO Y QUÉ SE COMPRUEBA CONTRA ÉL:
+#   · lo LEEN   `.claude/hooks/registrar-puerta.sh` y `scripts/medir_puerta.py`
+#   · lo LEE    `.github/workflows/fast.yml`, que antes tenía el 21000 tecleado
+#   · se COMPRUEBA contra él la línea «techo vigente» de ADR-0022, por
+#     `scripts/derivadas.py`
+#   · lo AFIRMA `tests/unit/test_aro_del_techo.py`, que ya no lleva el literal
+#
+# LO QUE NO SE REESCRIBE NUNCA: las órdenes `--techo N` publicadas en `RESULTS.md`.
+# Son el comando de una medición YA HECHA, no una copia del techo de hoy. Cambiarlas
+# al cambiar el techo falsificaría la reproducción de una serie pasada.
+#
+# EL VALOR NO SE SUBE DESPUÉS DE ROMPERLO PARA QUE DEJE DE AVISAR (ADR-0022). Se
+# re-justifica al cerrar cada hito, con las 40 corridas y la fórmula, y con el signo
+# que salga: puede BAJAR.
+TECHO_LOCAL_MS=8500
+TECHO_CI_MS=21000

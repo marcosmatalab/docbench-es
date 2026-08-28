@@ -12,9 +12,13 @@ nacieron del mismo hallazgo: la auditoría en frío del cierre de L4.
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+import reglas_de_censo  # noqa: E402
 
 
 def _corre(script: str) -> subprocess.CompletedProcess[str]:
@@ -70,3 +74,49 @@ def test_el_estado_del_readme_sale_de_estado_md() -> None:
     )
 
     assert hecho.returncode == 0, hecho.stdout + hecho.stderr
+
+
+def test_un_techo_vigente_que_no_cuadra_con_la_fuente_se_caza(tmp_path: Path) -> None:
+    """**El control negativo de R6, la regla que cierra la quinta copia del techo.**
+
+    La copia número cinco es prosa —la línea «techo vigente» de ADR-0022— y no puede
+    LEER `.techos`, así que se comprueba contra él. Una comprobación que nadie ha visto
+    en rojo no es una comprobación: aquí se le da un ADR con el número movido y se exige
+    que lo diga, nombrando la clave que no cuadra.
+
+    Y se comprueba **la otra dirección** en la misma función: con el número bueno, la
+    regla calla. Sin eso, una regla que devolviera siempre un fallo pasaría este test.
+    """
+    fuente = reglas_de_censo._techos_de_la_fuente()
+    bueno = tmp_path / "bueno.md"
+    bueno.write_text(
+        f"**Techo vigente: {fuente['TECHO_LOCAL_MS']} ms local · "
+        f"{fuente['TECHO_CI_MS']} ms en CI.**\n",
+        encoding="utf-8",
+    )
+    movido = tmp_path / "movido.md"
+    movido.write_text(
+        f"**Techo vigente: {fuente['TECHO_LOCAL_MS'] + 500} ms local · "
+        f"{fuente['TECHO_CI_MS']} ms en CI.**\n",
+        encoding="utf-8",
+    )
+    original = reglas_de_censo.ADR_TECHO
+    try:
+        reglas_de_censo.ADR_TECHO = bueno
+        assert reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md") == []
+        reglas_de_censo.ADR_TECHO = movido
+        rotas = reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md")
+        assert len(rotas) == 1, rotas
+        assert "TECHO_LOCAL_MS" in rotas[0].que
+        assert rotas[0].publicado == str(fuente["TECHO_LOCAL_MS"] + 500)
+        assert rotas[0].calculado == str(fuente["TECHO_LOCAL_MS"])
+    finally:
+        reglas_de_censo.ADR_TECHO = original
+
+
+def test_la_regla_del_techo_corre_una_sola_vez_y_no_por_documento() -> None:
+    """No es una comprobación sobre el texto de nadie: es sobre un fichero fijo. Si
+    corriera por documento, un mismo desajuste saldría nueve veces y el recuento de
+    «derivadas rotas» diría nueve donde hay una."""
+    assert reglas_de_censo.techo_vigente_del_adr("", "LIMITS.md") == []
+    assert reglas_de_censo.techo_vigente_del_adr("", "ESTADO.md") == []

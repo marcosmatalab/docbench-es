@@ -76,11 +76,15 @@ from __future__ import annotations
 
 import ast
 import re
+import sys
 from pathlib import Path
 
 import pytest
 
-from conftest import (
+RAIZ_SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
+sys.path.insert(0, str(RAIZ_SCRIPTS))
+
+from conftest import (  # noqa: E402
     CONTROLES_NEGATIVOS,
     RecuentoDegenerado,
     _plan,
@@ -88,6 +92,7 @@ from conftest import (
     fuera_por_fichero,
     recuentos,
 )
+from contabilidades import lineas, porcentaje  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parents[2]
 
@@ -705,3 +710,30 @@ def test_el_desglose_de_los_que_quedan_fuera_es_el_que_publica_limits() -> None:
         assert f"{corto} ({n})" in trozo, (
             f"el límite 51 no nombra a `{corto}` con sus {n} tests: {trozo[:300]}"
         )
+
+
+def test_el_comando_de_las_contabilidades_dice_los_mismos_numeros_que_el_guardian() -> None:
+    """**El criterio de L6 nombra un comando, así que el comando tiene que decir la
+    verdad.** Es la única forma de que un criterio pre-registrado sobre `% arnés` sea
+    comprobable por alguien que no esté en esta conversación.
+
+    Y comprueba lo que de verdad puede fallar: que el comando **reformatee** o pierda
+    una de las dos contabilidades. La aritmética no se comprueba dos veces porque no
+    está escrita dos veces — `scripts/contabilidades.py` llama a `recuentos()`.
+    """
+    reales = exigir_sano(recuentos())
+    texto = "\n".join(lineas(reales))
+    for clave in ("total", "dentro", "fuera", "protegidos", "sin_nada", "mutantes"):
+        assert str(reales[clave]) in texto, f"falta {clave}={reales[clave]} en:\n{texto}"
+    esperado = f"{100 * reales['dentro'] / reales['total']:.1f}".replace(".", ",")
+    assert f"{esperado}%" in texto, texto
+    assert "% arnés" in texto, "la columna que nombra el criterio de L6 va señalada"
+
+
+def test_un_porcentaje_sin_denominador_es_n_a_y_nunca_cero() -> None:
+    """Decisión B3 una vez más, aquí abajo: un 0,0% diría que se midió y salió cero.
+    Con la suite sin colectar, el denominador es 0 y eso **no es una cobertura del 0%**.
+    """
+    assert porcentaje(0, 0) == "n/a"
+    assert porcentaje(3, 0) == "n/a"
+    assert porcentaje(201, 638) == "31,5%"

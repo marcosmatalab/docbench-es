@@ -40,11 +40,19 @@ INICIO=".claude/.puerta-inicio"
 MARCA=".claude/.ultima-puerta"
 REGISTRO=".claude/.ultima-puerta.txt"
 
-# El techo local de ADR-0022. Está aquí Y en `scripts/medir_puerta.py --techo`, y son
-# dos copias: lo hace cumplir `tests/unit/test_guardianes_por_glob.py`, que se pone rojo
-# si dejan de coincidir. Una copia comprobada es una copia; una sin comprobar es un bug
-# esperando a que alguien mueva la otra.
-TECHO=8500
+# El techo local de ADR-0022. YA NO ESTÁ AQUÍ: se lee de `.techos`, que es su fuente
+# única, y lo mismo hacen `scripts/medir_puerta.py` y el workflow de CI. Antes había un
+# `TECHO=8500` tecleado aquí y otro en el instrumento, y `test_aro_del_techo.py`
+# —NO `test_guardianes_por_glob.py`, que es lo que decía este comentario y era falso—
+# comparaba los dos entre sí. Se separaron los dos JUNTOS del ADR y el test siguió verde.
+#
+# FALLA CERRADO: sin fichero no hay techo, y sin techo no se deja pasar un commit por
+# defecto. Un guardián que no puede comprobar no cede.
+TECHO=$(grep -E '^TECHO_LOCAL_MS=' .techos 2>/dev/null | cut -d= -f2)
+if ! [ "${TECHO:-}" -gt 0 ] 2>/dev/null; then
+  echo "no se pudo leer TECHO_LOCAL_MS de .techos: el aro del techo no puede comprobar" >&2
+  exit 1
+fi
 
 # Frío es que NO EXISTA NINGUNA de las cuatro cachés, no sólo la de mypy. Con el criterio
 # flojo, borrar sólo `.mypy_cache` contaría como frío y la cifra saldría optimista: la

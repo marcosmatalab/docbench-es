@@ -4,6 +4,61 @@
 §15 fija el presupuesto en 90 s y eso no cambia. Esto añade una alarma **por
 debajo** de esa promesa
 
+## Techo vigente
+
+<!-- TECHO-VIGENTE: lo comprueba scripts/derivadas.py contra `.techos`. NO se teclea. -->
+**Techo vigente: 8500 ms local · 21000 ms en CI.** La fuente única es
+[`.techos`](../../.techos); esta línea **se comprueba contra ella** en cada `make fast`,
+por `scripts/derivadas.py`.
+
+**Por qué esta línea existe y por qué está marcada.** Este ADR es de los que se
+**re-justifican en cada cierre**, así que su número no es un registro histórico como el
+del resto de ADR: es una afirmación sobre hoy. Y se quedó vieja al revés de lo que
+cualquiera esperaría — el ADR fijó **9000 local para L4** en la sección de más abajo,
+CI se movió a su número nuevo y el techo local se quedó en 8500 en sus dos copias, con
+un test que las comparaba **entre ellas** y por eso seguía verde. Ver LIMITS 111.
+
+**Lo que sigue siendo historia y NO se toca:** las secciones de abajo, que registran qué
+techo se fijó en cada cierre y con qué fórmula. Un ADR no se reescribe para que cuadre
+con hoy; lo que se hace es marcar cuál de sus números es el vigente.
+
+## PRE-REGISTRO, 28 ago 2026: EL TECHO PUEDE BAJAR
+
+**Escrito ANTES de medir el n=40 de L5, y por eso vale.** Si se escribiera después de
+ver el número sería elegir el criterio con el dato delante, que es lo que el límite 110
+acaba de dejar por escrito.
+
+**La pregunta que este ADR no se había hecho nunca: ¿el techo sabe bajar?** La fórmula
+—`p90 medido + incremento proyectado + una desviación`— parte de una **medición**, así
+que puede dar un número menor que el techo vigente. Nunca lo ha dado, y la razón no es
+que la fórmula no lo permita: es que **ningún hito había arreglado un defecto real antes
+de medir**. L5 es el primero — la caché de `huerfanos.reparto()`, que llevaba
+`scripts/derivadas.py` de 0,701 s a 0,174 s y sacó a su test de los seis más caros de la
+suite.
+
+**La regla, en firme y sin escapatoria:**
+
+> Si la fórmula da un número **por debajo** del techo vigente, **el techo BAJA a ese
+> número**. No se conserva el techo alto «por si acaso» ni «por dar margen». Un techo que
+> sólo sabe subir no es una alarma: es un registro de lo que ya pasó.
+
+**Contra qué p90 se compara, declarado antes de tener el de L5.** Hay dos candidatos y no
+son intercambiables, así que se fijan los tres tramos ahora:
+
+| p90 de L5 | contra qué | qué pasa |
+|---|---|---|
+| **por debajo de 8006** | el p90 con el que L4 **cerró**, sello `f89c5b6` | la puerta ha bajado en el hito más grande del release; el techo se recalcula y **baja** si la fórmula lo dice |
+| entre **8006** y **8558** | 8558 es el p90 de L4 **antes** del arreglo de `pdftotext` | **no** cuenta como bajada: 8558 es una lectura que L4 descartó al arreglar un defecto real, y usarla de referencia dejaría que el mismo arreglo se cobre dos veces |
+| por encima de **8558** | los dos | ha subido en las dos lecturas, y el techo se re-justifica hacia arriba con la fórmula o se abre una de las tres concesiones |
+
+**Y el incremento proyectado de L6 se proyecta con los tres escenarios de siempre**
+—por pasos, por tests y por horas—, no se pone a cero para forzar una bajada. L6 son 8-10
+h de código puro y mutable; si su incremento proyectado se come la bajada del p90, el
+techo **no** baja, y eso también se publica.
+
+**Lo que este pre-registro NO promete:** que el techo vaya a bajar. Promete que **si la
+fórmula lo dice, se baja**, y que la fórmula se aplica con el signo que salga.
+
 ## Contexto
 
 La puerta ha crecido así, con el mismo método y la misma máquina:

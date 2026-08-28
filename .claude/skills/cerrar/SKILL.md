@@ -80,13 +80,13 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 28 mutantes mueren» habla de esos 28 huecos, no de la
-   suite: hoy el arnés cubre 201 de 638 tests, o sea que los 437 tests que quedan
+   suite: hoy el arnés cubre 203 de 644 tests, o sea que los 441 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **635 de 638 tests protegidos por algo** y **3 tests sin ningún control**.
+   **641 de 644 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 

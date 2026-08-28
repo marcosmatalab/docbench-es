@@ -492,11 +492,11 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 201 de 638 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 203 de 644 tests.** Los
     **28 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS, el lote y —desde el paso 2 de L5— **el instrumento que emite la
     tabla**: el emparejado, el recuento de fallos, la cobertura, la intersección, el
-    delta y el `n/a`. Los **437 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (2),
+    delta y el `n/a`. Los **441 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (4),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -507,7 +507,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (14), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (13), `techo_fuente` (3), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
@@ -523,7 +523,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **635 de 638 tests protegidos por algo** —un
+    *el arnés*, no la protección: **641 de 644 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1480,9 +1480,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **71** scripts,
-    **23 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **48** que quedan, **huérfanos: 28 de 48**. Entre ellos `derivadas.py`
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **78** scripts,
+    **29 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
+    nada—, y de los **49** que quedan, **huérfanos: 25 de 49**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
@@ -2241,3 +2241,88 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     tabla, que **sí** viajan en el repo— es lo que hace `make quickstart` reproducible, y
     ésa es la que este proyecto ya tiene planeada. Hasta entonces, quien quiera reproducir
     la tabla de L5 necesita esta máquina o rehacer la cosecha.
+
+110. **UN CRITERIO PRE-REGISTRADO QUE NO NOMBRA LA COLUMNA QUE LO MIDE NO ES UN CRITERIO:
+    ES UNA INTENCIÓN.** Y el fallo no lo caza la pre-registración, que es lo que lo hace
+    un límite y no una anécdota.
+
+    **Lo medido.** La deuda 7 de [`ESTADO.md`](ESTADO.md) escribió, antes de L5:
+    *«L5 es el primero que puede subir el arnés en vez de bajarlo. Si no lo sube, deja de
+    ser estructural y pasa a ser deterioro»*. Su tabla tiene **dos** columnas que se
+    pueden llamar «el arnés»: un recuento y una fracción. En L5 fueron en direcciones
+    **opuestas** —el recuento 166 → 203, la fracción 43,2% → 31,7%—, así que el criterio
+    tiene una lectura que pasa y otra que falla, y **elegir la lectura ES elegir el
+    criterio**, con los dos números ya delante.
+
+    **Contra qué protege la pre-registración y contra qué no.** Protege contra elegir el
+    criterio después de ver el dato. **No** protege contra un criterio con dos lecturas:
+    ahí el dato llega antes que la decisión igualmente, sólo que la decisión se disfraza
+    de interpretación. Es la forma del límite 106 —un control que protege de una cosa y
+    se lee como si protegiera de todas— aplicada a la pre-registración en vez de a un
+    experimento.
+
+    **Lo que se hizo, y no es elegir la que salía bien:** el criterio se declaró
+    **inválido para L5** y se publicaron **las dos lecturas** diciendo cuál falla. Y se
+    dijo además que el texto **se inclina** hacia la fracción —*«en vez de bajarlo»* sólo
+    tiene sentido si el referente venía bajando, y el recuento nunca bajó: 162, 166,
+    166—, porque escudarse en la ambigüedad para no publicar el fallo sería la misma
+    elección con otro traje.
+
+    **La regla que sale, y su coste.** Un criterio pre-registrado nombra **la columna
+    exacta y el comando que la calcula**. El de L6 ya está reescrito así en la deuda 7, y
+    escribirlo obligó a que el comando existiera: `uv run python scripts/contabilidades.py`.
+    Ese es el coste real de la regla — no es prosa más cuidadosa, es que **hace falta un
+    comando por criterio**.
+
+    **Lo que queda sin cubrir:** ningún guardián lo hace cumplir. Un test no puede saber
+    si una frase en español tiene dos lecturas. Es una regla de método, como el PASO 0 del
+    límite 106, y vive en el guion de quien pre-registra. Lo único mecanizable es lo que
+    ya está hecho: que el comando que el criterio nombra **exista y diga la verdad**, y
+    eso sí lo comprueba `tests/unit/test_recuentos.py`.
+
+111. **EL TECHO DE LA PUERTA VIVÍA EN SEIS SITIOS Y SÓLO SE COMPROBABAN DOS — Y LOS DOS
+    COMPROBADOS SE QUEDARON VIEJOS A LA VEZ.** Es la forma del límite 106 aplicada a una
+    constante: un control protege contra que dos copias se separen; no protege contra que
+    las dos estén viejas.
+
+    | # | dónde vivía | quién lo comprobaba |
+    |---|---|---|
+    | 1 | `.claude/hooks/registrar-puerta.sh`, `TECHO=8500` | `test_aro_del_techo.py`, contra la 2 |
+    | 2 | `scripts/medir_puerta.py`, `--techo` por defecto | idem, contra la 1 |
+    | 3 | `tests/unit/test_aro_del_techo.py`, el **literal** en el `assert` | nadie: era el literal |
+    | 4 | `.github/workflows/fast.yml`, `TECHO_MS` | **nadie**: un grep de su valor por `tests/` y `scripts/` daba cero |
+    | 5 | la prosa de ADR-0022 | nadie |
+    | 6 | las órdenes `--techo N` de [`RESULTS.md`](RESULTS.md) | nadie |
+
+    **Y hay una séptima que no estaba ni en la cuenta:** `guard-commit.sh` leía el techo
+    del hook y terminaba en `|| echo 8500`. O sea que si la lectura fallaba, el guardián
+    **se inventaba un techo y seguía en verde**. Un guardián que falla abierto es peor que
+    no tenerlo, porque su verde se cree.
+
+    **Lo que pasó, y es exactamente lo que el test no podía ver.** ADR-0022 fijó al cerrar
+    L3 el techo de L4 en **9000 local y 21 000 en CI**. CI se movió a 21 000; el local se
+    quedó en 8500 **en sus dos copias**, así que `_hook() == _instrumento() == 8500`
+    siguió pasando **todo L5**. No se separaron entre ellas: se separaron **juntas** del
+    documento que las fija. El docstring de ese test decía *«una copia sin comprobar es un
+    bug esperando a que alguien mueva la otra»* — y el bug entró por el lado que sí
+    comprobaba.
+
+    **Y el hook atribuía mal quién lo hacía cumplir.** Decía que la coincidencia la exige
+    `tests/unit/test_guardianes_por_glob.py`; la exigía `test_aro_del_techo.py`. Ese
+    fichero **existe y hace otra cosa**, que es peor que si no existiera: quien comprueba
+    que el fichero está ahí concluye que la afirmación es cierta. Es la clase de fallo que
+    ese mismo fichero existe para cerrar.
+
+    **Lo hecho, con su reparto:** una fuente única, [`.techos`](.techos). La **leen** el
+    hook, `medir_puerta.py` y el workflow de CI; **se comprueba contra ella** la línea
+    «techo vigente» de ADR-0022, por la regla R6 de `scripts/derivadas.py` y con su
+    control negativo; y `test_aro_del_techo.py` **ya no lleva el literal**: afirma que los
+    tres lectores dan lo que dice la fuente. La séptima copia —el `|| echo`— pasa a fallar
+    cerrado.
+
+    **Lo que queda sin cubrir, y se dice:** las órdenes `--techo N` de `RESULTS.md` **no
+    se comprueban ni se reescriben**, y es deliberado — son el comando de una medición ya
+    hecha, y cambiarlas al cambiar el techo falsificaría la reproducción de una serie
+    pasada. Y **ningún guardián obliga a re-justificar el techo a tiempo**: R6 comprueba
+    que la línea vigente del ADR coincide con la fuente, no que alguien haya hecho las 40
+    corridas. Eso sigue siendo un paso de `/cerrar`, o sea una lista en markdown.

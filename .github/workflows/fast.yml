@@ -92,9 +92,21 @@ jobs:
       # motivo equivocado, y una puerta que se pone roja por motivos equivocados
       # enseña a ignorar el color. Bloquear se reserva para la promesa publicada.
       - name: la puerta, cronometrada contra su techo
-        env:
-          TECHO_MS: 21000
         run: |
+          # EL TECHO SALE DE `.techos`, QUE ES SU FUENTE UNICA. Aqui estaba TECLEADO en
+          # un `env:` y era la copia que no miraba nadie: un grep de su valor por
+          # `tests/` y `scripts/` daba cero. Las otras dos copias —el hook y el
+          # instrumento— si tenian un test que las comparaba ENTRE ELLAS, y por eso se
+          # separaron JUNTAS del ADR sin que nadie se enterara. Ver `.techos` y LIMITS 111.
+          #
+          # Y el numero no se escribe ni en este comentario: `test_aro_del_techo.py`
+          # exige que NO APAREZCA en el fichero, porque una copia en prosa se queda vieja
+          # igual que una copia en codigo y encima no la ejecuta nadie.
+          TECHO_MS=$(grep -E '^TECHO_CI_MS=' .techos | cut -d= -f2)
+          if ! [ "${TECHO_MS:-}" -gt 0 ] 2>/dev/null; then
+            echo "::error::no se pudo leer TECHO_CI_MS de .techos: la alarma de crecimiento no puede comprobar nada"
+            exit 1
+          fi
           # UNA SOLA DEFINICION DEL RELOJ, en `scripts/reloj.py`, que llaman tambien
           # `scripts/medir_puerta.py` y `.claude/hooks/registrar-puerta.sh`
           # Aqui hubo primero un `date +%s%N` —reloj de PARED midiendo una DURACION— y

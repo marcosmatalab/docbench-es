@@ -47,7 +47,7 @@ bugs que encuentra el que lo CONSUME — L1 cerró en verde y L2 descubrió que
 **Ninguna cifra publicada puede pasar por ellos**, y lo impide un test, no una
 nota. Ver LIMITS 49.
 
-**LA PREDICCIÓN DE ESTA SECCIÓN LLEVA CUATRO CONFIRMACIONES, Y TRES SON DE CONVERSORES.**
+**LA PREDICCIÓN DE ESTA SECCIÓN LLEVA TRES CONFIRMACIONES, Y LAS TRES SON DE CONVERSORES.**
 *«El hito que ESCRIBE un módulo no encuentra los bugs que encuentra el que lo CONSUME»*:
 
 | conversor | quién lo estrenó | qué le encontró |
@@ -55,10 +55,29 @@ nota. Ver LIMITS 49.
 | `from_html` | L2, el árbol de TEDS | marcaba mal el **100%** de las cabeceras de PubTabNet |
 | `from_dataframe` | L5, `pdfplumber` | `dataframe` faltaba en `FORMATOS_SIN_SPANS` (LIMITS 98) |
 | `from_markdown` | L5, `pymupdf4llm` | el marcado llegaba al texto de la celda, **19,5%** (LIMITS 103) |
-| `holes` | L1→su propia auditoría | dos implementaciones de «posición cubierta» que difieren |
 
-**Los tres de conversores los encontró el CONSUMIDOR, ninguno un guardián.** Quedan dos
-sin estrenar —`from_tei` y `from_text_heuristic`—, y ninguno está en la campaña de L5.
+**Los tres los encontró el CONSUMIDOR, ninguno un guardián.** Quedan dos sin estrenar
+—`from_tei` y `from_text_heuristic`—, y ninguno está en la campaña de L5.
+
+> **Aquí ponía CUATRO, y la cuarta fila era `holes`.** No es una confirmación, y hay que
+> decir por qué en vez de borrarla y ya: la predicción habla de **lo que encuentra el
+> consumidor**, y `holes()` **no tiene consumidor en `src/`** (deuda 11). Sin consumidor
+> la predicción no puede confirmarse ni refutarse — no es un contraejemplo, es un caso
+> **fuera de su dominio**, y meterlo en la tabla infló el titular de tres a cuatro.
+>
+> **Y su atribución también estaba mal.** Decía *«L1→su propia auditoría»*. La
+> divergencia entre `holes()` y `_invariantes._cobertura` salió de **la poda de `src/`**
+> (límite 81), no de la auditoría de L1; lo que sí salió alrededor de L2 fue otra cosa
+> —que la justificación de L1, *«`holes()` es lo que L2 usa»*, era falsa porque
+> `core.teds` no la llama—.
+>
+> **Lo que ese caso sí dice, y por eso no desaparece:** que una auditoría encuentra
+> defectos donde no hay consumidor que los encuentre. Eso acota la lectura retórica
+> —*«sólo el consumidor los encuentra»*—, que es más fuerte que la predicción escrita y
+> **no** está sostenida por estas tres filas.
+>
+> **La clase de fallo es la de siempre**: un titular que cuenta las filas de su tabla sin
+> comprobar que todas las filas pertenecen a la tabla. Ver LIMITS 55.
 
 ## EL SEGUNDO PATRÓN: LOS ESTIMADORES FALLAN POR EXTRAPOLAR DE UNA MUESTRA PEQUEÑA
 
@@ -216,7 +235,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 201 de 638 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 203 de 644 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -267,7 +286,69 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    puede subir el arnés en vez de bajarlo**. Si no lo sube, deja de ser estructural
    y pasa a ser deterioro: ése es el criterio, escrito antes de medirlo.
 
-   **De los 142 de fuera, 139 llevan control negativo en su propio fichero.**
+   ### ESE CRITERIO SE DECLARA INVÁLIDO PARA L5, Y LAS DOS LECTURAS SE PUBLICAN
+
+   | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
+   |---|---|---|---|---|---|---|
+   | **L5**, en curso, hoy | 644 | 203 | 31,5% | 641 | 99,5% | 3 |
+
+   **Por qué inválido: no nombra su columna.** La tabla tiene una columna «arnés»
+   —un recuento— y otra «% arnés» —una fracción—, y *«subir el arnés»* no dice
+   cuál. Las dos van en direcciones opuestas en L5, así que elegir la lectura
+   **es** elegir el criterio, y elegirlo ahora, con los dos números delante, es
+   exactamente contra lo que existe la pre-registración.
+
+   **Y no vale escudarse en la ambigüedad, porque el texto se inclina.** Dice
+   *«subir el arnés EN VEZ DE BAJARLO»*, y «en vez de bajarlo» sólo tiene sentido
+   si el referente venía bajando. **El recuento nunca bajó: 162, 166, 166.** Lo que
+   baja en toda la tabla, y lo que esta deuda entera se dedica a explicar, es el
+   porcentaje: 87,6 → 51,7 → 43,2. Así que la lectura a la que apunta el texto es
+   la del porcentaje, y **bajo esa lectura L5 FALLA**.
+
+   | lectura | L4 cerrado | L5 hoy | ¿lo cumple? |
+   |---|---|---|---|
+   | **columna «arnés»**, el recuento | 166 | **203** | **SÍ**, +37, y es la primera vez que sube desde L2 |
+   | **columna «% arnés»**, la fracción | 43,2% | **31,5%** | **NO**, −11,7 puntos, la caída más grande de la serie |
+
+   **Las dos se publican, y se dice cuál falla.** Lo que NO se hace es quedarse con
+   la que sale bien: el recuento sube porque L5 escribió seis mutantes contra el
+   instrumento del titular, y la fracción baja porque la suite creció +260 tests en
+   el mismo hito. Las dos cosas son ciertas a la vez y describen lo mismo.
+
+   **Lo que esto NO decide:** si la divergencia es estructural o deterioro. El
+   criterio que iba a decidirlo no era decidible, así que **esa pregunta sigue
+   abierta** y no se contesta con una lectura elegida a posteriori. Límite 110.
+
+   ### EL CRITERIO DE L6, REESCRITO ANTES DE QUE L6 EMPIECE
+
+   > **Criterio, pre-registrado el 28 ago 2026:** al cerrar L6, la columna
+   > **`% arnés`** —definida como `dentro / total`, la fracción de tests de
+   > `tests/unit` a cuyo fichero apunta algún mutante del `PLAN` de
+   > `scripts/mutantes/matar.py`— **no baja más de 5 puntos** respecto al valor con
+   > el que cierre L5.
+   >
+   > **El comando que la calcula, y es el único:**
+   > `uv run python scripts/contabilidades.py`, que imprime las dos contabilidades
+   > con sus porcentajes y sale de la misma colección que usa el guardián de
+   > recuentos. No hay segunda implementación: el script llama a `recuentos()` de
+   > `tests/unit/conftest.py`.
+   >
+   > **Qué pasa si baja más de 5 puntos:** deja de llamarse estructural y se abre
+   > el trabajo del límite 51 —los mutantes a plazos— con su precio en horas. Qué
+   > pasa si no baja: se publica y ya, sin declarar victoria sobre la otra columna.
+   >
+   > **Por qué 5 puntos y no otra cosa:** L3→L4 fueron −8,5 y L4→L5 son −11,7, o
+   > sea que la serie viene bajando y 5 puntos es **más estricto que la tendencia**.
+   > Un umbral por encima de la tendencia se cumpliría solo. Y L6 es un hito
+   > pequeño —8-10 h, el plan de muestreo y su potencia— con código puro y
+   > mutable, o sea el tipo de hito en el que un mutante por módulo es barato.
+   >
+   > **Y lo que este criterio NO mide, dicho antes:** la protección real, que es la
+   > segunda columna y la que lleva tres cierres por encima del 99%. Un criterio
+   > sobre `% arnés` puede fallar con la protección intacta; por eso se publican
+   > las dos y por eso ésta no sustituye a aquélla.
+
+   **De los 441 de fuera, 438 llevan control negativo en su propio fichero.**
    `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
    incumple cinco aros a propósito, y **afirma el conjunto exacto** de
    comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test

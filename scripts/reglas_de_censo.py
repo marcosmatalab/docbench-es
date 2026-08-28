@@ -88,3 +88,57 @@ def huerfanos_declarados(texto: str, documento: str) -> list[Rota]:
             linea = texto[: m.start()].count("\n") + 1
             fuera.append(Rota(documento, linea, "scripts/huerfanos.py", publicado, real))
     return fuera
+
+
+ADR_TECHO = RAIZ / "docs" / "adr" / "0022-el-techo-de-la-puerta.md"
+
+
+@lru_cache(maxsize=1)
+def _techos_de_la_fuente() -> dict[str, int]:
+    """Los techos de `.techos`, que es su fuente única."""
+    fuera: dict[str, int] = {}
+    for linea in (RAIZ / ".techos").read_text(encoding="utf-8").splitlines():
+        if re.fullmatch(r"TECHO_(LOCAL|CI)_MS=\d+", linea.strip()):
+            clave, valor = linea.strip().split("=")
+            fuera[clave] = int(valor)
+    return fuera
+
+
+def techo_vigente_del_adr(_texto: str, documento: str) -> list[Rota]:
+    """**R6 · la línea «techo vigente» de ADR-0022 contra `.techos`.**
+
+    Es la copia número cinco de las seis que tenía el techo, y la única que no puede
+    LEER la fuente porque es prosa. Así que se comprueba contra ella, que es la otra
+    mitad de la regla: *o la lee o se comprueba contra ella*.
+
+    **Corre una sola vez**, colgada del primer documento del barrido, porque no es una
+    comprobación sobre el texto de nadie: es sobre un fichero fijo. Los ADR están fuera
+    del barrido a propósito —registran el estado del día en que se decidió— y **éste es
+    la excepción declarada**: ADR-0022 dice de sí mismo que se re-justifica en cada
+    cierre, así que su techo vigente es una afirmación sobre hoy y no un registro.
+
+    `_texto` va sin usar y con guion bajo delante **a propósito**: la firma es la de
+    todas las reglas del barrido, y romperla para esta una obligaría a `derivadas.py` a
+    saber cuál es cuál. Una excepción en el bucle es más cara que un argumento ignorado.
+    """
+    if documento != "RESULTS.md":
+        return []
+    fuente = _techos_de_la_fuente()
+    texto_adr = ADR_TECHO.read_text(encoding="utf-8")
+    casa = re.search(r"\*\*Techo vigente: (\d+) ms local · (\d+) ms en CI\.\*\*", texto_adr)
+    if not casa:
+        return [Rota("docs/adr/0022-el-techo-de-la-puerta.md", 0, ".techos", "sin línea", "una")]
+    linea = texto_adr[: casa.start()].count("\n") + 1
+    fuera: list[Rota] = []
+    for i, clave in enumerate(("TECHO_LOCAL_MS", "TECHO_CI_MS")):
+        if int(casa.group(i + 1)) != fuente.get(clave, -1):
+            fuera.append(
+                Rota(
+                    "docs/adr/0022-el-techo-de-la-puerta.md",
+                    linea,
+                    f".techos {clave}",
+                    casa.group(i + 1),
+                    str(fuente.get(clave)),
+                )
+            )
+    return fuera

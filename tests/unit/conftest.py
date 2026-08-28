@@ -139,6 +139,9 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_procedencia.py": "test_un_arbol_sucio_si_mueve_la_huella",
     "test_nivel1.py": "test_el_documento_que_no_cuadra_no_cuenta_como_cero",
     "test_tabla_nivel1.py": "test_un_no_aplicable_se_imprime_n_a_y_nunca_cero",
+    # La fuente única del techo: su control negativo es el detector del número
+    # tecleado, que tiene que decir que SÍ cuando lo hay. Ver LIMITS 111.
+    "test_techo_fuente.py": "test_el_detector_del_numero_tecleado_dice_que_si_cuando_lo_hay",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

@@ -32,7 +32,18 @@ cd "$DIR" || exit 0
 
 MARCA=".claude/.ultima-puerta"
 REGISTRO=".claude/.ultima-puerta.txt"
-TECHO=$(.claude/hooks/registrar-puerta.sh --techo 2>/dev/null || echo 8500)
+# El techo sale de `.techos` por boca de `registrar-puerta.sh`, que es su único lector
+# aquí. **Antes esta línea acababa en `|| echo 8500`**, o sea que si la lectura fallaba
+# el guardián se inventaba un techo y seguía en verde: una SÉPTIMA copia, y encima
+# silenciosa. Un guardián que no puede comprobar no cede — falla cerrado.
+TECHO=$(.claude/hooks/registrar-puerta.sh --techo 2>/dev/null)
+if ! [ "${TECHO:-}" -gt 0 ] 2>/dev/null; then
+  cat >&2 <<'SIN_TECHO'
+NO SE PUDO LEER EL TECHO de `.techos`. El aro no puede comprobar nada, así que no cede:
+se arregla el fichero o se dice por qué no está, pero no se commitea a ciegas.
+SIN_TECHO
+  exit 1
+fi
 
 #   UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER NADA.
 # Este guardián publica su denominador como los demás: qué órdenes intercepta, qué

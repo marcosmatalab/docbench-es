@@ -8,7 +8,7 @@ que no se pueden comparar entre hitos, y la serie de la puerta es justo una
 comparación entre hitos.
 
     uv run python scripts/medir_puerta.py            # 10 tandas de 4
-    uv run python scripts/medir_puerta.py --techo 8500
+    uv run python scripts/medir_puerta.py        # el techo sale de `.techos`
     echo $?                                          # 1 si el p90 pasa del techo
 
 **Comprueba el código de salida de cada corrida y descarta la que falla.** `make`
@@ -143,6 +143,20 @@ def movimiento(antes: str, ahora: str, corrida: int, tanda: int) -> str | None:
     )
 
 
+def techo_local() -> int:
+    """El techo local, leído de `.techos`. **No hay un literal en este fichero.**
+
+    Estaba tecleado aquí y en `.claude/hooks/registrar-puerta.sh`, y un test comparaba
+    las dos copias entre sí. No se separaron entre ellas: se separaron **juntas** del ADR
+    que las fija, y el test siguió verde. La fuente única lo cierra por el lado que
+    faltaba; el porqué completo está escrito en el propio `.techos`.
+    """
+    for linea in (RAIZ / ".techos").read_text(encoding="utf-8").splitlines():
+        if linea.startswith("TECHO_LOCAL_MS="):
+            return int(linea.split("=", 1)[1].strip())
+    raise RuntimeError("`.techos` no declara TECHO_LOCAL_MS: el instrumento no tiene techo")
+
+
 def _una_corrida() -> tuple[int, int, float]:
     _en_frio()
     carga = _carga()
@@ -157,7 +171,9 @@ def main() -> int:
     partes = argparse.ArgumentParser(description=__doc__)
     partes.add_argument("--tandas", type=int, default=10)
     partes.add_argument("--por-tanda", type=int, default=4)
-    partes.add_argument("--techo", type=int, default=8500, help="techo local de ADR-0022")
+    partes.add_argument(
+        "--techo", type=int, default=techo_local(), help="techo local de ADR-0022, de `.techos`"
+    )
     args = partes.parse_args()
 
     print(f"sello: {sello()}")

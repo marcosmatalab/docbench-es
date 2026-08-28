@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -44,20 +43,6 @@ REGISTRAR = HOOKS / "registrar-puerta.sh"
 ORDEN = json.dumps({"tool_input": {"command": "git commit -m prueba"}})
 
 
-def _techo_del_hook() -> int:
-    texto = REGISTRAR.read_text(encoding="utf-8")
-    casa = re.search(r"^TECHO=(\d+)$", texto, re.MULTILINE)
-    assert casa, "el hook no declara TECHO"
-    return int(casa.group(1))
-
-
-def _techo_del_instrumento() -> int:
-    texto = (RAIZ / "scripts" / "medir_puerta.py").read_text(encoding="utf-8")
-    casa = re.search(r'"--techo",\s*type=int,\s*default=(\d+)', texto)
-    assert casa, "medir_puerta.py no declara un techo por defecto"
-    return int(casa.group(1))
-
-
 def _proyecto(tmp_path: Path, registro: str | None, huella_al_dia: bool = True) -> Path:
     """Un proyecto de juguete con los tres hooks, **el reloj** y las marcas que se pidan.
 
@@ -70,6 +55,9 @@ def _proyecto(tmp_path: Path, registro: str | None, huella_al_dia: bool = True) 
         shutil.copy(HOOKS / nombre, tmp_path / ".claude" / "hooks" / nombre)
     (tmp_path / "scripts").mkdir()
     shutil.copy(RAIZ / "scripts" / "reloj.py", tmp_path / "scripts" / "reloj.py")
+    # `.techos` se COPIA, no se inventa: el hook lee de ahí su techo desde que hay fuente
+    # única, y un arnés que le pusiera otro número estaría probando otro techo.
+    shutil.copy(RAIZ / ".techos", tmp_path / ".techos")
     huella = subprocess.run(
         [str(tmp_path / ".claude" / "hooks" / "huella-puerta.sh")],
         capture_output=True,
@@ -101,15 +89,6 @@ def _decide(proyecto: Path) -> str:
     if not hecho.stdout.strip():
         return "PASA"
     return str(json.loads(hecho.stdout)["hookSpecificOutput"]["permissionDecisionReason"])
-
-
-def test_los_dos_techos_son_el_mismo_numero() -> None:
-    """Está escrito en el hook Y en `medir_puerta.py`, y son dos copias.
-
-    Una copia comprobada es una copia; una sin comprobar es un bug esperando a que
-    alguien mueva la otra y deje al aro vigilando un techo que ya nadie usa.
-    """
-    assert _techo_del_hook() == _techo_del_instrumento() == 8500
 
 
 def test_una_medida_fria_por_debajo_del_techo_deja_commitear(tmp_path: Path) -> None:
@@ -165,6 +144,9 @@ def test_frio_exige_que_no_quede_ninguna_cache(
     shutil.copy(REGISTRAR, tmp_path / "registrar-puerta.sh")
     (tmp_path / "scripts").mkdir()
     shutil.copy(RAIZ / "scripts" / "reloj.py", tmp_path / "scripts" / "reloj.py")
+    # `.techos` se COPIA, no se inventa: el hook lee de ahí su techo desde que hay fuente
+    # única, y un arnés que le pusiera otro número estaría probando otro techo.
+    shutil.copy(RAIZ / ".techos", tmp_path / ".techos")
     for c in caches:
         (tmp_path / c).mkdir()
     subprocess.run(

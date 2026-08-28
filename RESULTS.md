@@ -525,14 +525,14 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 201 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 203 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 201 de 638 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 203 de 644 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **437 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
+Los **441 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
 `test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
 `test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
 `test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
@@ -545,7 +545,7 @@ Los **437 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), 
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. Así que «los 28 mutantes mueren» dice
 que **esos 28** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 437 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 441 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 > **Aquí ponía «esos 218», y 218 era el resto cuando la suite tenía 384**, o sea el
@@ -1357,8 +1357,8 @@ desde ese commit exacto.
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **201 de
-638 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **203 de
+644 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 

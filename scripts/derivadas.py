@@ -63,7 +63,11 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
-from reglas_de_censo import huerfanos_declarados, limites_declarados  # noqa: E402
+from reglas_de_censo import (  # noqa: E402
+    huerfanos_declarados,
+    limites_declarados,
+    techo_vigente_del_adr,
+)
 from rota import Rota  # noqa: E402
 
 # Los que ACUMULAN: un diario que discute con su propio pasado.
@@ -199,6 +203,7 @@ REGLAS = (
     sellos_contra_los_recuentos,
     limites_declarados,
     huerfanos_declarados,
+    techo_vigente_del_adr,
 )
 
 
