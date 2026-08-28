@@ -235,7 +235,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 203 de 644 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 207 de 652 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -253,14 +253,17 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    hito, y el mutante que lo mediría por rotura va a plazos con su precio. Sin esa
    frase al lado, un número que baja de 87,6% a 51,7% se lee como decadencia
    cuando lo que describe es una suite que crece más deprisa que su arnés. L3 ha
-   añadido **122 tests y UN mutante**, el del grupo de filas: el arnés casi no ha
-   crecido, ha crecido la suite por debajo. Pero **los 122 están protegidos**: 3
-   por el arnés y **119 por el control negativo de su propio fichero**. Por eso la protección no baja.
+   añadido **136 tests y UN mutante**, el del grupo de filas: el arnés casi no ha
+   crecido, ha crecido la suite por debajo. Pero **los 136 están protegidos**: 4
+   por el arnés y **132 por el control negativo de su propio fichero**. Por eso la
+   protección no baja. *(Aquí ponía 122, 3 y 119, tres cifras copiadas a mano de una
+   versión anterior de la columna de al lado: la tabla dice 185→321 tests, 162→166 arnés
+   y 182→318 protegidos. Es el límite 55 en el párrafo que lo explica.)*
    Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
    escondería.
 
    **Lo que sigue siendo verdad y hay que vigilar:** «los 28 mutantes mueren» dice
-   cada vez menos sobre el conjunto — hoy habla del **31,5%** de la suite. Los
+   cada vez menos sobre el conjunto — hoy habla del **31,7%** de la suite. Los
    mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
 
@@ -290,7 +293,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 
    | | tests | arnés | % arnés | protegidos por algo | % | sin ningún control |
    |---|---|---|---|---|---|---|
-   | **L5**, en curso, hoy | 644 | 203 | 31,5% | 641 | 99,5% | 3 |
+   | **L5**, en curso, hoy | 652 | 207 | 31,7% | 649 | 99,5% | 3 |
 
    **Por qué inválido: no nombra su columna.** La tabla tiene una columna «arnés»
    —un recuento— y otra «% arnés» —una fracción—, y *«subir el arnés»* no dice
@@ -307,12 +310,27 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 
    | lectura | L4 cerrado | L5 hoy | ¿lo cumple? |
    |---|---|---|---|
-   | **columna «arnés»**, el recuento | 166 | **203** | **SÍ**, +37, y es la primera vez que sube desde L2 |
-   | **columna «% arnés»**, la fracción | 43,2% | **31,5%** | **NO**, −11,7 puntos, la caída más grande de la serie |
+   | **columna «arnés»**, el recuento | 166 | **207** | **SÍ**, +41 |
+   | **columna «% arnés»**, la fracción | 43,2% | **31,7%** | **NO**, −11,5 puntos |
+
+   > **Aquí ponía dos cosas más y las dos eran falsas**, y las encontró el escrutinio del
+   > paso 4 leyendo la tabla de ocho líneas más arriba:
+   >
+   > · *«+41, y es la primera vez que sube desde L2»*. **El recuento subió en L3**: 162 →
+   >   166, o sea +4, y la prosa de esta misma deuda lo dice con palabras —«el arnés casi
+   >   no ha crecido»—, que es haber crecido. Lo que no subió fue L3→L4, y para eso la
+   >   tabla ya tiene su fila de delta.
+   >
+   > · *«−11,3 puntos, la caída más grande de la serie»*. La serie es 87,6 → 51,7 → 43,2 →
+   >   31,7, o sea −35,9, −8,5 y −11,5. **La más grande es L2→L3 con −35,9**, y está en la
+   >   tabla de arriba y citada en el párrafo que habla de «un número que baja de 87,6% a
+   >   51,7%». Ésta es la segunda.
+   >
+   > Las dos son la misma forma: prosa que adorna una columna **sin mirar la columna**.
 
    **Las dos se publican, y se dice cuál falla.** Lo que NO se hace es quedarse con
    la que sale bien: el recuento sube porque L5 escribió seis mutantes contra el
-   instrumento del titular, y la fracción baja porque la suite creció +260 tests en
+   instrumento del titular, y la fracción baja porque la suite creció +268 tests en
    el mismo hito. Las dos cosas son ciertas a la vez y describen lo mismo.
 
    **Lo que esto NO decide:** si la divergencia es estructural o deterioro. El
@@ -321,11 +339,19 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 
    ### EL CRITERIO DE L6, REESCRITO ANTES DE QUE L6 EMPIECE
 
-   > **Criterio, pre-registrado el 28 ago 2026:** al cerrar L6, la columna
-   > **`% arnés`** —definida como `dentro / total`, la fracción de tests de
-   > `tests/unit` a cuyo fichero apunta algún mutante del `PLAN` de
-   > `scripts/mutantes/matar.py`— **no baja más de 5 puntos** respecto al valor con
-   > el que cierre L5.
+   > **Criterio, pre-registrado el 28 ago 2026:** la columna **`% arnés`** —definida como
+   > `dentro / total`, la fracción de tests de `tests/unit` a cuyo fichero apunta algún
+   > mutante del `PLAN` de `scripts/mutantes/matar.py`— **no baja más de 5 puntos en
+   > NINGUNO de los dos cierres siguientes**, cada uno medido contra el cierre anterior:
+   > **L7 contra L5** y **L6 contra L7**.
+   >
+   > **Y son dos cierres y no uno porque L7 va ANTES que L6** (ADR-0042), cosa que la
+   > primera versión de este criterio no miró: decía «al cerrar L6 … respecto al valor con
+   > el que cierre L5» y entre esos dos puntos se ejecuta L7 entero. Un criterio con una
+   > ventana de dos hitos deja que uno compense al otro, y L7 —20 documentos congelados y
+   > su regresión— es exactamente el tipo de hito que esta deuda describe como el que
+   > hunde la fracción sin tocar el arnés. Medirlos por separado es lo que impide que el
+   > hito que la hunde se esconda detrás del que la sube.
    >
    > **El comando que la calcula, y es el único:**
    > `uv run python scripts/contabilidades.py`, que imprime las dos contabilidades
@@ -333,11 +359,12 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    > recuentos. No hay segunda implementación: el script llama a `recuentos()` de
    > `tests/unit/conftest.py`.
    >
-   > **Qué pasa si baja más de 5 puntos:** deja de llamarse estructural y se abre
-   > el trabajo del límite 51 —los mutantes a plazos— con su precio en horas. Qué
-   > pasa si no baja: se publica y ya, sin declarar victoria sobre la otra columna.
+   > **Qué pasa si baja más de 5 puntos en cualquiera de los dos:** deja de llamarse
+   > estructural y se abre el trabajo del límite 51 —los mutantes a plazos— con su precio
+   > en horas. Qué pasa si no baja: se publica y ya, sin declarar victoria sobre la otra
+   > columna.
    >
-   > **Por qué 5 puntos y no otra cosa:** L3→L4 fueron −8,5 y L4→L5 son −11,7, o
+   > **Por qué 5 puntos y no otra cosa:** L3→L4 fueron −8,5 y L4→L5 son −11,5, o
    > sea que la serie viene bajando y 5 puntos es **más estricto que la tendencia**.
    > Un umbral por encima de la tendencia se cumpliría solo. Y L6 es un hito
    > pequeño —8-10 h, el plan de muestreo y su potencia— con código puro y
@@ -348,7 +375,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    > sobre `% arnés` puede fallar con la protección intacta; por eso se publican
    > las dos y por eso ésta no sustituye a aquélla.
 
-   **De los 441 de fuera, 438 llevan control negativo en su propio fichero.**
+   **De los 445 de fuera, 442 llevan control negativo en su propio fichero.**
    `test_entity_conformance.py` (9) corre la suite contra `AdaptadorRoto`, que
    incumple cinco aros a propósito, y **afirma el conjunto exacto** de
    comprobaciones en rojo — así que borrar o ablandar una comprobación pone el test
@@ -506,7 +533,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 | El hueco de cola es legitimo, el interior es fatal | [`0018`](docs/adr/0018-hueco-de-cola-y-hueco-interior.md) | El «o declara los huecos» de §6.2 no era traducible tal cual. La lectura es la del ORIGEN de la celda, no la de la rejilla rellena |
 | TEDS compara contenido CANONICO | [`0020`](docs/adr/0020-teds-compara-contenido-canonico.md) | La referencia no normaliza y cuenta el marcado inline. El golden se genera dandole el mismo render canonico |
 | La forma canonica del arbol de TEDS | [`0021`](docs/adr/0021-forma-canonica-del-arbol-de-teds.md) | `<thead>` con el prefijo maximo de cabecera, todo `<td>`, el hueco sin nodo. Un `<tbody>` de mas cuesta 0,667 |
-| El techo de la puerta AVISA, el manual BLOQUEA | [`0022`](docs/adr/0022-el-techo-de-la-puerta.md) | 8500 local / 20 000 CI, re-justificado en cada cierre con 40 corridas. **No toca el manual**: §15 y sus 90 s no cambian |
+| El techo de la puerta AVISA, el manual BLOQUEA | [`0022`](docs/adr/0022-el-techo-de-la-puerta.md) | Techo vigente: 8500 ms local · 21000 ms en CI, re-justificado en cada cierre con 40 corridas. **No toca el manual**: §15 y sus 90 s no cambian |
 | El TEDS negativo se recorta SOLO al publicar | [`0023`](docs/adr/0023-teds-negativo-suelo-al-publicar.md) | El calculo no se toca —romperia el criterio de L2—; `para_publicar()` recorta, y se dice cuantos se recortaron |
 | Un documento con varias tablas: la nota es la media | [`0024`](docs/adr/0024-teds-batch-varias-tablas-por-documento.md) | `teds_batch` sobrescribia por clave y la tabla mal extraida desaparecia con cobertura 1,0. Regla de oro 6 rota |
 | «Tras alinear» = la colocacion canonica de L1 | [`0025`](docs/adr/0025-la-exactitud-de-celda-no-alinea.md) | `cell_accuracy` no hace un segundo alineamiento: es exactitud POSICIONAL, y el precio esta en el limite 53 |

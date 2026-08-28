@@ -20,7 +20,6 @@ from dataclasses import replace
 
 from benchcore.types import Cost
 
-from docbench_es.report.cara_a_cara import cara_a_cara
 from docbench_es.report.nivel1 import medir
 from docbench_es.types import CanonicalCell, CanonicalTable, DocRef, Extraction
 
@@ -58,6 +57,23 @@ def _ex(ident: str, *tablas: CanonicalTable, latencia: int = 10) -> Extraction:
 
 PERFECTA = _tabla("a", "b", "c", "d", filas=2)
 OTRA = _tabla("e", "f", "g", "h", filas=2)
+
+COMBINADA = CanonicalTable(
+    cells=(
+        CanonicalCell(row=0, col=0, text="a", is_header=True, rowspan=2),
+        CanonicalCell(row=0, col=1, text="b", is_header=True),
+        CanonicalCell(row=1, col=1, text="d", is_header=False),
+    ),
+    n_rows=2,
+    n_cols=2,
+    page_span=(1, 1),
+    caption=None,
+    expresses_spans=True,
+    source_format="html",
+)
+"""La verdad con una celda COMBINADA. Contra un extractor que no expresa spans, su par
+sale `NO_APLICABLE` por la regla de oro 4 — y ése es el caso que faltaba en todos los
+fixtures de este fichero, y por eso el titular falso de L5 no lo cazó ningún test."""
 
 
 def test_un_documento_que_cuadra_puntua_y_uno_que_no_sale_no_aplicable() -> None:
@@ -173,100 +189,3 @@ def test_medir_es_puro_y_dos_llamadas_dan_lo_mismo() -> None:
     frase: la tabla tiene que salir igual del mismo diario, hoy y dentro de un año."""
     entrada = ([_ex("D1", PERFECTA)], {"D1": (PERFECTA,)}, {"D1": 1})
     assert medir(*entrada).metricas == medir(*entrada).metricas
-
-
-# ─────────────────────────────── la cara a cara ──────────────────────────────
-
-
-def test_la_cara_a_cara_puntua_a_todos_sobre_la_interseccion() -> None:
-    """**El sesgo de supervivencia, cerrado.** `bueno` acierta el recuento en los dos
-    documentos; `malo` sólo en el fácil. Sobre su propio conjunto, `malo` sale PERFECTO;
-    sobre la intersección, los dos se comparan sobre el mismo documento.
-    """
-    mala = _tabla("z", "z", "z", "z", filas=2)
-    verdades = {"FACIL": (PERFECTA,), "DIFICIL": (PERFECTA,)}
-    paginas = {"FACIL": 1, "DIFICIL": 1}
-    bueno = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", mala)], verdades, paginas)
-    malo = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", PERFECTA, OTRA)], verdades, paginas)
-
-    assert malo.metricas.teds == 1.0, "sobre SU conjunto, el que detecta mal sale perfecto"
-    assert bueno.metricas.teds is not None
-    assert bueno.metricas.teds < 1.0, "y el que sí lo intenta, peor. Ése es el sesgo"
-
-    cc = cara_a_cara({"bueno": bueno, "malo": malo})
-    assert cc.documentos == ("FACIL",), "la intersección es donde los DOS acertaron"
-    assert cc.teds["bueno"] == cc.teds["malo"] == 1.0
-    assert cc.n == 1
-    assert cc.poblacion == 2
-
-
-def test_la_cara_a_cara_publica_los_dos_denominadores_y_su_resta() -> None:
-    """**El delta es lo que impide leer la intersección como una corrección del sesgo.**
-
-    `runs/l5/emparejado.yaml` declaró la dirección antes de medir: pasar al denominador
-    común baja la nota, y más la de quien menos cobertura tiene. Aquí sale **positivo**
-    justo para el que detecta BIEN — su conjunto propio incluye el documento difícil y la
-    intersección no—, así que el signo no está fijado por construcción. Por eso se publica
-    medido en vez de suponerse.
-    """
-    mala = _tabla("z", "z", "z", "z", filas=2)
-    verdades = {"FACIL": (PERFECTA,), "DIFICIL": (PERFECTA,)}
-    paginas = {"FACIL": 1, "DIFICIL": 1}
-    bueno = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", mala)], verdades, paginas)
-    malo = medir([_ex("FACIL", PERFECTA), _ex("DIFICIL", PERFECTA, OTRA)], verdades, paginas)
-
-    cc = cara_a_cara({"bueno": bueno, "malo": malo})
-    assert cc.suyo == {"bueno": bueno.metricas.teds, "malo": malo.metricas.teds}
-    subida = cc.delta("bueno")
-    assert subida is not None and subida > 0, "el delta PUEDE salir positivo"
-    assert cc.delta("malo") == 0.0
-    assert cc.delta("no_lo_hay") is None, "sin los dos lados no hay resta, y no es 0,0"
-
-
-def test_la_n_de_la_interseccion_se_publica_aunque_sea_cero() -> None:
-    """Sin intersección **no hay empate: no hay comparación**, y eso es un resultado sobre
-    la dificultad del corpus, no un fallo de la tabla."""
-    verdades = {"A": (PERFECTA,), "B": (PERFECTA,)}
-    paginas = {"A": 1, "B": 1}
-    uno = medir([_ex("A", PERFECTA), _ex("B", PERFECTA, OTRA)], verdades, paginas)
-    otro = medir([_ex("A", PERFECTA, OTRA), _ex("B", PERFECTA)], verdades, paginas)
-    cc = cara_a_cara({"uno": uno, "otro": otro})
-    assert cc.n == 0
-    assert cc.teds == {}
-    assert "NO HAY COMPARACIÓN" in str(cc)
-
-
-def test_con_un_solo_extractor_la_interseccion_es_su_propio_conjunto() -> None:
-    """Se calcula igual y su `n` lo dice: no aporta nada, y no finge aportarlo."""
-    fila = medir([_ex("D1", PERFECTA)], {"D1": (PERFECTA,)}, {"D1": 1})
-    cc = cara_a_cara({"solo": fila})
-    assert cc.n == 1
-    assert cc.teds == {"solo": 1.0}
-
-
-def test_la_cara_a_cara_sin_extractores_no_revienta() -> None:
-    cc = cara_a_cara({})
-    assert (cc.n, cc.poblacion, cc.extractores) == (0, 0, ())
-
-
-def test_el_acuerdo_se_desglosa_por_banda_de_paginas() -> None:
-    """**Lo que convierte el titular en diagnóstico.** «Coinciden en el 24%» dice que hay
-    un problema; el desglose dice si es de la herramienta o de la longitud del documento.
-
-    Aquí los dos extractores coinciden en el corto y discrepan en el largo: el acuerdo
-    sale 100% en la banda de una página y 0% en la de más de 50.
-    """
-    verdades = {"CORTO": (PERFECTA,), "LARGO": (PERFECTA,)}
-    paginas = {"CORTO": 1, "LARGO": 90}
-    uno = medir([_ex("CORTO", PERFECTA), _ex("LARGO", PERFECTA)], verdades, paginas)
-    otro = medir([_ex("CORTO", PERFECTA), _ex("LARGO", PERFECTA, OTRA)], verdades, paginas)
-    cc = cara_a_cara({"uno": uno, "otro": otro}, paginas)
-    assert cc.por_banda["una página"] == (1, 1)
-    assert cc.por_banda[">50"] == (0, 1)
-
-
-def test_sin_paginas_el_desglose_sale_vacio_en_vez_de_inventarse_una_banda() -> None:
-    """El desglose es información AÑADIDA, no parte del número: sin páginas la cara a cara
-    sigue valiendo y `por_banda` no se inventa nada."""
-    fila = medir([_ex("D1", PERFECTA)], {"D1": (PERFECTA,)}, {"D1": 1})
-    assert cara_a_cara({"solo": fila}).por_banda == {}

@@ -35,8 +35,15 @@ make fast     # lint + tipos + arquitectura + núcleo puro. Sin red, en unos 8 s
 Eso es lo que funciona hoy en un clon limpio, y se comprueba en cada cierre clonando
 el repo en `/tmp` y corriéndolo allí. **`make quickstart` —de clone a una tabla en
 menos de 3 minutos— llega en L7**, que es cuando existen los 20 documentos congelados
-y los extractores que los procesan; hoy no hay CLI y el ejecutable no está declarado,
-así que los trabajos `full` y `nightly` de CI nacen dormidos en vez de rojos.
+que hacen falta para correrlo sin red. La CLI y su ejecutable **ya existen** desde L5
+—`uv run docbench --help`—, y lo que sigue faltando para `quickstart` son los documentos,
+así que los trabajos `full` y `nightly` de CI siguen naciendo dormidos en vez de rojos
+hasta L7.
+
+*(Aquí ponía «hoy no hay CLI y el ejecutable no está declarado», y L5 trajo las dos cosas:
+`pyproject.toml` declara `docbench = "docbench_es.cli.main:app"` y `tests/unit/test_cli.py`
+ejecuta el `--help` de cada subcomando. Era una afirmación falsa en la puerta de entrada
+del repo, y la encontró el escrutinio adversarial de L5, no un guardián.)*
 
 ## Por dónde seguir
 

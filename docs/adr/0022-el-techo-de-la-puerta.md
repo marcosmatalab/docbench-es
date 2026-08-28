@@ -30,11 +30,25 @@ acaba de dejar por escrito.
 
 **La pregunta que este ADR no se había hecho nunca: ¿el techo sabe bajar?** La fórmula
 —`p90 medido + incremento proyectado + una desviación`— parte de una **medición**, así
-que puede dar un número menor que el techo vigente. Nunca lo ha dado, y la razón no es
-que la fórmula no lo permita: es que **ningún hito había arreglado un defecto real antes
-de medir**. L5 es el primero — la caché de `huerfanos.reparto()`, que llevaba
-`scripts/derivadas.py` de 0,701 s a 0,174 s y sacó a su test de los seis más caros de la
-suite.
+que puede dar un número menor que el techo vigente. **Nunca lo ha dado.**
+
+> **Y la primera versión de este bloque explicaba por qué con una razón FALSA:** decía
+> que *«ningún hito había arreglado un defecto real antes de medir, y L5 es el primero»*.
+> **L4 hizo exactamente eso** —`--durations`, `pdftotext` ocho veces sobre los mismos
+> bytes, `lru_cache`, 0,69 s → 0,36 s— y está contado en este mismo ADR 260 líneas más
+> abajo, en la sección que le puso nombre al paso. Escribir «es el primero» en el
+> documento que registra el anterior es la clase de fallo que este repo llama la más
+> grave, y lo encontró el escrutinio adversarial del paso 4 de L5.
+>
+> **Y el hecho corregido es MÁS fuerte que el falso, no menos.** En L4 el p90 bajó de
+> **8558 a 8006** al arreglar el defecto, o sea 552 ms, y el techo **no bajó**: siguió en
+> 8500. Así que no es que no hubiera habido ocasión: la hubo, la medición la respaldaba y
+> nadie se planteó la pregunta. Eso es justo lo que este pre-registro existe para que no
+> vuelva a pasar.
+
+L5 vuelve a estar en esa situación por el mismo camino: la caché de `huerfanos.reparto()`,
+que lleva `scripts/derivadas.py` de 0,701 s a 0,174 s y saca a su test de los seis más
+caros de la suite.
 
 **La regla, en firme y sin escapatoria:**
 

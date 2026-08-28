@@ -92,6 +92,27 @@ def huerfanos_declarados(texto: str, documento: str) -> list[Rota]:
 
 ADR_TECHO = RAIZ / "docs" / "adr" / "0022-el-techo-de-la-puerta.md"
 
+CON_TECHO_VIVO: tuple[str, ...] = (
+    "docs/adr/0022-el-techo-de-la-puerta.md",
+    "docs/metrics.md",
+    "ESTADO.md",
+    "RESULTS.md",
+    "LIMITS.md",
+    "README.md",
+)
+"""Los documentos donde una copia VIVA del techo puede aparecer.
+
+No es «todos»: es donde ya apareció alguna. El escrutinio del paso 4 encontró dos
+—`docs/metrics.md` y `ESTADO.md`— que publicaban **20 000 en CI** cuando la fuente dice
+21 000, y ninguna de las dos estaba en el censo de LIMITS 111. Se añaden aquí y se
+escriben en la FORMA CANÓNICA para que esta regla las vea.
+"""
+
+FORMA_CANONICA = re.compile(r"Techo vigente: (\d+) ms local · (\d+) ms en CI")
+"""La forma que esta regla comprueba. **Lo que no se escriba así, no lo ve nadie**, y eso
+está declarado en LIMITS 111: una copia en prosa con otra redacción es indistinguible de
+una nota histórica para cualquier expresión regular."""
+
 
 @lru_cache(maxsize=1)
 def _techos_de_la_fuente() -> dict[str, int]:
@@ -124,21 +145,28 @@ def techo_vigente_del_adr(_texto: str, documento: str) -> list[Rota]:
     if documento != "RESULTS.md":
         return []
     fuente = _techos_de_la_fuente()
-    texto_adr = ADR_TECHO.read_text(encoding="utf-8")
-    casa = re.search(r"\*\*Techo vigente: (\d+) ms local · (\d+) ms en CI\.\*\*", texto_adr)
-    if not casa:
-        return [Rota("docs/adr/0022-el-techo-de-la-puerta.md", 0, ".techos", "sin línea", "una")]
-    linea = texto_adr[: casa.start()].count("\n") + 1
     fuera: list[Rota] = []
-    for i, clave in enumerate(("TECHO_LOCAL_MS", "TECHO_CI_MS")):
-        if int(casa.group(i + 1)) != fuente.get(clave, -1):
-            fuera.append(
-                Rota(
-                    "docs/adr/0022-el-techo-de-la-puerta.md",
-                    linea,
-                    f".techos {clave}",
-                    casa.group(i + 1),
-                    str(fuente.get(clave)),
-                )
-            )
+    vistas = 0
+    for nombre in CON_TECHO_VIVO:
+        texto = (RAIZ / nombre).read_text(encoding="utf-8")
+        for casa in FORMA_CANONICA.finditer(texto):
+            vistas += 1
+            linea = texto[: casa.start()].count("\n") + 1
+            for i, clave in enumerate(("TECHO_LOCAL_MS", "TECHO_CI_MS")):
+                if int(casa.group(i + 1)) != fuente.get(clave, -1):
+                    fuera.append(
+                        Rota(
+                            nombre,
+                            linea,
+                            f".techos {clave}",
+                            casa.group(i + 1),
+                            str(fuente.get(clave)),
+                        )
+                    )
+    if not vistas:
+        # UN GUARDIÁN CON ALCANCE CERO SE LEE IGUAL QUE UNO EN VERDE. Si nadie escribe ya
+        # la forma canónica, esta regla no protege nada y tiene que decirlo.
+        fuera.append(
+            Rota("docs/adr/0022-el-techo-de-la-puerta.md", 0, ".techos", "0 copias vistas", "≥1")
+        )
     return fuera

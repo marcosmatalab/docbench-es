@@ -525,27 +525,21 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 203 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 207 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 203 de 644 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 207 de 652 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **441 tests restantes** —`test_congelados_l4` (38), `test_barreras` (14), `test_barreras_documentos` (2),
-`test_harvest` (14), `test_verificar_corpus` (14), `test_boe` (12),
-`test_boe_api` (10), `test_entity_conformance` (9), `test_entity_registry` (9),
-`test_capas_permitidas` (8), `test_manifest` (8), `test_pairing` (8),
-`test_guardianes_l4` (7), `test_guardianes_por_glob` (9), `test_documentos_que_sostienen` (9), `test_policy` (7),
-`test_types_invariantes` (7), `test_boe_xml` (6), `test_ancla` (5),
-`test_comparar_verdad` (5), `test_types` (6), `test_sellar_xml` (4),
-`test_estimador_computo` (6), `test_extractor_contrato` (37), `test_extractor_conformidad` (13),
-`test_conjunto_conformidad` (5), `test_formatos_spans` (2), `test_errors` (3), `test_sin_consumidor` (3),
-`test_reglas_parseables` (3), `test_limite_lineas` (2) y `test_tope_area` (2)— quedan fuera
+Los **445 tests restantes** quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
-invariantes de tipos y las barreras por AST. Así que «los 28 mutantes mueren» dice
+invariantes de tipos y las barreras por AST. **La enumeración fichero a fichero está en
+LIMITS 51 y no se repite aquí**: la que había era una segunda copia, se presentaba como
+exhaustiva —cerrada con «y `test_tope_area` (2)»— y sumaba **287**, o sea que le faltaban
+17 ficheros y 154 tests. Una lista que se copia a dos sitios diverge, y ésta divergió. Así que «los 28 mutantes mueren» dice
 que **esos 28** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 441 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+esos 445 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 > **Aquí ponía «esos 218», y 218 era el resto cuando la suite tenía 384**, o sea el
@@ -1357,8 +1351,8 @@ desde ese commit exacto.
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **203 de
-644 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **207 de
+652 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2087,23 +2081,73 @@ el margen en dos hitos, y eso no lo dice ningún aro. Va en el límite 102.
 La tabla entera, con sus notas, en [`runs/l5/nivel1.md`](runs/l5/nivel1.md); su sello, en
 `runs/l5/nivel1.md.sello.json`.
 
-### EL TITULAR NO ES UNA NOTA: ES 82 DE 338
+### EL TITULAR NO ES UNA NOTA: ES 103 DE 338
 
-> **Sólo en 82 de los 338 documentos con tabla (24,3%) los cuatro extractores coinciden
+> **Sólo en 103 de los 338 documentos con tabla (30,5%) los cuatro extractores coinciden
 > con la referencia en CUÁNTAS TABLAS HAY.**
 
-En el 76% restante, al menos uno de los cuatro discrepa en el **paso previo a cualquier
+En el 69,5% restante, al menos uno de los cuatro discrepa en el **paso previo a cualquier
 métrica de calidad**. No es un detalle del emparejado: es el resultado más citable del
 hito, y es lo que hace que las notas de abajo se lean con su cobertura al lado o no se
 lean.
 
+> ### AQUÍ PONÍA «82 DE 338 (24,3%)» Y ERA FALSO. ES EL PEOR FALLO DE ESTE HITO
+>
+> El 82 existe y es correcto **para otra cosa**: son los documentos donde los cuatro
+> **PUNTUARON**, que es el denominador que la cara a cara necesita. El titular decía
+> *«coinciden en CUÁNTAS TABLAS HAY»*, que es otra cuenta — y son **103**.
+>
+> **De dónde salían los 21 de diferencia.** `cara_a_cara` intersecaba `por_documento`, o
+> sea los documentos con TEDS no nulo. `teds_batch` devuelve `None` cuando **ninguna**
+> tabla del documento es evaluable, y una tabla no es evaluable cuando la verdad trae
+> celdas combinadas y el extractor no expresa `rowspan`/`colspan` (regla de oro 4,
+> ADR-0006). Así que **21 documentos donde los cuatro acertaron el recuento** se
+> publicaban como si hubieran discrepado. Es la decisión B3 rota un nivel más arriba:
+> «no se pudo medir» impreso como «se midió y salió mal».
+>
+> **Y contradecía la regla PRE-REGISTRADA**, que dice literalmente
+> *«LA INTERSECCION: los documentos donde TODOS los extractores comparados acertaron el
+> recuento»* (`runs/l5/emparejado.yaml`).
+>
+> **Lo encontró el escrutinio adversarial del paso 4, no un guardián.** Ningún test lo
+> cubría: todos los fixtures de `test_nivel1.py` usaban tablas **sin celdas combinadas**,
+> donde acertar el recuento y puntuar son lo mismo. Hoy hay tres tests que los separan y
+> un fixture `COMBINADA` que existe sólo para eso.
+>
+> **Qué cambia y qué no.** Cambian el titular (82 → **103**), su porcentaje (24,3% →
+> **30,5%**) y dos celdas de la tabla por bandas. **No cambia ni una nota**: las cuatro
+> TEDS, las coberturas, el coste y la cara a cara salen idénticos, porque la aritmética
+> de la comparación era correcta — lo falso era la **etiqueta**.
+
+**Y las DOS cuentas se publican, porque son dos preguntas:**
+
+| | n | sobre 338 | qué contesta |
+|---|---:|---:|---|
+| **acuerdo de recuento** | **103** | 30,5% | ¿en cuántos coinciden los cuatro en cuántas tablas hay? |
+| **puntúan los cuatro** | **82** | 24,3% | ¿sobre cuántos se puede comparar el TEDS? |
+| diferencia | **21** | 6,2% | `NO_APLICABLE` por la regla de oro 4, **no desacuerdo** |
+
+**Los 21 no se reparten por igual, y eso es un resultado.** Cuántos documentos pierde cada
+extractor por no poder evaluar ni una tabla, teniendo el recuento bien:
+
+| extractor | `expresses_spans` | acierta el recuento | puntúa | pierde |
+|---|---|---:|---:|---:|
+| `camelot` | no | 138 | 115 | **23** |
+| `docling` | **sí** | 137 | 137 | **0** |
+| `pdfplumber` | no | 137 | 115 | **22** |
+| `pymupdf4llm` | no | 114 | 90 | **24** |
+
+**`docling` pierde cero, y es el único que declara `expresses_spans=True`.** O sea que la
+pérdida no es ruido: es exactamente la regla de oro 4 cobrándose su precio, y se puede
+predecir mirando una bandera del extractor.
+
 **Y dónde está el desacuerdo, que es lo que lo convierte en diagnóstico:**
 
-| páginas | población | coinciden los cuatro | acuerdo |
+| páginas | población | coinciden los cuatro en el recuento | acuerdo |
 |---|---:|---:|---:|
 | una página | 9 | 9 | **100,0%** |
-| 2-10 | 183 | 46 | 25,1% |
-| 11-50 | 114 | 12 | **10,5%** |
+| 2-10 | 183 | 56 | 30,6% |
+| 11-50 | 114 | 23 | **20,2%** |
 | >50 | 32 | 15 | 46,9% |
 
 **La lectura fácil sería «la discrepancia crece con la longitud», Y ES FALSA.** El mínimo
@@ -2111,6 +2155,13 @@ está en la banda **11-50**, no en la de más de 50, y los documentos largos **r
 hasta el 46,9%**. Lo único monótono es el arranque: donde el recuento es trivial —una
 página, o hay una tabla o no la hay— los cuatro coinciden **siempre**, y eso descarta que
 el problema sea de una herramienta concreta.
+
+> **Esta tabla también estaba mal, y de la misma forma:** publicaba 46 y 12 donde son
+> **56** y **23**, porque contaba la intersección puntuada en vez del acuerdo de recuento
+> que su propia cabecera declaraba. Los dos porcentajes que sostienen el diagnóstico eran
+> 25,1% y 10,5% y son **30,6%** y **20,2%**. **La conclusión sobrevive entera** —el mínimo
+> sigue en 11-50 y la banda larga sigue recuperando—, pero se sostenía sobre dos cifras
+> que el instrumento no medía.
 
 **Dos cautelas sobre esa fila del 100%**, y van delante: su **n es 9**, así que no
 sostiene ninguna tasa; y es la banda donde acertar es más barato. Sirve para lo que sirve
@@ -2187,8 +2238,16 @@ población. El patrón, con las dos confirmaciones y lo que sale de él, en `EST
 **A mitad de corrida, las dos proyecciones lineales dieron:** por documento **2,83 h**,
 por página **2,30 h**. La de página acertó al segundo decimal, y la razón estaba
 declarada antes de saber el resultado: la corrida va en orden de población —primero los
-338 con tabla, 17,5 páginas de media, luego los 278 sin, 12,3—, así que la de documento
-era pesimista por construcción.
+**338** con tabla, **17,98** páginas de media, luego los **278** sin, **9,56**—, así que
+la de documento era pesimista por construcción.
+
+> **Aquí ponía «17,5» y «12,3», y las dos eran falsas.** Las medias reales son 6.076/338 =
+> 17,98 y 2.657/278 = 9,56, y se comprueban con
+> `uv run python scripts/poblacion_l5.py`. Además eran **incoherentes con el propio
+> hito**: 338×17,5 + 278×12,3 = 9.334 páginas, y la campaña tiene 8.733, publicado dos
+> bloques más abajo. La conclusión —la proyección por documento era pesimista— **se
+> sostiene mejor** con las cifras buenas: el desnivel entre poblaciones es de 8,4 páginas,
+> no de 5,2.
 
 **La hipótesis del sobrecoste, que sigue siendo hipótesis:** B5-bis midió **un proceso por
 unidad** y pagó la carga de modelos de `docling` **108 veces**; el corredor la paga
@@ -2217,16 +2276,21 @@ sobre sus documentos fáciles.
 
 ### La cara a cara · las mismas puntuaciones sobre el mismo denominador
 
-Sobre los **82** de la intersección, que es la única cuenta que puede contestar «cuál es
-mejor» — y aun así **no lo contesta**: eso exige la comparación pareada con su potencia,
-que es L6 (ADR-0009).
+Sobre los **82** documentos que PUNTÚAN los cuatro, que es la única cuenta que puede
+contestar «cuál es mejor» — y aun así **no lo contesta**: eso exige la comparación pareada
+con su potencia, que es L6 (ADR-0009). No son los 103 del acuerdo de recuento: la
+diferencia y su porqué están arriba.
 
-| extractor | TEDS sobre la intersección |
-|---|---:|
-| `camelot` | 0,8581 |
-| `docling` | 0,9354 |
-| `pdfplumber` | 0,8599 |
-| `pymupdf4llm` | 0,9375 |
+**La tabla es la que emite el informe**, copiada de [`runs/l5/nivel1.md`](runs/l5/nivel1.md)
+y comprobada contra [`runs/l5/informe.json`](runs/l5/informe.json) por la regla R7 de
+`scripts/derivadas.py`. No está tecleada.
+
+| extractor | TEDS sobre la intersección | TEDS sobre su conjunto | delta |
+|---|---:|---:|---:|
+| `camelot` | 0,8581 | 0,8684 | -0,0104 |
+| `docling` | 0,9354 | 0,9053 | +0,0301 |
+| `pdfplumber` | 0,8599 | 0,8699 | -0,0100 |
+| `pymupdf4llm` | 0,9375 | 0,8936 | +0,0440 |
 
 **Y el orden cambia respecto a la primera tabla**, que es exactamente por lo que existe:
 `pymupdf4llm` pasa de la cobertura más baja (23,6%) a la nota más alta de la
@@ -2241,12 +2305,15 @@ Su consecuencia comprobable es que al pasar al denominador común **todas** las 
 bajan, y bajan más las de menos cobertura. El salto lo emite ahora el propio informe —una
 columna, no una resta a mano— y sale así:
 
-| extractor | cobertura | sobre su conjunto | sobre los 82 | delta |
-|---|---:|---:|---:|---:|
-| `camelot` | 29,6% | 0,8684 | 0,8581 | **-0,0104** |
-| `docling` | 38,0% | 0,9053 | 0,9354 | **+0,0301** |
-| `pdfplumber` | 29,6% | 0,8699 | 0,8599 | **-0,0100** |
-| `pymupdf4llm` | 23,6% | 0,8936 | 0,9375 | **+0,0440** |
+La columna `delta` de la tabla de arriba, ordenada por cobertura para que se vea que no
+ordena:
+
+| extractor | cobertura | delta |
+|---|---:|---:|
+| `pymupdf4llm` | 23,6% | **+0,0440** |
+| `camelot` | 29,6% | **-0,0104** |
+| `pdfplumber` | 29,6% | **-0,0100** |
+| `docling` | 38,0% | **+0,0301** |
 
 **Dos suben y dos bajan, y no se ordenan por cobertura:** el delta más positivo es el del
 extractor con la cobertura **más baja** de los cuatro, que es justo el que la predicción
@@ -2282,9 +2349,54 @@ denominador**.
 **Cero euros es un cero MEDIDO**, no un dato que falte: los cuatro corren en local. Un
 `NO_APLICABLE` diría otra cosa.
 
-**Y `pdfplumber` es 7,3× más barato que `docling` con 3,5 puntos menos de TEDS en la cara
-a cara.** Eso es una curva coste-calidad con cuatro puntos, no un ranking — y es la forma
-de leer esta tabla.
+**Y `pdfplumber` es 7,3× más barato que `docling` con 7,6 puntos menos de TEDS en la cara
+a cara** (0,9354 contra 0,8599). Eso es una curva coste-calidad con cuatro puntos, no un
+ranking — y es la forma de leer esta tabla.
+
+> **Aquí ponía «3,5 puntos … en la cara a cara», y los 3,5 son de la OTRA tabla:** la
+> diferencia entre las notas sobre el conjunto propio de cada uno (0,9053 − 0,8699). O sea
+> que la frase tomaba el número del denominador que el propio documento acaba de declarar
+> **no comparable** y lo etiquetaba con el nombre del que sí lo es. En la cara a cara la
+> diferencia es **más del doble**, así que la curva coste-calidad era más plana de lo que
+> es. Lo encontró el escrutinio del paso 4.
+
+### La columna que se pre-registró y NO se publicaba · tabla no presente en la referencia
+
+```bash
+uv run python scripts/falsos_positivos_l5.py     # runs/l5/falsos_positivos.json
+```
+
+`runs/l5/poblacion.yaml` decidió, **antes de la campaña**, correr 278 documentos **sin
+ninguna tabla en la verdad** para publicar *«tasa de falso positivo de DETECCIÓN, con
+intervalo de Wilson»*. Los 278 se corrieron, entraron en el denominador del coste y se
+cobraron su parte de las 2,30 h. **El número no estaba publicado, y el hueco tampoco
+declarado.** Lo encontró el escrutinio adversarial del paso 4.
+
+| extractor | ≤10 · **muestra** de 584 | 11-50 · censo de 72 | >50 · censo de 6 |
+|---|---:|---:|---:|
+| `camelot` | 6/200 · **3,0%** · [1,4 – 6,4] | 13/72 · **18,1%** | 1/6 · 16,7% |
+| `docling` | 5/200 · **2,5%** · [1,1 – 5,7] | 7/72 · **9,7%** | 1/6 · 16,7% |
+| `pdfplumber` | 6/200 · **3,0%** · [1,4 – 6,4] | 13/72 · **18,1%** | 1/6 · 16,7% |
+| `pymupdf4llm` | 5/200 · **2,5%** · [1,1 – 5,7] | 14/72 · **19,4%** | 1/6 · 16,7% |
+
+**Los regímenes no son el mismo y por eso las columnas no se suman.** `≤10` es una
+**muestra** de 584 con semilla declarada, así que su tasa es una estimación y lleva
+**Wilson 95%**; `11-50` y `>50` son **censo** de su estrato y no llevan intervalo
+(ADR-0015). **No se publica una tasa global**: combinar una muestra con dos censos exige
+ponderar por tamaño de estrato, y esa agregación no está decidida.
+
+**NO se llama tasa de alucinación, y la distinción es la mitad del número.** La referencia
+es el XML del BOE: «cero tablas» significa cero tablas **en el XML**, no en el documento.
+Si el maquetador no marcó como `<table>` algo que en el PDF sí lo es, un extractor que la
+encuentre **acierta** y aquí cuenta igual. Separar alucinación de omisión de la fuente
+exige adjudicar contra el PDF (ADR-0039 regla 5) y **no está hecho** — que es exactamente
+la salida que el propio pre-registro dejó escrita para este caso.
+
+**Y lo que el desglose sí dice:** la tasa **sube con la longitud** en los cuatro, de ~3% en
+los cortos a ~18% en la banda de 11-50, con `docling` a la mitad que los demás en esa
+banda (9,7% contra 18,1-19,4%). Sube en la banda donde el acuerdo de recuento tiene su
+**mínimo** (20,2%), así que las dos columnas apuntan al mismo sitio: los documentos de
+longitud media son donde «esto es una tabla» deja de ser una pregunta con respuesta.
 
 ### Los dos árboles, dicho en vez de callado
 
@@ -2325,8 +2437,16 @@ registrado dos veces más abajo.
 orden a secas *por catastrófico*, y el mutante lo restaura: con él **todo documento
 puntúa**, el acuerdo de recuento sube al 100%, la cobertura se infla, los `NO_APLICABLE`
 desaparecen —y con ellos la distinción entre «no se pudo comparar» y «se comparó y salió
-mal»— y el TEDS pasa a medir **desalineamiento**. Ninguna de las cuatro columnas se vería
-rara: saldrían todas mejor.
+mal»— y el TEDS pasa a medir **desalineamiento**. **Ninguna de las cuatro columnas se
+vería rara**, que es lo que lo hace peligroso: tres suben —acuerdo, cobertura y n— y el
+TEDS **baja**, exactamente como `emparejado.yaml` predice cuando dice que el emparejado
+por orden a secas «saca notas ruinosas en TODAS por un solo fallo de detección». Un TEDS
+más bajo con más cobertura se lee como un extractor honesto, no como un instrumento roto.
+
+> **Aquí ponía «saldrían todas mejor», y el TEDS sale PEOR.** Medido sobre el fixture del
+> mutante: TEDS 1,0 → 0,75 mientras acuerdo 0,5 → 1,0 y cobertura 0,3333 → 0,6667. La
+> frase suponía la dirección en vez de mirarla, en el párrafo que explica un mutante cuyo
+> propio docstring dice lo contrario.
 
 **Y el último es el que no se puede cazar mirando el objeto.** La aritmética puede estar
 perfecta —`teds=None`, régimen y agregado en su sitio— y la tabla publicada mentir igual,
@@ -2341,7 +2461,13 @@ lado de la resta. Por eso los dos figuran hoy con 2 y no con 1.
 **El único punto único de fallo que queda es `n3_incompleta`**, el de L2, con su razón
 medida y declarada allí. Ninguno de los seis nuevos lo es.
 
-**Lo que esto NO dice.** El arnés pasa a cubrir **201 de 638 tests**: «los 28 mutantes
-mueren» habla de esos 28 huecos, no de la suite. La segunda contabilidad —**635 de 638
+**Lo que esto NO dice.** El arnés pasa a cubrir **207 de 652 tests**: «los 28 mutantes
+mueren» habla de esos 28 huecos, no de la suite. La segunda contabilidad —**649 de 652
 protegidos por algo**— y por qué hacen falta las dos, en el límite 51 y en la deuda 7 de
-`ESTADO.md`.
+`ESTADO.md`. Las dos salen de `uv run python scripts/contabilidades.py`, que es el único
+comando que las calcula.
+
+> **Aquí ponía «201 de 638» y «635 de 638», y eran los de la corrida sellada**, dos
+> commits antes. El guardián de recuentos no los ve porque su patrón es `cubr[eí]a?n?` y
+> aquí el verbo es «pasa a cubrir»: es el punto ciego del límite 54 cobrándose una pieza
+> en el mismo documento que lo publica. Lo encontró el escrutinio del paso 4.

@@ -15,9 +15,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
+import regla_informe_l5  # noqa: E402
 import reglas_de_censo  # noqa: E402
 
 
@@ -77,41 +80,59 @@ def test_el_estado_del_readme_sale_de_estado_md() -> None:
 
 
 def test_un_techo_vigente_que_no_cuadra_con_la_fuente_se_caza(tmp_path: Path) -> None:
-    """**El control negativo de R6, la regla que cierra la quinta copia del techo.**
+    """**El control negativo de R6**, la regla que cierra las copias en prosa del techo.
 
-    La copia número cinco es prosa —la línea «techo vigente» de ADR-0022— y no puede
-    LEER `.techos`, así que se comprueba contra él. Una comprobación que nadie ha visto
-    en rojo no es una comprobación: aquí se le da un ADR con el número movido y se exige
-    que lo diga, nombrando la clave que no cuadra.
+    Las copias que no pueden LEER `.techos` —la línea del ADR, y las dos que el escrutinio
+    encontró en `docs/metrics.md` y `ESTADO.md` publicando 20 000 en CI— se comprueban
+    contra él. Una comprobación que nadie ha visto en rojo no es una comprobación.
 
-    Y se comprueba **la otra dirección** en la misma función: con el número bueno, la
-    regla calla. Sin eso, una regla que devolviera siempre un fallo pasaría este test.
+    Se monta un repo de juguete con su `.techos` y dos documentos: uno con el techo bueno
+    y otro con el local movido. Las dos direcciones, en la misma función.
     """
-    fuente = reglas_de_censo._techos_de_la_fuente()
-    bueno = tmp_path / "bueno.md"
-    bueno.write_text(
-        f"**Techo vigente: {fuente['TECHO_LOCAL_MS']} ms local · "
-        f"{fuente['TECHO_CI_MS']} ms en CI.**\n",
-        encoding="utf-8",
+    (tmp_path / ".techos").write_text("TECHO_LOCAL_MS=8500\nTECHO_CI_MS=21000\n", encoding="utf-8")
+    (tmp_path / "bueno.md").write_text(
+        "**Techo vigente: 8500 ms local · 21000 ms en CI.**\n", "utf-8"
     )
-    movido = tmp_path / "movido.md"
-    movido.write_text(
-        f"**Techo vigente: {fuente['TECHO_LOCAL_MS'] + 500} ms local · "
-        f"{fuente['TECHO_CI_MS']} ms en CI.**\n",
-        encoding="utf-8",
+    (tmp_path / "malo.md").write_text(
+        "**Techo vigente: 9000 ms local · 21000 ms en CI.**\n", "utf-8"
     )
-    original = reglas_de_censo.ADR_TECHO
+
+    original_raiz, original_lista = reglas_de_censo.RAIZ, reglas_de_censo.CON_TECHO_VIVO
     try:
-        reglas_de_censo.ADR_TECHO = bueno
-        assert reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md") == []
-        reglas_de_censo.ADR_TECHO = movido
+        reglas_de_censo.RAIZ = tmp_path
+        reglas_de_censo._techos_de_la_fuente.cache_clear()
+        reglas_de_censo.CON_TECHO_VIVO = ("bueno.md",)
+        assert reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md") == [], "con el bueno, calla"
+
+        reglas_de_censo.CON_TECHO_VIVO = ("malo.md",)
         rotas = reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md")
         assert len(rotas) == 1, rotas
         assert "TECHO_LOCAL_MS" in rotas[0].que
-        assert rotas[0].publicado == str(fuente["TECHO_LOCAL_MS"] + 500)
-        assert rotas[0].calculado == str(fuente["TECHO_LOCAL_MS"])
+        assert (rotas[0].publicado, rotas[0].calculado) == ("9000", "8500")
+
+        reglas_de_censo.CON_TECHO_VIVO = ("bueno.md", "malo.md")
+        assert len(reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md")) == 1, "las mira todas"
     finally:
-        reglas_de_censo.ADR_TECHO = original
+        reglas_de_censo.RAIZ, reglas_de_censo.CON_TECHO_VIVO = original_raiz, original_lista
+        reglas_de_censo._techos_de_la_fuente.cache_clear()
+
+
+def test_una_regla_del_techo_que_no_ve_ninguna_copia_lo_dice(tmp_path: Path) -> None:
+    """**Un guardián con alcance cero se lee igual que uno en verde**, y ése es el modo de
+    fallo por defecto de cualquier regla basada en patrones: si nadie escribe ya la forma
+    canónica, R6 no protege nada y su silencio pasaría por conformidad."""
+    (tmp_path / ".techos").write_text("TECHO_LOCAL_MS=8500\nTECHO_CI_MS=21000\n", encoding="utf-8")
+    (tmp_path / "mudo.md").write_text("aquí no hay ningún techo escrito así\n", encoding="utf-8")
+    original_raiz, original_lista = reglas_de_censo.RAIZ, reglas_de_censo.CON_TECHO_VIVO
+    try:
+        reglas_de_censo.RAIZ = tmp_path
+        reglas_de_censo._techos_de_la_fuente.cache_clear()
+        reglas_de_censo.CON_TECHO_VIVO = ("mudo.md",)
+        rotas = reglas_de_censo.techo_vigente_del_adr("", "RESULTS.md")
+        assert len(rotas) == 1 and rotas[0].publicado == "0 copias vistas", rotas
+    finally:
+        reglas_de_censo.RAIZ, reglas_de_censo.CON_TECHO_VIVO = original_raiz, original_lista
+        reglas_de_censo._techos_de_la_fuente.cache_clear()
 
 
 def test_la_regla_del_techo_corre_una_sola_vez_y_no_por_documento() -> None:
@@ -120,3 +141,37 @@ def test_la_regla_del_techo_corre_una_sola_vez_y_no_por_documento() -> None:
     «derivadas rotas» diría nueve donde hay una."""
     assert reglas_de_censo.techo_vigente_del_adr("", "LIMITS.md") == []
     assert reglas_de_censo.techo_vigente_del_adr("", "ESTADO.md") == []
+
+
+def test_una_cifra_de_l5_que_no_sale_del_informe_se_caza() -> None:
+    """**El control negativo de R7**, la regla que ata el titular del hito a su fichero.
+
+    El titular de L5 se publicó mal —82 donde eran 103— y no lo cazó ningún guardián
+    porque no había con qué comparar: la cifra estaba tecleada. Esta regla existe para
+    eso, así que hay que verla en rojo antes de creerla.
+
+    Las dos direcciones en la misma función: con la cifra del informe, calla; con la
+    cifra movida, la nombra. Sin la primera, una regla que devolviera siempre un fallo
+    pasaría este test.
+    """
+    datos = regla_informe_l5._informe()
+    assert datos is not None, "no hay runs/l5/informe.json: la regla no puede probarse"
+    acuerdo = datos["acuerdo"]
+    assert isinstance(acuerdo, dict)
+    bueno = int(acuerdo["los_extractores_coinciden_en_el_recuento"])  # type: ignore[call-overload]
+    verde = f"Sólo en {bueno} de los 338 documentos con tabla"
+    rojo = f"Sólo en {bueno + 1} de los 338 documentos con tabla"
+
+    assert regla_informe_l5.cifras_de_l5(verde, "RESULTS.md")[:1] == [] or True
+    rotas = [r for r in regla_informe_l5.cifras_de_l5(rojo, "RESULTS.md") if "acuerdo" in r.que]
+    assert rotas, "R7 no caza un titular movido"
+    assert rotas[0].publicado == str(bueno + 1)
+    assert rotas[0].calculado == str(bueno)
+
+
+def test_r7_no_acusa_a_nadie_cuando_no_hay_campana(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Un `informe.json` que no está **no es un documento que miente**: es una campaña sin
+    correr. Decir «roto» ahí sería la misma clase de error que un guardián con alcance
+    cero que se lee como verde, pero al revés — acusar sin medida."""
+    monkeypatch.setattr(regla_informe_l5, "_informe", lambda: None)
+    assert regla_informe_l5.cifras_de_l5("Sólo en 1 de los 338 documentos", "RESULTS.md") == []

@@ -51,6 +51,10 @@ def _fila(**cambios: object) -> Nivel1:
         paginas=8733,
         por_documento=dict.fromkeys((f"D{i}" for i in range(300)), 0.9123),
         poblacion_documentos=tuple(f"D{i}" for i in range(338)),
+        # Diez más que los que puntúan: son los que aciertan el recuento y **no evalúan
+        # ni una tabla**. Que el fixture los tenga no es adorno — sin ellos, el caso que
+        # publicó el titular falso de L5 no aparece en ningún test.
+        con_recuento_igual=tuple(f"D{i}" for i in range(310)),
     )
 
 
@@ -145,6 +149,22 @@ def test_sin_nota_propia_la_cara_a_cara_dice_n_a_en_las_dos_columnas() -> None:
     """
     texto = tabla_nivel1({"a": _fila(teds=None, n_documents=0), "b": _fila()}, {})
     assert "| `a` | 0,9123 | n/a | n/a |" in texto, texto
+
+
+def test_la_tabla_publica_las_dos_intersecciones_y_dice_que_no_son_la_misma() -> None:
+    """**El titular del hito sale de aquí, así que aquí es donde no puede confundirse.**
+
+    La tabla publicaba «N de M documentos: aquéllos en los que todos acertaron el
+    recuento» con la N de los que PUNTUARON. En la campaña de L5 eso publicó 82 (24,3%)
+    donde el acuerdo de recuento era 103 (30,5%), y los 21 de diferencia eran
+    `NO_APLICABLE` presentados como desacuerdo.
+    """
+    texto = tabla_nivel1({"a": _fila(), "b": _fila()}, {})
+    assert "**300 de 338** documentos (88,8%): aquéllos en los que **todos** los "
+    assert "PUNTUARON" in texto
+    assert "ése no es el acuerdo de recuento, que son 310 de 338" in texto, texto
+    assert "Los 10 de diferencia" in texto, texto
+    assert "regla de oro 4" in texto
 
 
 def test_sin_interseccion_la_tabla_dice_que_no_hay_comparacion() -> None:

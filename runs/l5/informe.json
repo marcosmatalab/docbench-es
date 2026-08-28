@@ -1,0 +1,206 @@
+{
+ "sello_de_la_corrida": {
+  "que": "campaña de estructura L5",
+  "empezada": "2026-08-27T10:39:57.893229+00:00",
+  "commit": "819c06f",
+  "sucios": 0,
+  "huella": "01ba4719c80b6fe9",
+  "cpus": 14,
+  "carga": 1.39,
+  "entradas": {
+   "poblacion": {
+    "ruta": "runs/l5/poblacion.json",
+    "sha256": "3f7490c2f6341c6a"
+   },
+   "manifiesto": {
+    "ruta": "runs/l3/manifiesto.json",
+    "sha256": "1106df5b2a6b4f1a"
+   }
+  },
+  "extractores": [
+   {
+    "id": "camelot",
+    "version": "2.0.0+lattice+ad1"
+   },
+   {
+    "id": "docling",
+    "version": "2.121.0+2h+ad1"
+   },
+   {
+    "id": "pdfplumber",
+    "version": "0.11.9+ad1"
+   },
+   {
+    "id": "pymupdf4llm",
+    "version": "1.28.2+ad1"
+   }
+  ],
+  "documentos": 616,
+  "unidades": 2464
+ },
+ "sello_del_informe": {
+  "que": "informe de nivel 1",
+  "empezada": "2026-08-28T14:00:23.794807+00:00",
+  "commit": "93ae494",
+  "sucios": 22,
+  "huella": "9d043629aace74a1",
+  "cpus": 14,
+  "cpu": "AMD Ryzen 9 9950X3D 16-Core Processor",
+  "carga": 0.63,
+  "entradas": {
+   "sello_de_la_corrida": {
+    "ruta": "runs/l5/campana/sello.json",
+    "sha256": "132f45ba95ed3d40"
+   },
+   "camelot": {
+    "ruta": "runs/l5/campana/camelot.jsonl",
+    "sha256": "578665021ee5a765"
+   },
+   "docling": {
+    "ruta": "runs/l5/campana/docling.jsonl",
+    "sha256": "b5396033ae776fc7"
+   },
+   "pdfplumber": {
+    "ruta": "runs/l5/campana/pdfplumber.jsonl",
+    "sha256": "af35d5c9a44d33dd"
+   },
+   "pymupdf4llm": {
+    "ruta": "runs/l5/campana/pymupdf4llm.jsonl",
+    "sha256": "fbb20cc3dbb448ca"
+   }
+  },
+  "campana": "runs/l5/campana"
+ },
+ "poblacion": {
+  "documentos_con_tabla": 338,
+  "tablas_de_la_verdad": 2135,
+  "documentos_procesados": 616,
+  "paginas_procesadas": 8733
+ },
+ "acuerdo": {
+  "los_extractores_coinciden_en_el_recuento": 103,
+  "puntuan_todos": 82,
+  "no_aplicables": 21,
+  "denominador": 338,
+  "por_banda": {
+   "una página": {
+    "coinciden": 9,
+    "poblacion": 9
+   },
+   "2-10": {
+    "coinciden": 56,
+    "poblacion": 183
+   },
+   "11-50": {
+    "coinciden": 23,
+    "poblacion": 114
+   },
+   ">50": {
+    "coinciden": 15,
+    "poblacion": 32
+   }
+  }
+ },
+ "extractores": {
+  "camelot": {
+   "version": "2.0.0+lattice+ad1",
+   "teds": 0.8684381215508702,
+   "teds_s": 0.87007200693674,
+   "cell_f1": 0.9342934686854721,
+   "teds_por_pagina": 0.8987470135762509,
+   "cobertura_evaluable": 0.2955503512880562,
+   "agregado": "POR_DOCUMENTO",
+   "regimen": "CENSO",
+   "acuerdo_de_recuento": 138,
+   "acuerdo_de_recuento_tasa": 0.40828402366863903,
+   "puntuan": 115,
+   "no_aplicables_con_recuento_bueno": 23,
+   "tablas_de_mas": 684,
+   "tablas_de_menos": 22,
+   "fallos": {},
+   "n_extracciones": 616,
+   "paginas": 8733,
+   "latencia_mediana_ms": 854,
+   "coste_ms": 1091258,
+   "coste_eur": "0",
+   "coste_medido": true,
+   "cara_a_cara_teds": 0.8580535375080233,
+   "cara_a_cara_delta": -0.010384584042846923
+  },
+  "docling": {
+   "version": "2.121.0+2h+ad1",
+   "teds": 0.905303790940678,
+   "teds_s": 0.9149603263029119,
+   "cell_f1": 0.8547406473621018,
+   "teds_por_pagina": 0.8983828341922098,
+   "cobertura_evaluable": 0.380327868852459,
+   "agregado": "POR_DOCUMENTO",
+   "regimen": "CENSO",
+   "acuerdo_de_recuento": 137,
+   "acuerdo_de_recuento_tasa": 0.40532544378698226,
+   "puntuan": 137,
+   "no_aplicables_con_recuento_bueno": 0,
+   "tablas_de_mas": 671,
+   "tablas_de_menos": 28,
+   "fallos": {},
+   "n_extracciones": 616,
+   "paginas": 8733,
+   "latencia_mediana_ms": 3613,
+   "coste_ms": 3778517,
+   "coste_eur": "0",
+   "coste_medido": true,
+   "cara_a_cara_teds": 0.9354142527909658,
+   "cara_a_cara_delta": 0.030110461850287762
+  },
+  "pdfplumber": {
+   "version": "0.11.9+ad1",
+   "teds": 0.8698919159290409,
+   "teds_s": 0.87007200693674,
+   "cell_f1": 0.9424930041035271,
+   "teds_por_pagina": 0.9017354815934944,
+   "cobertura_evaluable": 0.2955503512880562,
+   "agregado": "POR_DOCUMENTO",
+   "regimen": "CENSO",
+   "acuerdo_de_recuento": 137,
+   "acuerdo_de_recuento_tasa": 0.40532544378698226,
+   "puntuan": 115,
+   "no_aplicables_con_recuento_bueno": 22,
+   "tablas_de_mas": 709,
+   "tablas_de_menos": 22,
+   "fallos": {},
+   "n_extracciones": 616,
+   "paginas": 8733,
+   "latencia_mediana_ms": 404,
+   "coste_ms": 513655,
+   "coste_eur": "0",
+   "coste_medido": true,
+   "cara_a_cara_teds": 0.8598631362491719,
+   "cara_a_cara_delta": -0.010028779679869038
+  },
+  "pymupdf4llm": {
+   "version": "1.28.2+ad1",
+   "teds": 0.8935578975330591,
+   "teds_s": 0.9133973051083201,
+   "cell_f1": 0.7371508409452523,
+   "teds_por_pagina": 0.954087933809526,
+   "cobertura_evaluable": 0.2360655737704918,
+   "agregado": "POR_DOCUMENTO",
+   "regimen": "CENSO",
+   "acuerdo_de_recuento": 114,
+   "acuerdo_de_recuento_tasa": 0.33727810650887574,
+   "puntuan": 90,
+   "no_aplicables_con_recuento_bueno": 24,
+   "tablas_de_mas": 618,
+   "tablas_de_menos": 111,
+   "fallos": {},
+   "n_extracciones": 616,
+   "paginas": 8733,
+   "latencia_mediana_ms": 2363,
+   "coste_ms": 2884032,
+   "coste_eur": "0",
+   "coste_medido": true,
+   "cara_a_cara_teds": 0.9375285039314754,
+   "cara_a_cara_delta": 0.04397060639841621
+  }
+ }
+}

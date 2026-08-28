@@ -78,6 +78,9 @@ def test_los_tres_lectores_del_techo_dan_lo_que_dice_la_fuente() -> None:
     assert fuente > 0
     assert _techo_del_hook() == fuente, "el hook no está leyendo `.techos`"
     assert _techo_del_instrumento() == fuente, "medir_puerta.py no está leyendo `.techos`"
+    # El tercero —el workflow de CI— tiene su propio test, porque lee la OTRA clave y
+    # compararlo con ésta lo daría por roto. Hasta que se escribió, este test se llamaba
+    # «los tres lectores» y comprobaba dos.
 
 
 def test_el_techo_de_ci_tampoco_esta_tecleado_en_el_workflow() -> None:
@@ -93,6 +96,36 @@ def test_el_techo_de_ci_tampoco_esta_tecleado_en_el_workflow() -> None:
     ci = _de_la_fuente("TECHO_CI_MS")
     assert not _lleva_el_numero(texto, ci), "el techo de CI ha vuelto a estar tecleado"
     assert ".techos" in texto, "el workflow no lee la fuente única del techo"
+
+
+def test_el_workflow_de_ci_lee_la_clave_que_toca_y_no_otra() -> None:
+    """**El tercer lector, EJECUTADO.** Los otros dos se comprueban corriéndolos; éste se
+    comprobaba leyendo, y leer no distingue leer bien de leer la clave equivocada.
+
+    Un workflow que hiciera `grep TECHO_LOCAL_MS` pasaría las dos aserciones del test de
+    arriba —no lleva el número, nombra `.techos`— y pondría la alarma de CI en el techo
+    LOCAL, o sea 2,5 veces más estricta de lo que ADR-0022 decide. Así que se extrae su
+    línea del YAML y se ejecuta.
+    """
+    linea = next(
+        (
+            linea.strip()
+            for linea in WORKFLOW.read_text(encoding="utf-8").splitlines()
+            if "TECHO_MS=$(" in linea
+        ),
+        None,
+    )
+    assert linea, "el workflow ya no calcula TECHO_MS: la alarma de CI no tiene techo"
+    hecho = subprocess.run(
+        ["bash", "-c", f'{linea}; echo "$TECHO_MS"'],
+        cwd=RAIZ,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert hecho.stdout.strip() == str(_de_la_fuente("TECHO_CI_MS")), (
+        f"el workflow lee otra cosa: {hecho.stdout!r} {hecho.stderr!r}"
+    )
 
 
 def _lleva_el_numero(texto: str, techo: int) -> bool:

@@ -56,7 +56,8 @@ class CaraACara:
 
     Que `evaluable_coverage` viaje pegado a la nota hace el sesgo **legible**, no lo quita.
     Esto lo quita para la comparación: se puntúa a todos sobre **la intersección**, los
-    documentos donde **todos** acertaron el recuento.
+    documentos donde **todos PUNTUARON**. Que no es lo mismo que «donde todos acertaron el
+    recuento», y decirlo mal costó el titular del hito: ver `acuerdo_de_recuento`.
 
     **`n` es un dato en sí.** Si de 338 los cuatro coinciden en el recuento en 150, eso
     dice algo sobre la dificultad del corpus que ninguna nota de TEDS dice — y se publica
@@ -84,8 +85,22 @@ class CaraACara:
     en L5: `emparejado.yaml` declaró que todos los deltas serían negativos y más negativos
     cuanto menor la cobertura, y salieron de los dos signos.
     """
+    acuerdo_de_recuento: tuple[str, ...]
+    """Los documentos donde **TODOS** los extractores aciertan el recuento de tablas.
+
+    **NO es lo mismo que `documentos`, y confundirlos publicó el titular de L5 con un
+    número falso.** `documentos` es la intersección de los que PUNTUARON, que es lo que la
+    comparación de TEDS necesita; esto es la intersección de los que ACERTARON EL RECUENTO,
+    que es lo que la frase «coinciden en cuántas tablas hay» significa.
+
+    La diferencia son los documentos donde todos acertaron el recuento y al menos uno no
+    pudo evaluar ninguna tabla —celdas combinadas contra un extractor sin spans, regla de
+    oro 4—. Ésos son `NO_APLICABLE`, **no discrepancias de recuento**, y contarlos como
+    discrepancias es la decisión B3 rota un nivel más arriba: «no se pudo medir» publicado
+    como «se midió y salió mal». Medido en L5: 103 contra 82, o sea **21 documentos**.
+    """
     por_banda: Mapping[str, tuple[int, int]]
-    """Banda de páginas → (documentos donde coinciden TODOS, población de la banda).
+    """Banda de páginas → (documentos donde coinciden TODOS EN EL RECUENTO, población).
 
     **Es lo que convierte el titular en un diagnóstico.** «Los cuatro coinciden en el
     recuento en el 24% de los documentos» dice que hay un problema; el desglose por banda
@@ -102,7 +117,23 @@ class CaraACara:
 
     @property
     def n(self) -> int:
+        """Los que PUNTUARON todos. El denominador de la comparación de TEDS."""
         return len(self.documentos)
+
+    @property
+    def n_acuerdo(self) -> int:
+        """Los que ACERTARON EL RECUENTO todos. **El del titular**, y es otro número."""
+        return len(self.acuerdo_de_recuento)
+
+    @property
+    def no_aplicables(self) -> int:
+        """Cuántos se caen de la comparación **sin haber fallado el recuento**.
+
+        Es un resultado en sí: mide cuánta comparación se pierde por la regla de oro 4,
+        o sea por extractores que no expresan `rowspan`/`colspan` contra una verdad que
+        sí los trae. Publicarlo separado es lo que impide que se lea como desacuerdo.
+        """
+        return self.n_acuerdo - self.n
 
     def delta(self, extractor: str) -> float | None:
         """Lo que le cuesta a `extractor` pasar al denominador común. **`None` no es 0,0.**
@@ -126,8 +157,9 @@ class CaraACara:
         if self.n == 0:
             return f"cara a cara: NO HAY COMPARACIÓN · 0 de {self.poblacion} documentos"
         return (
-            f"cara a cara sobre {self.n} de {self.poblacion} documentos "
-            f"({100 * self.n / self.poblacion:.1f}%) · {len(self.extractores)} extractores"
+            f"cara a cara sobre {self.n} de {self.poblacion} documentos que PUNTÚAN todos "
+            f"({100 * self.n / self.poblacion:.1f}%) · acuerdo de recuento en "
+            f"{self.n_acuerdo} · {len(self.extractores)} extractores"
         )
 
 
@@ -161,8 +193,21 @@ def cara_a_cara(filas: Mapping[str, Nivel1], paginas: Mapping[str, int] | None =
     de inventarse una banda.
     """
     if not filas:
-        return CaraACara(extractores=(), documentos=(), teds={}, poblacion=0, por_banda={}, suyo={})
+        return CaraACara(
+            extractores=(),
+            documentos=(),
+            teds={},
+            poblacion=0,
+            acuerdo_de_recuento=(),
+            por_banda={},
+            suyo={},
+        )
     comunes = set.intersection(*(set(f.por_documento) for f in filas.values()))
+    # **DOS intersecciones, y no son la misma.** Ésta es la del RECUENTO, que es la que
+    # contesta «¿en cuántos documentos coinciden todos en cuántas tablas hay?». La de
+    # arriba es la de los que PUNTUARON, que es la que la comparación de TEDS necesita.
+    # Publicar la segunda con la etiqueta de la primera fue el titular falso de L5.
+    acuerdan = set.intersection(*(set(f.con_recuento_igual) for f in filas.values()))
     documentos = tuple(sorted(comunes))
     poblacion = sorted({d for f in filas.values() for d in f.poblacion_documentos})
     por_banda: dict[str, tuple[int, int]] = {}
@@ -170,7 +215,10 @@ def cara_a_cara(filas: Mapping[str, Nivel1], paginas: Mapping[str, int] | None =
         for nombre, _, _ in (*BANDAS, ("(sin páginas)", 0, 0)):
             de_la_banda = [d for d in poblacion if _banda(paginas.get(d, 0)) == nombre]
             if de_la_banda:
-                coinciden = sum(1 for d in de_la_banda if d in comunes)
+                # Cuenta el ACUERDO DE RECUENTO, que es lo que dice la cabecera de la
+                # columna. Contaba `comunes` y por eso dos de las cuatro celdas
+                # publicadas eran falsas para lo que su propia columna declaraba.
+                coinciden = sum(1 for d in de_la_banda if d in acuerdan)
                 por_banda[nombre] = (coinciden, len(de_la_banda))
     return CaraACara(
         extractores=tuple(sorted(filas)),
@@ -181,6 +229,7 @@ def cara_a_cara(filas: Mapping[str, Nivel1], paginas: Mapping[str, int] | None =
             if documentos
         },
         poblacion=len(poblacion),
+        acuerdo_de_recuento=tuple(sorted(acuerdan)),
         por_banda=por_banda,
         suyo={nombre: f.metricas.teds for nombre, f in sorted(filas.items())},
     )

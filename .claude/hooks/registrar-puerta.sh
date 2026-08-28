@@ -51,6 +51,9 @@ REGISTRO=".claude/.ultima-puerta.txt"
 TECHO=$(grep -E '^TECHO_LOCAL_MS=' .techos 2>/dev/null | cut -d= -f2)
 if ! [ "${TECHO:-}" -gt 0 ] 2>/dev/null; then
   echo "no se pudo leer TECHO_LOCAL_MS de .techos: el aro del techo no puede comprobar" >&2
+  # Aquí `exit 1` SÍ vale: este guion no es un `PreToolUse`, lo llama `guard-commit.sh`
+  # por sustitución de orden y lo que mira es que la salida no sea un número. Quien
+  # bloquea es aquél, y aquél usa `exit 2`.
   exit 1
 fi
 

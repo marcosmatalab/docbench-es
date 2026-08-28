@@ -59,7 +59,15 @@ class Deteccion:
     documentos: int
     """La población considerada: los que tienen alguna tabla en la verdad."""
     con_recuento_igual: int
-    """Los que puntúan. **Es el denominador de `teds`.**"""
+    """Los que ACIERTAN EL RECUENTO. **No es el denominador de `teds`**, y decir que lo
+    era costó el titular del hito.
+
+    Acertar el recuento es **necesario y no suficiente** para puntuar: si además ninguna
+    de las tablas emparejadas es evaluable —la verdad combina celdas y el extractor no
+    expresa spans, regla de oro 4—, `teds_batch` devuelve `None` para ese documento y sale
+    del agregado. Medido en L5: `camelot` acierta el recuento en 138 documentos y puntúa
+    en 115. Los 23 de diferencia son `NO_APLICABLE`, no fallos de recuento.
+    """
     tablas_de_mas: int
     tablas_de_menos: int
     tablas_de_la_verdad: int
@@ -93,6 +101,19 @@ class Nivel1:
     """Los documentos CON tabla en la verdad, por nombre. Es el denominador del acuerdo, y
     viaja entero —no sólo su recuento— porque el acuerdo POR BANDA no se puede reconstruir
     desde un número."""
+    con_recuento_igual: tuple[str, ...]
+    """Los documentos donde este extractor ACERTÓ EL RECUENTO, por nombre.
+
+    **Es distinto de `por_documento`, y confundirlos publicó un titular falso.**
+    `por_documento` son los que PUNTUARON, o sea los que acertaron el recuento **y** además
+    tienen alguna tabla evaluable. Un documento cuya única tabla trae celdas combinadas
+    contra un extractor sin spans sale `NO_APLICABLE` (regla de oro 4) y desaparece de
+    `por_documento` **sin haber fallado ningún recuento**.
+
+    Viaja por nombre y no por recuento porque la pregunta *«¿en cuántos documentos
+    coinciden TODOS en cuántas tablas hay?»* es una **intersección**, y una intersección no
+    se reconstruye desde cuatro números.
+    """
 
 
 def _por_documento(
@@ -160,6 +181,7 @@ def medir(
         if ex.failed and ex.failure_reason is not None:
             fallos[ex.failure_reason] = fallos.get(ex.failure_reason, 0) + 1
 
+    recuento_igual: list[str] = []
     for clave, gold in verdades.items():
         if not gold:
             continue
@@ -168,6 +190,7 @@ def medir(
         pares = _emparejar(pred, gold)
         if pares is not None:
             igual += 1
+            recuento_igual.append(clave)
             tripletas += [(clave, p, g) for p, g in pares]
             pares_f1[clave] = pares
         else:
@@ -205,6 +228,7 @@ def medir(
         paginas=sum(paginas.get(clave, 0) for clave in por_doc),
         por_documento={c: v for c, v in informe.per_document.items() if v is not None},
         poblacion_documentos=tuple(sorted(c for c, g in verdades.items() if g)),
+        con_recuento_igual=tuple(sorted(recuento_igual)),
     )
 
 

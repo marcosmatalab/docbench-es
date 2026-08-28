@@ -42,7 +42,12 @@ if ! [ "${TECHO:-}" -gt 0 ] 2>/dev/null; then
 NO SE PUDO LEER EL TECHO de `.techos`. El aro no puede comprobar nada, así que no cede:
 se arregla el fichero o se dice por qué no está, pero no se commitea a ciegas.
 SIN_TECHO
-  exit 1
+  # `exit 2` Y NO `exit 1`. En el contrato de `PreToolUse` de Claude Code sólo bloquean
+  # el `exit 2` y el JSON con `permissionDecision: "deny"`; cualquier otro código
+  # distinto de cero es un error NO bloqueante —se le enseña al usuario y la herramienta
+  # se ejecuta igual—. O sea que la primera versión de este bloque decía «falla cerrado»
+  # y fallaba ABIERTO. `guard-frozen.sh` ya lo tenía bien y escribe la misma frase.
+  exit 2
 fi
 
 #   UNA PROTECCIÓN QUE NO DICE CUÁNTO PROTEGE ES INDISTINGUIBLE DE NO PROTEGER NADA.

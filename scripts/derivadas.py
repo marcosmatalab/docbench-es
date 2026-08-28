@@ -63,6 +63,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
+from regla_informe_l5 import cifras_de_l5  # noqa: E402
 from reglas_de_censo import (  # noqa: E402
     huerfanos_declarados,
     limites_declarados,
@@ -204,6 +205,7 @@ REGLAS = (
     limites_declarados,
     huerfanos_declarados,
     techo_vigente_del_adr,
+    cifras_de_l5,
 )
 
 

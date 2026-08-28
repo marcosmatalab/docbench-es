@@ -89,7 +89,10 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     "test_entity_conformance.py": "test_el_adaptador_roto_se_cae_por_los_cinco_aros_que_rompe",
     "test_entity_registry.py": "test_el_rechazo_por_version_ocurre_al_cargar",
     "test_barreras.py": "test_el_barrido_dice_que_no_ante_una_referencia_rota",
-    "test_barreras_documentos.py": "test_las_derivadas_publicadas_salen_de_su_fuente",
+    # Cuatro controles negativos en un fichero: el barrido entero, R6 en las dos
+    # direcciones y su alcance cero, y R7 contra el titular movido. Se nombra el de
+    # R7 porque es el que ata el número más citable del repo a su fichero.
+    "test_barreras_documentos.py": "test_una_cifra_de_l5_que_no_sale_del_informe_se_caza",
     "test_limite_lineas.py": "test_ningun_fichero_de_codigo_pasa_de_300_lineas",
     "test_reglas_parseables.py": "test_una_regla_rota_se_detecta_nombrandola",
     "test_extractor_contrato.py": "test_al_que_le_falta_un_solo_miembro_no_cumple",
@@ -138,6 +141,10 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     # sucio los tres campos tienen que moverse, y eso es lo que un vacio no puede fingir.
     "test_procedencia.py": "test_un_arbol_sucio_si_mueve_la_huella",
     "test_nivel1.py": "test_el_documento_que_no_cuadra_no_cuenta_como_cero",
+    # El control negativo de la cara a cara es el caso que faltaba en TODOS los
+    # fixtures y por el que el titular de L5 salió falso: una verdad con celdas
+    # combinadas, donde acertar el recuento y puntuar dejan de ser lo mismo.
+    "test_cara_a_cara.py": "test_acertar_el_recuento_y_puntuar_no_son_lo_mismo",
     "test_tabla_nivel1.py": "test_un_no_aplicable_se_imprime_n_a_y_nunca_cero",
     # La fuente única del techo: su control negativo es el detector del número
     # tecleado, que tiene que decir que SÍ cuando lo hay. Ver LIMITS 111.

@@ -153,7 +153,15 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
         "### Cara a cara · el mismo denominador para todos",
         "",
         f"**{cc.n} de {cc.poblacion}** documentos ({_pct(cc.n / cc.poblacion)}): "
-        "aquéllos en los que **todos** los extractores acertaron el recuento de tablas.",
+        "aquéllos en los que **todos** los extractores PUNTUARON.",
+        "",
+        f"**Y ése no es el acuerdo de recuento, que son {cc.n_acuerdo} de {cc.poblacion} "
+        f"({_pct(cc.n_acuerdo / cc.poblacion)}).** Los {cc.no_aplicables} de diferencia "
+        "son documentos donde **todos acertaron el recuento** y al menos uno no pudo "
+        "evaluar ni una tabla: la verdad trae celdas combinadas y él no expresa spans, "
+        "así que sale `NO_APLICABLE` por la regla de oro 4. Publicarlos como desacuerdo "
+        "sería la decisión B3 rota un nivel más arriba — «no se pudo medir» leído como "
+        "«se midió y salió mal».",
         "",
         "**Alfabético, no por nota.** El mismo denominador hace la comparación posible; "
         "no la resuelve.",
@@ -178,7 +186,7 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
         "**El delta no es una tercera medida**: es la resta de las dos columnas de al "
         "lado, o sea las mismas puntuaciones por documento con dos denominadores.",
         "",
-        f"**Y este {cc.n} es un dato en sí**: dice en cuántos documentos los "
+        f"**Y este {cc.n_acuerdo} es un dato en sí**: dice en cuántos documentos los "
         f"{len(cc.extractores)} extractores coinciden con la referencia en algo tan "
         "básico como CUÁNTAS tablas hay.",
         "",
@@ -215,7 +223,7 @@ def _por_banda(cc: CaraACara) -> list[str]:
         # comprueba cada porcentaje contra la PRIMERA columna numérica de su fila. Con la
         # parte delante, el barrido calcula la fracción del revés y se pone rojo — cazado
         # al publicar esta misma tabla.
-        "| páginas | población | coinciden los cuatro | acuerdo |",
+        f"| páginas | población | coinciden los {len(cc.extractores)} en el recuento | acuerdo |",
         "|---|---:|---:|---:|",
         *filas,
         "",
@@ -239,9 +247,15 @@ def _nota(filas: Mapping[str, Nivel1]) -> list[str]:
         "",
         f"**Denominadores.** La población con tabla son **{d.documentos}** documentos y "
         f"**{d.tablas_de_la_verdad}** tablas de referencia. `cobertura evaluable` es "
-        "sobre tablas; `acuerdo de recuento` es sobre documentos, y es **el denominador "
-        "del TEDS**: sólo puntúan los documentos donde el extractor devuelve tantas "
-        "tablas como la verdad (`runs/l5/emparejado.yaml`).",
+        "sobre tablas; `acuerdo de recuento` es sobre documentos.",
+        "",
+        "**Y `acuerdo de recuento` NO es el denominador del TEDS, aunque aquí ponía que "
+        "sí.** Acertar el recuento es **necesario y no suficiente**: si además ninguna "
+        "de las tablas emparejadas es evaluable —la verdad combina celdas y el extractor "
+        "no expresa spans, regla de oro 4— el documento sale `NO_APLICABLE` y tampoco "
+        "puntúa. El denominador real del TEDS de cada fila es su `n` de documentos "
+        "puntuados, y la diferencia entre las dos cuentas está publicada en la cara a "
+        "cara (`runs/l5/emparejado.yaml`).",
         "",
         "**`+/- tablas` NO es una columna de calidad.** Cuenta el desacuerdo con la "
         "referencia, no la habilidad: uno que parte una tabla en tres encuentra más y "

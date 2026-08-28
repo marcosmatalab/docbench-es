@@ -85,11 +85,11 @@ PLAN = [
     # el emparejado, el recuento de fallos, la cobertura, la intersección, el delta
     # y el `n/a`. Cada uno haría mentir a una columna publicada sin que la tabla
     # pareciera rara, que es la clase de fallo que este repo llama la más grave.
-    ("emparejado_sin_recuento", "tests/unit/test_nivel1.py"),
+    ("emparejado_sin_recuento", "tests/unit/test_nivel1.py tests/unit/test_cara_a_cara.py"),
     ("fallos_no_se_cuentan", "tests/unit/test_nivel1.py"),
     ("cobertura_siempre_llena", "tests/unit/test_nivel1.py"),
-    ("cara_a_cara_la_union", "tests/unit/test_nivel1.py tests/unit/test_tabla_nivel1.py"),
-    ("delta_siempre_cero", "tests/unit/test_nivel1.py tests/unit/test_tabla_nivel1.py"),
+    ("cara_a_cara_la_union", "tests/unit/test_cara_a_cara.py tests/unit/test_tabla_nivel1.py"),
+    ("delta_siempre_cero", "tests/unit/test_cara_a_cara.py tests/unit/test_tabla_nivel1.py"),
     ("no_aplicable_impreso_cero", "tests/unit/test_tabla_nivel1.py"),
 ]
 
@@ -97,8 +97,11 @@ PLAN = [
 def _corre_sin_mutar(suite: str) -> tuple[int, int]:
     """El CONTROL NEGATIVO: la misma suite sin mutante ninguno.
 
-    «Los 12 mutantes mueren» no prueba nada si el arnés no ha demostrado que sabe
-    **no** matar. Si esto no da 0 fallos, la tabla entera no vale: significaría
+    «Los mutantes mueren» no prueba nada si el arnés no ha demostrado que sabe
+    **no** matar. *(Aquí ponía «los 12», que era el `PLAN` de L2 y lleva desde entonces
+    sin remedirse; el número vive en `len(PLAN)` y esta frase no lo repite.)*
+
+    Si esto no da 0 fallos, la tabla entera no vale: significaría
     que la suite se cae sola y que cada «muerte» podría ser ese mismo fallo de
     fondo, no el mutante.
     """
@@ -193,7 +196,14 @@ def _tabla_de_asesinos(reps: int = 3, solo: str = "") -> int:
             }:
                 cuenta[nombre] = cuenta.get(nombre, 0) + 1
         siempre = sorted(t for t, n in cuenta.items() if n == reps)
-        unico = siempre[0].split("::")[-1] if len(cuenta) == 1 else ""
+        # **El único asesino sale de `cuenta`, no de `siempre`.** Con `siempre[0]` esto
+        # reventaba con `IndexError` justo en el caso peor que la sección existe para
+        # publicar: un mutante con UN solo asesino que además es INTERMITENTE deja
+        # `cuenta` con una entrada y `siempre` vacía, y `--tabla` abortaba entero sin
+        # publicar ni la tabla ni el punto único. El módulo describe ese caso dos
+        # docstrings más arriba —«un asesino intermitente no es un asesino»— y el código
+        # no podía imprimirlo.
+        unico = sorted(cuenta)[0].split("::")[-1] if len(cuenta) == 1 else ""
         if len(cuenta) == 1:
             unicos.append(f"{mutante} -> {unico}")
         print(f"  {mutante:<26}{len(siempre):>9}{len(cuenta):>12}   {unico[:44]}")

@@ -419,7 +419,7 @@ sino **la pendiente**.
 | — | **LÍNEA DE CORTE · la puerta pasa a `-n auto` (ADR-0043)** | | | **A partir de aquí la serie mide OTRO INSTRUMENTO.** Las dos medidas del mismo árbol `1cc8ce8`: **en serie p90 8170**, **en paralelo p90 4905**. Factor 1,67× sobre la puerta entera, contra 1,88× sobre `pytest` solo — `ruff`, `mypy` y `lint-imports` no se paralelizan. σ sube de 127 a 186, como ADR-0043 predijo antes de medir |
 | L5 | **6507 ms** (n=40, p90 6866, σ=178) | 6177 – 6885 | 529 | `extract/` con el primer extractor real, su registro, su corredor y su diario; `corpus.store`; la CLI. **+2403 líneas en `src/`** desde la línea de corte. Sello `0f9816c`, 14 CPU. **Se compara con el 4905 de la línea de corte, no con el 8006 de L4** — y de los +1961 del p90, **+1109 son de máquina** (el mismo `1cc8ce8` remedido hoy da 6014) y **+852 de código**. Por el camino, la regresión de mypy de LIMITS 102 |
 
-**El techo es 8500 ms local / 20 000 en CI** (ADR-0022), y no aparecía en esta tabla
+**Techo vigente: 8500 ms local · 21000 ms en CI** (ADR-0022), y no aparecía en esta tabla
 pese a ser el número contra el que se lee la última columna.
 
 > **CORREGIDO en la auditoría en frío de `a0d85ed`, y son dos cosas.** Primera: la
@@ -798,10 +798,17 @@ no mide**: la aritmética vive en `report.nivel1`, `report.cara_a_cara` y `core`
 puros. Por eso la tabla se puede **regenerar sobre los diarios viejos** sin volver a correr
 las 2,30 h.
 
-### El acuerdo de recuento · 82 de 338
+### El acuerdo de recuento · 103 de 338
 
 **Qué mide:** en cuántos documentos los cuatro extractores devuelven **el mismo número de
 tablas** que la verdad derivada. No mide calidad: mide el paso previo.
+
+**Y NO es el mismo número que la `n` de la cara a cara**, que son **82**: aquélla exige
+además que todos hayan podido **puntuar**, o sea que alguna tabla del documento sea
+evaluable. Los **21** de diferencia son documentos donde los cuatro acertaron el recuento
+y al menos uno no pudo evaluar ninguna tabla —celdas combinadas contra un extractor sin
+spans, regla de oro 4—, o sea `NO_APLICABLE` y **no** desacuerdo. Publicar el segundo con
+la etiqueta del primero fue el titular falso de L5, corregido en `RESULTS.md` con su nota.
 
 **Denominador:** los **338** documentos con al menos una tabla en la verdad. Los 662 sin
 ninguna no entran —salen `NO_APLICABLE`, nunca 0,00— y su tasa de falso positivo es otra
@@ -816,9 +823,13 @@ del BOE los produce de verdad, LIMITS 30—. Un documento cuya verdad pierde una
 de banda de acuerdo sin que el extractor haya hecho nada distinto.
 
 **El desglose por banda lleva su propia cautela:** la fila de **una página** tiene **n=9**,
-así que su 100% no sostiene ninguna tasa. Y el patrón **no es monótono** —100%, 25,1%,
-10,5%, 46,9%—, así que la lectura «crece con la longitud» está descartada por los propios
+así que su 100% no sostiene ninguna tasa. Y el patrón **no es monótono** —100%, 30,6%,
+20,2%, 46,9%—, así que la lectura «crece con la longitud» está descartada por los propios
 datos.
+
+> **Aquí ponía «100%, 25,1%, 10,5%, 46,9%»**, que era la misma tabla contando la
+> intersección puntuada en vez del acuerdo de recuento. Los dos porcentajes centrales
+> eran falsos para lo que su columna declara; la conclusión de no-monotonía no cambia.
 
 **Qué ordena entonces el acuerdo: NO ESTÁ MEDIDO, y el candidato va declarado.** La
 hipótesis con nombre es que el factor no sea la longitud del documento sino la
@@ -862,7 +873,8 @@ elegido por el propio extractor. Para eso está la cara a cara.
 ### La cara a cara · el mismo denominador para todos
 
 **Qué mide:** el TEDS de cada extractor **sobre los 82 documentos de la intersección**,
-donde todos acertaron el recuento.
+donde todos **puntuaron** — que exige acertar el recuento **y** tener alguna tabla
+evaluable. El acuerdo de recuento solo son 103; la diferencia está arriba.
 
 **Por qué hace falta:** el sesgo de supervivencia declarado en `runs/l5/emparejado.yaml`.
 Y se ve en el resultado: **el orden cambia** respecto a la primera tabla.

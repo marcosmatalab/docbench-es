@@ -84,7 +84,8 @@ def tabla_coste(filas: Mapping[str, Nivel1], sello: Mapping[str, object]) -> lis
     return [
         *lineas,
         "",
-        "**Cero euros es un cero MEDIDO**, no un dato que falte: estos cuatro corren en "
+        f"**Cero euros es un cero MEDIDO**, no un dato que falte: estos {len(filas)} "
+        "corren en "
         "local y no gastan. Un `NO_APLICABLE` diría otra cosa.",
         "",
         "**Alfabético, no por coste.** Por lo mismo que arriba: ordenar es ordenar, y el "

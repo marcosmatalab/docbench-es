@@ -24,6 +24,8 @@ from docbench_es.entity import boe_xml
 from docbench_es.errors import DocbenchError
 from docbench_es.extract.diario import Diario
 from docbench_es.extract.sello import sello_de_corrida
+from docbench_es.report.cara_a_cara import cara_a_cara
+from docbench_es.report.informe import informe
 from docbench_es.report.nivel1 import Nivel1, medir
 from docbench_es.report.procedencia import difieren
 from docbench_es.report.tables import tabla_nivel1
@@ -115,4 +117,16 @@ def report(
         salida.write_text(texto + "\n", encoding="utf-8")
         suyo = salida.with_suffix(salida.suffix + ".sello.json")
         suyo.write_text(json.dumps(mio, indent=1, ensure_ascii=False), encoding="utf-8")
-        typer.echo(f"  escrito {salida} · sello del informe en {suyo}")
+        # EL JSON SE ESCRIBE EN LA MISMA LLAMADA, no en un comando aparte. Un artefacto
+        # que hay que acordarse de regenerar es un artefacto que se queda viejo, y éste
+        # existe justamente para que el titular del hito no sea un número tecleado.
+        datos = campana.parent / "informe.json"
+        datos.write_text(
+            json.dumps(
+                informe(filas, cara_a_cara(filas, paginas), versiones, crudo, mio),
+                indent=1,
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        typer.echo(f"  escrito {salida} · sello del informe en {suyo} · datos en {datos}")

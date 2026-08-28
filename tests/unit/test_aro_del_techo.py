@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -36,6 +37,21 @@ from pathlib import Path
 import pytest
 
 RAIZ = Path(__file__).resolve().parents[2]
+
+
+def _techo() -> int:
+    """El techo, de `.techos`. **Sin literal**: éste era la copia nº3 del límite 111.
+
+    El `assert` de abajo llevaba `"8500"` escrito a mano y el mensaje del aro lo imprime
+    desde la fuente, así que el día que el techo cambie el test se cae por llevar el
+    número viejo — que es exactamente el modo de fallo que la fuente única existe para
+    cerrar. Se declaró «ya no lleva el literal» cuando todavía lo llevaba.
+    """
+    casa = re.search(r"^TECHO_LOCAL_MS=(\d+)$", (RAIZ / ".techos").read_text("utf-8"), re.M)
+    assert casa, "`.techos` no declara TECHO_LOCAL_MS"
+    return int(casa.group(1))
+
+
 HOOKS = RAIZ / ".claude" / "hooks"
 ARO = HOOKS / "guard-commit.sh"
 REGISTRAR = HOOKS / "registrar-puerta.sh"
@@ -109,7 +125,7 @@ def test_una_medida_fria_por_encima_del_techo_bloquea(tmp_path: Path) -> None:
     """Verde no es suficiente: la puerta estuvo verde los diez commits."""
     razon = _decide(_proyecto(tmp_path, "HUELLA 25949 frio 4 0.42"))
     assert "PASA DEL TECHO" in razon, razon
-    assert "25949" in razon and "8500" in razon
+    assert "25949" in razon and str(_techo()) in razon
     assert "MÍNIMO de 4" in razon, "el aro dice sobre cuántas corridas decide"
     assert "Carga de la máquina" in razon, (
         "y dice la carga: «se ha vuelto lenta» y «está ocupada» son diagnósticos "

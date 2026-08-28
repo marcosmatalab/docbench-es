@@ -492,11 +492,11 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 203 de 644 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 207 de 652 tests.** Los
     **28 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS, el lote y —desde el paso 2 de L5— **el instrumento que emite la
     tabla**: el emparejado, el recuento de fallos, la cobertura, la intersección, el
-    delta y el `n/a`. Los **441 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (4),
+    delta y el `n/a`. Los **445 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (7),
     `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
     `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
     `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
@@ -507,13 +507,13 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
     extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
     capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (13), `techo_fuente` (3), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
+    `canonical_texto_de_celda` (19), `aro_del_techo` (13), `techo_fuente` (4), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
     `censo_capa_texto` (6),
     `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **68,5% hoy** — y 66 de los 437 entraron de golpe con
+    12,4% al cerrar L2, **68,3% hoy** — y 66 de los 437 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (9) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -523,7 +523,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **641 de 644 tests protegidos por algo** —un
+    *el arnés*, no la protección: **649 de 652 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1482,7 +1482,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
 
     El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **78** scripts,
     **29 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **49** que quedan, **huérfanos: 25 de 49**. Entre ellos `derivadas.py`
+    nada—, y de los **51** que quedan, **huérfanos: 26 de 51**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
@@ -2175,7 +2175,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
 
 107. **QUÉ ORDENA EL ACUERDO DE RECUENTO: NO ESTÁ MEDIDO, Y LA LECTURA FÁCIL YA ESTÁ
     DESCARTADA.** El desglose por banda de páginas de L5 sale **no monótono** —100% con
-    n=9, 25,1%, 10,5% y 46,9%—: el mínimo está en la banda intermedia y los documentos
+    n=9, 30,6%, 20,2% y 46,9%—: el mínimo está en la banda intermedia y los documentos
     largos **recuperan**, con 28,7 tablas por documento, donde acertar el recuento exacto
     debería ser más difícil. Así que la banda de páginas **no es** el factor que ordena el
     acuerdo, y cuál lo es no se sabe.
@@ -2250,7 +2250,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     *«L5 es el primero que puede subir el arnés en vez de bajarlo. Si no lo sube, deja de
     ser estructural y pasa a ser deterioro»*. Su tabla tiene **dos** columnas que se
     pueden llamar «el arnés»: un recuento y una fracción. En L5 fueron en direcciones
-    **opuestas** —el recuento 166 → 203, la fracción 43,2% → 31,7%—, así que el criterio
+    **opuestas** —el recuento 166 → 207, la fracción 43,2% → 31,7%—, así que el criterio
     tiene una lectura que pasa y otra que falla, y **elegir la lectura ES elegir el
     criterio**, con los dos números ya delante.
 
@@ -2314,15 +2314,71 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     ese mismo fichero existe para cerrar.
 
     **Lo hecho, con su reparto:** una fuente única, [`.techos`](.techos). La **leen** el
-    hook, `medir_puerta.py` y el workflow de CI; **se comprueba contra ella** la línea
-    «techo vigente» de ADR-0022, por la regla R6 de `scripts/derivadas.py` y con su
-    control negativo; y `test_aro_del_techo.py` **ya no lleva el literal**: afirma que los
-    tres lectores dan lo que dice la fuente. La séptima copia —el `|| echo`— pasa a fallar
-    cerrado.
+    hook, `medir_puerta.py` y el workflow de CI, y los tres se comprueban **ejecutándolos**;
+    **se comprueba contra ella** toda línea escrita en la forma canónica *«Techo vigente: N
+    ms local · M ms en CI»*, por la regla R6 de `scripts/derivadas.py` y con su control
+    negativo; y ni `test_aro_del_techo.py` ni el workflow llevan ya el literal.
+
+    > **Tres cosas de este mismo párrafo eran falsas al escribirlo, y las encontró el
+    > escrutinio adversarial del paso 4 el mismo día:**
+    >
+    > 1. **«`test_aro_del_techo.py` ya no lleva el literal».** Lo llevaba: `assert "25949"
+    >    in razon and "8500" in razon`. Era la copia nº3 de esta misma tabla, declarada
+    >    cerrada en la misma frase que la dejaba abierta.
+    > 2. **«pasa a fallar cerrado».** El camino de fallo terminaba en `exit 1`, y un
+    >    `PreToolUse` de Claude Code sólo bloquea con `exit 2` o con el JSON de denegación.
+    >    O sea que decía «falla cerrado» y fallaba **abierto** — el mismo defecto que venía
+    >    a arreglar, un nivel más abajo. `guard-frozen.sh` ya lo tenía bien.
+    > 3. **El censo de seis se quedaba corto.** Había dos copias VIVAS más, en presente y
+    >    con el valor de CI **equivocado**: `docs/metrics.md` y la tabla de decisiones de
+    >    `ESTADO.md` publicaban *«20 000 en CI»* contra los 21 000 de la fuente. Las dos
+    >    están ahora en forma canónica y las mira R6.
+    >
+    > Las tres tienen la misma forma: **declarar cerrado un agujero en el mismo texto que
+    > lo describe**. Es lo que hace que este límite valga más que su arreglo.
 
     **Lo que queda sin cubrir, y se dice:** las órdenes `--techo N` de `RESULTS.md` **no
     se comprueban ni se reescriben**, y es deliberado — son el comando de una medición ya
     hecha, y cambiarlas al cambiar el techo falsificaría la reproducción de una serie
-    pasada. Y **ningún guardián obliga a re-justificar el techo a tiempo**: R6 comprueba
-    que la línea vigente del ADR coincide con la fuente, no que alguien haya hecho las 40
-    corridas. Eso sigue siendo un paso de `/cerrar`, o sea una lista en markdown.
+    pasada. **Una copia en prosa que no use la forma canónica sigue siendo invisible**, y
+    no hay forma de arreglarlo con una expresión regular: para un `grep`, «el techo es
+    8500» en presente y «el techo era 8500» de una nota histórica son la misma cadena. Y
+    **ningún guardián obliga a re-justificar el techo a tiempo**: R6 comprueba que las
+    líneas vivas coincidan con la fuente, no que alguien haya hecho las 40 corridas. Eso
+    sigue siendo un paso de `/cerrar`, o sea una lista en markdown.
+
+112. **EL TITULAR DE L5 SE PUBLICÓ CON LA ETIQUETA DE OTRA CUENTA, Y NINGÚN GUARDIÁN
+    PODÍA VERLO PORQUE TODOS LOS FIXTURES ESTABAN EN EL PUNTO CIEGO.** Es la decisión B3
+    —`NO_APLICABLE` no es cero— rota un nivel más arriba: aquí lo que se convirtió en
+    desacuerdo no fue un cero, fue **un documento entero**.
+
+    **Lo medido.** El titular decía *«sólo en 82 de los 338 documentos los cuatro
+    coinciden en CUÁNTAS TABLAS HAY»*. Los cuatro coinciden en el recuento en **103**. El
+    82 era la intersección de los que **PUNTUARON**, que exige además que alguna tabla del
+    documento sea evaluable; los **21** de diferencia son documentos donde todos acertaron
+    el recuento y al menos uno no pudo evaluar ni una tabla —la verdad trae celdas
+    combinadas y él no expresa spans, regla de oro 4—. La misma confusión falseaba dos
+    celdas de la tabla por bandas: 46 y 12 donde son 56 y 23.
+
+    **Por qué ningún test lo cazaba, que es la parte que hay que aprender.** Los fixtures
+    de `tests/unit/test_nivel1.py` —`PERFECTA`, `OTRA`, y las tablas de `_tabla()`— **no
+    tienen ni una celda combinada**. En ese mundo, «acertar el recuento» y «puntuar» son
+    literalmente el mismo conjunto, así que **ninguna aserción posible sobre esos fixtures
+    podía distinguirlos**. No es que faltara un test: es que faltaba un **caso** en los
+    datos de prueba, y un caso que falta no deja hueco visible en ninguna cobertura.
+
+    **Lo hecho:** `CaraACara` publica ahora las dos intersecciones —`acuerdo_de_recuento`
+    y `documentos`— con su diferencia (`no_aplicables`) como número publicado; el informe
+    imprime las dos y dice que no son la misma; y entra el fixture `COMBINADA`, que existe
+    **sólo** para que los dos conjuntos puedan diferir, con tres tests que lo exigen.
+
+    **Lo que queda sin cubrir:** ningún guardián comprueba que un fixture cubra el espacio
+    de casos que su módulo distingue. Es la misma familia que el límite 60 —lo que no se
+    puede verificar es si el control es *fuerte*— y aquí con una vuelta de tuerca: el
+    control era fuerte y el **dato** era ciego. Lo único que se puede hacer es lo que se ha
+    hecho: cuando una distinción se descubre, entra su caso en el fixture y no sólo su
+    aserción.
+
+    **Y lo encontró un escrutinio adversarial, no un test.** Es la tercera vez en este
+    repo —L1 con `holes`, L3 con los sellos, y ésta—, y las tres veces leyendo, no
+    ejecutando.
