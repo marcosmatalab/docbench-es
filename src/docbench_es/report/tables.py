@@ -152,11 +152,14 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
     return [
         "### Cara a cara · el mismo denominador para todos",
         "",
-        f"**{cc.n} de {cc.poblacion}** documentos ({_pct(cc.n / cc.poblacion)}): "
-        "aquéllos en los que **todos** los extractores PUNTUARON.",
+        f"**{cc.n} de {cc.poblacion}** documentos ({_pct(cc.n / cc.poblacion)}) "
+        f"**sobre el panel de {len(cc.extractores)}** "
+        f"—{', '.join(f'`{e}`' for e in cc.extractores)}—: aquéllos en los que **todos** "
+        "PUNTUARON.",
         "",
         f"**Y ése no es el acuerdo de recuento, que son {cc.n_acuerdo} de {cc.poblacion} "
-        f"({_pct(cc.n_acuerdo / cc.poblacion)}).** Los {cc.no_aplicables} de diferencia "
+        f"({_pct(cc.n_acuerdo / cc.poblacion)}) sobre el mismo panel.** "
+        f"Los {cc.no_aplicables} de diferencia "
         "son documentos donde **todos acertaron el recuento** y al menos uno no pudo "
         "evaluar ni una tabla: la verdad trae celdas combinadas y él no expresa spans, "
         "así que sale `NO_APLICABLE` por la regla de oro 4. Publicarlos como desacuerdo "
@@ -187,8 +190,17 @@ def tabla_cara_a_cara(cc: CaraACara) -> list[str]:
         "lado, o sea las mismas puntuaciones por documento con dos denominadores.",
         "",
         f"**Y este {cc.n_acuerdo} es un dato en sí**: dice en cuántos documentos los "
-        f"{len(cc.extractores)} extractores coinciden con la referencia en algo tan "
-        "básico como CUÁNTAS tablas hay.",
+        f"{len(cc.extractores)} extractores del panel coinciden con la referencia en algo "
+        "tan básico como CUÁNTAS tablas hay.",
+        "",
+        f"**LOS DOS NÚMEROS SON FUNCIÓN DEL PANEL, Y AL AÑADIR UN EXTRACTOR SÓLO PUEDEN "
+        f"BAJAR.** Son intersecciones sobre {len(cc.extractores)} conjuntos: con un "
+        "extractor más hay un conjunto más que intersecar, y un documento que salía sólo "
+        "puede dejar de salir. **Es monótono por construcción, no por calidad.** Así que "
+        "dos valores medidos sobre paneles distintos **no son comparables y no van en la "
+        "misma serie**: una caída al pasar de un panel a otro más grande no dice que el "
+        "corpus haya empeorado ni que la extracción vaya peor — dice que hay más "
+        "conjuntos que cruzar. Por eso el panel va en la etiqueta y no en una nota.",
         "",
         *_por_banda(cc),
         "**Esto no es un ranking.** Mismo denominador es necesario y no suficiente: "

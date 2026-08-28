@@ -94,6 +94,10 @@ def informe(
             "paginas_procesadas": max((f.paginas for f in filas.values()), default=0),
         },
         "acuerdo": {
+            # EL PANEL VIAJA CON EL NÚMERO. Las dos cuentas de abajo son intersecciones
+            # sobre estos N conjuntos: con un extractor más sólo pueden bajar, así que un
+            # valor sin su panel al lado no se puede comparar con otro. LIMITS 113.
+            "panel": list(cc.extractores),
             "los_extractores_coinciden_en_el_recuento": cc.n_acuerdo,
             "puntuan_todos": cc.n,
             "no_aplicables": cc.no_aplicables,

@@ -145,3 +145,42 @@ no_cubre:
   - >
     El ORDEN de la verdad derivada es el del XML. Se supone que es el de lectura, y no
     esta comprobado contra el PDF para los 338 — solo para las 30 de L4.
+
+# ============================================================================
+# EL ACUERDO DE RECUENTO ES UNA FUNCION DEL PANEL, Y SOLO SABE BAJAR
+# Anadido el 28 ago 2026, ANTES de que entre el quinto extractor y por tanto ANTES de
+# que el numero se mueva. Escribirlo despues seria explicar una caida ya publicada.
+# ============================================================================
+el_titular_depende_del_panel:
+  que_es: >
+    «En N de 338 documentos los extractores coinciden con la referencia en CUANTAS TABLAS
+    HAY» es una INTERSECCION sobre tantos conjuntos como extractores tenga el panel. Con
+    cuatro son cuatro conjuntos; con cinco, cinco.
+  la_monotonia: >
+    Anadir un extractor SOLO PUEDE BAJARLO, nunca subirlo. Un documento que estaba en la
+    interseccion sigue exigiendo que los cuatro de antes acierten, mas el nuevo: la
+    condicion se endurece y el conjunto solo puede encoger. ES MONOTONO POR CONSTRUCCION,
+    NO POR CALIDAD.
+  la_consecuencia_que_hay_que_impedir: >
+    L5 cierra con CUATRO y los otros cuatro entran de uno en uno con /extractor. Cuando
+    entren, el titular BAJARA, y una serie de dos valores con paneles distintos se lee
+    como que el corpus empeoro o como que la extraccion va peor. Seria exactamente la
+    clase de error que este hito acaba de corregir —un numero con la etiqueta de otra
+    cuenta— pero diferido: el fallo no estaria en el numero de hoy sino en la comparacion
+    de mañana, y para entonces nadie tendra delante el contexto para verlo.
+  la_regla:
+    - >
+      EL PANEL VA EN LA ETIQUETA, no en una nota al pie: «N de 338 sobre el panel de K,
+      [nombres]». Sin el panel, el numero no esta completo.
+    - >
+      DOS VALORES CON PANELES DISTINTOS NO SON COMPARABLES y NO van en la misma serie ni
+      en la misma tabla de evolucion. Si alguien quiere comparar, la unica comparacion
+      legitima es recalcular el panel viejo sobre la corrida nueva, que se puede porque
+      los diarios estan y el aritmetico es puro.
+    - >
+      LO IMPRIME EL INSTRUMENTO, no el que escribe. `report.tables` emite el panel con sus
+      nombres y la frase de la monotonia; `runs/l5/informe.json` lo lleva como dato en
+      `acuerdo.panel`. Lo fija tests/unit/test_tabla_nivel1.py.
+  lo_que_esto_NO_dice: >
+    Que el numero no sirva. Sirve, y es el titular del hito: dice cuanta base comun hay
+    para comparar en ESTE panel. Lo que no admite es una flecha entre dos paneles.

@@ -1150,12 +1150,14 @@ docbench-es/
 │   ├── extract/
 │   │   ├── base.py              el Protocol, el registro y la conformidad
 │   │   ├── oracle.py            el brazo de control
-│   │   │   LOS OCHO DE L5, uno por fichero, cubriendo las cinco familias:
-│   │   ├── pymupdf4llm.py · pdfplumber.py    parser de texto
-│   │   ├── camelot.py                        extractor de tablas
-│   │   ├── docling.py · marker.py · unstructured.py   document-AI
-│   │   ├── grobid.py                         TEI / científico
-│   │   ├── tesseract.py                      OCR
+│   │   │   LOS CUATRO DE L5, uno por fichero, cubriendo TRES de las cinco familias:
+│   │   ├── pymupdf4llm.py · pdfplumber.py    parser de texto      (L5)
+│   │   ├── camelot.py                        extractor de tablas  (L5)
+│   │   ├── docling.py                        document-AI          (L5)
+│   │   │   LOS CUATRO QUE ENTRAN CON `/extractor`, en este orden (ADR-0046):
+│   │   ├── grobid.py                         TEI / científico  · trae `from_tei`
+│   │   ├── tesseract.py                      OCR               · trae `from_text_heuristic`
+│   │   ├── marker.py · unstructured.py       document-AI, ya cubierta: al final o nunca
 │   │   │   LLEGAN EN L12, con el nivel 2:
 │   │   ├── vlm_api.py           genérico sobre benchcore.ComputeProvider
 │   │   └── vlm_local.py         vLLM u Ollama
@@ -2009,7 +2011,7 @@ El badge apunta a `fast`, pero **el titular del README es el número medido**, n
 > [ADR-0041](docs/adr/0041-el-congelado-se-atestigua-con-un-digest-empujado.md): **al
 > congelar, lo que va a git es el DIGEST, no el puntero**, en un commit que se empuja
 > solo antes de medir.
-| **L5** | `extract.base` + conformidad + **ocho** extractores locales + nivel 1 | Primera tabla de estructura con coste y cobertura evaluable. Ocho, no trece: los otros cinco entran después con `/extractor`, una tarde cada uno | 14-18 |
+| **L5** | `extract.base` + conformidad + **cuatro** extractores locales + nivel 1 | Primera tabla de estructura con coste y cobertura evaluable. **Cuatro de trece, en DOS tramos de aplazamiento y no en uno** ([ADR-0046](docs/adr/0046-l5-cierra-con-los-extractores-que-caben.md)): **(1)** los cuatro de L5 —`camelot`, `docling`, `pdfplumber`, `pymupdf4llm`—, que cubren **tres** de las cinco familias; **(2)** cuatro más con `/extractor`, y en este orden **por lo que compra cada uno**: `grobid` (familia TEI + el conversor `from_tei`), `tesseract` (familia OCR + `from_text_heuristic`, y con su coste medido sobre 50 páginas antes de comprometer 8.733), y `marker` / `unstructured` al final o nunca, porque no compran ni familia ni conversor y **sólo ensanchan el panel**; **(3)** los cinco restantes en `v0.4.0`. Los dos tramos **no se colapsan en «nueve aplazados»**: la diferencia entre ellos es justo la información con la que se prioriza | 14-18 |
 | **L6** | `sample` con McNemar + bootstrap agrupado | Plan congelado y publicado antes de la primera campaña seria | 8-10 |
 | **L7** | Quickstart: 20 documentos versionados + `make quickstart` | De clone a tabla en menos de 3 minutos, sin red y sin gastar | 6-8 |
 

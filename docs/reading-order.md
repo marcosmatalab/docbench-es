@@ -6,8 +6,7 @@ se indica**; ✅, que existe hoy.
 <!-- ESTADO:inicio -->
 | | |
 |---|---|
-| Release en curso | `v0.1.0` · **5 hitos cerrados** (L0, L1, L2, L3, L4), el último el 2026-08-25. Siguiente: **L5** |
-| La puerta | `make fast` en verde. **p90 8006 ms** al cerrar L4, en serie —desde L5 corre en paralelo, ADR-0043—, local sobre `f89c5b6`, techo 8500 (ADR-0022), margen 494 ms, n=40 en frío. El presupuesto del manual son 90 s y es del runner. Procedencia en [`RESULTS.md`](../RESULTS.md) |
+| Release en curso | `v0.1.0` · **6 hitos cerrados** (L0, L1, L2, L3, L4, L5), el último el 2026-08-28. Siguiente: **L7** |
 | Dónde va el checkpoint | [`ESTADO.md`](../ESTADO.md), que se actualiza al cerrar cada hito. **Esta tabla se genera desde ahí** con `uv run python scripts/estado_readme.py --escribir` |
 <!-- ESTADO:fin -->
 

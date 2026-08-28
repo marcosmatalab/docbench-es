@@ -525,12 +525,12 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 207 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 208 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 207 de 652 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 208 de 653 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
 Los **445 tests restantes** quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
@@ -1351,8 +1351,8 @@ desde ese commit exacto.
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **207 de
-652 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **208 de
+653 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -1991,6 +1991,26 @@ mismo día: con la máquina de verdad en reposo —carga 0,24 al empezar— el m
 n=4 dio **7696**, y con carga 1,5–4,2 daba 8025–8779. **El campo `carga` de una serie no
 certifica máquina en reposo**: certifica lo que la serie hace consigo misma.
 
+### El coste del barrido de referencias dentro de la puerta · la decisión que L5 debía tomar
+
+`/cerrar` dejó escrito que **en L5 se decide con la cifra delante** si el barrido de
+referencias se queda en la puerta o pasa a ser un paso del cierre. La cifra:
+
+| | s |
+|---|---:|
+| `scripts/referencias.py` en solitario, n=3 | **0,27 – 0,29** |
+| lo que le cuesta a `pytest tests/unit`, n=3 pares en frío | **+0,39 · +0,02 · +0,05** |
+
+**Se queda en la puerta.** Su coste en solitario son ~0,28 s, pero **su coste marginal
+sobre la suite es de centésimas**: corre en uno de los 14 trabajadores y no está en el
+camino crítico. Medido con `--deselect` del test que lo lanza, tres pares en frío.
+
+**Y la dispersión de los pares es la mitad del hallazgo:** +0,39, +0,02 y +0,05 sobre una
+puerta de ~2,7 s. El ruido entre corridas es del orden del efecto, así que **lo honesto es
+decir «de centésimas, indistinguible del ruido» y no publicar una media de tres**. Lo que
+la medición descarta con seguridad es la hipótesis que hacía falta descartar: que fuera
+«una décima parte de la puerta».
+
 ## L5 · La puerta: la regresión de 25,5 s, su arreglo, y contra qué se compara
 
 ### Antes: n=9, sello `b54ec82`, 14 CPU visibles
@@ -2131,10 +2151,20 @@ el margen en dos hitos, y eso no lo dice ningún aro. Va en el límite 102.
 La tabla entera, con sus notas, en [`runs/l5/nivel1.md`](runs/l5/nivel1.md); su sello, en
 `runs/l5/nivel1.md.sello.json`.
 
-### EL TITULAR NO ES UNA NOTA: ES 103 DE 338
+### EL TITULAR NO ES UNA NOTA: ES 103 DE 338 **SOBRE EL PANEL DE CUATRO**
 
-> **Sólo en 103 de los 338 documentos con tabla (30,5%) los cuatro extractores coinciden
-> con la referencia en CUÁNTAS TABLAS HAY.**
+> **Sólo en 103 de los 338 documentos con tabla (30,5%) coinciden con la referencia en
+> CUÁNTAS TABLAS HAY los cuatro extractores del panel** —`camelot`, `docling`,
+> `pdfplumber`, `pymupdf4llm`—.
+
+**El panel va en la etiqueta y no en una nota, porque el número es una función suya.** Es
+una intersección sobre cuatro conjuntos: **añadir un extractor sólo puede bajarlo**, nunca
+subirlo, porque un documento que estaba dentro sigue exigiendo que acierten los cuatro de
+antes **más el nuevo**. **Es monótono por construcción, no por calidad**, así que dos
+valores medidos sobre paneles distintos **no son comparables y no van en la misma serie**.
+Cuando entren los otros cuatro con `/extractor` este número bajará, y esa bajada **no dirá
+que el corpus haya empeorado**. Pre-registrado el 28 ago 2026 —antes de que el número se
+mueva— en `runs/l5/emparejado.yaml` y en el límite 113; lo imprime el propio informe.
 
 En el 69,5% restante, al menos uno de los cuatro discrepa en el **paso previo a cualquier
 métrica de calidad**. No es un detalle del emparejado: es el resultado más citable del

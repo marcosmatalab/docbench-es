@@ -80,13 +80,13 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 28 mutantes mueren» habla de esos 28 huecos, no de la
-   suite: hoy el arnés cubre 207 de 652 tests, o sea que los 445 tests que quedan
+   suite: hoy el arnés cubre 208 de 653 tests, o sea que los 445 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **649 de 652 tests protegidos por algo** y **3 tests sin ningún control**.
+   **650 de 653 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -247,10 +247,13 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
    | **el barrido de referencias** | `pytest tests/unit -k barreras` contra la misma corrida sin ese test |
 
    El barrido corre **dentro de la puerta** —lo ata `test_barreras.py`, y ha cazado
-   dos referencias rotas reales— pero **su coste no está medido**, y una décima
-   parte de la puerta sin medir es exactamente lo que este repo no publica.
-   **En L5 se decide con esa cifra delante** si se queda en la puerta o pasa a ser
-   un paso de este cierre. Hoy no se decide: hoy se mide. Si se cumple alguna de las tres condiciones de parada de ADR-0022, la
+   dos referencias rotas reales— y **su coste ya está medido**.
+
+   **DECIDIDO EN L5, con la cifra delante: se queda en la puerta.** n=3 pares en frío,
+   con `--deselect` del test que lo lanza: **0,28 s en solitario** y **centésimas** sobre
+   la suite, porque corre en uno de los 14 trabajadores y no está en el camino crítico.
+   La hipótesis que había que descartar —«una décima parte de la puerta»— queda
+   descartada. Los tres pares, en `RESULTS.md`. Si se cumple alguna de las tres condiciones de parada de ADR-0022, la
    respuesta ya no es subir el techo: es reestructurar, y eso va con su ADR.
 
 7. **Números medidos.** Añade a `RESULTS.md` los números que este hito produce, con

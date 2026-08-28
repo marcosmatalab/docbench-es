@@ -167,6 +167,26 @@ def test_la_tabla_publica_las_dos_intersecciones_y_dice_que_no_son_la_misma() ->
     assert "regla de oro 4" in texto
 
 
+def test_el_titular_lleva_el_panel_en_la_etiqueta_y_no_en_una_nota() -> None:
+    """**El titular es una FUNCIÓN DEL PANEL, y sin el panel dentro no significa nada.**
+
+    «En N de M los extractores coinciden en cuántas tablas hay» es una intersección sobre
+    tantos conjuntos como extractores: **al añadir uno sólo puede bajar**. Con la etiqueta
+    muda, la serie de L5 a L6 se leería como que el corpus empeoró, cuando lo que cambió
+    fue cuántos conjuntos se cruzan. Es la misma clase de fallo que publicar una cuenta
+    con la etiqueta de otra, sólo que diferida a la comparación de mañana.
+
+    Por eso el panel va **en la etiqueta**, con sus nombres, y la monotonía va escrita con
+    la palabra «no son comparables» en la misma sección.
+    """
+    texto = tabla_nivel1({"a": _fila(), "b": _fila()}, {})
+    assert "sobre el panel de 2" in texto, texto
+    assert "—`a`, `b`—" in texto, texto
+    assert "SÓLO PUEDEN\nBAJAR" in texto or "SÓLO PUEDEN " in texto, texto
+    assert "no son comparables y no van en la misma serie" in texto
+    assert "monótono por construcción, no por calidad" in texto
+
+
 def test_sin_interseccion_la_tabla_dice_que_no_hay_comparacion() -> None:
     """No es un empate ni un cero: es que no se pueden comparar. Y es un resultado sobre
     el corpus, no un fallo de la tabla."""

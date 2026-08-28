@@ -1,12 +1,12 @@
 {
  "que": "informe de nivel 1",
- "empezada": "2026-08-28T14:00:23.794807+00:00",
- "commit": "93ae494",
- "sucios": 22,
- "huella": "9d043629aace74a1",
+ "empezada": "2026-08-28T18:10:42.773250+00:00",
+ "commit": "233e21f",
+ "sucios": 7,
+ "huella": "d1d56e8393065461",
  "cpus": 14,
  "cpu": "AMD Ryzen 9 9950X3D 16-Core Processor",
- "carga": 0.63,
+ "carga": 0.6,
  "entradas": {
   "sello_de_la_corrida": {
    "ruta": "runs/l5/campana/sello.json",

@@ -492,7 +492,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 207 de 652 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 208 de 653 tests.** Los
     **28 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS, el lote y —desde el paso 2 de L5— **el instrumento que emite la
     tabla**: el emparejado, el recuento de fallos, la cobertura, la intersección, el
@@ -513,7 +513,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
     mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **68,3% hoy** — y 66 de los 437 entraron de golpe con
+    12,4% al cerrar L2, **68,1% hoy** — y 66 de los 437 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
     `documentos_que_sostienen` (9) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
@@ -523,7 +523,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **649 de 652 tests protegidos por algo** —un
+    *el arnés*, no la protección: **650 de 653 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2250,7 +2250,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     *«L5 es el primero que puede subir el arnés en vez de bajarlo. Si no lo sube, deja de
     ser estructural y pasa a ser deterioro»*. Su tabla tiene **dos** columnas que se
     pueden llamar «el arnés»: un recuento y una fracción. En L5 fueron en direcciones
-    **opuestas** —el recuento 166 → 207, la fracción 43,2% → 31,7%—, así que el criterio
+    **opuestas** —el recuento 166 → 208, la fracción 43,2% → 31,7%—, así que el criterio
     tiene una lectura que pasa y otra que falla, y **elegir la lectura ES elegir el
     criterio**, con los dos números ya delante.
 
@@ -2280,10 +2280,10 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     ya está hecho: que el comando que el criterio nombra **exista y diga la verdad**, y
     eso sí lo comprueba `tests/unit/test_recuentos.py`.
 
-111. **EL TECHO DE LA PUERTA VIVÍA EN SEIS SITIOS Y SÓLO SE COMPROBABAN DOS — Y LOS DOS
-    COMPROBADOS SE QUEDARON VIEJOS A LA VEZ.** Es la forma del límite 106 aplicada a una
-    constante: un control protege contra que dos copias se separen; no protege contra que
-    las dos estén viejas.
+111. **EL TECHO DE LA PUERTA VIVÍA EN NUEVE SITIOS —OCHO DE ELLOS COPIAS VIVAS— Y SÓLO
+    SE COMPROBABAN DOS. Y LOS DOS COMPROBADOS SE QUEDARON VIEJOS A LA VEZ.** Es la forma
+    del límite 106 aplicada a una constante: un control protege contra que dos copias se
+    separen; no protege contra que las dos estén viejas.
 
     | # | dónde vivía | quién lo comprobaba |
     |---|---|---|
@@ -2292,12 +2292,20 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     | 3 | `tests/unit/test_aro_del_techo.py`, el **literal** en el `assert` | nadie: era el literal |
     | 4 | `.github/workflows/fast.yml`, `TECHO_MS` | **nadie**: un grep de su valor por `tests/` y `scripts/` daba cero |
     | 5 | la prosa de ADR-0022 | nadie |
-    | 6 | las órdenes `--techo N` de [`RESULTS.md`](RESULTS.md) | nadie |
+    | 6 | `.claude/hooks/guard-commit.sh`, el `\|\| echo 8500` de reserva | nadie, y encima **fallaba abierto** |
+    | 7 | `docs/metrics.md`, en presente y **con el valor de CI equivocado** | nadie |
+    | 8 | `ESTADO.md`, tabla de decisiones, **idem** | nadie |
+    | 9 | las órdenes `--techo N` de [`RESULTS.md`](RESULTS.md) | nadie, y **no es una copia viva**: es el comando de una medición ya hecha |
 
-    **Y hay una séptima que no estaba ni en la cuenta:** `guard-commit.sh` leía el techo
-    del hook y terminaba en `|| echo 8500`. O sea que si la lectura fallaba, el guardián
-    **se inventaba un techo y seguía en verde**. Un guardián que falla abierto es peor que
-    no tenerlo, porque su verde se cree.
+    **Ocho copias vivas y una histórica.** El primer censo de este límite decía **seis**, y
+    el error iba **en la dirección que empequeñece el problema**: se escribió el mismo día
+    en que se arreglaban las dos primeras, y contó las que se estaban tocando en vez de
+    buscar las que no. Las 6, 7 y 8 salieron del escrutinio adversarial, no del censo.
+
+    **La 6 es la peor de las nueve y no estaba ni en la cuenta:** `guard-commit.sh` leía el
+    techo del hook y terminaba en `|| echo 8500`. Si la lectura fallaba, el guardián **se
+    inventaba un techo y seguía en verde**. Un guardián que falla abierto es peor que no
+    tenerlo, porque su verde se cree.
 
     **Lo que pasó, y es exactamente lo que el test no podía ver.** ADR-0022 fijó al cerrar
     L3 el techo de L4 en **9000 local y 21 000 en CI**. CI se movió a 21 000; el local se
@@ -2382,3 +2390,44 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     **Y lo encontró un escrutinio adversarial, no un test.** Es la tercera vez en este
     repo —L1 con `holes`, L3 con los sellos, y ésta—, y las tres veces leyendo, no
     ejecutando.
+
+113. **EL TITULAR DE L5 ES UNA FUNCIÓN DEL PANEL Y SÓLO SABE BAJAR: DOS VALORES CON
+    PANELES DISTINTOS NO SON COMPARABLES.** Escrito el 28 ago 2026, **antes de que entre
+    el quinto extractor** y por tanto antes de que el número se mueva. Después sería
+    explicar una caída ya publicada.
+
+    **La monotonía, con la palabra.** *«En 103 de 338 documentos los extractores coinciden
+    con la referencia en cuántas tablas hay»* es una **intersección sobre tantos conjuntos
+    como extractores tenga el panel**. Añadir uno **sólo puede bajarlo**: un documento que
+    estaba dentro sigue exigiendo que acierten los cuatro de antes, **más el nuevo**. La
+    condición se endurece y el conjunto encoge. **Es monótono por construcción, no por
+    calidad.**
+
+    **Lo que esto impide, y es lo que hace que sea un límite y no una curiosidad.** L5
+    cierra con **cuatro** y los otros entran de uno en uno con `/extractor` (ADR-0046).
+    Cuando entren, el titular **bajará**. Una serie con los dos valores se leería como que
+    el corpus empeoró o como que la extracción va peor, y **sería la misma clase de fallo
+    que este hito acaba de corregir** —un número con la etiqueta de otra cuenta— sólo que
+    **diferido**: el error no estaría en el número de hoy sino en la comparación de mañana,
+    cuando nadie tenga delante el contexto para verlo.
+
+    **Las tres cosas que lo sostienen, y ninguna es una nota al pie:**
+
+    | dónde | qué |
+    |---|---|
+    | la **etiqueta** | «N de 338 **sobre el panel de K**, con sus nombres». Sin panel, el número está incompleto |
+    | el **instrumento** | `report.tables` imprime el panel y la frase de la monotonía; `runs/l5/informe.json` lo lleva en `acuerdo.panel`. Lo fija `tests/unit/test_tabla_nivel1.py` |
+    | la **regla** | `runs/l5/emparejado.yaml`, bloque `el_titular_depende_del_panel`, con su fecha |
+
+    **La única comparación legítima entre paneles**, y existe: recalcular el panel viejo
+    sobre la corrida nueva. Se puede porque los diarios están y el aritmético es puro — es
+    la misma promesa que protege «el núcleo se puede reejecutar sobre extracciones viejas».
+    Lo que **no** vale es una flecha entre dos números con paneles distintos.
+
+    **Lo que esto NO dice:** que el número no sirva. Es el titular del hito y dice cuánta
+    base común hay para comparar **en este panel**. Lo que no admite es la flecha.
+
+    **Y lo que queda sin cubrir:** ningún guardián impide escribir esa flecha. `derivadas.py`
+    comprueba que las cifras publicadas salgan de `informe.json`; no puede saber si dos
+    cifras de dos informes distintos se están comparando en una frase. Es una regla de
+    método, como el límite 110, y vive en el guion de quien escribe la serie.

@@ -88,6 +88,8 @@ ARTEFACTOS: dict[str, str] = {
     ".claude/.ultima-puerta": "lo escribe `medir_puerta.py` al correr; en un clon no está",
     ".claude/.congelados.sha256": "manifiesto de huellas que crea el hook `stop-gate.sh`",
     "runs/l3/docs": "los 362 MB del corpus. Versionado va el manifiesto, no los bytes (ADR-0038)",
+    "runs/l5/campana": "los 143 MB de diarios de la campaña de L5. Versionado va su informe.json, "
+    "no las 2.464 extracciones (LIMITS 109)",
 }
 """Ruta -> por qué **NO debe estar en git**. Es la tabla contraria a `DECLARADAS`.
 

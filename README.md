@@ -9,7 +9,7 @@ tablas —convenios, pliegos, expedientes, cuentas anuales— y necesita decidir
 números en qué gastar el presupuesto.
 
 <!-- TITULAR:inicio -->
-> **5 de 10 hitos de la `v0.1.0` cerrados** — L0, L1, L2, L3, L4 — y el siguiente es **L5**. El último número medido: **25 de 30 coinciden sobre 30 documentos y 1.213 celdas transcritas del PDF** (L4).
+> **6 de 10 hitos de la `v0.1.0` cerrados** — L0, L1, L2, L3, L4, L5 — y el siguiente es **L7**. El último número medido: **2.464 unidades sobre 616 documentos** (L5).
 >
 > Lo que hay medido está en [`RESULTS.md`](RESULTS.md); lo que este proyecto **no** mide, en [`LIMITS.md`](LIMITS.md). **Esta línea se genera desde [`ESTADO.md`](ESTADO.md)**: no se teclea.
 <!-- TITULAR:fin -->
@@ -19,8 +19,7 @@ números en qué gastar el presupuesto.
 <!-- ESTADO:inicio -->
 | | |
 |---|---|
-| Release en curso | `v0.1.0` · **5 hitos cerrados** (L0, L1, L2, L3, L4), el último el 2026-08-25. Siguiente: **L5** |
-| La puerta | `make fast` en verde. **p90 8006 ms** al cerrar L4, en serie —desde L5 corre en paralelo, ADR-0043—, local sobre `f89c5b6`, techo 8500 (ADR-0022), margen 494 ms, n=40 en frío. El presupuesto del manual son 90 s y es del runner. Procedencia en [`RESULTS.md`](RESULTS.md) |
+| Release en curso | `v0.1.0` · **6 hitos cerrados** (L0, L1, L2, L3, L4, L5), el último el 2026-08-28. Siguiente: **L7** |
 | Dónde va el checkpoint | [`ESTADO.md`](ESTADO.md), que se actualiza al cerrar cada hito. **Esta tabla se genera desde ahí** con `uv run python scripts/estado_readme.py --escribir` |
 <!-- ESTADO:fin -->
 

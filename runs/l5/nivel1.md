@@ -14,11 +14,11 @@
 
 **Extracciones** — corrida de `819c06f`, 0 ficheros sin commitear, huella `01ba4719c80b6fe9`, empezada 2026-08-27T10:39:57.893229+00:00.
 
-**Puntuación** — informe de `93ae494`, 22 ficheros sin commitear, huella `9d043629aace74a1`.
+**Puntuación** — informe de `233e21f`, 7 ficheros sin commitear, huella `d1d56e8393065461`.
 
 **Qué discrimina cada campo**, porque no es lo mismo y verlos juntos hace creer que la huella identifica el árbol: `commit` dice **qué** commit y es el único que separa un árbol limpio de otro; `sucios`, **cuántos** ficheros sin commitear; y `huella` separa **limpio de sucio** —y, si está sucio, qué diff—, así que sobre cualquier árbol limpio vale siempre `01ba4719c80b6fe9`. **Dos huellas iguales no dicen que sea el mismo árbol: dicen que los dos están limpios.**
 
-**NO son el mismo árbol**, y se dice en vez de callarlo: `commit`: corrida '819c06f' → informe '93ae494' · `sucios`: corrida 0 → informe 22 · `huella`: corrida '01ba4719c80b6fe9' → informe '9d043629aace74a1'.
+**NO son el mismo árbol**, y se dice en vez de callarlo: `commit`: corrida '819c06f' → informe '233e21f' · `sucios`: corrida 0 → informe 7 · `huella`: corrida '01ba4719c80b6fe9' → informe 'd1d56e8393065461'.
 
 Eso **no invalida la tabla**: invalida atarla a un commit solo. Las extracciones son del árbol de la corrida y la puntuación es del árbol del informe, y quien quiera reproducir esto necesita **los dos**. Para reproducirla exacta, el aritmético vive en `report.nivel1` y `core`, que son puros: se vuelve al commit del informe y se relanza `docbench report` sobre los mismos diarios.
 
@@ -31,9 +31,9 @@ Eso **no invalida la tabla**: invalida atarla a un commit solo. Las extracciones
 
 ### Cara a cara · el mismo denominador para todos
 
-**82 de 338** documentos (24,3%): aquéllos en los que **todos** los extractores PUNTUARON.
+**82 de 338** documentos (24,3%) **sobre el panel de 4** —`camelot`, `docling`, `pdfplumber`, `pymupdf4llm`—: aquéllos en los que **todos** PUNTUARON.
 
-**Y ése no es el acuerdo de recuento, que son 103 de 338 (30,5%).** Los 21 de diferencia son documentos donde **todos acertaron el recuento** y al menos uno no pudo evaluar ni una tabla: la verdad trae celdas combinadas y él no expresa spans, así que sale `NO_APLICABLE` por la regla de oro 4. Publicarlos como desacuerdo sería la decisión B3 rota un nivel más arriba — «no se pudo medir» leído como «se midió y salió mal».
+**Y ése no es el acuerdo de recuento, que son 103 de 338 (30,5%) sobre el mismo panel.** Los 21 de diferencia son documentos donde **todos acertaron el recuento** y al menos uno no pudo evaluar ni una tabla: la verdad trae celdas combinadas y él no expresa spans, así que sale `NO_APLICABLE` por la regla de oro 4. Publicarlos como desacuerdo sería la decisión B3 rota un nivel más arriba — «no se pudo medir» leído como «se midió y salió mal».
 
 **Alfabético, no por nota.** El mismo denominador hace la comparación posible; no la resuelve.
 
@@ -50,7 +50,9 @@ Eso **no invalida la tabla**: invalida atarla a un commit solo. Las extracciones
 
 **El delta no es una tercera medida**: es la resta de las dos columnas de al lado, o sea las mismas puntuaciones por documento con dos denominadores.
 
-**Y este 103 es un dato en sí**: dice en cuántos documentos los 4 extractores coinciden con la referencia en algo tan básico como CUÁNTAS tablas hay.
+**Y este 103 es un dato en sí**: dice en cuántos documentos los 4 extractores del panel coinciden con la referencia en algo tan básico como CUÁNTAS tablas hay.
+
+**LOS DOS NÚMEROS SON FUNCIÓN DEL PANEL, Y AL AÑADIR UN EXTRACTOR SÓLO PUEDEN BAJAR.** Son intersecciones sobre 4 conjuntos: con un extractor más hay un conjunto más que intersecar, y un documento que salía sólo puede dejar de salir. **Es monótono por construcción, no por calidad.** Así que dos valores medidos sobre paneles distintos **no son comparables y no van en la misma serie**: una caída al pasar de un panel a otro más grande no dice que el corpus haya empeorado ni que la extracción vaya peor — dice que hay más conjuntos que cruzar. Por eso el panel va en la etiqueta y no en una nota.
 
 **Y DÓNDE está el desacuerdo**, que es lo que lo convierte en diagnóstico:
 
