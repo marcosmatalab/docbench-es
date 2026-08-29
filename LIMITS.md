@@ -492,15 +492,16 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 218 de 681 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 218 de 692 tests.** Los
     **29 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS, el lote, —desde el paso 2 de L5— **el instrumento que emite la
     tabla** —el emparejado, el recuento de fallos, la cobertura, la intersección, el
     delta y el `n/a`— y **el que emite la portada**, que es la primera pantalla del
-    proyecto. Los **463 tests restantes** —`congelados_l4` (38), `extractor_contrato` (37), `canonical_texto_de_celda` (19),
+    proyecto. Los **474 tests restantes** —`congelados_l4` (38), `extractor_contrato` (37), `canonical_texto_de_celda` (19),
     `barreras` (14), `extractor_arnes` (14), `harvest` (14), `verificar_corpus` (14),
     `aro_del_techo` (13), `extractor_conformidad` (13), `barreras_documentos` (12),
     `boe` (12), `metricas_regimen` (12), `pdfplumber` (12), `documentos_que_sostienen` (11),
+    `dos_series` (11),
     `boe_api` (10), `camelot` (10), `diario` (9), `entity_conformance` (9),
     `entity_registry` (9), `guardianes_por_glob` (9), `pymupdf4llm` (9),
     `capas_permitidas` (8), `cli` (8), `manifest` (8), `pairing` (8), `corpus_store` (7),
@@ -523,7 +524,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **678 de 681 tests protegidos por algo** —un
+    *el arnés*, no la protección: **689 de 692 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1480,9 +1481,9 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **86** scripts,
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **88** scripts,
     **30 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **56** que quedan, **huérfanos: 24 de 56**. Entre ellos `derivadas.py`
+    nada—, y de los **58** que quedan, **huérfanos: 24 de 58**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
 
@@ -2655,3 +2656,61 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     los **tres de la CLI**, que reciben la ruta de quien llama y fallan con su código de
     salida (§11). Los nueve van enumerados uno a uno, con su razón, en
     `tests/unit/test_datos_fuera_de_git.py`.
+
+119. **LA ÚNICA EVIDENCIA DE REPRODUCIBILIDAD DEL REPO ES SOBRE EL ESTADÍSTICO QUE NO
+    DECIDE.** Escrito el 29 ago 2026, restando dos números que llevaban cuatro días
+    publicados uno encima del otro.
+
+    **Lo medido, y no hizo falta medir nada nuevo.** `RESULTS.md` publica desde el 24 ago
+    2026 dos series de 40 corridas del mismo día, bajo el título *«el protocolo reproduce
+    a 10 ms»*. La sección demuestra lo que dice y lo argumenta bien — **sobre la
+    mediana**. En esa misma tabla:
+
+    | | serie A | serie B | diferencia |
+    |---|---|---|---|
+    | mediana | 6198 | 6208 | **10** |
+    | p90 | 6262 | 6327 | **65** |
+
+    **Las dos series difirieron 10 ms en la mediana y 65 ms en el p90.** Y **el techo se
+    compara contra el p90**, no contra la mediana. La resta de la segunda fila **no se
+    hizo nunca**.
+
+    **Qué invalida, en concreto.** El 29 ago 2026 este repo publicó *«p90 8231 contra un
+    techo de 8200: sigue sonando, y por 31 ms»*. **31 es menos de la mitad de 65.** No es
+    que la alarma no suene: es que **con una sola serie no se puede afirmar que suene**.
+
+    **Y tiene causa mecánica, no sólo aritmética.** El p90 de n=40 se estima con unas
+    **cuatro** observaciones de la cola; la mediana usa las **cuarenta**. Un estimador de
+    cola con cuatro puntos se mueve más que uno central con cuarenta, y eso no se arregla
+    mirándolo mejor. **El proyecto eligió el estadístico conceptualmente correcto y validó
+    el estable.** Son dos, y sólo uno tenía aval.
+
+    **Esto NO es el límite 116**, aunque vivan pegados. El 116 dice que **el término del
+    medio** de la fórmula del techo —el incremento proyectado— no está medido, y es
+    verdad. Esto va debajo: **el primer término tampoco tiene medida de reproducibilidad
+    en la forma en que se usa para decidir.**
+
+    **Lo hecho, y es la mitad barata:** [ADR-0048](docs/adr/0048-el-techo-se-decide-con-dos-series.md)
+    pasa el protocolo del cierre a **dos series de 40** —40 minutos una vez por hito
+    contra los 20 de antes— y da el techo por roto **sólo si los dos p90 lo pasan**. El
+    caso del medio —una por encima y otra por debajo— **no es verde y no es rojo**: sale
+    con **código 3**, `NO CONCLUYENTE`, porque devolver el código del verde sería
+    contestar con una moneda al aire una pregunta que el instrumento sabe que no ha
+    resuelto. Lo prueba `tests/unit/test_dos_series.py` en las tres direcciones, y **R10**
+    (`scripts/regla_reproducibilidad.py`) ata cada copia publicada de esa resta a la tabla
+    de la que sale — incluidas las de los docstrings de los dos scripts, porque la sexta
+    copia del error del estimador ya enseñó que el sitio da igual.
+
+    **Lo que este límite NO dice, y son tres cosas.** No dice que la reproducibilidad del
+    p90 *sea* 65 ms: **con n=2 no se publica una tasa, se publica el par**, y lo que se
+    afirma es que *estas dos* series difirieron eso. No dice que haya que gatear sobre la
+    mediana — **escondería la cola, que es justo lo que un techo existe para vigilar**; la
+    respuesta a un estimador ruidoso es más evidencia sobre él, no cambiar a otro que mira
+    otra cosa. Y no autoriza a mover el techo: sigue en **8200**, y ADR-0022 prohíbe
+    subirlo después de romperlo.
+
+    **Lo que queda sin hacer, con su método y sin fecha.** Medir de verdad la
+    reproducibilidad del p90, que exige varias series y su intervalo. La cura ya no cuesta
+    nada aparte: **cada cierre deja ahora dos p90 del mismo árbol el mismo día**, así que
+    la serie se construye sola hito a hito. Con tres o cuatro puntos deja de ser una
+    observación — y es el mismo dato que el límite 116 pide por otro camino.

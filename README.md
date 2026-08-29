@@ -11,7 +11,7 @@
 >
 > **Y este titular se publicó mal:** decía ~~82 de 338~~ y son **103 de 338**. Era otra cuenta —los que *puntuaron* todos—, y ningún test podía verlo porque **ningún fixture tenía una celda combinada**. El commit falso sigue en la historia, con la corrección detrás.
 >
-> **29** mutantes · **118** límites · **32** ADR · coste **0,00 €** medido, con la predicción del reloj fallando **+74,6%** · puerta p90 **8.231 ms** contra un techo de **8.200**: **la alarma está sonando** y el techo no se ha subido para callarla.
+> **29** mutantes · **119** límites · **33** ADR · coste **0,00 €** medido, con la predicción del reloj fallando **+74,6%** · puerta p90 **8.231 ms** contra un techo de **8.200** en la última serie: **por encima**, y el techo no se ha subido para callarlo. Una serie avisa, dos deciden (ADR-0048).
 >
 > [**La portada entera, en diez minutos**](https://marcosmatalab.github.io/docbench-es/) · [`RESULTS.md`](RESULTS.md) · [`LIMITS.md`](LIMITS.md) · [`runs/l5/informe.json`](runs/l5/informe.json). **Este bloque lo genera `uv run docbench portada`**: no se teclea.
 <!-- PORTADA:fin -->

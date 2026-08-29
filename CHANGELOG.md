@@ -11,6 +11,38 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### La resta que faltaba: el techo se decide con DOS series · 2026-08-29
+
+#### Añadido
+
+- **`scripts/serie_puerta.py`** y **`--series` en `medir_puerta.py`** (por defecto **2**):
+  el protocolo del cierre pasa a **dos series de 40** y el techo se da por roto **sólo si
+  los dos p90 lo pasan**. El caso del medio —una por encima y otra por debajo— sale con
+  **código 3, `NO CONCLUYENTE`**: no es verde y no es rojo. `veredicto()` vive separado
+  del bucle de medir y se prueba en las tres direcciones. Ver
+  [ADR-0048](docs/adr/0048-el-techo-se-decide-con-dos-series.md).
+- **La regla R10 de `scripts/derivadas.py`** (`scripts/regla_reproducibilidad.py`): ata
+  cada copia publicada de la resta entre series —la frase, la tabla copiada y su columna
+  `diferencia`— a la tabla de `RESULTS.md` de la que sale, **incluidas las copias en
+  docstrings de scripts**, y avisa con «0 copias vistas» si nadie escribe ya la forma
+  canónica.
+- **El límite 119**, y no hizo falta medir nada nuevo para escribirlo.
+
+#### Corregido
+
+- **«El protocolo reproduce a 10 ms» era sobre la MEDIANA, y el techo decide contra el
+  p90.** En la misma tabla del 24 ago 2026, sin restar, estaban los dos p90: **las dos
+  series difirieron 10 ms en la mediana y 65 ms en el p90**. La sección se retitula, la
+  tabla gana su columna `diferencia` y la corrección va escrita debajo.
+- **«Sigue sonando, y por 31 ms»**, publicado el 29 ago en `RESULTS.md`, la portada y el
+  `README`. **31 es menos de la mitad de 65**: no es que la alarma no suene, es que **con
+  una sola serie no se puede afirmar que suene**. La portada y el bloque corto pasan a
+  decir que **la última serie midió por encima** y que una serie avisa y dos deciden.
+- **`.techos` NO se ha tocado**: el techo sigue en 8200. La respuesta a un estimador
+  ruidoso es más evidencia sobre él, no cambiar al estadístico estable —la mediana
+  escondería la cola, que es lo que un techo existe para vigilar—.
+
+
 ### LA PORTADA y el error del estimador con dos valores · 2026-08-28
 
 #### Añadido

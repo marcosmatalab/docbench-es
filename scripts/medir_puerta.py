@@ -7,9 +7,17 @@ se limpió la caché. Un protocolo que cada uno recuerda a su manera produce cif
 que no se pueden comparar entre hitos, y la serie de la puerta es justo una
 comparación entre hitos.
 
-    uv run python scripts/medir_puerta.py            # 10 tandas de 4
-    uv run python scripts/medir_puerta.py        # el techo sale de `.techos`
-    echo $?                                          # 1 si el p90 pasa del techo
+    uv run python scripts/medir_puerta.py            # DOS series de 40 (ADR-0048)
+    uv run python scripts/medir_puerta.py --series 1 # una: diagnostica, NO decide
+    echo $?                                          # 1 roto · 3 no concluyente · 0 dentro
+
+**Y son DOS series desde ADR-0048, no una.** El techo se compara contra el p90, y la
+unica evidencia de reproducibilidad que este repo tuvo durante cuatro dias era sobre la
+MEDIANA: dos series del 24 ago 2026 difirieron 10 ms en mediana y **65 en el p90**, los
+dos numeros en la misma tabla y la resta sin hacer. Decidir un techo con un margen de 31
+ms usando un estimador cuya unica diferencia observada entre series es de 65 es una
+moneda al aire. La regla y su alternativa descartada —gatear sobre la mediana, que
+esconderia la cola— estan en ADR-0048.
 
 **Comprueba el código de salida de cada corrida y descarta la que falla.** `make`
 para en el primer paso que falla, así que una puerta rota da un tiempo MENOR: sin
@@ -53,6 +61,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 from reloj import ms  # noqa: E402
 from sello import sello  # noqa: E402
+from serie_puerta import Serie, comparacion, resumen, veredicto  # noqa: E402
 
 CACHES = (
     ".pytest_cache",
@@ -116,16 +125,6 @@ def _lo_que_se_movio(antes: str, ahora: str) -> str:
     return "\n".join(fuera + dentro)
 
 
-def _desviacion(muestras: list[int]) -> str:
-    """La desviación típica, o «n/a» con una sola muestra.
-
-    `statistics.stdev` revienta con n=1, y `--por-tanda 1` es una invocación legal
-    del propio script: no puede acabar en traza. Con una muestra la dispersión no
-    es cero, es que **no se ha medido**, y eso se escribe.
-    """
-    return f"{statistics.stdev(muestras):.0f}" if len(muestras) > 1 else "n/a (n=1)"
-
-
 def movimiento(antes: str, ahora: str, corrida: int, tanda: int) -> str | None:
     """El aviso si el árbol se movió, o `None` si no. **La decisión, sin el bucle.**
 
@@ -167,10 +166,48 @@ def _una_corrida() -> tuple[int, int, float]:
     return ms() - inicio, resultado.returncode, carga
 
 
+def _una_serie(tandas: int, por_tanda: int, huella: str) -> Serie | None:
+    """Una serie entera, o `None` si el árbol se movió. **El bucle, sin la decisión.**
+
+    Devuelve los tiempos crudos y no un resumen: quien decide es `veredicto`, y quien
+    compara dos series necesita las dos enteras.
+    """
+    todas: list[int] = []
+    cargas: list[float] = []
+    medianas: list[float] = []
+    descartadas = 0
+    corrida = 0
+    for tanda in range(1, tandas + 1):
+        fila: list[int] = []
+        for _ in range(por_tanda):
+            tiempo, rc, carga = _una_corrida()
+            corrida += 1
+            aviso = movimiento(huella, _huella_arbol(), corrida, tanda)
+            if aviso is not None:
+                print(aviso)
+                return None
+            cargas.append(carga)
+            if rc == 0:
+                fila.append(tiempo)
+                todas.append(tiempo)
+            else:
+                descartadas += 1
+        if fila:
+            medianas.append(statistics.median(fila))
+        print(f"  tanda {tanda:>2}: {fila}")
+    return Serie(tuple(todas), tuple(cargas), tuple(medianas), descartadas)
+
+
 def main() -> int:
     partes = argparse.ArgumentParser(description=__doc__)
     partes.add_argument("--tandas", type=int, default=10)
     partes.add_argument("--por-tanda", type=int, default=4)
+    partes.add_argument(
+        "--series",
+        type=int,
+        default=2,
+        help="cuántas series de 40. **DOS por defecto: ADR-0048.** Una no decide el techo",
+    )
     partes.add_argument(
         "--techo", type=int, default=techo_local(), help="techo local de ADR-0022, de `.techos`"
     )
@@ -178,51 +215,22 @@ def main() -> int:
 
     print(f"sello: {sello()}")
     huella = _huella_arbol()
-    todas: list[int] = []
-    cargas: list[float] = []
-    medianas: list[float] = []
-    descartadas = 0
-    corrida = 0
-    for tanda in range(1, args.tandas + 1):
-        fila: list[int] = []
-        for _ in range(args.por_tanda):
-            ms, rc, carga = _una_corrida()
-            corrida += 1
-            aviso = movimiento(huella, _huella_arbol(), corrida, tanda)
-            if aviso is not None:
-                print(aviso)
-                return 2
-            cargas.append(carga)
-            if rc == 0:
-                fila.append(ms)
-                todas.append(ms)
-            else:
-                descartadas += 1
-        if fila:
-            medianas.append(statistics.median(fila))
-        print(f"  tanda {tanda:>2}: {fila}")
+    series: list[Serie] = []
+    for numero in range(1, args.series + 1):
+        print(f"\n  SERIE {numero} de {args.series}")
+        serie = _una_serie(args.tandas, args.por_tanda, huella)
+        if serie is None:
+            return 2
+        if not serie.tiempos:
+            print("NINGUNA corrida en verde: no hay medición, no hay número.")
+            return 1
+        print(resumen(serie, args.techo))
+        series.append(serie)
 
-    if not todas:
-        print("NINGUNA corrida en verde: no hay medición, no hay número.")
-        return 1
-
-    ordenadas = sorted(todas)
-    p90 = ordenadas[min(len(ordenadas) - 1, int(0.90 * len(ordenadas)))]
-    print(
-        f"\n  n={len(todas)} en verde · descartadas por rc!=0: {descartadas}\n"
-        f"  mínimo {ordenadas[0]} · mediana {statistics.median(ordenadas):.0f} · "
-        f"p90 {p90} · máximo {ordenadas[-1]}\n"
-        f"  desviación típica {_desviacion(ordenadas)} · "
-        f"medianas por tanda {int(min(medianas))}-{int(max(medianas))}\n"
-        f"  carga de la máquina: mediana {statistics.median(cargas):.2f} · "
-        f"rango {min(cargas):.2f} a {max(cargas):.2f}\n"
-        f"  techo {args.techo} · margen en el p90: {args.techo - p90} ms"
-    )
-    if p90 > args.techo:
-        print("EL P90 PASA DEL TECHO. Ver ADR-0022: re-justificar o reestructurar.")
-        return 1
-    print("OK")
-    return 0
+    print(comparacion(tuple(series)))
+    codigo, dictamen = veredicto(tuple(series), args.techo)
+    print(dictamen)
+    return codigo
 
 
 if __name__ == "__main__":

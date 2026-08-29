@@ -433,6 +433,40 @@ pese a ser el número contra el que se lee la última columna.
 > como está, marcada, en vez de elegir la combinación que cuadre. **Lo que lo cierra
 > es el sello**, que L3 y L4 sí llevan.
 
+### El estadístico que decide es el p90, y su reproducibilidad NO estaba medida
+
+**El techo se compara contra el p90**, que aquí es `ordenadas[int(0,90·n)]` —con n=40, el
+**37.º valor**, o sea el percentil empírico 92,5— y la convención está declarada en
+ADR-0022 porque cambiarla haría incomparables todos los puntos de la tabla de arriba.
+
+Lo que faltaba es **con cuánto ruido se mide ese estadístico**. Las dos series de 40 del
+24 ago 2026 —el mismo día, el mismo commit— dan la única observación que hay:
+
+| | serie A | serie B | diferencia |
+|---|---|---|---|
+| mediana | 6198 | 6208 | **10** |
+| p90 | 6262 | 6327 | **65** |
+
+**Las dos series difirieron 10 ms en la mediana y 65 ms en el p90.** El repo publicó
+durante cuatro días la primera cifra bajo el título *«el protocolo reproduce a 10 ms»* y
+**nunca restó la segunda**, que es la del estadístico que decide.
+
+**De dónde sale la diferencia, y es método y no mala suerte:** el p90 de n=40 se estima
+con unas **cuatro** observaciones de la cola; la mediana usa las **cuarenta**. Un
+estimador de cola con cuatro puntos se mueve más, y por eso **el número que decide es el
+menos estable de los dos que se publican**.
+
+**Qué se hace con eso.** No cambiar de estadístico —la mediana escondería la cola, que es
+lo que un techo vigila— sino **medir dos veces**: desde
+[ADR-0048](adr/0048-el-techo-se-decide-con-dos-series.md) el cierre son **dos series de
+40** y el techo se da por roto **sólo si los dos p90 lo pasan**; una por encima y otra por
+debajo sale como **no concluyente**, con su propio código de salida.
+
+**Y la incertidumbre de este número sigue declarada como lo que es:** con n=2 no se
+publica una tasa. No se afirma que la reproducibilidad del p90 *sea* 65 ms; se afirma que
+**estas dos** series difirieron eso. La serie que lo convertiría en una estimación se
+construye sola a partir de ahora, dos p90 por cierre. Límite 119.
+
 **+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
 `mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de
 n=3 en frío— y los **~806 ms** restantes son los tests y sus 17 propiedades de
@@ -590,6 +624,13 @@ es la publicada en [`RESULTS.md`](../RESULTS.md). Regla que queda:
 
 Cada vez que una cifra publicada estuvo mal. `RESULTS.md` se lee como la verdad de
 hoy; esto es cómo se llegó a ella.
+
+**«El protocolo reproduce a 10 ms» nombraba el estadístico equivocado, 29 ago 2026.** El
+título no decía «la mediana», y los 10 ms son de la mediana; el techo decide contra el
+p90, cuyas dos series difieren **65**. La corrección no necesitó medir nada: los dos
+números llevaban cuatro días publicados en la misma tabla, uno encima del otro. Lo que
+publicó de más fue la frase *«el p90 pasa del techo por 31 ms»* del 29 ago, con **31
+menos de la mitad de 65**. Ver el apartado de arriba y el límite 119.
 
 **Sobre qué corrida se publicaba.** La primera tabla citaba la corrida
 `32482756941` del commit `e32c846`, que es el **pack de arranque**, no L0. Se

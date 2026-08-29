@@ -243,7 +243,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 218 de 681 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 218 de 692 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -532,7 +532,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 14. **LA PUERTA ESTÁ EN ROJO POR EL TECHO. LA DECISIÓN NO SE TOMA HOY: SE TOMA EN EL
     CIERRE, CON LAS 40.** Abierta el 29 ago 2026, al entrar la portada.
 
-    **No es un `make fast` que falle**: los 681 tests, el linter, los tipos y el contrato
+    **No es un `make fast` que falle**: los 692 tests, el linter, los tipos y el contrato
     de capas están en verde y las 40 corridas salieron con `rc=0`. Lo que suena es la
     **alarma del techo**: p90 **8231** contra **8200** —**31 ms**—, n=40,
     `uv run python scripts/medir_puerta.py`. El paso 1 de ADR-0022 ha valido **498 ms
@@ -552,8 +552,20 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
     | reestructurar | Su primer peldaño —`pytest -n auto`— **se gastó en L5** (ADR-0043). El segundo es mover suites a `full`, del que el propio ADR dice que es lo que el límite 25 llama enseñar a ignorar el rojo |
 
     **Así que lo que queda es re-justificar el techo con la fórmula, y eso es el cierre.**
-    Hasta entonces **`.techos` no se toca** y la portada publica los dos números con la
-    alarma sonando, que es lo que tiene que hacer una alarma.
+    Hasta entonces **`.techos` no se toca** y la portada publica los dos números diciendo
+    que la última serie midió por encima, que es lo que tiene que hacer una alarma.
+
+    **Y los 31 ms ni siquiera están medidos, descubierto el 29 ago 2026 restando dos
+    números publicados el 24.** El techo se compara contra el **p90**, y la única
+    evidencia de reproducibilidad del repo era sobre la **mediana**: las dos series de
+    aquel día **difirieron 10 ms en la mediana y 65 ms en el p90**, los dos números en la
+    misma tabla y **la resta sin hacer**. **31 es menos de la mitad de 65**, así que con
+    una serie no se puede afirmar que la alarma suene. No cambia la decisión —sigue siendo
+    del cierre— pero cambia el protocolo: [ADR-0048](docs/adr/0048-el-techo-se-decide-con-dos-series.md)
+    pasa el cierre a **dos series de 40**, da el techo por roto **sólo si los dos p90 lo
+    pasan** y añade un tercer código de salida para el caso del medio. Límite **119**, y
+    **no** es el 116: aquél dice que el término del medio de la fórmula no está medido;
+    éste, que el primero no tiene medida de reproducibilidad en la forma en que decide.
 
     **Lo que sí se ha hecho, porque en el cierre ya no se podría medir:**
 
@@ -582,6 +594,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 | TEDS compara contenido CANONICO | [`0020`](docs/adr/0020-teds-compara-contenido-canonico.md) | La referencia no normaliza y cuenta el marcado inline. El golden se genera dandole el mismo render canonico |
 | La forma canonica del arbol de TEDS | [`0021`](docs/adr/0021-forma-canonica-del-arbol-de-teds.md) | `<thead>` con el prefijo maximo de cabecera, todo `<td>`, el hueco sin nodo. Un `<tbody>` de mas cuesta 0,667 |
 | El techo de la puerta AVISA, el manual BLOQUEA | [`0022`](docs/adr/0022-el-techo-de-la-puerta.md) | Techo vigente: 8200 ms local · 21000 ms en CI, re-justificado en cada cierre con 40 corridas. **Bajó** en L5, la primera vez. **No toca el manual**: §15 y sus 90 s no cambian |
+| El techo se decide con **DOS** series de 40 | [`0048`](docs/adr/0048-el-techo-se-decide-con-dos-series.md) | Modifica a 0022 en un punto: roto sólo si **los dos** p90 pasan, y un código 3 para el caso del medio. Las dos series del 24 ago difirieron 10 ms en la mediana y **65 en el p90**, y el techo decide contra el p90 |
 | El TEDS negativo se recorta SOLO al publicar | [`0023`](docs/adr/0023-teds-negativo-suelo-al-publicar.md) | El calculo no se toca —romperia el criterio de L2—; `para_publicar()` recorta, y se dice cuantos se recortaron |
 | Un documento con varias tablas: la nota es la media | [`0024`](docs/adr/0024-teds-batch-varias-tablas-por-documento.md) | `teds_batch` sobrescribia por clave y la tabla mal extraida desaparecia con cobertura 1,0. Regla de oro 6 rota |
 | La portada se GENERA desde `informe.json`, y son dos salidas | [`0047`](docs/adr/0047-la-portada-se-genera-desde-el-informe.md) | `docs/index.html` y el bloque `PORTADA` del README, con **cero** cifras tecleadas y la regla R9 comprobandolas en la puerta. Una portada escrita a mano seria la copia catorce del titular y la primera en quedarse vieja |

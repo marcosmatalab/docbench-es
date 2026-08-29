@@ -227,8 +227,8 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--rule);
     <div><dt>pre-registro</dt><dd>Cada criterio se escribe <b>antes</b> de medir, con su comando. Cuando sale en contra, sale publicado en contra: este hito declaró <b>inválido</b> uno de sus propios criterios porque no nombraba la columna que lo medía.</dd></div>
     <div><dt>mutantes</dt><dd><b data-cifra="mutantes">29</b> mutantes contra el código de producción, todos mueren, y un <b>control negativo</b> que demuestra que la suite no mata por accidente. Uno de ellos le quita el panel a esta misma página.</dd></div>
     <div><dt>derivadas</dt><dd>Un número derivado <b>no se teclea</b>. Las <b>70</b> cifras de esta página las recalcula la puerta contra <code>runs/l5/informe.json</code> y contra el censo del repo: ni una está escrita en la plantilla.</dd></div>
-    <div><dt>límites</dt><dd><b data-cifra="limites">118</b> cosas que este banco <b>no</b> mide, escritas el día que se descubren y no al final.</dd></div>
-    <div><dt>la puerta</dt><dd>El techo <b>bajó</b> de <span data-cifra="techo_anterior">8.500</span> a <span data-cifra="techo">8.200</span> ms este hito, por una regla escrita antes de medirlo: es la primera vez que baja. Y el último p90 medido son <b data-cifra="p90">8.231</b> ms, o sea que <b>la alarma está sonando</b>. No se sube un techo para que deje de avisar: la decisión está abierta y escrita, con el coste medido y atribuido.</dd></div>
+    <div><dt>límites</dt><dd><b data-cifra="limites">119</b> cosas que este banco <b>no</b> mide, escritas el día que se descubren y no al final.</dd></div>
+    <div><dt>la puerta</dt><dd>El techo <b>bajó</b> de <span data-cifra="techo_anterior">8.500</span> a <span data-cifra="techo">8.200</span> ms este hito, por una regla escrita antes de medirlo: es la primera vez que baja. Y la última serie midió <b data-cifra="p90">8.231</b> ms de p90, o sea <b>por encima del techo</b>. No se sube un techo para que deje de avisar: la decisión está abierta y escrita, con el coste medido y atribuido. Y una sola serie <b>avisa pero no decide</b>: el protocolo son dos, y el techo se da por roto sólo si las dos miden por encima (ADR-0048).</dd></div>
     <div><dt>coste</dt><dd><b data-cifra="coste">0,00 €</b>, medido y no supuesto. Y la predicción del reloj falló: <b data-cifra="error_estimador">+74,6%</b> contra lo medido, publicado con sus dos operandos sin redondear.</dd></div>
   </dl>
 </section>
@@ -236,7 +236,7 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--rule);
 <section>
   <p class="eyebrow">Lo que este banco no mide</p>
   <h2>Cuatro de los
-  <span data-cifra="limites">118</span>, los que
+  <span data-cifra="limites">119</span>, los que
   más cambian cómo se leen los números de arriba</h2>
   <ul class="limits">
     <li><b>El corpus es el BOE</b> que está mejor maquetado que la media de una empresa. Estos números son un <b>techo optimista</b> para cualquier otra entidad.</li>
@@ -251,8 +251,8 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--rule);
   <h2>Cuatro puertas</h2>
   <div class="doors">
     <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/RESULTS.md"><span class="f">RESULTS.md</span><span class="d">Cada número con el comando que lo produce y el sello del árbol donde se midió.</span></a>
-    <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/LIMITS.md"><span class="f">LIMITS.md</span><span class="d">Los <span data-cifra="limites">118</span> límites. Dónde se rompe cada supuesto, con fecha.</span></a>
-    <a class="door" href="https://github.com/marcosmatalab/docbench-es/tree/main/docs/adr"><span class="f">docs/adr/</span><span class="d"><span data-cifra="adr">32</span> decisiones de diseño, cada una con su alternativa descartada.</span></a>
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/LIMITS.md"><span class="f">LIMITS.md</span><span class="d">Los <span data-cifra="limites">119</span> límites. Dónde se rompe cada supuesto, con fecha.</span></a>
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/tree/main/docs/adr"><span class="f">docs/adr/</span><span class="d"><span data-cifra="adr">33</span> decisiones de diseño, cada una con su alternativa descartada.</span></a>
     <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/runs/l5/informe.json"><span class="f">runs/l5/informe.json</span><span class="d">La salida cruda de la campaña. Todo lo de esta página sale de aquí.</span></a>
   </div>
 </section>

@@ -216,6 +216,12 @@ def _puerta(c: Mapping[str, Cifra]) -> str:
     Y cuando suena se dice **por qué no se ha apagado**: subir un techo después de
     romperlo es la salida cómoda que ADR-0022 prohíbe. Una alarma que se apaga sola no
     es una alarma.
+
+    **Y desde ADR-0048 se dice también lo que una serie NO puede decir.** «La alarma está
+    sonando» era una afirmación sobre una serie de un estadístico cuya única diferencia
+    observada entre dos series es de 65 ms, contra un margen de 31. El verbo cambia —«la
+    última serie midió por encima»— y la página dice que eso avisa y no decide. Es más
+    largo y es lo que hay medido.
     """
     p90 = int(c["p90"].valor.replace(".", ""))
     techo = int(c["techo"].valor.replace(".", ""))
@@ -226,9 +232,11 @@ def _puerta(c: Mapping[str, Cifra]) -> str:
     if p90 <= techo:
         return f"p90 de {marca(c, 'p90', 'b')} ms sobre 40 corridas en frío. {baja}"
     return (
-        f"{baja} Y el último p90 medido son {marca(c, 'p90', 'b')} ms, o sea que "
-        "<b>la alarma está sonando</b>. No se sube un techo para que deje de avisar: "
-        "la decisión está abierta y escrita, con el coste medido y atribuido."
+        f"{baja} Y la última serie midió {marca(c, 'p90', 'b')} ms de p90, o sea "
+        "<b>por encima del techo</b>. No se sube un techo para que deje de avisar: la "
+        "decisión está abierta y escrita, con el coste medido y atribuido. Y una sola "
+        "serie <b>avisa pero no decide</b>: el protocolo son dos, y el techo se da por "
+        "roto sólo si las dos miden por encima (ADR-0048)."
     )
 
 

@@ -4,6 +4,13 @@
 §15 fija el presupuesto en 90 s y eso no cambia. Esto añade una alarma **por
 debajo** de esa promesa
 
+> **MODIFICADO por [ADR-0048](0048-el-techo-se-decide-con-dos-series.md), 29 ago 2026, en
+> un punto y sólo en uno: el protocolo del cierre son ahora DOS series de 40 y el techo se
+> da por roto sólo si LOS DOS p90 lo pasan.** El estadístico no cambia —sigue siendo el
+> p90— ni la fórmula de re-justificación. La razón está restada en la tabla de
+> `RESULTS.md` que ya existía: las dos series del 24 ago 2026 **difirieron 10 ms en la
+> mediana y 65 ms en el p90**, y este ADR decide contra el p90. Ver límite 119.
+
 ## Techo vigente
 
 <!-- TECHO-VIGENTE: lo comprueba scripts/derivadas.py contra `.techos`. NO se teclea. -->
@@ -239,6 +246,10 @@ promesa publicada. El aviso, en cambio, aparece en cada PR y obliga a tratarlo e
 el siguiente cierre.
 
 ### Cómo se re-justifica
+
+> **Corregido por ADR-0048:** donde este párrafo dice «se miden 40 corridas», ahora son
+> **dos series de 40**, y el techo se considera roto sólo si **los dos** p90 lo pasan. Lo
+> demás de este apartado sigue en vigor tal cual.
 
 Al cerrar cada hito: se miden **40 corridas en frío en 10 tandas**, se publica
 mediana, p90, máximo y desviación, y se fija el techo del hito siguiente como

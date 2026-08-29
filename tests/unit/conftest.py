@@ -158,6 +158,11 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     # `censo_tablas.tablas()` devolvía `{}` sin corpus y la predicción salía DISTINTA en
     # vez de fallar. Se le mueve el corpus y se exige rojo.
     "test_datos_fuera_de_git.py": "test_el_censo_de_tablas_no_degrada_sin_corpus",
+    # La regla de decisión del techo (ADR-0048) y R10. Se nombra el control de R10 —una
+    # resta publicada que no sale de su tabla— porque es el que ejerce un sujeto contra
+    # algo deliberadamente malo; el de `veredicto()` está al lado y es el caso del medio:
+    # una serie por encima y otra por debajo NO es verde.
+    "test_dos_series.py": "test_una_resta_entre_series_que_no_sale_de_la_tabla_se_caza",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

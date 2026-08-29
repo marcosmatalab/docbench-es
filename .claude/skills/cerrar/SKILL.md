@@ -80,13 +80,13 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 29 mutantes mueren» habla de esos 29 huecos, no de la
-   suite: hoy el arnés cubre 218 de 681 tests, o sea que los 463 tests que quedan
+   suite: hoy el arnés cubre 218 de 692 tests, o sea que los 474 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **678 de 681 tests protegidos por algo** y **3 tests sin ningún control**.
+   **689 de 692 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -193,16 +193,34 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
    filtrar. Trátalos uno a uno delante del usuario: arreglado, descartado con razón
    escrita, o anotado en LIMITS.md. Un hallazgo sin tratar deja el hito abierto.
 
-6. **La puerta, con el protocolo de ADR-0022.** Ejecuta y **pega la salida**:
+6. **La puerta, con el protocolo de ADR-0022 y ADR-0048.** Ejecuta y **pega la salida**:
 
    ```bash
    uv run python scripts/medir_puerta.py --techo <el del hito>; echo $?
    ```
 
-   40 corridas en frío en 10 tandas, `.hypothesis` borrada, corridas con `rc != 0`
-   descartadas. Devuelve 1 si el p90 pasa del techo. **Publica mediana, p90,
-   máximo y desviación**, y fija el techo del hito siguiente con la proyección
-   escrita.
+   **DOS series de 40 corridas en frío**, 10 tandas de 4 cada una, `.hypothesis` borrada,
+   corridas con `rc != 0` descartadas. **Publica mediana, p90, máximo y desviación de
+   cada serie**, más **el par restado**, y fija el techo del hito siguiente con la
+   proyección escrita.
+
+   **Y son dos series desde ADR-0048, con su código de salida:**
+
+   | Cuántas pasan del techo | Código | Qué se hace |
+   |---|---|---|
+   | las dos | **1** | roto: `--durations` primero, después las tres concesiones |
+   | una | **3** | **no concluyente**: no se sube el techo **y no se declara roto**. Se anota el par |
+   | ninguna | **0** | dentro |
+
+   **Por qué dos y no una.** El techo se compara contra el **p90**, y la única evidencia
+   de reproducibilidad que este repo tuvo durante cuatro días era sobre la **mediana**:
+   las dos series del 24 ago 2026 **difirieron 10 ms en la mediana y 65 ms en el p90**,
+   los dos números en la misma tabla y la resta sin hacer. Con eso, discutir un margen de
+   31 ms era una moneda al aire. Cuesta ~40 minutos en vez de ~20, y **construye sola la
+   serie de reproducibilidad del p90 que hoy no existe**. Ver límite 119.
+
+   **Con n=2 se publica el par, nunca una tasa.** No «la reproducibilidad del p90 es N
+   ms», sino «estas dos series difirieron N».
 
    **SI EL p90 SE PASA, EL PRIMER PASO ES `--durations`. Como paso, no como
    ocurrencia:**
