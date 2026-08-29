@@ -442,12 +442,12 @@ ADR-0022 porque cambiarla haría incomparables todos los puntos de la tabla de a
 Lo que faltaba es **con cuánto ruido se mide ese estadístico**. Las dos series de 40 del
 24 ago 2026 —el mismo día, el mismo commit— dan la única observación que hay:
 
-| | serie A | serie B | diferencia |
+| 24 ago 2026 | serie A | serie B | diferencia |
 |---|---|---|---|
 | mediana | 6198 | 6208 | **10** |
 | p90 | 6262 | 6327 | **65** |
 
-**Las dos series difirieron 10 ms en la mediana y 65 ms en el p90.** El repo publicó
+**Las series del 24 ago 2026 difirieron 10 ms en la mediana y 65 ms en el p90.** El repo publicó
 durante cuatro días la primera cifra bajo el título *«el protocolo reproduce a 10 ms»* y
 **nunca restó la segunda**, que es la del estadístico que decide.
 
@@ -466,6 +466,19 @@ debajo sale como **no concluyente**, con su propio código de salida.
 publica una tasa. No se afirma que la reproducibilidad del p90 *sea* 65 ms; se afirma que
 **estas dos** series difirieron eso. La serie que lo convertiría en una estimación se
 construye sola a partir de ahora, dos p90 por cierre. Límite 119.
+
+**Segunda observación, el 29 ago 2026 y ya bajo la regla nueva** (`1d1468a`, árbol
+limpio): p90 **8181 y 8153**, **las series del 29 ago 2026 difirieron 22 ms en la mediana
+y 28 ms en el p90**. Van las dos, no su media:
+
+| 29 ago 2026 | serie A | serie B | diferencia |
+|---|---:|---:|---:|
+| mediana | 8076 | 8054 | **22** |
+| p90 | 8181 | 8153 | **28** |
+
+**Dos observaciones de la diferencia entre series —65 y 28— siguen sin ser una tasa**, y
+además son de árboles distintos: lo que se publica es el par, y el que decide es el peor
+de los dos p90.
 
 **+2090 ms con 67 tests más**, y el reparto **medido**: **+1284 ms** son
 `mypy --strict` tipando ahora también `tests/` —1820 ms contra 536 ms, media de

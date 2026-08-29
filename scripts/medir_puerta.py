@@ -13,7 +13,7 @@ comparación entre hitos.
 
 **Y son DOS series desde ADR-0048, no una.** El techo se compara contra el p90, y la
 unica evidencia de reproducibilidad que este repo tuvo durante cuatro dias era sobre la
-MEDIANA: dos series del 24 ago 2026 difirieron 10 ms en mediana y **65 en el p90**, los
+MEDIANA: las series del 24 ago 2026 difirieron 10 ms en la mediana y **65 ms en el p90**, los
 dos numeros en la misma tabla y la resta sin hacer. Decidir un techo con un margen de 31
 ms usando un estimador cuya unica diferencia observada entre series es de 65 es una
 moneda al aire. La regla y su alternativa descartada —gatear sobre la mediana, que

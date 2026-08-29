@@ -42,11 +42,13 @@ def _puerta(v: Mapping[str, str]) -> str:
     decirlo se lee como que está por debajo."""
     p90 = int(v["p90"].replace(".", ""))
     if p90 <= int(v["techo"].replace(".", "")):
-        return f"puerta p90 **{v['p90']} ms** bajo un techo de **{v['techo']}**."
+        return (
+            f"puerta p90 **{v['p90']} ms** bajo un techo de **{v['techo']}**, y es el"
+            " **peor de dos series** de 40 (ADR-0048)."
+        )
     return (
-        f"puerta p90 **{v['p90']} ms** contra un techo de **{v['techo']}** en la última"
-        " serie: **por encima**, y el techo no se ha subido para callarlo. Una serie"
-        " avisa, dos deciden (ADR-0048)."
+        f"puerta p90 **{v['p90']} ms** contra un techo de **{v['techo']}**, el peor de"
+        " dos series: **por encima**, y el techo no se ha subido para callarlo."
     )
 
 

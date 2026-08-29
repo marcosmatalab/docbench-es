@@ -1,4 +1,4 @@
-"""**R10** · la diferencia entre las dos series, contra la resta de su propia tabla.
+"""**R10** · cada resta entre series publicada, contra la tabla de la que sale.
 
 ## El hallazgo que la justifica, y estaba en una columna publicada
 
@@ -9,20 +9,20 @@ y **nadie los restó nunca**: son **65 ms**, más del doble del margen de 31 ms 
 se estaba discutiendo si el techo suena.
 
 > **Es la clase de la que este repo ya lleva cinco: una cifra que está en una columna y
-> que la prosa de al lado no usa.** El guardián de derivadas existe justo para eso, y
-> esta forma se le escapaba porque la resta no estaba escrita en ninguna parte —no había
-> nada que contradijera nada—.
+> que la prosa de al lado no usa.** Al guardián de derivadas se le escapaba porque la
+> resta no estaba escrita en ninguna parte — no había nada que contradijera nada.
 
-## Qué comprueba
+## Qué comprueba, y por qué las tablas van ETIQUETADAS
 
-Lee la tabla de `RESULTS.md` —la que tiene `serie A` y `serie B` en su cabecera—, hace
-las dos restas, y las compara con **todas** las copias de la frase canónica
+Desde ADR-0048 **cada cierre deja un par**, así que las tablas de series se multiplican y
+«la tabla de las dos series» deja de identificar a ninguna. La primera celda de la
+cabecera es su **etiqueta** —`24 ago 2026`, `29 ago 2026`— y la frase canónica la nombra:
 
-    difirieron **10 ms** en la mediana y **65 ms** en el p90
+    las series del 24 ago 2026 difirieron **10 ms** en la mediana y **65 ms** en el p90
 
-allí donde esté escrita, incluidos los **docstrings de los dos scripts** que implementan
-la regla de decisión: una copia en el código diverge igual de bien que una en la prosa, y
-la sexta copia del error del estimador ya enseñó que el sitio no importa.
+Con eso se comprueban cuatro cosas: que cada frase sale de la tabla que nombra, que las
+**copias** de una tabla en otro documento coinciden con la original, que la columna
+`diferencia` de cada copia es la resta, y que la etiqueta que cita una frase **existe**.
 
 **Y avisa si no ve ninguna copia**, que es el modo de fallo por defecto de toda regla
 basada en patrones: si nadie escribe ya la forma canónica, el silencio pasa por
@@ -42,46 +42,50 @@ sys.path.insert(0, str(RAIZ / "scripts"))
 from rota import Rota  # noqa: E402
 
 FUENTE = "RESULTS.md"
-"""Dónde vive la tabla. **Es la fuente porque es donde el instrumento la dejó publicada**
-—las dos series son del 24 ago 2026, anteriores al modo `--series`—, y la aritmética
-interna de lo publicado es exactamente lo que `derivadas.py` declara comprobar."""
+"""Dónde viven las tablas. **Es la fuente porque es donde el instrumento las deja
+publicadas**, y la aritmética interna de lo publicado es lo que `derivadas.py` declara
+comprobar."""
 
 CON_EL_PAR: tuple[str, ...] = (
     "RESULTS.md",
     "LIMITS.md",
     "ESTADO.md",
     "docs/metrics.md",
+    "docs/adr/0022-el-techo-de-la-puerta.md",
     "docs/adr/0048-el-techo-se-decide-con-dos-series.md",
+    ".claude/skills/cerrar/SKILL.md",
     "scripts/medir_puerta.py",
     "scripts/serie_puerta.py",
 )
-"""Dónde se busca la frase. **Los dos scripts están dentro a propósito.**"""
+"""Dónde se busca. **Los dos scripts y la skill están dentro a propósito:** una copia en
+un docstring o en un guion diverge igual de bien que una en la prosa, y la sexta copia del
+error del estimador ya enseñó que el sitio da igual."""
 
 FRASE = re.compile(
-    r"difirieron\s+\*{0,2}(\d+)\s*ms\*{0,2}\s+en\s+(?:la\s+)?mediana"
-    r"\s+y\s+\*{0,2}(\d+)\s*(?:ms)?\*{0,2}\s+en\s+el\s+p90"
+    r"las series del (?P<etiqueta>[\w\s]{5,20}?) difirieron\s+\*{0,2}(?P<mediana>\d+)\s*ms\*{0,2}"
+    r"\s+en\s+la\s+mediana\s+y\s+\*{0,2}(?P<p90>\d+)\s*(?:ms)?\*{0,2}\s+en\s+el\s+p90"
 )
 FILAS = ("mediana", "p90")
 COLUMNAS = ("serie A", "serie B", "diferencia")
+
+Tabla = dict[str, tuple[int, int, int | None]]
 
 
 def _celda(texto: str) -> str:
     return texto.strip().strip("*`").strip()
 
 
-def _tabla(texto: str) -> dict[str, tuple[int, int, int | None]]:
-    """Las dos series, **leídas de la tabla**. Ni una cifra tecleada en este fichero.
+def _tablas(texto: str) -> dict[str, Tabla]:
+    """Las tablas de series de un texto, **por su etiqueta**.
 
-    La tabla se reconoce por su cabecera —`serie A` y `serie B`— y no por su número de
-    línea: un documento que crece por arriba movería el número y no la cabecera. Y las
-    columnas se leen **por su posición en esa cabecera**, no por «los dos primeros
-    números de la fila»: la tabla lleva ahora una columna `diferencia` y una regla que
-    contara números la sumaría a la cuenta sin enterarse.
-
-    Devuelve, por fila, `(serie A, serie B, la diferencia PUBLICADA o None)`.
+    Se reconocen por la cabecera —`serie A` y `serie B`— y las columnas se leen **por su
+    posición en esa cabecera**, no por «los dos primeros números de la fila»: las tablas
+    llevan una columna `diferencia` y una regla que contara números la sumaría a la cuenta
+    sin enterarse. Cada fila devuelve `(serie A, serie B, la diferencia PUBLICADA o None)`.
     """
-    par: dict[str, tuple[int, int, int | None]] = {}
+    tablas: dict[str, Tabla] = {}
     columnas: dict[str, int] = {}
+    etiqueta = ""
     for linea in texto.splitlines():
         if not linea.lstrip().startswith("|"):
             columnas = {}
@@ -89,6 +93,8 @@ def _tabla(texto: str) -> dict[str, tuple[int, int, int | None]]:
         celdas = [_celda(c) for c in linea.strip().strip("|").split("|")]
         if "serie A" in celdas and "serie B" in celdas:
             columnas = {c: i for i, c in enumerate(celdas) if c}
+            etiqueta = celdas[0]
+            tablas.setdefault(etiqueta, {})
             continue
         if not columnas or not celdas or celdas[0] not in FILAS:
             continue
@@ -98,15 +104,19 @@ def _tabla(texto: str) -> dict[str, tuple[int, int, int | None]]:
         if not all(re.fullmatch(r"\d+", c) for c in crudas[:2]):
             continue
         publicada = int(crudas[2]) if re.fullmatch(r"\d+", crudas[2]) else None
-        par[celdas[0]] = (int(crudas[0]), int(crudas[1]), publicada)
-    return par
+        tablas[etiqueta][celdas[0]] = (int(crudas[0]), int(crudas[1]), publicada)
+    return tablas
 
 
 @lru_cache(maxsize=1)
-def _el_par() -> dict[str, tuple[int, int, int | None]]:
-    """La tabla de la FUENTE, leída una vez por corrida. `lru_cache` por la misma razón
-    que en `reglas_de_censo`: la regla se llama una vez por documento."""
-    return _tabla((RAIZ / FUENTE).read_text(encoding="utf-8"))
+def _las_fuentes() -> dict[str, Tabla]:
+    """Las tablas de la FUENTE, leídas una vez por corrida. `lru_cache` por la misma
+    razón que en `reglas_de_censo`: la regla se llama una vez por documento."""
+    return _tablas((RAIZ / FUENTE).read_text(encoding="utf-8"))
+
+
+def _restas(tabla: Tabla) -> dict[str, int]:
+    return {clave: abs(v[1] - v[0]) for clave, v in tabla.items()}
 
 
 def diferencias_entre_series(_texto: str, documento: str) -> list[Rota]:
@@ -117,19 +127,22 @@ def diferencias_entre_series(_texto: str, documento: str) -> list[Rota]:
     """
     if documento != FUENTE:
         return []
-    par = _el_par()
-    if set(par) != set(FILAS):
-        return [
-            Rota(
-                FUENTE,
-                0,
-                "la tabla de las dos series (cabecera `serie A` / `serie B`)",
-                f"filas vistas: {sorted(par) or 'ninguna'}",
-                f"hacen falta {list(FILAS)}",
-            )
-        ]
-    esperadas = {clave: abs(v[1] - v[0]) for clave, v in par.items()}
-    fuera: list[Rota] = []
+    fuentes = _las_fuentes()
+    fuera = [
+        Rota(FUENTE, 0, "una tabla de series sin etiqueta en su primera celda", "«»", "24 ago 2026")
+        for etiqueta in fuentes
+        if not etiqueta
+    ]
+    incompletas = [e for e, t in fuentes.items() if set(t) != set(FILAS)]
+    fuera += [
+        Rota(
+            FUENTE, 0, f"la tabla de series «{e}»", f"filas: {sorted(fuentes[e])}", str(list(FILAS))
+        )
+        for e in incompletas
+    ]
+    if not fuentes or incompletas:
+        return fuera or [Rota(FUENTE, 0, "tablas de series (cabecera `serie A`)", "ninguna", ">=1")]
+
     copias = 0
     for nombre in CON_EL_PAR:
         ruta = RAIZ / nombre
@@ -137,38 +150,65 @@ def diferencias_entre_series(_texto: str, documento: str) -> list[Rota]:
             fuera.append(Rota(nombre, 0, "un documento de CON_EL_PAR que ya no existe", nombre, ""))
             continue
         contenido = ruta.read_text(encoding="utf-8")
-        for clave, valores in _tabla(contenido).items():
-            if nombre != FUENTE and valores[:2] != par[clave][:2]:
+        for etiqueta, tabla in _tablas(contenido).items():
+            if etiqueta not in fuentes:
                 fuera.append(
                     Rota(
                         nombre,
                         0,
-                        f"copia de la fila `{clave}` de las dos series",
-                        str(valores[:2]),
-                        str(par[clave][:2]),
+                        "una tabla de series cuya etiqueta no está en la fuente",
+                        etiqueta,
+                        str(sorted(fuentes)),
                     )
                 )
-            if valores[2] is not None and valores[2] != esperadas[clave]:
-                fuera.append(
-                    Rota(
-                        nombre,
-                        0,
-                        f"la columna `diferencia` de {clave}",
-                        str(valores[2]),
-                        str(esperadas[clave]),
-                    )
-                )
-        for m in FRASE.finditer(contenido):
-            copias += 1
-            publicado = {"mediana": int(m.group(1)), "p90": int(m.group(2))}
-            for clave, valor in publicado.items():
-                if valor != esperadas[clave]:
+                continue
+            for clave, valores in tabla.items():
+                if nombre != FUENTE and valores[:2] != fuentes[etiqueta][clave][:2]:
                     fuera.append(
                         Rota(
                             nombre,
-                            contenido[: m.start()].count("\n") + 1,
-                            f"la resta de las dos series en {clave} ({par[clave][:2]})",
-                            str(valor),
+                            0,
+                            f"copia de la fila `{clave}` de «{etiqueta}»",
+                            str(valores[:2]),
+                            str(fuentes[etiqueta][clave][:2]),
+                        )
+                    )
+                esperada = _restas(fuentes[etiqueta])[clave]
+                if valores[2] is not None and valores[2] != esperada:
+                    fuera.append(
+                        Rota(
+                            nombre,
+                            0,
+                            f"la columna `diferencia` de {clave} en «{etiqueta}»",
+                            str(valores[2]),
+                            str(esperada),
+                        )
+                    )
+        for m in FRASE.finditer(contenido):
+            copias += 1
+            linea = contenido[: m.start()].count("\n") + 1
+            etiqueta = m.group("etiqueta").strip()
+            if etiqueta not in fuentes:
+                fuera.append(
+                    Rota(
+                        nombre,
+                        linea,
+                        "una frase que cita una tabla de series que no existe",
+                        etiqueta,
+                        str(sorted(fuentes)),
+                    )
+                )
+                continue
+            esperadas = _restas(fuentes[etiqueta])
+            for clave in FILAS:
+                publicado = int(m.group(clave))
+                if publicado != esperadas[clave]:
+                    fuera.append(
+                        Rota(
+                            nombre,
+                            linea,
+                            f"la resta de «{etiqueta}» en {clave} ({fuentes[etiqueta][clave][:2]})",
+                            str(publicado),
                             str(esperadas[clave]),
                         )
                     )

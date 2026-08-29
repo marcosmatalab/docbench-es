@@ -80,13 +80,13 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
 
    **Publica el n al lado de la tabla, y publica también cuántos tests quedan
    FUERA del arnés.** «Los 29 mutantes mueren» habla de esos 29 huecos, no de la
-   suite: hoy el arnés cubre 218 de 692 tests, o sea que los 474 tests que quedan
+   suite: hoy el arnés cubre 218 de 693 tests, o sea que los 475 tests que quedan
    fuera no están medidos por mutación.
 
    **Y publica las DOS contabilidades, no sólo ésa.** La cobertura del arnés mide
    el arnés; lo que importa es cuántos tests tienen **algo** que demuestre que se
    pondrían rojos —un mutante o un control negativo en su propio fichero—: hoy,
-   **689 de 692 tests protegidos por algo** y **3 tests sin ningún control**.
+   **690 de 693 tests protegidos por algo** y **3 tests sin ningún control**.
    Publicar sólo la primera exagera el hueco; publicar sólo la segunda lo esconde.
    Las dos, con el criterio del límite 60 al lado.
 
@@ -214,7 +214,7 @@ fallaron —`stop-gate.sh` con `runs/*/fixtures`, este mismo guion sin README, y
 
    **Por qué dos y no una.** El techo se compara contra el **p90**, y la única evidencia
    de reproducibilidad que este repo tuvo durante cuatro días era sobre la **mediana**:
-   las dos series del 24 ago 2026 **difirieron 10 ms en la mediana y 65 ms en el p90**,
+   **las series del 24 ago 2026 difirieron 10 ms en la mediana y 65 ms en el p90**,
    los dos números en la misma tabla y la resta sin hacer. Con eso, discutir un margen de
    31 ms era una moneda al aire. Cuesta ~40 minutos en vez de ~20, y **construye sola la
    serie de reproducibilidad del p90 que hoy no existe**. Ver límite 119.

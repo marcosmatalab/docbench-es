@@ -55,10 +55,20 @@ TECHO_CI_MS=21000
 #
 # `PUERTA_P90_MS` es EL ULTIMO p90 MEDIDO, no el que justifico el techo. Los dos
 # coincidieron mientras la puerta estuvo por debajo; el 29 ago 2026, al entrar la portada,
-# dejaron de coincidir: 8231 medido contra un techo de 8200, o sea 31 ms. **El techo NO se ha movido**
-# —ADR-0022 prohibe subirlo despues de romperlo— y la portada publica los dos numeros uno
-# al lado del otro, con la alarma sonando, porque escribir en presente un p90 que ya no se
-# mide seria el peor fallo posible en la puerta de entrada del proyecto.
+# dejaron de coincidir: 8231 medido contra un techo de 8200, o sea 31 ms.
+#
+# Y DESDE ADR-0048 HAY DOS p90 POR MEDICION, ASI QUE ESTE VALOR ES EL PEOR DE LOS DOS.
+# El primer par bajo la regla nueva, sobre el arbol limpio `1d1468a`, dio 8181 y 8153 —los
+# dos por debajo del techo, rc=0—, asi que aqui va el 8181. El peor y no la media: un
+# techo redondea hacia arriba o deja de ser un techo, y una alarma que publicara el mejor
+# de sus dos numeros estaria eligiendo el que le conviene. Las dos series enteras, con su
+# comando y con lo que NO dicen, en `RESULTS.md`.
+#
+# Y aquel 8231 no era reproducible: el mismo arbol, con once tests mas y sin una sola
+# optimizacion en medio, mide hoy 8181 y 8153. Los 31 ms de exceso estaban dentro del
+# ruido del propio estimador —las series del 24 ago 2026 difirieron 10 ms en la mediana y
+# 65 ms en el p90—, que es el limite 119 entero. **El techo NO se ha movido** —ADR-0022
+# prohibe subirlo despues de romperlo, y ahora tampoco haria falta—.
 # El que justifico el techo de 8200 fue 7845, al cerrar L5, y esta arriba en la prosa.
 TECHO_LOCAL_ANTERIOR_MS=8500
-PUERTA_P90_MS=8231
+PUERTA_P90_MS=8181

@@ -119,11 +119,12 @@ def _repo(tmp_path: Path, tabla: str, prosa: str) -> None:
     (tmp_path / "copia.md").write_text(prosa, encoding="utf-8")
     r10.RAIZ = tmp_path
     r10.CON_EL_PAR = ("RESULTS.md", "copia.md")
-    r10._el_par.cache_clear()
+    r10._las_fuentes.cache_clear()
 
 
+ETIQUETA = "24 ago 2026"
 TABLA = (
-    "| | serie A | serie B | diferencia |\n"
+    f"| {ETIQUETA} | serie A | serie B | diferencia |\n"
     "|---|---|---|---|\n"
     "| **mediana** | **6198** | **6208** | 10 |\n"
     "| p90 | 6262 | 6327 | 65 |\n"
@@ -140,16 +141,25 @@ def test_una_resta_entre_series_que_no_sale_de_la_tabla_se_caza(tmp_path: Path) 
     """
     original = r10.RAIZ, r10.CON_EL_PAR
     try:
-        _repo(tmp_path, TABLA, "difirieron **10 ms** en la mediana y **65 ms** en el p90")
+        _repo(
+            tmp_path,
+            TABLA,
+            f"las series del {ETIQUETA} difirieron **10 ms** en la mediana y **65 ms** en el p90",
+        )
         assert r10.diferencias_entre_series("", "RESULTS.md") == [], "con la buena, calla"
 
-        _repo(tmp_path, TABLA, "difirieron **10 ms** en la mediana y **12 ms** en el p90")
+        _repo(
+            tmp_path,
+            TABLA,
+            f"las series del {ETIQUETA} difirieron **10 ms** en la mediana y **12 ms** en el p90",
+        )
         rotas = r10.diferencias_entre_series("", "RESULTS.md")
         assert len(rotas) == 1 and (rotas[0].publicado, rotas[0].calculado) == ("12", "65")
+        assert ETIQUETA in rotas[0].que, "la rota nombra la tabla de la que sale la resta"
         assert rotas[0].documento == "copia.md" and rotas[0].linea == 1
     finally:
         r10.RAIZ, r10.CON_EL_PAR = original
-        r10._el_par.cache_clear()
+        r10._las_fuentes.cache_clear()
 
 
 def test_r10_caza_tambien_la_copia_de_la_tabla_y_su_columna(tmp_path: Path) -> None:
@@ -158,11 +168,11 @@ def test_r10_caza_tambien_la_copia_de_la_tabla_y_su_columna(tmp_path: Path) -> N
     estimador otra vez, y el sitio da igual."""
     original = r10.RAIZ, r10.CON_EL_PAR
     try:
-        frase = "\ndifirieron 10 ms en la mediana y 65 ms en el p90\n"
+        frase = f"\nlas series del {ETIQUETA} difirieron 10 ms en la mediana y 65 ms en el p90\n"
         movida = TABLA.replace("| p90 | 6262 | 6327 | 65 |", "| p90 | 6262 | 6999 | 65 |")
         _repo(tmp_path, TABLA, movida + frase)
         rotas = r10.diferencias_entre_series("", "RESULTS.md")
-        assert len(rotas) == 1 and rotas[0].que == "copia de la fila `p90` de las dos series"
+        assert len(rotas) == 1 and rotas[0].que == f"copia de la fila `p90` de «{ETIQUETA}»"
         assert (rotas[0].publicado, rotas[0].calculado) == ("(6262, 6999)", "(6262, 6327)")
 
         # Y la otra mitad: la fila bien copiada con SU columna `diferencia` detrás. Es la
@@ -171,11 +181,11 @@ def test_r10_caza_tambien_la_copia_de_la_tabla_y_su_columna(tmp_path: Path) -> N
         vieja = TABLA.replace("| p90 | 6262 | 6327 | 65 |", "| p90 | 6262 | 6327 | 99 |")
         _repo(tmp_path, TABLA, vieja + frase)
         rotas = r10.diferencias_entre_series("", "RESULTS.md")
-        assert len(rotas) == 1 and rotas[0].que == "la columna `diferencia` de p90"
+        assert len(rotas) == 1 and rotas[0].que == f"la columna `diferencia` de p90 en «{ETIQUETA}»"
         assert (rotas[0].publicado, rotas[0].calculado) == ("99", "65")
     finally:
         r10.RAIZ, r10.CON_EL_PAR = original
-        r10._el_par.cache_clear()
+        r10._las_fuentes.cache_clear()
 
 
 def test_r10_avisa_cuando_ya_nadie_escribe_la_frase(tmp_path: Path) -> None:
@@ -190,7 +200,28 @@ def test_r10_avisa_cuando_ya_nadie_escribe_la_frase(tmp_path: Path) -> None:
         assert len(rotas) == 1 and rotas[0].publicado == "0 copias vistas", rotas
     finally:
         r10.RAIZ, r10.CON_EL_PAR = original
-        r10._el_par.cache_clear()
+        r10._las_fuentes.cache_clear()
+
+
+def test_r10_caza_una_frase_que_cita_una_tabla_que_no_existe(tmp_path: Path) -> None:
+    """**La dirección que aparece cuando las tablas se multiplican**, y desde ADR-0048 se
+    multiplican solas: un par por cierre. Una frase que nombra un par inexistente —porque
+    la tabla se renombró, se movió a otro documento o nunca se llegó a publicar— es una
+    resta sin fuente, que es exactamente lo que R10 existe para impedir."""
+    original = r10.RAIZ, r10.CON_EL_PAR
+    try:
+        _repo(
+            tmp_path,
+            TABLA,
+            "las series del 31 dic 2026 difirieron 1 ms en la mediana y 2 ms en el p90",
+        )
+        rotas = r10.diferencias_entre_series("", "RESULTS.md")
+
+        assert len(rotas) == 1, rotas
+        assert rotas[0].publicado == "31 dic 2026" and ETIQUETA in rotas[0].calculado
+    finally:
+        r10.RAIZ, r10.CON_EL_PAR = original
+        r10._las_fuentes.cache_clear()
 
 
 def test_r10_corre_una_sola_vez_y_no_por_documento() -> None:
@@ -200,12 +231,15 @@ def test_r10_corre_una_sola_vez_y_no_por_documento() -> None:
     assert r10.diferencias_entre_series("", "ESTADO.md") == []
 
 
-def test_la_tabla_de_la_fuente_sigue_donde_r10_la_busca() -> None:
+def test_las_tablas_de_la_fuente_siguen_donde_r10_las_busca() -> None:
     """**El aro de arriba, sobre el repo de verdad y no sobre uno de juguete.** R10 se
-    apoya en una cabecera de markdown de `RESULTS.md`; si esa sección se reescribe, la
+    apoya en cabeceras de markdown de `RESULTS.md`; si esas secciones se reescriben, la
     regla se queda sin fuente y hay que verlo aquí y no en un rojo raro."""
-    par = r10._el_par()
+    fuentes = r10._las_fuentes()
 
+    assert ETIQUETA in fuentes, sorted(fuentes)
+    assert all(f for f in fuentes), "una tabla sin etiqueta no se puede atar a su frase"
+    par = fuentes[ETIQUETA]
     assert set(par) == {"mediana", "p90"}, par
     assert par["p90"][1] - par["p90"][0] == 65, "las dos series publicadas, restadas"
     assert par["mediana"][1] - par["mediana"][0] == 10

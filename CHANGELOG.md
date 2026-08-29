@@ -27,6 +27,11 @@ de cada número vive con su método, en `docs/metrics.md`.
   docstrings de scripts**, y avisa con «0 copias vistas» si nadie escribe ya la forma
   canónica.
 - **El límite 119**, y no hizo falta medir nada nuevo para escribirlo.
+- **El primer par bajo la regla nueva**, sobre el árbol limpio `1d1468a`: **p90 8181 y
+  8153** contra un techo de 8200, los dos por debajo, `rc=0`. **Los 31 ms de exceso de
+  ayer no se reprodujeron** — mismo árbol con once tests más y sin una optimización en
+  medio. `.techos` publica el **peor de los dos** como último p90 medido; el techo sigue
+  en 8200 y su re-justificación sigue siendo un paso de `/cerrar`.
 
 #### Corregido
 

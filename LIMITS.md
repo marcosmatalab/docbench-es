@@ -492,16 +492,16 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 218 de 692 tests.** Los
+51. **La suite no está medida por mutación: el arnés cubre 218 de 693 tests.** Los
     **29 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
     árbol de TEDS, el lote, —desde el paso 2 de L5— **el instrumento que emite la
     tabla** —el emparejado, el recuento de fallos, la cobertura, la intersección, el
     delta y el `n/a`— y **el que emite la portada**, que es la primera pantalla del
-    proyecto. Los **474 tests restantes** —`congelados_l4` (38), `extractor_contrato` (37), `canonical_texto_de_celda` (19),
+    proyecto. Los **475 tests restantes** —`congelados_l4` (38), `extractor_contrato` (37), `canonical_texto_de_celda` (19),
     `barreras` (14), `extractor_arnes` (14), `harvest` (14), `verificar_corpus` (14),
     `aro_del_techo` (13), `extractor_conformidad` (13), `barreras_documentos` (12),
     `boe` (12), `metricas_regimen` (12), `pdfplumber` (12), `documentos_que_sostienen` (11),
-    `dos_series` (11),
+    `dos_series` (12),
     `boe_api` (10), `camelot` (10), `diario` (9), `entity_conformance` (9),
     `entity_registry` (9), `guardianes_por_glob` (9), `pymupdf4llm` (9),
     `capas_permitidas` (8), `cli` (8), `manifest` (8), `pairing` (8), `corpus_store` (7),
@@ -524,7 +524,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **689 de 692 tests protegidos por algo** —un
+    *el arnés*, no la protección: **690 de 693 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -2666,12 +2666,12 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     a 10 ms»*. La sección demuestra lo que dice y lo argumenta bien — **sobre la
     mediana**. En esa misma tabla:
 
-    | | serie A | serie B | diferencia |
+    | 24 ago 2026 | serie A | serie B | diferencia |
     |---|---|---|---|
     | mediana | 6198 | 6208 | **10** |
     | p90 | 6262 | 6327 | **65** |
 
-    **Las dos series difirieron 10 ms en la mediana y 65 ms en el p90.** Y **el techo se
+    **Las series del 24 ago 2026 difirieron 10 ms en la mediana y 65 ms en el p90.** Y **el techo se
     compara contra el p90**, no contra la mediana. La resta de la segunda fila **no se
     hizo nunca**.
 
@@ -2709,8 +2709,18 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     otra cosa. Y no autoriza a mover el techo: sigue en **8200**, y ADR-0022 prohíbe
     subirlo después de romperlo.
 
+    **Y el primer par bajo la regla nueva, medido el mismo día, le da la razón al
+    límite.** Sobre el árbol limpio `1d1468a` —**once tests más** que el de ayer y sin una
+    sola optimización en medio— las dos series dan **p90 8181 y 8153**, los dos **por
+    debajo** de 8200: `rc=0`. **Los 31 ms de exceso de ayer no se reprodujeron.** Las
+    series del 29 ago 2026 difirieron 22 ms en la mediana y 28 ms en el p90. Las dos
+    series enteras, con su comando y con las cuatro cosas que **no** dicen, en
+    [`RESULTS.md`](RESULTS.md).
+
     **Lo que queda sin hacer, con su método y sin fecha.** Medir de verdad la
-    reproducibilidad del p90, que exige varias series y su intervalo. La cura ya no cuesta
+    reproducibilidad del p90, que exige varias series y su intervalo. Hoy hay **dos**
+    observaciones de la diferencia entre series —**65 ms** el 24 ago y **28 ms** el 29—,
+    sobre árboles distintos, y dos observaciones no son una tasa. La cura ya no cuesta
     nada aparte: **cada cierre deja ahora dos p90 del mismo árbol el mismo día**, así que
     la serie se construye sola hito a hito. Con tres o cuatro puntos deja de ser una
     observación — y es el mismo dato que el límite 116 pide por otro camino.

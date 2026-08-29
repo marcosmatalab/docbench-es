@@ -214,14 +214,12 @@ def _puerta(c: Mapping[str, Cifra]) -> str:
     van juntos y **la frase la decide la comparación**, no quien escribe la plantilla.
 
     Y cuando suena se dice **por qué no se ha apagado**: subir un techo después de
-    romperlo es la salida cómoda que ADR-0022 prohíbe. Una alarma que se apaga sola no
-    es una alarma.
+    romperlo es la salida cómoda que ADR-0022 prohíbe. Una alarma que se apaga sola no es
+    una alarma.
 
-    **Y desde ADR-0048 se dice también lo que una serie NO puede decir.** «La alarma está
-    sonando» era una afirmación sobre una serie de un estadístico cuya única diferencia
-    observada entre dos series es de 65 ms, contra un margen de 31. El verbo cambia —«la
-    última serie midió por encima»— y la página dice que eso avisa y no decide. Es más
-    largo y es lo que hay medido.
+    **Desde ADR-0048 el número publicado es el PEOR de las dos series**, no el de una:
+    publicar el mejor sería elegir el que conviene y la media escondería la cola. Va el
+    peor, que es hacia donde redondea un techo.
     """
     p90 = int(c["p90"].valor.replace(".", ""))
     techo = int(c["techo"].valor.replace(".", ""))
@@ -230,13 +228,15 @@ def _puerta(c: Mapping[str, Cifra]) -> str:
         "este hito, por una regla escrita antes de medirlo: es la primera vez que baja."
     )
     if p90 <= techo:
-        return f"p90 de {marca(c, 'p90', 'b')} ms sobre 40 corridas en frío. {baja}"
+        return (
+            f"p90 de {marca(c, 'p90', 'b')} ms, <b>el peor de dos series</b> de 40 "
+            f"corridas en frío: las dos por debajo del techo, que es lo que hace falta "
+            f"para no darlo por roto (ADR-0048). {baja}"
+        )
     return (
-        f"{baja} Y la última serie midió {marca(c, 'p90', 'b')} ms de p90, o sea "
-        "<b>por encima del techo</b>. No se sube un techo para que deje de avisar: la "
-        "decisión está abierta y escrita, con el coste medido y atribuido. Y una sola "
-        "serie <b>avisa pero no decide</b>: el protocolo son dos, y el techo se da por "
-        "roto sólo si las dos miden por encima (ADR-0048)."
+        f"{baja} Y el peor p90 de las dos últimas series son {marca(c, 'p90', 'b')} ms, "
+        "o sea <b>por encima del techo</b>. No se sube un techo para que deje de avisar: "
+        "la decisión está abierta y escrita, con el coste medido y atribuido."
     )
 
 

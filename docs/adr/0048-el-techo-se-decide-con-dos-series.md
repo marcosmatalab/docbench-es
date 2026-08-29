@@ -15,12 +15,12 @@ día, bajo el título *«el protocolo reproduce a 10 ms»*. La sección demuestr
 y lo argumenta bien: **la MEDIANA de 40 reproduce a 10 ms**, seis a nueve veces menos que
 la σ *dentro* de cada serie. En esa misma tabla, dos filas más abajo:
 
-| | serie A | serie B | diferencia |
+| 24 ago 2026 | serie A | serie B | diferencia |
 |---|---|---|---|
 | mediana | 6198 | 6208 | **10** |
 | p90 | 6262 | 6327 | **65** |
 
-**Las dos series difirieron 10 ms en la mediana y 65 ms en el p90.** Los dos p90 llevaban
+**Las series del 24 ago 2026 difirieron 10 ms en la mediana y 65 ms en el p90.** Los dos p90 llevaban
 cuatro días publicados y **la resta no se hizo nunca**.
 
 **Y el techo se compara contra el p90.** O sea que la única evidencia de reproducibilidad
@@ -63,8 +63,8 @@ que él mismo sabe que no ha resuelto.
 
 **3. Se publica EL PAR, nunca una tasa.** La misma disciplina que ya está escrita en la
 sección que destapó esto: *«con n=2 no se publica una tasa: se publica el par»*. No se
-escribe «la reproducibilidad del p90 es 65 ms»; se escribe que **las dos únicas series
-observadas difirieron 10 ms en la mediana y 65 ms en el p90**, y que el techo se compara
+escribe «la reproducibilidad del p90 es 65 ms»; se escribe que **las series
+del 24 ago 2026 difirieron 10 ms en la mediana y 65 ms en el p90**, y que el techo se compara
 contra el primero de los dos.
 
 **4. Lo hace cumplir código, no la buena memoria:** `scripts/serie_puerta.py` tiene la
@@ -77,6 +77,15 @@ la regla dice **«0 copias vistas»** en vez de callarse.
 mismo día. Con tres o cuatro hitos hay una serie de reproducibilidad del p90 medida, que
 es el mismo dato que el límite 116 pide por otro camino: el día que exista, el término del
 medio de la fórmula deja de ser un juicio.
+
+## Primera aplicación, el mismo día
+
+Sobre el árbol limpio `1d1468a`: **p90 8181 y 8153** contra un techo de 8200, **los dos
+por debajo**, `rc=0`. **Las series del 29 ago 2026 difirieron 22 ms en la mediana y 28 ms
+en el p90.** O sea que los 31 ms de exceso que motivaron este ADR **no se reprodujeron**
+—en un árbol con once tests más y sin una sola optimización en medio—, que es justo lo que
+esta regla existe para no volver a decidir a ciegas. Las dos series enteras y lo que **no**
+dicen, en [`RESULTS.md`](../../RESULTS.md).
 
 ## Alternativa descartada
 

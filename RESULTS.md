@@ -530,9 +530,9 @@ ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de f
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 218 de 692 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 218 de 693 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **474 tests restantes** quedan fuera
+Los **475 tests restantes** quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. **La enumeración fichero a fichero está en
 LIMITS 51 y no se repite aquí**: la que había era una segunda copia, se presentaba como
@@ -932,7 +932,7 @@ protocolo mide algo o mide el ruido de la máquina»*. Salió medido por acciden
 —hubo que repetir una serie para que el sello viniera de la misma corrida— y vale
 más que la repetición:
 
-| | serie A | serie B | diferencia |
+| 24 ago 2026 | serie A | serie B | diferencia |
 |---|---|---|---|
 | **sello** | `099e452+26` **reconstruido** | `099e452+28` **impreso** | |
 | n | 40 en 10 tandas | 40 en 10 tandas | |
@@ -974,8 +974,8 @@ habría sido falso y aquí estaba escrito así hasta que se comprobó.
 > **CORREGIDO el 29 ago 2026, y la corrección estaba DENTRO de esta misma tabla.** El
 > título decía *«el protocolo reproduce a 10 ms»* sin nombrar el estadístico, y los 10 ms
 > son de la **mediana**. Dos filas más abajo están los dos p90 —**6262 y 6327**— y **la
-> resta no se hizo nunca**: **las dos series difirieron 10 ms en la mediana y 65 ms en el
-> p90**, y **el techo se compara contra el p90**.
+> resta no se hizo nunca**: **las series del 24 ago 2026 difirieron 10 ms en la mediana
+> y 65 ms en el p90**, y **el techo se compara contra el p90**.
 >
 > O sea que la única evidencia de reproducibilidad que este repo tenía era sobre **el
 > estadístico que no decide**. Los dos números llevaban cuatro días publicados, uno
@@ -1379,7 +1379,7 @@ desde ese commit exacto.
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
 **Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **218 de
-692 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+693 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2595,7 +2595,7 @@ lado de la resta. Por eso los dos figuran hoy con 2 y no con 1.
 **El único punto único de fallo que queda es `n3_incompleta`**, el de L2, con su razón
 medida y declarada allí. Ninguno de los seis nuevos lo es.
 
-**Lo que esto NO dice.** El arnés pasa a cubrir **218 de 692 tests**: «los 29 mutantes
+**Lo que esto NO dice.** El arnés pasa a cubrir **218 de 693 tests**: «los 29 mutantes
 mueren» habla de esos 29 huecos, no de la suite. La segunda contabilidad —**678 de 681
 protegidos por algo**— y por qué hacen falta las dos, en el límite 51 y en la deuda 7 de
 `ESTADO.md`. Las dos salen de `uv run python scripts/contabilidades.py`, que es el único
@@ -2670,8 +2670,9 @@ después sin borrarlo**: uno que lo borrara del todo lo cazaría cualquier
 uv run python scripts/mutantes/matar.py; echo $?
 ```
 
-**Sello `7841550+19 · 218 tests`** —árbol sucio, y va dicho: es el trabajo de ADR-0048 sin
-commitear; la corrida anterior llevaba `188a59f+48`— **con control negativo 0**. Los **29 mueren**, y `portada_sin_panel` se cae en
+**Sello `1d1468a+16 · 218 tests`** —árbol sucio, y va dicho: es el par medido de ADR-0048
+sin commitear; las corridas anteriores llevaron `7841550+19` y `188a59f+48`— **con control
+negativo 0**. Los **29 mueren**, y `portada_sin_panel` se cae en
 **3 de los 10** tests de su suite objetivo.
 
 **Los tres asesinos son tres aserciones distintas, no una repetida**, que es lo que este
@@ -2710,8 +2711,8 @@ instrumento devuelve **rc=1** en esta serie.
 > **Y AQUÍ SE ACABA LO QUE SE PUEDE AFIRMAR, corregido el 29 ago 2026.** «Sigue sonando,
 > y por 31 ms» era una frase sobre **una** serie de un estadístico cuya **única diferencia
 > observada entre dos series es de 65 ms** —la resta que llevaba cuatro días sin hacerse
-> en la tabla de arriba: las dos series del 24 ago difirieron 10 ms en la mediana y 65 ms
-> en el p90—. **31 es menos de la mitad de 65.**
+> en la tabla de arriba: **las series del 24 ago 2026 difirieron 10 ms en la mediana y 65
+> ms en el p90**—. **31 es menos de la mitad de 65.**
 >
 > No es que la alarma no suene: es que **con una sola serie no se puede afirmar que
 > suene**. Lo que queda publicado es lo medido —el p90 de esta serie pasó del techo por 31
@@ -2841,3 +2842,54 @@ el ADR dice que es lo que el límite 25 llama enseñar a ignorar el rojo. Lo que
 **re-justificar el techo con la fórmula**, y eso el ADR lo ata al cierre: *«con las 40
 corridas»*, y sus condiciones de parada van *«medidas en el cierre»*. Aquí hay n=5
 pareado y L7 abierto. **`.techos` no se toca.** Límite 116, deuda 14 de `ESTADO.md`.
+
+---
+
+## EL PRIMER PAR BAJO ADR-0048 · 2×40 sobre `1d1468a`, y **los dos p90 caben bajo el techo**
+
+```bash
+uv run python scripts/medir_puerta.py; echo $?     # --series 2 · rc=0
+```
+
+**Árbol limpio y sello impreso por el instrumento: `1d1468a`, sin sufijo de sucio.** Es la
+primera medición del proyecto que sigue la regla nueva, y es también la primera que se
+hace sobre un árbol commiteado desde que entró la portada.
+
+| 29 ago 2026 | serie A | serie B | diferencia |
+|---|---:|---:|---:|
+| n | 40 en 10 tandas | 40 en 10 tandas | |
+| descartadas por `rc != 0` | 0 | 0 | |
+| mínimo | 7801 | 7827 | |
+| mediana | 8076 | 8054 | **22** |
+| **p90** | **8181** | **8153** | **28** |
+| máximo | 8384 | 8188 | |
+| σ | 103 | 88 | |
+| margen contra el techo de 8200 | +19 | +47 | |
+| carga de la máquina | mediana 3,14 · 1,66 – 4,05 | mediana 3,62 · 2,65 – 5,06 | |
+
+**Las series del 29 ago 2026 difirieron 22 ms en la mediana y 28 ms en el p90.** Los dos
+p90 están **por debajo** de 8200, así que bajo ADR-0048 **el techo no está roto** y el
+instrumento devuelve **rc=0**.
+
+**Y esto es lo que corrige, dicho sin adornos: la frase de ayer no era reproducible.** El
+mismo árbol —con **once tests más** y sin una sola optimización en medio— midió ayer un
+p90 de **8231** y hoy **8181 y 8153**. La diferencia entre aquella lectura y la peor de
+hoy son **50 ms**, del mismo orden que las diferencias entre series que este documento ya
+tiene medidas: **65 ms** el 24 ago y **28 ms** hoy. **El «se pasa por 31 ms» estaba dentro
+del ruido del propio estimador**, que es exactamente lo que el límite 119 dice y lo que
+ADR-0048 existe para no volver a decidir a ciegas.
+
+**Lo que este par NO dice, y son cuatro cosas.**
+
+1. **No re-justifica el techo.** Eso es un paso de `/cerrar` con la fórmula, y L7 sigue
+   abierto. `.techos` mantiene `TECHO_LOCAL_MS=8200`.
+2. **No dice que la serie de ayer estuviera mal medida.** Está publicada entera, con su σ
+   de **223** y su máximo de **8927** — una cola gorda que estas dos no tienen (σ 103 y
+   88). Lo que dice es que **una sola serie no decide**, ni la de ayer ni éstas.
+3. **No dice que sobre margen.** Los márgenes son **19 y 47 ms** sobre 8200. Con series
+   que difieren 28 ms entre ellas, el par siguiente puede salir por encima; y bajo la
+   regla nueva eso tampoco lo decidiría una sola serie.
+4. **Con n=2 no se publica una tasa.** Las diferencias entre series observadas hasta hoy
+   son **dos**: 65 ms (24 ago) y 28 ms (29 ago), medidas sobre árboles distintos. Son dos
+   observaciones, no una estimación de la reproducibilidad del p90. La serie que sí lo
+   sería se construye sola, dos p90 por cierre.

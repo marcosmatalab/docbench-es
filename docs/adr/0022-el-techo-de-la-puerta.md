@@ -8,7 +8,7 @@ debajo** de esa promesa
 > un punto y sólo en uno: el protocolo del cierre son ahora DOS series de 40 y el techo se
 > da por roto sólo si LOS DOS p90 lo pasan.** El estadístico no cambia —sigue siendo el
 > p90— ni la fórmula de re-justificación. La razón está restada en la tabla de
-> `RESULTS.md` que ya existía: las dos series del 24 ago 2026 **difirieron 10 ms en la
+> `RESULTS.md` que ya existía: **las series del 24 ago 2026 difirieron 10 ms en la
 > mediana y 65 ms en el p90**, y este ADR decide contra el p90. Ver límite 119.
 
 ## Techo vigente
