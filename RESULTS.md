@@ -470,7 +470,7 @@ por familia sí, y el censo se pone rojo si alguna queda a cero.
 
 ### Los mutantes
 
-**Son 28 mutantes, no 22**: los seis del instrumento de L5 entraron en el paso 2 de
+**Son 29 mutantes, no 22**: los seis del instrumento de L5 entraron en el paso 2 de
 su cierre, y antes los tres de `recuentos` con el guardián de números. Las cuatro casillas de `siempre_ok`
 × `siempre_roto` están completas sobre las dos funciones que L2 construye.
 `siempre_roto` no es simetría decorativa: es el único que caza al test que sólo
@@ -525,21 +525,21 @@ referencia**. Ninguna propiedad ni ninguna gráfica lo vería.
 La conclusión anterior salió de **un** mutante, así que se midieron **los 12, tres
 repeticiones en frío cada uno**, con `uv run python scripts/mutantes/matar.py --tabla`.
 
-**Control negativo primero: el árbol SIN mutar da 0 muertes de 208 tests.** Sin
+**Control negativo primero: el árbol SIN mutar da 0 muertes de 218 tests.** Sin
 ese cero la tabla no valdría nada — cada «muerte» podría ser un fallo de fondo de
 la suite y no el mutante. Lo comprueba el propio arnés antes de empezar y aborta
 si no es cero.
 
-**El arnés no cubre la suite entera: cubre 208 de 653 tests.** El control negativo y
+**El arnés no cubre la suite entera: cubre 218 de 681 tests.** El control negativo y
 `matar.py` sin argumentos corren la **unión de las suites objetivo** del `PLAN`.
-Los **445 tests restantes** quedan fuera
+Los **463 tests restantes** quedan fuera
 porque **no hay ningún mutante escrito contra su código**: el enum de errores, las
 invariantes de tipos y las barreras por AST. **La enumeración fichero a fichero está en
 LIMITS 51 y no se repite aquí**: la que había era una segunda copia, se presentaba como
 exhaustiva —cerrada con «y `test_tope_area` (2)»— y sumaba **287**, o sea que le faltaban
-17 ficheros y 154 tests. Una lista que se copia a dos sitios diverge, y ésta divergió. Así que «los 28 mutantes mueren» dice
-que **esos 28** huecos están tapados, **no** que la suite esté medida. Algunos de
-esos 445 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
+17 ficheros y 154 tests. Una lista que se copia a dos sitios diverge, y ésta divergió. Así que «los 29 mutantes mueren» dice
+que **esos 29** huecos están tapados, **no** que la suite esté medida. Algunos de
+esos 453 sí matan mutantes cuando `--tabla` recorre la suite entera, pero eso es
 daño colateral, no cobertura diseñada.
 
 > **Aquí ponía «esos 218», y 218 era el resto cuando la suite tenía 384**, o sea el
@@ -560,7 +560,7 @@ diferencia es información: **SIEMPRE** es la intersección —muere en las tres
 **ALGUNA VEZ** es la unión. *Un asesino intermitente no es un asesino*: depende de
 que un sorteo de `hypothesis` salga bien.
 
-**Son 28 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
+**Son 29 mutantes**, y esta es su composición completa, sin sumas que cuadrar:
 
 | De dónde salen | Cuáles |
 |---|---|
@@ -571,6 +571,7 @@ que un sorteo de `hypothesis` salga bien.
 | **La auditoría en frío del guardián** (3) | `recuentos_todo_vale`, `recuentos_sin_claude`, `recuentos_plano_flojo` |
 | **El arreglo del grupo de filas** (1) | `seccion_sin_cerrar` |
 | **El paso 2 de L5 · el INSTRUMENTO del titular** (6) | `emparejado_sin_recuento`, `fallos_no_se_cuentan`, `cobertura_siempre_llena`, `cara_a_cara_la_union`, `delta_siempre_cero`, `no_aplicable_impreso_cero` |
+| **La portada · el instrumento de la PRIMERA PANTALLA** (1) | `portada_sin_panel` |
 
 > **Aquí ponía «Son 21 mutantes, no 12: … añadieron seis», y 12 + 6 = 18.** El
 > guardián de recuentos había actualizado el dígito de 18 a 21 —porque el patrón
@@ -620,7 +621,7 @@ saber por qué. Aquí se ve que las tres diferencias tienen nombre y tasa.
 > [límite 50](LIMITS.md). Para afinar un caso concreto:
 > `uv run python scripts/mutantes/matar.py --tabla --reps 10 --solo EL_MUTANTE`.
 
-**La afirmación, recontada contra esta tabla:** sobre los 28 mutantes existentes,
+**La afirmación, recontada contra esta tabla:** sobre los 29 mutantes existentes,
 la propiedad de normalización **no es la única asesina de ninguno**; es asesina
 **determinista** de `normalizador_agresivo` —donde además hay otros ocho— y
 aparece **esporádicamente** sobre otros dos, `n3_incompleta` y
@@ -1351,8 +1352,8 @@ desde ese commit exacto.
 «alguna vez». Ningún asesino intermitente. Punto único de fallo que queda: **uno**,
 `n3_incompleta`, declarado y con su razón medida en la sección de L2.
 
-**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **208 de
-653 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
+**Lo que esa frase NO dice**, y es la mitad que importa: el arnés cubre **218 de
+681 tests**. Las dos contabilidades y su velocidad, en la deuda 7 de `ESTADO.md`.
 
 ---
 
@@ -2290,25 +2291,50 @@ nacido digital y con capa de texto en el **100%** de sus 10.298 páginas (censo,
 
 | | horas | segundos |
 |---|---:|---:|
-| pre-registrado en `runs/l5/poblacion.yaml` | **4,01** | 14.436 |
+| pre-registrado en `runs/l5/poblacion.yaml` | **4,01** | 14.439 |
 | real | **2,30** | **8.272** |
-| **error contra lo medido**, `(predicho − real) / real` | | **+74,5%** |
+| **error contra lo medido**, `(predicho − real) / real` | | **+74,6%** |
 | sobra de la predicción, `(real − predicho) / predicho` | | −42,7% |
 
-`scripts/poblacion_l5.py` proyecta desde el coste/página medido en B5-bis, y **sobreestimó
-el reloj de la campaña en un 74,5%** sobre lo que costó de verdad.
+`scripts/poblacion_l5.py` proyecta desde el coste/página medido en B5-bis, y sobreestimó
+el reloj de la campaña: **+74,6%** sobre lo que costó de verdad.
+
+**Las cuatro cifras salen de [`runs/l5/reloj.json`](runs/l5/reloj.json)**, que emite
+`uv run python scripts/error_del_estimador.py --escribir`, y las compara contra este
+documento la regla **R8** de `scripts/derivadas.py`. Antes no salían de ningún sitio:
+ver la errata de abajo.
 
 > **Aquí ponía «error del estimador −43%» y «sobreestimó un 43%», a secas, y las dos
 > frases juntas se leen mal.** El −43% es cierto y es la segunda fila de arriba: qué
 > fracción de la predicción sobraba. Lo que no es cierto es «sobreestimó un 43%», porque
-> **sobreestimar se mide contra lo medido**, y contra lo medido son 74,5 puntos. Y la
+> **sobreestimar se mide contra lo medido**, y contra lo medido son **+74,6%**. Y la
 > comparación con L3 estaba hecha entre convenciones distintas: los −23,5%, +47,3% y
 > −29,8% de L3 salen de una columna que se llama literalmente *«error contra lo medido»*.
 > Poner un −43% al lado de un +47,3% invitaba a leer «éste falló menos», y con el mismo
 > divisor **falló más**. Se publican las dos filas con su fórmula.
 >
-> **Resolución:** el pre-registrado se publicó con dos decimales de hora, o sea ±18 s, que
-> mueve los dos porcentajes ±0,2 puntos.
+> **Resolución:** el pre-registrado se publica con dos decimales de hora, o sea ±18 s, y
+> eso mueve los dos porcentajes ±0,2 puntos. **La división NO se hace con esa cifra**:
+> se hace con los 14.439,4 s que emite el instrumento. Ver la errata siguiente.
+
+> **Y ESTE MISMO ERROR SE PUBLICÓ CON DOS VALORES, `+74,5%` y `+74,6%`, EN SEIS SITIOS.**
+> No eran dos mediciones: eran la misma división con el **dividendo** redondeado y sin
+> redondear. `scripts/poblacion_l5.py` emite **14.439,4 s**; publicarlo como «4,01 h» y
+> volver a segundos da 14.436, y ese redondeo —y sólo ése— baja el cociente de 74,558% a
+> 74,516%. El divisor ya iba sin redondear: son 8.272 s, no 2,30 h; con 2,30 h saldría
+> **+74,4%**, y con los dos redondeos, **+74,3%**.
+>
+> **Lo que se publica es lo que emite el instrumento con los dos operandos enteros:
+> `+74,6%`.** Y la resolución del dato medido no lo mueve: con el segundo a favor o en
+> contra —8.271,5 s o 8.272,5 s— el error va de 74,569% a 74,547%, o sea **±0,01
+> puntos**. Lo que lo movía era el redondeo del que se publica, no el del que se mide.
+>
+> **Lo hecho:** el número vive en [`runs/l5/reloj.json`](runs/l5/reloj.json) con sus dos
+> operandos y sus dos fórmulas, y la regla **R8** de `scripts/derivadas.py` compara contra
+> él las **seis copias vivas**, con su control negativo. Es el límite 111 —una constante
+> en N sitios comprobada en ninguno— aplicado a un porcentaje, con el agravante de que
+> **las dos lecturas caían dentro de la incertidumbre declarada** (±0,2 puntos), así que
+> la discrepancia no llamaba la atención de nadie. Límite 114.
 
 **Y es la segunda vez que un estimador de este repo falla por el mismo mecanismo** —L3
 proyectó **533 MB** de corpus contra **361,9 MB** reales, +47,3% contra lo medido—: los
@@ -2543,8 +2569,8 @@ lado de la resta. Por eso los dos figuran hoy con 2 y no con 1.
 **El único punto único de fallo que queda es `n3_incompleta`**, el de L2, con su razón
 medida y declarada allí. Ninguno de los seis nuevos lo es.
 
-**Lo que esto NO dice.** El arnés pasa a cubrir **207 de 652 tests**: «los 28 mutantes
-mueren» habla de esos 28 huecos, no de la suite. La segunda contabilidad —**649 de 652
+**Lo que esto NO dice.** El arnés pasa a cubrir **218 de 681 tests**: «los 29 mutantes
+mueren» habla de esos 29 huecos, no de la suite. La segunda contabilidad —**678 de 681
 protegidos por algo**— y por qué hacen falta las dos, en el límite 51 y en la deuda 7 de
 `ESTADO.md`. Las dos salen de `uv run python scripts/contabilidades.py`, que es el único
 comando que las calcula.
@@ -2553,3 +2579,222 @@ comando que las calcula.
 > commits antes. El guardián de recuentos no los ve porque su patrón es `cubr[eí]a?n?` y
 > aquí el verbo es «pasa a cubrir»: es el punto ciego del límite 54 cobrándose una pieza
 > en el mismo documento que lo publica. Lo encontró el escrutinio del paso 4.
+>
+> **Y volvió a pasar con «207 de 652» al entrar la portada**, que subió la suite a 669 y
+> los mutantes a 29. Lo cazó el guardián por la otra mitad de la frase —«los 28 mutantes
+> mueren», que sí casa un patrón— y no por el recuento de tests, que sigue invisible. Un
+> punto ciego que se tapa por accidente desde el lado de al lado sigue siendo un punto
+> ciego: el conteo de esta frase **no** lo vigila nadie.
+
+---
+
+## LA PORTADA · la puerta de entrada, GENERADA · 28 ago 2026
+
+```bash
+uv run docbench portada --informe runs/l5/informe.json --salida docs/index.html
+uv run docbench portada          # comprueba y no escribe: rc=1 si está rancia
+```
+
+**Esto no es una medición: es un artefacto.** Va aquí porque publica números, y todo lo
+que publica números en este repo tiene que decir de dónde salen. La decisión y sus dos
+alternativas descartadas están en
+[ADR-0047](docs/adr/0047-la-portada-se-genera-desde-el-informe.md).
+
+| | |
+|---|---|
+| salidas | **dos**: [`docs/index.html`](docs/index.html) y el bloque `PORTADA` del [`README.md`](README.md) |
+| cifras publicadas | **70**, todas marcadas con `data-cifra` en el HTML |
+| tecleadas en la plantilla | **0** |
+| fuentes | [`runs/l5/informe.json`](runs/l5/informe.json) y el censo del repo |
+| lo comprueba | la regla **R9** de `scripts/derivadas.py`, en la puerta |
+| control negativo | `tests/unit/test_portada.py`, en las **tres** direcciones |
+| mutante | `portada_sin_panel` |
+
+**El problema que resuelve no es de rigor, es de distribución.** `LIMITS.md` son 2.433
+líneas, `RESULTS.md` 2.100 y `MANUAL.md` 2.000: **los 114 límites no existen para quien no
+llega a ellos**. Y una portada escrita a mano sería la copia número catorce del titular y
+la primera en quedarse vieja — el README de este repo estuvo **33 commits** publicando
+«Hito L0 de 10» con cuatro hitos más cerrados.
+
+### Las tres direcciones de R9, y la tercera no la tenía ninguna otra regla
+
+| Dirección | Qué caza | Por qué hacía falta |
+|---|---|---|
+| **no cuadra** | una clave publicada con otro valor | es lo que hace R7 con `RESULTS.md` |
+| **falta** | una clave que el instrumento emite y la página no lleva | sin ella, una plantilla vacía pasaría |
+| **SOBRA** | una clave **en la página** que el instrumento no emite | **un número escrito a mano pasa cualquier comprobación de «lo publicado coincide con lo medido»**, porque no hay nada con qué compararlo |
+
+**Las tres se encontraron en rojo antes de creerlas**, y las tres primeras veces que R9
+corrió encontró cuatro cosas de verdad: la cifra `adr` no estaba marcada en la página, los
+cuatro nombres de extractor estaban marcados y **no los emitía nadie**, y `&gt;50`
+comparado contra `>50` ponía roja la banda larga por su tipografía.
+
+### Y una comprobación que no es de valor sino de SITIO
+
+El titular sólo está completo con su panel **dentro** de la etiqueta (límite 113): «103 de
+338» sin decir sobre qué cuatro extractores es una intersección sin conjuntos. Que el
+panel esté *en alguna parte* de la página **no vale**, y por eso hay una comprobación
+aparte —`panel_dentro_de_la_etiqueta()`— y un mutante que **mueve el panel a un párrafo de
+después sin borrarlo**: uno que lo borrara del todo lo cazaría cualquier
+`"camelot" in html`.
+
+### El mutante, re-medido con sello propio
+
+```bash
+uv run python scripts/mutantes/matar.py; echo $?
+```
+
+**Sello `188a59f+48 · 218 tests`** —árbol sucio, y va dicho: es este trabajo sin
+commitear— **con control negativo 0**. Los **29 mueren**, y `portada_sin_panel` se cae en
+**3 de los 10** tests de su suite objetivo.
+
+**Los tres asesinos son tres aserciones distintas, no una repetida**, que es lo que este
+repo exige cuando un mutante nace con un solo asesino: dónde está el **panel**, dónde está
+la **frase que lo explica** —que el número sólo sabe bajar— y que la **página publicada**
+coincide con la que emite el instrumento. Se puede romper cada una sin romper las otras
+dos.
+
+**Lo que NO comprueba nadie, y va declarado:** que los **cuatro** límites y las **cuatro**
+puertas que la página elige de entre 116 y 32 sean los que hay que enseñar. Es una
+selección editorial, va dicha en la propia página —«los que más cambian cómo se leen los
+números de arriba»— y es el límite 115.
+
+---
+
+## LA PUERTA AL ENTRAR LA PORTADA · n=40, y **EL p90 SE PASA DEL TECHO**
+
+```bash
+uv run python scripts/medir_puerta.py; echo $?     # rc=1 · el techo sale de `.techos`
+uv run pytest tests/unit -q --durations=15         # el paso 1 de ADR-0022, antes de nada
+```
+
+| | sin arreglar | tras el 1.er defecto | **tras el 2.º** |
+|---|---:|---:|---:|
+| mínimo | 8231 | 7759 | **7807** |
+| mediana | 8500 | 8082 | **8008** |
+| **p90** | 8729 | 8438 | **8231** |
+| máximo | 8806 | 13221 | **8927** |
+| desviación típica | 145 | 841 | **223** |
+| carga mediana | 3,20 | 3,85 | 3,31 |
+
+**Las tres con n=40 en 10 tandas y cero descartadas**, sello `188a59f` + árbol sucio —es
+este trabajo sin commitear, y va dicho—. **Techo 8200, margen en el p90: −31 ms.** El
+instrumento devuelve **rc=1**: sigue sonando, y por 31 ms.
+
+**El paso 1 de ADR-0022 ha valido 498 ms de p90**, en dos pasadas y con dos defectos
+distintos. Eso es lo que la pregunta *«¿hay algo que simplemente está mal?»* compra antes
+de tocar ninguna concesión.
+
+**La σ de 841 de la columna del medio es de UNA corrida, no de la distribución**: una sola
+de aquellas 40 dio 13.221 ms —la máquina paró— y las 39 restantes cabían entre 7.759 y
+8.887. **No se descartó**, porque el protocolo descarta por `rc!=0` y ésa salió verde; lo
+que se hace es decir cuál es. La σ de 223 de la columna nueva, con su máximo de 8.927, es
+la de siempre.
+
+### El paso 1 fue `--durations`, y encontró un defecto real. Es el de L4 otra vez
+
+`scripts/censo_paginas.paginas()` **reparseaba los 520 KB de `runs/l3/manifiesto.json`
+cinco veces** por cada `runs/l5/reloj.json` emitido: una directa, otra por `poblaciones()`
+y tres más por dentro de `tablas()` y `muestra_sin_tabla()`. Es literalmente el
+`pdftotext` llamado ocho veces sobre los mismos bytes que encontró el cierre de L4, y se
+arregla igual —`lru_cache`—:
+
+| | antes | después |
+|---|---:|---:|
+| el test que lo ejercita | 0,26 s | **0,05 s** |
+| la puerta, mediana de 40 | 8500 ms | **8082 ms** |
+| la puerta, p90 de 40 | 8729 ms | **8438 ms** |
+
+**Y es un arreglo del PRODUCTO, no del banco**, que es la señal que ADR-0022 pide para
+distinguirlo de maquillar la medición: `scripts/poblacion_l5.py` pagaba esas cinco
+lecturas en cada corrida, no sólo cuando lo llama un test.
+
+**El segundo arreglo es una duplicación, no una lentitud:** el test que corría
+`uv run docbench portada` en un subproceso comprobaba dos cosas, y **una de las dos ya la
+comprobaba R9** dentro de `scripts/derivadas.py`, que la puerta también ejecuta. La mitad
+que sí aportaba —el bloque `PORTADA` del README— pasa a comprobarse en proceso. Dos
+intérpretes de Python para una comparación de cadenas.
+
+### Y lo que queda es este trabajo, medido y no supuesto
+
+**La primera lectura de estos números fue FALSA y va escrita**: se concluyó que la puerta
+estaría igual de roja sin la portada, comparando *listas de ficheros* con el contenido de
+hoy y con n=4 frente a una máquina que da paradas de 27 s. Lo que decide es una
+comparación **pareada y alterna contra un `git worktree` de verdad**, que cancela la
+deriva:
+
+| pareado contra `188a59f`, n=5 | HEAD | hoy | delta |
+|---|---:|---:|---:|
+| `mypy --strict src tests` | 4512 | 4765 | **+253** |
+| `pytest tests/unit` | 2695 | 3301 | **+606** |
+
+**Y el árbol viejo reproduce su número publicado**, que es lo que cierra la puerta a
+culpar a la máquina: `372b82f` medido hoy, con la puerta entera y en parejas alternas,
+da mediana **7656 ms** contra los **7722** que publicó al cerrar L5. La máquina es la
+misma; lo que cambió es el árbol.
+
+### Lo que `--durations` NO alcanza: `mypy` tiene su propio instrumento
+
+**`--durations` mide tests.** El paso de `mypy` son ~5 s de los 8,5 y no aparece ahí, así
+que preguntarle a `--durations` por él es preguntarle al instrumento equivocado. `mypy`
+trae el suyo: `--timing-stats`, que emite el tiempo **por módulo**.
+
+```bash
+uv run mypy --strict src tests --timing-stats /tmp/tim.txt
+```
+
+| `mypy --timing-stats`, dos corridas en frío | corrida 1 | corrida 2 |
+|---|---:|---:|
+| módulos, `188a59f` → hoy | 1345 → 1359 | 1345 → 1359 |
+| **los 14 módulos NUEVOS, sumados** | **36,3 ms** | **33,7 ms** |
+| el más caro de ellos, `poblacion_l5` | 5,9 ms | 5,6 ms |
+
+**No hay patología de tipos, y ésa era la pregunta.** Un `Protocol`, un `overload` o una
+unión grande de `Literal` habrían salido como un módulo desproporcionado; el mayor de los
+catorce son **5,9 ms** y es un script que ya existía y que ahora **alcanza un test**, o
+sea que `mypy` lo tipa por primera vez — que es exactamente lo que se quería.
+
+**Y el instrumento atribuye MENOS que el cronómetro**: 35 ms contra los +253 ms de reloj.
+La diferencia no está en ningún módulo —los deltas de los 1345 comunes son ruido repartido
+entre `numpy`, `rich` y `httpx`, que no se han tocado— sino en el trabajo fijo de `mypy`
+por módulo: grafo de dependencias y escritura de caché, **catorce veces**. Se publica así,
+con los dos números y sin elegir el que conviene: **el tipado del código nuevo cuesta 35
+ms; el resto no es atribuible a ninguna línea escrita.**
+
+### Y el paso 1, repetido sobre el árbol arreglado, encontró un SEGUNDO defecto
+
+**Haber encontrado uno no contesta si era el único ni si era el mayor**, y aquí no era
+ninguna de las dos cosas. Con el `lru_cache` ya puesto, `--durations` sobre la suite
+entera en serie señaló `test_el_reloj_de_l5_publicado_sale_del_instrumento_que_lo_mide` en
+**0,27 s**, el test más caro de todo lo que entra con este trabajo.
+
+**La causa no era el manifiesto: era el corpus.** `poblacion_l5` llamaba a
+`censo_tablas.tablas()`, que **recorre los mil XML de `runs/l3/docs`** —362 MB— para
+contar tablas que **ya están contadas y versionadas** en `runs/l5/censo_tablas.json`. El
+consumidor estaba **midiendo** donde sólo tenía que **leer**.
+
+| | antes | después |
+|---|---:|---:|
+| `error_del_estimador.reloj()` | 0,27 s | **4,2 ms** |
+| ficheros que lee | 1.002 | **5**, uno cada uno |
+| necesita `runs/l3/docs` | **sí** | **no** |
+
+**Y arreglarlo cierra de paso el otro agujero**: el test ya no se salta en un clon frío,
+porque el consumidor dejó de depender de datos que no están en git. Las dos cosas eran el
+mismo defecto visto desde dos lados. Comprobado: `reloj.json` **no se movió**, o sea que
+el censo publicado y el escaneo de los XML dan el mismo número —lo comprueba
+`test_datos_fuera_de_git.py` cuando el corpus está—.
+
+**Así que el coste es de la portada y de sus guardianes, y es trabajo, no un defecto.**
+Un subcomando nuevo, un paquete de siete módulos, cinco scripts, dos reglas de
+`derivadas.py` y 28 tests.
+
+**Lo que esto deja sobre la mesa no lo decide este trabajo, y las tres concesiones de
+ADR-0022 no son tres.** Gastar una palanca está **cerrado por medición**: la única
+declarada es `max_examples` 100→50 y **vale 44 ms medidos** —alternativa descartada (b)
+del propio ADR—, que contra ~859 ms pareados es ruido. Reestructurar tiene el primer
+peldaño gastado —`pytest -n auto`, en L5— y el segundo es mover suites a `full`, del que
+el ADR dice que es lo que el límite 25 llama enseñar a ignorar el rojo. Lo que queda es
+**re-justificar el techo con la fórmula**, y eso el ADR lo ata al cierre: *«con las 40
+corridas»*, y sus condiciones de parada van *«medidas en el cierre»*. Aquí hay n=5
+pareado y L7 abierto. **`.techos` no se toca.** Límite 116, deuda 14 de `ESTADO.md`.

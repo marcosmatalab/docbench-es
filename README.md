@@ -2,6 +2,20 @@
 
 **Banco de extracción documental en español, adaptable a cualquier entidad.**
 
+<!-- PORTADA:inicio -->
+> ## 103 de 338 · el titular de L5
+>
+> Documentos con tabla en los que los **cuatro** extractores —`camelot · docling · pdfplumber · pymupdf4llm`— coinciden con la referencia en **cuántas tablas hay**: el **30,5%**. **El panel va dentro de la etiqueta**, porque el número es una intersección y **sólo sabe bajar** al añadir un extractor: dos valores con paneles distintos no son comparables.
+>
+> **Las notas de los cuatro no son comparables entre sí**: cada TEDS se calcula sobre lo que ese extractor pudo evaluar, y esa cobertura va de **23,6%** a **38,0%**. Ordenarlas sería un ranking falso; la comparación que vale es la cara a cara sobre los **82** que puntuaron todos, y ahí **el orden cambia**.
+>
+> **Y este titular se publicó mal:** decía ~~82 de 338~~ y son **103 de 338**. Era otra cuenta —los que *puntuaron* todos—, y ningún test podía verlo porque **ningún fixture tenía una celda combinada**. El commit falso sigue en la historia, con la corrección detrás.
+>
+> **29** mutantes · **118** límites · **32** ADR · coste **0,00 €** medido, con la predicción del reloj fallando **+74,6%** · puerta p90 **8.231 ms** contra un techo de **8.200**: **la alarma está sonando** y el techo no se ha subido para callarla.
+>
+> [**La portada entera, en diez minutos**](https://marcosmatalab.github.io/docbench-es/) · [`RESULTS.md`](RESULTS.md) · [`LIMITS.md`](LIMITS.md) · [`runs/l5/informe.json`](runs/l5/informe.json). **Este bloque lo genera `uv run docbench portada`**: no se teclea.
+<!-- PORTADA:fin -->
+
 Mide cuánto se pierde entre *«el PDF lo dice»* y *«la IA lo contesta»*, y **de quién
 es la culpa**: de la extracción de la tabla o del modelo que responde. Los dos fallan,
 y hoy nadie mide cuál de los dos. Es para quien tiene miles de PDF en español con

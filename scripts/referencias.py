@@ -51,6 +51,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+from fuera_de_git import RAICES  # noqa: E402
 
 FUENTES: tuple[str, ...] = (
     "pyproject.toml",
@@ -84,14 +87,13 @@ excusa — las convierte en una lista de tareas que **el propio barrido tacha**:
 día que el fichero exista, su línea sobra y `referencias.py` se pone rojo pidiendo
 que la quites."""
 
-ARTEFACTOS: dict[str, str] = {
-    ".claude/.ultima-puerta": "lo escribe `medir_puerta.py` al correr; en un clon no está",
-    ".claude/.congelados.sha256": "manifiesto de huellas que crea el hook `stop-gate.sh`",
-    "runs/l3/docs": "los 362 MB del corpus. Versionado va el manifiesto, no los bytes (ADR-0038)",
-    "runs/l5/campana": "los 143 MB de diarios de la campaña de L5. Versionado va su informe.json, "
-    "no las 2.464 extracciones (LIMITS 109)",
-}
+ARTEFACTOS: dict[str, str] = dict(RAICES)
 """Ruta -> por qué **NO debe estar en git**. Es la tabla contraria a `DECLARADAS`.
+
+**Sale de `fuera_de_git.RAICES` y no se escribe aquí**: había dos listas de lo mismo
+con redacciones distintas, que es el límite 111 en pequeño. Y servían para las dos
+direcciones del mismo hecho —aquélla para lanzar si el dato falta, ésta para poner
+rojo si aparece en git—, así que con más razón salen del mismo sitio.
 
 **Y la dirección de su fallo también es la contraria.** Una entrada de aquí que
 apareciera en `git ls-files` pone rojo el barrido: un artefacto de ejecución
@@ -102,7 +104,13 @@ que **nunca** debe estar versionado.
 Las tres de dentro son el fallo que estrenó la tabla: existían en la máquina de
 quien escribió el barrido y en ningún clon."""
 
-EXTENSIONES = "py|md|toml|yaml|yml|sh|json|cfg|ini|txt|lock|sha256"
+EXTENSIONES = "py|md|toml|yaml|yml|sh|json|cfg|ini|txt|lock|sha256|html"
+"""Las extensiones que este barrido reconoce como fichero.
+
+`html` entró con la portada, y el fallo que lo trajo enseña el modo: sin él, la regex
+capturaba `docs/index` —sin extensión— y lo declaraba **roto** contra un fichero que
+existe. Una extensión que falta no produce un falso negativo silencioso: produce un
+falso POSITIVO ruidoso, que es la dirección buena para un guardián."""
 
 RUTA = re.compile(rf"(?<![\w/.])((?:[\w.\-]+/)+[\w.\-]+(?:\.(?:{EXTENSIONES}))?)")
 """Algo con al menos una barra. Sin barra hay demasiada prosa que parece fichero."""

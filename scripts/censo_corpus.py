@@ -59,6 +59,7 @@ sys.path.insert(0, str(RAIZ / "scripts"))
 from _censo_agregado import agregar, imprimir  # noqa: E402
 from docbench_es.core.canonical import validate  # noqa: E402
 from docbench_es.entity import boe_xml  # noqa: E402
+from fuera_de_git import exige  # noqa: E402
 
 SALIDA = RAIZ / "runs" / "censos" / "censo-corpus-1000.json"
 
@@ -214,7 +215,7 @@ def _mide(xml: str) -> dict[str, object]:
 def main() -> int:
     inicio = time.monotonic()
     manifiesto = json.loads((RAIZ / "runs" / "l3" / "manifiesto.json").read_text(encoding="utf-8"))
-    docs = RAIZ / "runs" / "l3" / "docs"
+    docs = exige(RAIZ / "runs" / "l3" / "docs")
     filas: list[dict[str, object]] = []
     sin_fichero: list[str] = []
 

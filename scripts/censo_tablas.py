@@ -23,26 +23,65 @@ from __future__ import annotations
 import json
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 from censo_paginas import DEL_COSTE, paginas, repartir  # noqa: E402
+from fuera_de_git import exige  # noqa: E402
 
 DOCS = RAIZ / "runs" / "l3" / "docs"
 # `<table` seguido de espacio o de `>`: así no cuenta `<tablero` ni nada que empiece igual.
 TABLA = re.compile(r"<table[\s>]")
 
 
-def tablas() -> dict[str, int]:
-    """`external_id` → número de tablas en su XML de referencia."""
-    fuera: dict[str, int] = {}
+PUBLICADO = RAIZ / "runs" / "l5" / "censo_tablas.json"
+
+
+@lru_cache(maxsize=1)
+def _contadas() -> tuple[tuple[str, int], ...]:
+    """Los mil XML, contados UNA vez por proceso. Misma razón que `censo_paginas`.
+
+    **Y ahora LANZA si el corpus no está.** Antes devolvía `{}`: sin los 362 MB de
+    `runs/l3/docs` no fallaba, repartía los 1.000 documentos como si ninguno tuviera
+    tabla y `poblacion_l5` emitía **otra predicción**. Un test que la comprobara habría
+    pasado en verde en un clon frío afirmando un número falso. Ver `fuera_de_git.py`.
+    """
+    exige(DOCS)
+    fuera: list[tuple[str, int]] = []
     for ident in paginas():
         xml = DOCS / f"{ident}.xml"
         if xml.exists():
-            fuera[ident] = len(TABLA.findall(xml.read_text(encoding="utf-8", errors="replace")))
-    return fuera
+            fuera.append(
+                (ident, len(TABLA.findall(xml.read_text(encoding="utf-8", errors="replace"))))
+            )
+    return tuple(fuera)
+
+
+def tablas() -> dict[str, int]:
+    """`external_id` → número de tablas en su XML de referencia. **Mide, desde los XML.**
+
+    Es el INSTRUMENTO, y necesita el corpus. Quien sólo necesita el censo **ya medido**
+    llama a `publicado()`, que lee el artefacto versionado y por tanto corre en un clon
+    frío. La diferencia importa: si un consumidor mide en vez de leer, arrastra 362 MB de
+    dependencia sin necesitarla y su test se salta donde no hacía falta.
+    """
+    return dict(_contadas())
+
+
+@lru_cache(maxsize=1)
+def publicado() -> dict[str, int]:
+    """El censo tal y como quedó publicado en `runs/l5/censo_tablas.json`. **En git.**
+
+    Lo emite `main()` de este mismo fichero desde los XML; esto sólo lo lee. Que los dos
+    coincidan lo comprueba `tests/unit/test_datos_fuera_de_git.py` **cuando el corpus
+    está**, y se salta con su razón cuando no — que es el sitio donde un salto vale: en
+    la comprobación del artefacto, no en el consumidor.
+    """
+    datos = json.loads(exige(PUBLICADO).read_text(encoding="utf-8"))
+    return {str(k): int(v) for k, v in datos["por_documento"].items()}
 
 
 def main() -> int:

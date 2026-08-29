@@ -47,6 +47,11 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+from fuera_de_git import exige  # noqa: E402
+
 DOCS = RAIZ / "runs" / "l3" / "docs"
 
 # Se fijan ANTES de importar nada: torch, OpenMP y BLAS leen el entorno al cargarse, y
@@ -109,7 +114,7 @@ def main(argv: list[str]) -> int:
         )
         return 2
     nombre, ident, destino = argv
-    ruta = DOCS / f"{ident}.pdf"
+    ruta = exige(DOCS) / f"{ident}.pdf"
 
     def escribir(registro: dict[str, object]) -> None:
         Path(destino).write_text(json.dumps(registro), encoding="utf-8")

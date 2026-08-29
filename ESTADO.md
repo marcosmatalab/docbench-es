@@ -15,7 +15,7 @@
 | L2 `core.teds` + validación contra PubTabNet | 10-14 | **CERRADO 2026-08-23** | Coincide a cuatro decimales con la referencia | **20 de 20 a cuatro decimales** —de hecho a seis— sobre los 20 casos propios de PubTabNet, más **6 de 6** casos límite. Golden calculado por su `metric.py` con APTED, contra un Zhang-Shasha propio. No es una estimación: recuento sobre el censo completo, sin intervalo (ADR-0015). Los golden van de 0,5883 a 1,0000, o sea que discriminan. Puerta al cerrar: **mediana 5593 ms, p90 5933**, n=40 en 10 tandas en frío, σ=286, cero descartadas, `uv run python scripts/medir_puerta.py`. La suite creció de 145 a **185 tests** (+28%) y la mediana pasó de 5593 a **5920 ms** tras la auditoría del guardián: **8,2 ms por test** (327/40), contra ~900 ms de arranque. Sigue dominando el arranque, pero **decir «no se movió» ya era falso**: lo decía cuando la suite estaba en 177 y nadie reescribió la frase al remedir (límite 55). **18 mutantes** al cerrar L2, todos mueren. *(Aquí ponía «22 mutantes, control negativo 0 de 166», que son las cifras de una corrida MUY posterior —los 22 no existían en L2, el cierre los subió de 12 a 18— metidas en la fila de un hito cerrado. Misma clase que el sello de L3: corridas distintas presentadas como una.)* Censo: **8525/8525** en **20 familias, ninguna vacía**. Techo **8500 local / 20 000 CI** (ADR-0022); el techo avisa, el 90 s del manual bloquea. **Cada número con SU comando**: los 20 de 20, `uv run pytest tests/unit/test_teds_referencia.py -q`; los 6 de 6 casos límite, `uv run pytest tests/unit/test_teds_limites.py -q` —viven en otro fichero y el comando anterior no los cubría—; la puerta, `uv run python scripts/medir_puerta.py`. **Y lo que este criterio NO valida**: el mapeo `CanonicalTable → árbol`, que se cancela en los dos lados de la comparación (límite 52). Números en [`RESULTS.md`](RESULTS.md) |
 | L3 `entity.base` + conformidad + `entity.boe` + `boe_xml` + `corpus` | ~~16-20~~ **18-23** | **CERRADO 2026-08-24** | 1.000 documentos emparejados PDF/XML, con manifiesto y tasa de descarte | **1.000 de 1.000 emparejados**, de 1.043 intentados, con **tasa de descarte 4,12%** —denominador 1.043, umbral 0,85, ventana 2026-03-09 a 2026-04-11, causa única `incoherente` (43)—, 0 reintentos agotados y 4 días sin boletín fuera del denominador. `uv run python scripts/verificar_corpus.py runs/l3/manifiesto.json --plan runs/l3/plan.yaml` → **CUMPLE, 0 fallos, rc=0**, y ese CUMPLE incluye **rehacer los 1.000 `sha256` contra los bytes**. No es una estimación: censo sobre la población completa de la ventana, sin intervalo (ADR-0015). **Desglose por estación**, que es para lo que la ventana cruza el equinoccio: invierno **3,90%** (462/444), primavera **4,30%** (581/556), reconstruido y declarado (límite 63). **La ventana se eligió sobre el tramo con MÁS descarte de los tres medidos** —agosto 2,0%, otoño 4,5%, primavera 5,5%— para que a la tasa no se le pueda acusar de estar elegida. Ritmo **1,0000851 s de espaciado mediano, mínimo 1,0000211, n=2.064**, contra 1 rps declarado. **361,9 MB** en disco contra tres proyecciones que fallaron las tres (−23,5%, **+47,3%**, −29,8%): la corrección empeoró la estimación por aplicar KB/página medido en documentos cortos a una población larga, y KB/página **cae un factor 5,6** con la longitud. Puerta al cerrar: **mediana 7400 ms, p90 7505**, n=40 en 10 tandas en frío, σ=100, cero descartadas, sello `1600137`, **margen 995 ms** bajo el techo de 8500. Desglose por paso con el **barrido de referencias medido por fin: 220 ms, el 3,0%** de la puerta. **21 mutantes, todos mueren y todos SIEMPRE**, control negativo **0 de 164**, sello `0717b70 · 164 tests`. *(Publicado como «22 mutantes, 0 de 166» junto a un sello de 164: eran DOS corridas presentadas como una. `seccion_sin_cerrar` entró en el `PLAN` cuatro horas después, y su suite objetivo tiene 2 tests — 164 + 2 = 166. Corregido en la auditoría en frío de `a0d85ed`.)* El escrutinio adversarial del cierre sacó **12 hallazgos y 4 eran afirmaciones falsas**, todas corregidas en el acto. Números en [`RESULTS.md`](RESULTS.md) |
 | L4 `truth.derived` + fixtures de tabla | 8-10 | **CERRADO 2026-08-25** | La verdad derivada reproduce las tablas a mano | **25 de 30 coinciden** sobre 30 documentos y **1.213 celdas** transcritas del PDF, `uv run python scripts/comparar_verdad.py --detalle`. No es una estimación: recuento exhaustivo sobre las 30, sin intervalo (ADR-0015). **CERO discrepancias atribuibles al código**; de las 11, **6 errores de transcripción** evidenciados contra el PDF y **5 de frontera ambigua**, las dos clases declaradas antes de verlas. **Antes de corregir, 22 de 30**, y las dos cifras se publican. De los 25, **21 limpias + 1 contaminada + 3 corregidas**, y el desglose lo emite el propio comparador en `runs/l4/informe.json` (`--informe`), no se deduce. **Y el cero está atacado**: `seccion_sin_cerrar` —el bug real del grupo de filas— **mata 0 de 25** porque 0 de 30 documentos tienen la forma que lo dispara, mientras mata 2 de 2 en `test_grupo_de_filas.py`. **Dos huecos medidos** del instrumento de 22 mutantes, límites 65-68. Cobertura de la comparación: **53,1%** (1.213 de 2.283 celdas), límite 75. **No reproducible en clon frío**, límite 74, y el **orden del congelado tampoco está atestiguado por git**, límite 78. **Puerta: p90 8006 ms, techo 8500, margen 494 ms**, n=40, sello `f89c5b6`, 0 descartadas. **Baja** desde los 8238 de antes del hito (sello `988a0fe`, σ=86) con 55 tests más — **correlación, no causa aislada**: entre las dos series entraron el arreglo de `pdftotext` *y* los 55 tests, y las tres series con sus seis campos están en [`RESULTS.md`](RESULTS.md). Números en [`RESULTS.md`](RESULTS.md), método en [`docs/metrics.md`](docs/metrics.md) |
-| L5 `extract.base` + conformidad + **cuatro** extractores locales + nivel 1 | 14-18 | **CERRADO 2026-08-28** | Primera tabla de estructura con coste y cobertura evaluable | **2.464 unidades sobre 616 documentos**, `uv run docbench report --campaign runs/l5/campana`, con sus cifras en [`runs/l5/informe.json`](runs/l5/informe.json) y la regla R7 de `scripts/derivadas.py` comprobando contra él lo publicado — el titular deja de estar tecleado. **EL TITULAR: 103 de 338 documentos (30,5%) sobre el panel de CUATRO** —`camelot`, `docling`, `pdfplumber`, `pymupdf4llm`— coinciden con la referencia en cuántas tablas hay; el panel va en la etiqueta porque el número **sólo sabe bajar** al añadir extractores (límite 113, pre-registrado antes de que se mueva). *(Se publicó **82 de 338 (24,3%)** y era FALSO: ése es el número de los que PUNTUARON todos, y los 21 de diferencia son `NO_APLICABLE` por la regla de oro 4 presentados como desacuerdo. Lo encontró el escrutinio adversarial; ningún test podía verlo porque ningún fixture tenía una celda combinada. Límite 112.)* **Cobertura evaluable del 23,6% al 38,0%**, así que las cuatro notas NO son comparables entre sí: para eso está la cara a cara sobre los **82**, donde **el orden cambia**. **Fallos 0/0/0/0**, contados recorriendo los diarios, con el cero atacado por el aro `extract_no_lanza`. **Coste: 0,00 € medido**, 2,30 h de reloj contra **4,011 h** pre-registradas (**+74,6%** contra lo medido). **Tasa de tabla no presente en la referencia**, que el pre-registro pedía y no se publicaba: ~3% en los cortos y ~18% en 11-50, con Wilson donde es muestra. **28 mutantes**, todos mueren, control negativo 0, sello `5550ca2`; **seis nuevos contra el instrumento que emite la tabla**, que hasta ahora no tenía ninguno. Puerta: **p90 7845**, n=40, σ=119, y **el techo BAJA por primera vez, 8500 → 8200** ([ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md)). Cierra con cuatro y no con ocho por [ADR-0046](docs/adr/0046-l5-cierra-con-los-extractores-que-caben.md), que transcribe una regla congelada **antes de medir**. Números en [`RESULTS.md`](RESULTS.md) |
+| L5 `extract.base` + conformidad + **cuatro** extractores locales + nivel 1 | 14-18 | **CERRADO 2026-08-28** | Primera tabla de estructura con coste y cobertura evaluable | **2.464 unidades sobre 616 documentos**, `uv run docbench report --campaign runs/l5/campana`, con sus cifras en [`runs/l5/informe.json`](runs/l5/informe.json) y la regla R7 de `scripts/derivadas.py` comprobando contra él lo publicado — el titular deja de estar tecleado. **EL TITULAR: 103 de 338 documentos (30,5%) sobre el panel de CUATRO** —`camelot`, `docling`, `pdfplumber`, `pymupdf4llm`— coinciden con la referencia en cuántas tablas hay; el panel va en la etiqueta porque el número **sólo sabe bajar** al añadir extractores (límite 113, pre-registrado antes de que se mueva). *(Se publicó **82 de 338 (24,3%)** y era FALSO: ése es el número de los que PUNTUARON todos, y los 21 de diferencia son `NO_APLICABLE` por la regla de oro 4 presentados como desacuerdo. Lo encontró el escrutinio adversarial; ningún test podía verlo porque ningún fixture tenía una celda combinada. Límite 112.)* **Cobertura evaluable del 23,6% al 38,0%**, así que las cuatro notas NO son comparables entre sí: para eso está la cara a cara sobre los **82**, donde **el orden cambia**. **Fallos 0/0/0/0**, contados recorriendo los diarios, con el cero atacado por el aro `extract_no_lanza`. **Coste: 0,00 € medido**, 2,30 h de reloj contra **4,011 h** pre-registradas (**+74,6%** contra lo medido). **Tasa de tabla no presente en la referencia**, que el pre-registro pedía y no se publicaba: ~3% en los cortos y ~18% en 11-50, con Wilson donde es muestra. **28 mutantes al cerrar L5**, todos mueren, control negativo 0, sello `5550ca2`; **seis nuevos contra el instrumento que emite la tabla**, que hasta ahora no tenía ninguno. Puerta: **p90 7845**, n=40, σ=119, y **el techo BAJA por primera vez, 8500 → 8200** ([ADR-0022](docs/adr/0022-el-techo-de-la-puerta.md)). Cierra con cuatro y no con ocho por [ADR-0046](docs/adr/0046-l5-cierra-con-los-extractores-que-caben.md), que transcribe una regla congelada **antes de medir**. Números en [`RESULTS.md`](RESULTS.md) |
 | L6 `sample` con McNemar + bootstrap agrupado | 8-10 | PENDIENTE · **va DESPUÉS de L7** (ADR-0042) | Plan congelado y publicado antes de la primera campaña seria | — |
 | L7 quickstart: 20 documentos versionados + `make quickstart` | 6-8 | **PENDIENTE, el siguiente** · **ADELANTADO, va antes de L6** (ADR-0042) | De clone a tabla en < 3 min, sin red y sin gastar | — |
 | L8 los tres adaptadores hostiles + cableado de `benchcore.core.policy` + fuga de credenciales | ~~10-12~~ **11-14** | PENDIENTE | Los tres bloquean. Ningún secreto en ningún artefacto | **Alcance ampliado en L3 (ADR-0037):** L8 mueve `src/docbench_es/core/policy.py` a `benchcore.core.policy`, con su suite y subiendo el menor de `API_VERSION`. **~1 h 30 min**, y el rango sube porque un cambio en otro repo tiene ida y vuelta |
@@ -87,7 +87,15 @@ de ser una anécdota y pasa a ser algo que mirar antes de publicar la siguiente 
 | hito | qué se estimó | pre-registrado | medido | error contra lo medido | de qué muestra extrapolaba |
 |---|---|---:|---:|---:|---|
 | L3 | tamaño del corpus en disco | 533 MB | **361,9 MB** | **+47,3%** | KB/página de 50 documentos de **6,1 páginas** de media, aplicado a un corpus de **10,30** |
-| L5 | reloj de la campaña | 4,01 h | **2,30 h** | **+74,5%** | s/página de B5-bis, medido **un proceso por unidad**, aplicado a un corredor que carga los modelos una vez |
+| L5 | reloj de la campaña | 4,01 h | **2,30 h** | **+74,6%** | s/página de B5-bis, medido **un proceso por unidad**, aplicado a un corredor que carga los modelos una vez |
+
+> **Y la fila de L5 estuvo publicada con DOS valores, `+74,5%` y `+74,6%`, en seis
+> sitios.** No eran dos mediciones: era la misma división con el **dividendo** redondeado
+> y sin redondear —`scripts/poblacion_l5.py` emite 14.439,4 s y publicarlo como «4,01 h»
+> da 14.436—. Las dos caían dentro de la resolución declarada, ±0,2 puntos, así que la
+> discrepancia **no le chirriaba a nadie**. Ahora el número vive en
+> [`runs/l5/reloj.json`](runs/l5/reloj.json) y lo comprueba la regla R8 de
+> `scripts/derivadas.py`. Límite 114.
 
 **Las dos van con la MISMA convención**, `(predicho − real) / real`, y eso hace falta
 decirlo: el error de L5 se publicó primero como «−43%» —la fracción de la predicción que
@@ -235,7 +243,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    de conformidad, ~1 h. Mientras tanto, `umbral_capa_texto` es un numero declarado
    que nadie ha medido contra un corpus real.
 
-7. **El arnés cubre 208 de 653 tests y su hueco se ensancha; la protección real
+7. **El arnés cubre 218 de 681 tests y su hueco se ensancha; la protección real
    no.** Límite 51, criterio en el 60. Faltaban dos cosas por escribir: **la
    velocidad** y **la segunda contabilidad**. Con las dos:
 
@@ -262,7 +270,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    Publicar sólo la primera columna exageraba el hueco; publicar sólo la segunda lo
    escondería.
 
-   **Lo que sigue siendo verdad y hay que vigilar:** «los 28 mutantes mueren» dice
+   **Lo que sigue siendo verdad y hay que vigilar:** «los 29 mutantes mueren» dice
    cada vez menos sobre el conjunto — hoy habla del **31,9%** de la suite. Los
    mismos **3 tests sin ningún control** en las dos fechas son los de
    `test_errors.py`.
@@ -469,7 +477,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
    9 escapes de 19 contra 0 y 8 hoy.
 
    **Dos de esos puntos ciegos ya se cobraron su pieza**, y por eso la cifra no es
-   teórica: la forma de `ESTADO.md`:15 —«28 mutantes, todos mueren»— se escapaba
+   teórica: la forma de `ESTADO.md`:15 —«29 mutantes, todos mueren»— se escapaba
    entera, en el documento que el hook `SessionStart` inyecta en cada sesión; y el
    mensaje de error enumeraba sólo lo que veía, así que **corregir lo enumerado
    dejaba `ESTADO.md` en verde mintiendo**. Los dos están tapados; los siete de
@@ -521,6 +529,46 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
     cuyo `src/docbench_es/entity/boe.py` dice que «dos copias del mismo dato no pueden divergir».
     Unificarlas es ~30 min y toca tres módulos con tests propios; va con L5.
 
+14. **LA PUERTA ESTÁ EN ROJO POR EL TECHO. LA DECISIÓN NO SE TOMA HOY: SE TOMA EN EL
+    CIERRE, CON LAS 40.** Abierta el 29 ago 2026, al entrar la portada.
+
+    **No es un `make fast` que falle**: los 681 tests, el linter, los tipos y el contrato
+    de capas están en verde y las 40 corridas salieron con `rc=0`. Lo que suena es la
+    **alarma del techo**: p90 **8231** contra **8200** —**31 ms**—, n=40,
+    `uv run python scripts/medir_puerta.py`. El paso 1 de ADR-0022 ha valido **498 ms
+    de p90** en dos pasadas, así que lo que queda ya no es un defecto: es trabajo.
+
+    **Por qué la decisión NO es de hoy, con el ADR delante.** ADR-0022 dice que el techo
+    se re-justifica *«al cerrar cada hito, con las 40 corridas y la fórmula»*, y sus tres
+    condiciones de parada están escritas *«medidas en el cierre»*. Lo que hay hoy es una
+    medición **pareada con n=5** y **L7 abierto**: elegir concesión con eso es tomar la
+    decisión del cierre con un quinto de la muestra.
+
+    **Y dos de las tres concesiones ya están cerradas por medición, no por opinión:**
+
+    | Concesión | Por qué no está sobre la mesa |
+    |---|---|
+    | gastar una palanca | La única declarada es `max_examples` 100→50 y **vale 44 ms medidos** (ADR-0022, alternativa descartada (b)). Contra ~859 ms pareados es ruido, y reabrirla exige volver a medirla, que cuesta más que los 44 ms |
+    | reestructurar | Su primer peldaño —`pytest -n auto`— **se gastó en L5** (ADR-0043). El segundo es mover suites a `full`, del que el propio ADR dice que es lo que el límite 25 llama enseñar a ignorar el rojo |
+
+    **Así que lo que queda es re-justificar el techo con la fórmula, y eso es el cierre.**
+    Hasta entonces **`.techos` no se toca** y la portada publica los dos números con la
+    alarma sonando, que es lo que tiene que hacer una alarma.
+
+    **Lo que sí se ha hecho, porque en el cierre ya no se podría medir:**
+
+    - **El paso 1 de ADR-0022, dos veces.** La primera encontró `censo_paginas.paginas()`
+      reparseando 520 KB **cinco veces**; la segunda, **sobre el árbol ya arreglado**,
+      encontró un defecto **mayor**: `censo_tablas.tablas()` recorriendo mil XML donde
+      bastaba leer el censo publicado —0,27 s → **4,2 ms**—. Haber encontrado uno no
+      contestaba si era el único ni si era el mayor, y no era ninguna de las dos.
+    - **`mypy` con SU instrumento**, que `--durations` no alcanza: `--timing-stats` dice
+      que los 14 módulos nuevos cuestan **35 ms** y que el mayor son 5,9 ms. **No hay
+      patología de tipos**; el resto del delta de reloj no es atribuible a ningún módulo.
+
+    Los números y sus corridas, en [`RESULTS.md`](RESULTS.md); el hueco de la fórmula
+    —el término «incremento proyectado», que nunca se ha medido— en el **límite 116**.
+
 ## Decisiones tomadas fuera del manual
 
 | Decision | ADR | En una linea |
@@ -536,6 +584,7 @@ que sí es comprobable —que el número publicado no se quede viejo— ya lo vi
 | El techo de la puerta AVISA, el manual BLOQUEA | [`0022`](docs/adr/0022-el-techo-de-la-puerta.md) | Techo vigente: 8200 ms local · 21000 ms en CI, re-justificado en cada cierre con 40 corridas. **Bajó** en L5, la primera vez. **No toca el manual**: §15 y sus 90 s no cambian |
 | El TEDS negativo se recorta SOLO al publicar | [`0023`](docs/adr/0023-teds-negativo-suelo-al-publicar.md) | El calculo no se toca —romperia el criterio de L2—; `para_publicar()` recorta, y se dice cuantos se recortaron |
 | Un documento con varias tablas: la nota es la media | [`0024`](docs/adr/0024-teds-batch-varias-tablas-por-documento.md) | `teds_batch` sobrescribia por clave y la tabla mal extraida desaparecia con cobertura 1,0. Regla de oro 6 rota |
+| La portada se GENERA desde `informe.json`, y son dos salidas | [`0047`](docs/adr/0047-la-portada-se-genera-desde-el-informe.md) | `docs/index.html` y el bloque `PORTADA` del README, con **cero** cifras tecleadas y la regla R9 comprobandolas en la puerta. Una portada escrita a mano seria la copia catorce del titular y la primera en quedarse vieja |
 | «Tras alinear» = la colocacion canonica de L1 | [`0025`](docs/adr/0025-la-exactitud-de-celda-no-alinea.md) | `cell_accuracy` no hace un segundo alineamiento: es exactitud POSICIONAL, y el precio esta en el limite 53 |
 
 **Cuales estan transcritos al manual**, por la regla de oro 8, y cuales no tocan
@@ -548,11 +597,12 @@ el manual — que no es lo mismo y hay que distinguirlo:
 | 0015 | **No lo toca**: la regla del intervalo vive en `CLAUDE.md` y el manual no la enuncia —`grep -n 'sin intervalo' MANUAL.md` no devuelve nada— |
 | 0022 | **No lo toca**: §15 fija 90 s y no cambia; el techo es una alarma POR DEBAJO de esa promesa |
 | 0023 | **Si**: §9.2. `para_publicar()` es una funcion publica que §9.2 no declaraba, y una interfaz incompleta es una contradiccion como cualquier otra. Transcrita en el mismo commit |
+| 0047 | **Si**: §8 y §11. Anade `report/portada/` al arbol y `docbench portada` a la CLI, que §11 no declaraba. Transcrito en el mismo commit |
 | 0024 | **No lo contradice, lo cumple**: §6 ya decia que `evaluable_coverage` es «sobre cuantas TABLAS se pudo calcular» y el codigo contaba documentos. El ADR arregla el codigo, no el manual |
 
 Los 0017 y 0019 son de L0 y L1 y estan en sus cierres.
 
-> **Esta tabla estaba desfasada y decia «los cuatro».** Existen 0013–0025.
+> **Esta tabla estaba desfasada y decia «los cuatro».** Existen 0013–0026, 0030–0047.
 > Enumerarlos mal es exactamente el fallo que la regla de oro 8 persigue: si nadie
 > sabe que ADR hay, nadie puede comprobar cual falta por transcribir.
 

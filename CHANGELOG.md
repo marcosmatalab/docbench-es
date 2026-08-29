@@ -11,6 +11,78 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### LA PORTADA y el error del estimador con dos valores · 2026-08-28
+
+#### Añadido
+
+- **`docbench portada`** y el paquete **`report/portada/`**: la puerta de entrada de
+  diez minutos, **generada** desde `runs/l5/informe.json` y del censo del repo. **Dos
+  salidas** —`docs/index.html`, servida por GitHub Pages, y el bloque `PORTADA` del
+  `README.md` con su tope de líneas— y **ni una cifra tecleada**: las 70 van marcadas
+  con `data-cifra` y salen de su fuente. El porqué y sus tres alternativas descartadas,
+  en [ADR-0047](docs/adr/0047-la-portada-se-genera-desde-el-informe.md), transcrito al
+  manual (§8 y §11) en el mismo commit.
+- **La regla R9 de `scripts/derivadas.py`**, que compara la portada contra su fuente en
+  **tres direcciones**: la cifra que no cuadra, la que falta y **la que sobra** —una
+  clave en la página que el instrumento no emite—. La tercera no la tenía ninguna otra
+  regla, y es la que caza un número escrito a mano en la plantilla.
+- **El mutante `portada_sin_panel`** (28 → 29), que **mueve** el panel fuera de la
+  etiqueta del titular sin borrarlo: uno que lo borrara lo cazaría cualquier
+  `"camelot" in html`. Lo matan dos aserciones distintas de `tests/unit/test_portada.py`
+  —dónde está el panel y dónde está la frase que lo explica—, no una repetida.
+- **`runs/l5/reloj.json`** y **`scripts/error_del_estimador.py`**: el reloj de la campaña
+  y su predicción, con los dos operandos, sus dos fórmulas y el dato medido declarado
+  como tal. **La regla R8** compara contra él las seis copias vivas del error.
+- **`.techos` gana `PUERTA_P90_MS` y `TECHO_LOCAL_ANTERIOR_MS`**, que estaban dichos en
+  sus comentarios y por tanto eran invisibles para cualquier lector automático.
+
+#### Corregido
+
+- **`censo_tablas.tablas()` recorría los mil XML de `runs/l3/docs`** para contar tablas
+  que ya estaban contadas y versionadas: el consumidor **medía** donde bastaba **leer**.
+  0,27 s → **4,2 ms**, y de paso `poblacion_l5` deja de necesitar los 362 MB, así que su
+  test ya no se salta en un clon frío. Lo encontró `--durations` **repetido sobre el
+  árbol ya arreglado**: haber encontrado un defecto no dice si era el único ni el mayor.
+- **`scripts/censo_paginas.paginas()` reparseaba los 520 KB del manifiesto CINCO veces**
+  por cada `reloj.json` emitido. Es el `pdftotext` llamado ocho veces del cierre de L4, y
+  se arregla igual —`lru_cache`—: el test que lo ejercita pasa de 0,26 s a **0,05 s** y la
+  mediana de la puerta de 8500 a **8082 ms**. Lo encontró `--durations`, que es el paso 1
+  de ADR-0022 y por eso existe.
+- **Un test recomputaba la predicción sin poder hacerlo en un clon frío.** Necesitaba
+  los 362 MB de `runs/l3/docs`, y sin ellos no fallaba: daba **otro número**. Arreglado
+  en la raíz —el consumidor ya no depende del corpus— y generalizado con la puerta.
+- **El error del estimador de L5 estaba publicado con DOS valores**, `+74,5%` en cinco
+  sitios y `+74,6%` en un sexto, y **ninguno salía de un fichero**. No eran dos
+  mediciones: era la misma división con el dividendo redondeado y sin redondear. Se
+  publica **`+74,6%`**, que es lo que emite el instrumento con los dos operandos
+  enteros, y los 14.436 s del pre-registrado pasan a los **14.439** reales. Límite 114.
+- **`scripts/referencias.py` no reconocía `.html`**, así que declaraba rota
+  `docs/index.html` — un falso positivo, que es la dirección buena para un guardián.
+
+- **`scripts/lecturas.py` y su aro**, contra el defecto que iba por la **cuarta**: una
+  función pura que lee algo caro, llamada una vez por elemento del bucle, sin cachear
+  (L4, L5 y dos veces en L7). Cuenta lecturas por `(qué, argumento)` dentro de **una
+  llamada**, y su control negativo es **el defecto real revivido**, no un bucle inventado.
+  Límite 117.
+- **`scripts/fuera_de_git.py`, la puerta única de los datos que no están en git**, que
+  **lanza** con su razón en vez de devolver un vacío. El criterio de quién debe pasar por
+  ella se **deriva** de `huerfanos.reparto()` —quien alcanza un test puede degradar en
+  verde— en vez de escribirse a mano. Límite 118.
+
+#### Abierto
+
+- **La puerta suena: p90 8231 contra un techo de 8200 —31 ms—**, con `rc=0` en las 40
+  corridas. El paso 1 de ADR-0022 ha valido **498 ms de p90** en dos pasadas.
+  **La decisión NO se toma aquí**: ADR-0022 la ata al cierre, con las 40 corridas y la
+  fórmula, y dos de sus tres concesiones ya están cerradas por medición —la palanca vale
+  44 ms, y el primer peldaño de la reestructuración se gastó en L5—. **`.techos` no sube
+  el techo.** Deuda 14 de `ESTADO.md`, límite 116.
+
+#### Retirado
+
+- Las cinco copias de `+74,5%` y el `14.436 s` derivado de redondear la hora.
+
+
 ### L4 · La verdad derivada contra 30 tablas transcritas a mano · cerrado el 2026-08-25
 
 #### Añadido

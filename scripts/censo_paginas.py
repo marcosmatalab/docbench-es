@@ -23,6 +23,7 @@ import json
 import statistics
 import sys
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -55,10 +56,35 @@ class Banda:
         )
 
 
-def paginas() -> dict[str, int]:
-    """`external_id` → páginas, del manifiesto de L3."""
+@lru_cache(maxsize=1)
+def _del_manifiesto() -> tuple[tuple[str, int], ...]:
+    """El manifiesto, parseado UNA vez por proceso. **520 KB de JSON.**
+
+    `scripts/error_del_estimador.py` llamaba a `paginas()` **cinco veces** para emitir un
+    solo `reloj.json` —directamente, por `poblaciones()`, y otras tres por dentro de
+    `tablas()` y `muestra_sin_tabla()`—, y cada una reparseaba el fichero entero. Es el
+    mismo defecto que el cierre de L4 encontró con `pdftotext` llamado ocho veces sobre
+    los mismos bytes, y se arregla igual, que es como ADR-0022 manda: **primero
+    `--durations`, y si hay un defecto real se arregla en vez de gastar una concesión**.
+
+    Y es un arreglo del PRODUCTO, no del banco: `poblacion_l5.py` pagaba lo mismo en cada
+    corrida. Si sólo hiciera más rápido el test, sería maquillar la medición.
+
+    El precio de cachear, dicho como en `huerfanos.reparto()`: si alguien reescribiera el
+    manifiesto **durante** la corrida, esto no lo vería. Ningún consumidor lo hace —todos
+    leen— y el árbol quieto ya es precondición de cualquier medida de este repo.
+    """
     man = json.loads(MANIFIESTO.read_text(encoding="utf-8"))
-    return {d["external_id"]: int(d["n_pages"]) for d in man["documentos"]}
+    return tuple((str(d["external_id"]), int(d["n_pages"])) for d in man["documentos"])
+
+
+def paginas() -> dict[str, int]:
+    """`external_id` → páginas, del manifiesto de L3. **Un `dict` nuevo cada vez.**
+
+    La caché guarda la tupla y no el diccionario a propósito: devolver el mismo `dict`
+    dejaría que un llamante lo mutara y envenenara a los demás, que es peor que releer.
+    """
+    return dict(_del_manifiesto())
 
 
 def repartir(cortes: dict[str, tuple[int, int]]) -> dict[str, Banda]:

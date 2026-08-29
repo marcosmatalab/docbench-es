@@ -34,6 +34,8 @@ from pathlib import Path
 
 import pytest
 
+from docbench_es.report.portada import FIN, INICIO
+
 RAIZ = Path(__file__).resolve().parents[2]
 
 SOSTIENEN = {
@@ -96,3 +98,49 @@ def test_un_documento_que_acumula_no_lleva_tope(nombre: str) -> None:
         " valor. Si hace falta acortarlo, se parte por hitos, no se recorta"
     )
     assert (RAIZ / nombre).exists()
+
+
+TOPE_PORTADA = 18
+"""Líneas del bloque `PORTADA` del README, marcas incluidas. Medido en 13 el 28 ago 2026.
+
+**Un bloque GENERADO también necesita tope, y por una razón que los otros tres no
+tienen:** nadie lo escribe, así que nadie nota que crece. Añadir una frase a
+`report.portada._corto` cuesta lo mismo se publique donde se publique, y la versión corta
+existe **precisamente** para ser corta: si crece hasta ser la página, el README vuelve a
+ser lo que era y la portada larga deja de tener sentido.
+
+Y el tope va sobre el bloque y no sólo sobre el README entero a propósito: con el tope
+global se podría hacer sitio recortando lo escrito a mano, o sea pagando la generación
+con la prosa. Los dos topes, y cada uno mide lo suyo.
+"""
+
+
+def test_el_bloque_generado_de_la_portada_cabe_en_su_tope() -> None:
+    """La versión corta de la portada, acotada. Si esto se pone rojo, la respuesta por
+    defecto es **sacar una frase**, que ya está en la página larga, no subir el número."""
+    texto = (RAIZ / "README.md").read_text(encoding="utf-8")
+    i, j = texto.index(INICIO), texto.index(FIN) + len(FIN)
+    lineas = len(texto[i:j].splitlines())
+
+    assert lineas <= TOPE_PORTADA, (
+        f"el bloque PORTADA tiene {lineas} líneas y su tope son {TOPE_PORTADA}."
+        " Es la VERSIÓN CORTA: lo que no cabe ya está en `docs/index.html`."
+        " Saca una frase de `report.portada._corto` antes de subir el número"
+    )
+
+
+def test_el_readme_lleva_las_marcas_de_los_dos_generadores() -> None:
+    """**Dos generadores escriben en este fichero, y ninguno de los dos puede fallar en
+    silencio.** `estado_readme.py` deriva el titular de `ESTADO.md`; `docbench portada`
+    deriva la portada de `runs/l5/informe.json`. Si alguien borra un par de marcas al
+    editar a mano, el generador aborta —y esto lo dice antes, con el nombre.
+    """
+    texto = (RAIZ / "README.md").read_text(encoding="utf-8")
+
+    faltan = [
+        m
+        for m in (INICIO, FIN, "<!-- ESTADO:inicio -->", "<!-- TITULAR:inicio -->")
+        if m not in texto
+    ]
+
+    assert not faltan, f"el README perdió marcas de generador: {faltan}"

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>docbench-es · banco de extracción documental en español</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --paper:#F1F2F0; --panel:#FFFFFF; --ink:#15181A; --ink-soft:#59626A;
+  --ink-faint:#8A9299; --rule:#D2D6D3; --rule-soft:#E3E6E3;
+  --errata:#96271F; --errata-wash:#F7EAE8; --gauge:#37596B; --gauge-wash:#E9EFF2;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#131618; --panel:#191D20; --ink:#E5E7E4; --ink-soft:#8B949B;
+    --ink-faint:#6B747B; --rule:#282D31; --rule-soft:#202528;
+    --errata:#D9695B; --errata-wash:#241A19; --gauge:#7FA5B7; --gauge-wash:#181F23;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131618; --panel:#191D20; --ink:#E5E7E4; --ink-soft:#8B949B;
+  --ink-faint:#6B747B; --rule:#282D31; --rule-soft:#202528;
+  --errata:#D9695B; --errata-wash:#241A19; --gauge:#7FA5B7; --gauge-wash:#181F23;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;
+  line-height:1.62;margin:0;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:0 28px 96px}
+@media(max-width:640px){.wrap{padding:0 18px 64px}}
+p{margin:0 0 1.05em;max-width:66ch}
+a{color:var(--gauge);text-decoration:none;
+  border-bottom:1px solid color-mix(in srgb,var(--gauge) 35%,transparent)}
+a:hover{border-bottom-color:var(--gauge)}
+a:focus-visible{outline:2px solid var(--gauge);outline-offset:3px;border-radius:2px}
+strong{font-weight:600}
+code,.mono{font-family:var(--mono);font-size:.88em;font-variant-numeric:tabular-nums}
+.masthead{border-bottom:2px solid var(--ink);padding:64px 0 20px;margin-bottom:8px}
+@media(max-width:640px){.masthead{padding-top:40px}}
+.wordmark{font-family:var(--sans);font-weight:700;font-size:clamp(34px,6vw,52px);
+  letter-spacing:-.025em;line-height:1;margin:0 0 14px;text-wrap:balance}
+.wordmark span{color:var(--ink-faint);font-weight:500}
+.standfirst{font-family:var(--serif);font-size:clamp(17px,2.2vw,20px);
+  color:var(--ink-soft);max-width:58ch;margin:0 0 22px}
+.strip{display:flex;flex-wrap:wrap;gap:0 26px;font-family:var(--mono);font-size:12px;
+  color:var(--ink-faint);padding-bottom:2px}
+.strip b{color:var(--ink-soft);font-weight:500}
+section{padding-top:52px}
+.eyebrow{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-faint);margin:0 0 10px}
+h2{font-family:var(--sans);font-weight:600;font-size:clamp(21px,3vw,26px);
+  letter-spacing:-.015em;line-height:1.22;margin:0 0 16px;text-wrap:balance}
+.figure{background:var(--panel);border:1px solid var(--rule);padding:26px 28px;margin:0 0 18px}
+.figure .n{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;
+  font-size:clamp(38px,7vw,58px);line-height:1;letter-spacing:-.03em;display:block;
+  margin-bottom:12px}
+.figure .q{font-family:var(--sans);font-size:15px;line-height:1.5;color:var(--ink);
+  max-width:54ch;margin:0}
+.figure .q em{font-style:normal;color:var(--ink-soft)}
+.bind{margin-top:16px;padding-top:14px;border-top:1px solid var(--rule-soft);
+  font-family:var(--sans);font-size:13.5px;line-height:1.55;color:var(--ink-soft);max-width:60ch}
+.bind b{color:var(--ink);font-weight:600}
+.nota{font-family:var(--sans);font-size:14px;color:var(--ink-soft);max-width:64ch}
+.scroll{overflow-x:auto;margin:0 0 12px;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:560px;font-family:var(--sans);font-size:14px}
+caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:13.5px;
+  color:var(--ink-soft);padding:0 0 12px;line-height:1.5;max-width:64ch}
+caption b{color:var(--ink);font-weight:600}
+th{font-weight:600;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:right;padding:0 0 8px 18px;
+  border-bottom:1px solid var(--ink);white-space:nowrap;vertical-align:bottom}
+th:first-child{text-align:left;padding-left:0}
+td{padding:9px 0 9px 18px;border-bottom:1px solid var(--rule-soft);text-align:right;
+  font-variant-numeric:tabular-nums}
+td:first-child{text-align:left;padding-left:0;font-family:var(--mono);font-size:13px}
+tbody tr:last-child td{border-bottom:1px solid var(--rule)}
+.cov{color:var(--ink-faint);font-family:var(--mono);font-size:12px}
+.lead{font-weight:600}
+.errata{border-left:3px solid var(--errata);background:var(--errata-wash);
+  padding:24px 26px;margin:20px 0 18px}
+.errata .tag{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--errata);margin:0 0 14px}
+.swap{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 18px;margin:0 0 16px}
+.swap .was{font-family:var(--mono);font-size:clamp(24px,4.5vw,34px);font-weight:500;
+  color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--errata);
+  text-decoration-thickness:2px}
+.swap .arrow{font-family:var(--sans);color:var(--ink-faint);font-size:18px}
+.swap .now{font-family:var(--mono);font-size:clamp(24px,4.5vw,34px);font-weight:600;
+  color:var(--ink)}
+.errata p{font-size:15.5px;max-width:62ch}
+.errata p:last-child{margin-bottom:0}
+.limits{list-style:none;padding:0;margin:0;display:grid;gap:1px;background:var(--rule-soft);
+  border-top:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+.limits li{background:var(--paper);padding:13px 0;font-family:var(--sans);font-size:14.5px;
+  line-height:1.5;color:var(--ink-soft)}
+.limits li b{color:var(--ink);font-weight:600;font-family:var(--sans)}
+.method{display:grid;gap:0;margin:6px 0 0}
+.method div{display:grid;grid-template-columns:132px 1fr;gap:20px;padding:14px 0;
+  border-bottom:1px solid var(--rule-soft)}
+.method div:first-child{border-top:1px solid var(--rule)}
+.method dt{font-family:var(--mono);font-size:12px;color:var(--gauge);letter-spacing:.02em;
+  padding-top:2px}
+.method dd{margin:0;font-family:var(--sans);font-size:14.5px;line-height:1.55;color:var(--ink-soft)}
+.method dd b{color:var(--ink);font-weight:600}
+@media(max-width:600px){.method div{grid-template-columns:1fr;gap:5px}.method dt{padding-top:0}}
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-top:6px}
+.door{background:var(--panel);padding:18px 20px;display:block;border-bottom:none}
+.door:hover{background:var(--gauge-wash);border-bottom:none}
+.door .f{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--gauge);
+  display:block;margin-bottom:5px}
+.door .d{font-family:var(--sans);font-size:13px;color:var(--ink-soft);line-height:1.45;
+  display:block}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <h1 class="wordmark">docbench&#8209;es <span>· nivel 1 · <span data-cifra="hito">L5</span></span></h1>
+  <p class="standfirst">El primer banco de pruebas de extracción documental en español,
+  medido sobre el BOE. <strong>Lo publica alguien que no vende extracción
+  documental</strong>: aquí el juez no es concursante y no hay extractor propio en la
+  tabla.</p>
+  <div class="strip"><span>cerrado el <b data-cifra="fecha">28 ago 2026</b></span> <span>sello <b data-cifra="sello_corrida">819c06f</b></span> <span>unidades <b data-cifra="unidades">2.464</b></span> <span>fallos <b data-cifra="fallos">0</b></span> <span>coste <b data-cifra="coste">0,00 €</b></span></div>
+</header>
+
+<section>
+  <p class="eyebrow">El titular</p>
+  <div class="figure">
+    <span data-cifra="titular" class="n">103 de 338</span>
+    <p class="q">documentos con tabla en los que los
+    <strong><span data-cifra="panel_n">cuatro</span></strong> extractores coinciden con la referencia en
+    <strong>cuántas tablas hay</strong>. <em>El <span data-cifra="titular_pct">30,5%</span>.</em></p>
+    <p class="bind"><b>Sobre el panel de <span data-cifra="panel_n">cuatro</span></b> —
+    <code data-cifra="panel">camelot · docling · pdfplumber · pymupdf4llm</code>. El panel va dentro de la etiqueta
+    porque el número <b>sólo sabe bajar</b> al añadir un extractor: es una intersección,
+    no una nota. Dos valores con paneles distintos no son comparables y no van en la
+    misma serie.</p>
+  </div>
+  <p>En el <span data-cifra="titular_resto_pct">69,5%</span> restante, al menos uno de los
+  <span data-cifra="panel_n">cuatro</span> discrepa en el <strong>paso previo a cualquier métrica de
+  calidad</strong>. Antes de discutir si una tabla está bien extraída hay que estar de
+  acuerdo en cuántas tablas hay.</p>
+  <div class="scroll">
+    <table>
+      <caption><b>El acuerdo por longitud del documento.</b> El mínimo <b>no</b> está en
+      los documentos largos.</caption>
+      <thead>
+        <tr><th>Banda de páginas</th><th>Documentos</th><th>Coinciden todos</th><th>Tasa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-cifra="banda0_nombre">una página</td><td data-cifra="banda0_poblacion">9</td><td data-cifra="banda0_coinciden">9</td><td data-cifra="banda0_tasa" class="lead">100,0%</td></tr>
+        <tr><td data-cifra="banda1_nombre">2-10</td><td data-cifra="banda1_poblacion">183</td><td data-cifra="banda1_coinciden">56</td><td data-cifra="banda1_tasa">30,6%</td></tr>
+        <tr><td data-cifra="banda2_nombre">11-50</td><td data-cifra="banda2_poblacion">114</td><td data-cifra="banda2_coinciden">23</td><td data-cifra="banda2_tasa" class="lead">20,2%</td></tr>
+        <tr><td data-cifra="banda3_nombre">&gt;50</td><td data-cifra="banda3_poblacion">32</td><td data-cifra="banda3_coinciden">15</td><td data-cifra="banda3_tasa">46,9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="nota"><strong>No es monótono con la longitud</strong>, así que la explicación
+  fácil —«los documentos largos son más difíciles»— está descartada por la propia tabla.
+  <strong>Qué lo ordena de verdad no está medido</strong>, y eso se publica como hueco y
+  no como hipótesis: hay un candidato escrito, con el cruce que lo confirmaría o lo
+  descartaría, y no está hecho.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Las notas, con lo que las califica</p>
+  <h2>Ninguna de estas notas es comparable con las otras</h2>
+  <div class="scroll">
+    <table>
+      <caption>Cada TEDS se calcula sobre las tablas que ese extractor <b>pudo
+      evaluar</b>, y esa fracción va de <span data-cifra="cobertura_min">23,6%</span> a
+      <span data-cifra="cobertura_max">38,0%</span>. Ordenar esta columna produciría un ranking falso: los
+      denominadores no son el mismo conjunto. La comparación que sí vale es la cara a
+      cara sobre los <span data-cifra="cara_a_cara_n">82</span> documentos que puntuaron todos, y ahí
+      <b>el orden cambia</b>. <b>Esto no es un ranking</b>: la ordenación con su potencia
+      llega en L6.</caption>
+      <thead>
+        <tr><th>Extractor</th><th>TEDS</th><th>TEDS&#8209;S</th><th>F1 celda</th>
+        <th>Cobertura evaluable</th><th>Latencia mediana</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-cifra="nota_docling_nombre">docling</td><td data-cifra="nota_docling_teds">0,9053</td><td data-cifra="nota_docling_teds_s">0,9150</td><td data-cifra="nota_docling_cell_f1">0,8547</td><td data-cifra="nota_docling_cobertura" class="cov">38,0%</td><td data-cifra="nota_docling_latencia" class="cov">3.613 ms</td></tr>
+        <tr><td data-cifra="nota_pymupdf4llm_nombre">pymupdf4llm</td><td data-cifra="nota_pymupdf4llm_teds">0,8936</td><td data-cifra="nota_pymupdf4llm_teds_s">0,9134</td><td data-cifra="nota_pymupdf4llm_cell_f1">0,7372</td><td data-cifra="nota_pymupdf4llm_cobertura" class="cov">23,6%</td><td data-cifra="nota_pymupdf4llm_latencia" class="cov">2.363 ms</td></tr>
+        <tr><td data-cifra="nota_pdfplumber_nombre">pdfplumber</td><td data-cifra="nota_pdfplumber_teds">0,8699</td><td data-cifra="nota_pdfplumber_teds_s">0,8701</td><td data-cifra="nota_pdfplumber_cell_f1">0,9425</td><td data-cifra="nota_pdfplumber_cobertura" class="cov">29,6%</td><td data-cifra="nota_pdfplumber_latencia" class="cov">404 ms</td></tr>
+        <tr><td data-cifra="nota_camelot_nombre">camelot</td><td data-cifra="nota_camelot_teds">0,8684</td><td data-cifra="nota_camelot_teds_s">0,8701</td><td data-cifra="nota_camelot_cell_f1">0,9343</td><td data-cifra="nota_camelot_cobertura" class="cov">29,6%</td><td data-cifra="nota_camelot_latencia" class="cov">854 ms</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Por qué creérselo</p>
+  <h2>El titular de este hito se publicó mal, y la corrección está en la historia de git</h2>
+  <div class="errata">
+    <p class="tag">Errata</p>
+    <div class="swap">
+      <span data-cifra="errata_antes" class="was">82 de 338</span>
+      <span class="arrow">&rarr;</span>
+      <span data-cifra="errata_ahora" class="now">103 de 338</span>
+    </div>
+    <p><strong>Era otra cuenta.</strong> El número tachado existe y es correcto
+    <strong>para otra pregunta</strong>: son los documentos donde todos
+    <strong>puntuaron</strong>. El titular decía «coinciden en cuántas tablas hay», que
+    es otra. Los <span data-cifra="errata_diferencia">21</span> de diferencia son documentos donde
+    <strong>todos acertaron el recuento</strong> y al menos uno no pudo evaluar ni una
+    tabla, porque la verdad trae celdas combinadas y él no expresa <code>rowspan</code>.
+    Se publicaban como desacuerdo.</p>
+    <p><strong>Ningún fixture tenía una celda combinada</strong>, y en ese mundo «acertar
+    el recuento» y «puntuar» son literalmente el mismo conjunto: ninguna aserción posible
+    sobre esos datos de prueba podía distinguirlos. No faltaba un test, faltaba un caso.
+    Lo encontró un escrutinio adversarial leyendo, no ejecutando.</p>
+    <p><strong>El commit con el titular falso sigue en la historia</strong>, con la
+    corrección detrás. Borrarlo habría sido más limpio y menos cierto.</p>
+  </div>
+  <p>Ése es el mecanismo del proyecto entero funcionando sobre su propio peor caso. Lo
+  que lo sostiene el resto del tiempo:</p>
+  <dl class="method">
+    <div><dt>pre-registro</dt><dd>Cada criterio se escribe <b>antes</b> de medir, con su comando. Cuando sale en contra, sale publicado en contra: este hito declaró <b>inválido</b> uno de sus propios criterios porque no nombraba la columna que lo medía.</dd></div>
+    <div><dt>mutantes</dt><dd><b data-cifra="mutantes">29</b> mutantes contra el código de producción, todos mueren, y un <b>control negativo</b> que demuestra que la suite no mata por accidente. Uno de ellos le quita el panel a esta misma página.</dd></div>
+    <div><dt>derivadas</dt><dd>Un número derivado <b>no se teclea</b>. Las <b>70</b> cifras de esta página las recalcula la puerta contra <code>runs/l5/informe.json</code> y contra el censo del repo: ni una está escrita en la plantilla.</dd></div>
+    <div><dt>límites</dt><dd><b data-cifra="limites">118</b> cosas que este banco <b>no</b> mide, escritas el día que se descubren y no al final.</dd></div>
+    <div><dt>la puerta</dt><dd>El techo <b>bajó</b> de <span data-cifra="techo_anterior">8.500</span> a <span data-cifra="techo">8.200</span> ms este hito, por una regla escrita antes de medirlo: es la primera vez que baja. Y el último p90 medido son <b data-cifra="p90">8.231</b> ms, o sea que <b>la alarma está sonando</b>. No se sube un techo para que deje de avisar: la decisión está abierta y escrita, con el coste medido y atribuido.</dd></div>
+    <div><dt>coste</dt><dd><b data-cifra="coste">0,00 €</b>, medido y no supuesto. Y la predicción del reloj falló: <b data-cifra="error_estimador">+74,6%</b> contra lo medido, publicado con sus dos operandos sin redondear.</dd></div>
+  </dl>
+</section>
+
+<section>
+  <p class="eyebrow">Lo que este banco no mide</p>
+  <h2>Cuatro de los
+  <span data-cifra="limites">118</span>, los que
+  más cambian cómo se leen los números de arriba</h2>
+  <ul class="limits">
+    <li><b>El corpus es el BOE</b> que está mejor maquetado que la media de una empresa. Estos números son un <b>techo optimista</b> para cualquier otra entidad.</li>
+    <li><b>El error de la verdad de referencia es desconocido.</b> Es transcripción del XML oficial, no lectura del PDF, y su discordancia contra una auditoría humana no está medida todavía.</li>
+    <li><b>La tasa de tabla que no está en la referencia sube con la longitud</b> y <b>no se llama alucinación</b>, porque la adjudicación contra el PDF —mirar el PDF, no el XML— no está hecha.</li>
+    <li><b>Faltan familias de extractor:</b> <b>TEI</b> y <b>OCR</b>. El hito cerró con los que caben en el presupuesto de cómputo, por una regla congelada antes de medirlo.</li>
+  </ul>
+</section>
+
+<section>
+  <p class="eyebrow">Dónde está la profundidad</p>
+  <h2>Cuatro puertas</h2>
+  <div class="doors">
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/RESULTS.md"><span class="f">RESULTS.md</span><span class="d">Cada número con el comando que lo produce y el sello del árbol donde se midió.</span></a>
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/LIMITS.md"><span class="f">LIMITS.md</span><span class="d">Los <span data-cifra="limites">118</span> límites. Dónde se rompe cada supuesto, con fecha.</span></a>
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/tree/main/docs/adr"><span class="f">docs/adr/</span><span class="d"><span data-cifra="adr">32</span> decisiones de diseño, cada una con su alternativa descartada.</span></a>
+    <a class="door" href="https://github.com/marcosmatalab/docbench-es/blob/main/runs/l5/informe.json"><span class="f">runs/l5/informe.json</span><span class="d">La salida cruda de la campaña. Todo lo de esta página sale de aquí.</span></a>
+  </div>
+</section>
+
+<footer>
+  Campaña <span data-cifra="hito">L5</span> · <span data-cifra="documentos">616</span> documentos ·
+  <span data-cifra="paginas">8.733</span> páginas · <span data-cifra="tablas_verdad">2.135</span> tablas en la verdad de
+  referencia<br>
+  sello de la corrida <code data-cifra="sello_corrida">819c06f</code> ·
+  informe emitido sobre <code data-cifra="sello_informe">233e21f</code> ·
+  <span data-cifra="cpu">AMD Ryzen 9 9950X3D 16-Core Processor</span>, <span data-cifra="procesos">14</span> procesos visibles<br>
+  Esta página la genera <code>docbench portada</code> desde
+  <code>runs/l5/informe.json</code>. Ninguna cifra está tecleada.
+</footer>
+
+</div>
+</body>
+</html>

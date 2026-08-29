@@ -45,6 +45,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 from censo_paginas import DEL_COSTE  # noqa: E402
+from fuera_de_git import exige  # noqa: E402
 
 DOCS = RAIZ / "runs" / "l3" / "docs"
 MANIFIESTO = RAIZ / "runs" / "l3" / "manifiesto.json"
@@ -94,6 +95,7 @@ class Documento:
 
 def censar(ids: list[str], docs: Path = DOCS) -> list[Documento]:
     """Página a página, con `pypdf`. Un documento que no se puede abrir **se cuenta**."""
+    exige(docs)
     from pypdf import PdfReader
 
     fuera: list[Documento] = []

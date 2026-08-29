@@ -1,0 +1,30 @@
+{
+ "que": "el reloj de la campaña de L5 contra su predicción pre-registrada",
+ "prediccion": {
+  "instrumento": "scripts/poblacion_l5.py",
+  "modelo_de_coste": "runs/l5/computo_base_2hilos.json",
+  "segundos": 14439.436347454552,
+  "horas": 4.010954540959598,
+  "derivada": true
+ },
+ "real": {
+  "instrumento": "time alrededor de `uv run docbench run`",
+  "n": 1,
+  "resolucion_s": 1,
+  "segundos": 8272.0,
+  "horas": 2.2977777777777777,
+  "derivada": false
+ },
+ "error_contra_lo_medido": {
+  "formula": "(predicho − real) / real",
+  "valor": 0.7455798292377359
+ },
+ "sobra_de_la_prediccion": {
+  "formula": "(real − predicho) / predicho",
+  "valor": -0.4271244527174203
+ },
+ "no_es_el_reloj": {
+  "que": "suma de los coste_ms de runs/l5/informe.json: perf_counter DENTRO de extract",
+  "segundos": 8267.462
+ }
+}

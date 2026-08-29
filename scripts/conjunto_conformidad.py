@@ -28,6 +28,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from docbench_es.extract.conjunto import veredictos_posibles as _veredictos
 
 RAIZ = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+from fuera_de_git import exige  # noqa: E402
+
 PLAN = RAIZ / "runs" / "l5" / "conformidad.yaml"
 FIXTURES = RAIZ / "runs" / "l4" / "fixtures"
 DOCS = RAIZ / "runs" / "l3" / "docs"
@@ -123,7 +128,7 @@ def conjunto() -> list[Elegido]:
                     forma_real=forma_real,
                     paginas_declaradas=int(entrada["paginas"]),
                     paginas_reales=paginas.get(str(entrada["id"])),
-                    pdf=(DOCS / f"{entrada['id']}.pdf").exists(),
+                    pdf=(exige(DOCS) / f"{entrada['id']}.pdf").exists(),
                 )
             )
     return fuera

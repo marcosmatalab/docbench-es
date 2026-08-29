@@ -38,7 +38,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 from censo_paginas import DEL_COSTE, paginas  # noqa: E402
-from censo_tablas import tablas  # noqa: E402
+from censo_tablas import publicado  # noqa: E402
 
 PLAN = RAIZ / "runs" / "l5" / "poblacion.yaml"
 # El modelo de coste sale de la corrida de POCOS HILOS, que es la configuración en la
@@ -77,7 +77,12 @@ def horas(ids: list[str], pag: dict[str, int], coste: dict[tuple[str, str], floa
 
 def poblaciones() -> tuple[list[str], dict[str, list[str]]]:
     """Los 338 que puntúan, y los 662 que no repartidos por estrato."""
-    pag, tab = paginas(), tablas()
+    # EL CENSO PUBLICADO, NO LOS 1.000 XML. Son el mismo número —lo comprueba
+    # `test_datos_fuera_de_git.py` cuando el corpus está— y la diferencia es que así
+    # esto corre en un clon frío. Antes arrastraba los 362 MB de `runs/l3/docs`, y
+    # `censo_tablas` devolvía `{}` sin ellos: la predicción salía **distinta** en vez de
+    # fallar. Y de paso es el 90% del coste del instrumento: 44 ms de los 48.
+    pag, tab = paginas(), publicado()
     con = sorted(i for i in pag if tab.get(i, 0) > 0)
     estratos: dict[str, list[str]] = {b: [] for b in DEL_COSTE}
     for i in sorted(pag):

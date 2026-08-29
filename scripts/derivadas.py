@@ -64,6 +64,8 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 from regla_informe_l5 import cifras_de_l5  # noqa: E402
+from regla_portada import portada_contra_el_informe  # noqa: E402
+from regla_reloj_l5 import cifras_del_reloj_l5  # noqa: E402
 from reglas_de_censo import (  # noqa: E402
     huerfanos_declarados,
     limites_declarados,
@@ -206,6 +208,8 @@ REGLAS = (
     huerfanos_declarados,
     techo_vigente_del_adr,
     cifras_de_l5,
+    cifras_del_reloj_l5,
+    portada_contra_el_informe,
 )
 
 

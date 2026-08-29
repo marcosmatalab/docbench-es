@@ -492,30 +492,30 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     `--solo` en el arnés para afinar un caso concreto cuando la diferencia entre
     las dos columnas no se explique sola.
 
-51. **La suite no está medida por mutación: el arnés cubre 208 de 653 tests.** Los
-    **28 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
-    árbol de TEDS, el lote y —desde el paso 2 de L5— **el instrumento que emite la
-    tabla**: el emparejado, el recuento de fallos, la cobertura, la intersección, el
-    delta y el `n/a`. Los **445 tests restantes** —`congelados_l4` (38), `barreras` (14), `barreras_documentos` (7),
-    `harvest` (14), `verificar_corpus` (14), `boe` (12), `boe_api` (10),
-    `entity_conformance` (9), `entity_registry` (9), `capas_permitidas` (8),
-    `manifest` (8), `pairing` (8), `guardianes_l4` (7), `guardianes_por_glob` (9), `documentos_que_sostienen` (9),
-    `policy` (7), `types_invariantes` (7), `boe_xml` (6), `ancla` (5),
-    `comparar_verdad` (5), `types` (6), `sellar_xml` (4), `errors` (3),
-    `estimador_computo` (6), `extractor_contrato` (37), `extractor_conformidad` (13),
-    `conjunto_conformidad` (5), `formatos_spans` (2), `sin_consumidor` (3), `reglas_parseables` (3),
-    `limite_lineas` (2), `tope_area` (2), y los diecisiete que entran con los CUATRO
-    extractores reales, el corredor, el aro del techo, el texto de celda y el censo de
-    capa de texto: `extractor_arnes` (14), `pdfplumber` (12),
-    `canonical_texto_de_celda` (19), `aro_del_techo` (13), `techo_fuente` (4), `camelot` (10), `metricas_regimen` (12), `procedencia` (4), `docling` (7),
-    `censo_capa_texto` (6),
-    `pymupdf4llm` (9), `diario` (9), `corredor` (7), `corpus_store` (7),
-    `extract_registry` (7), `conjunto` (6) y `cli` (7)— **no tienen ningún
-    mutante escrito contra su código**, así que «los 22 mueren» no dice nada sobre si
+51. **La suite no está medida por mutación: el arnés cubre 218 de 681 tests.** Los
+    **29 mutantes** apuntan a `canonical`, `types.clave`, `teds`, `cellmatch`, el
+    árbol de TEDS, el lote, —desde el paso 2 de L5— **el instrumento que emite la
+    tabla** —el emparejado, el recuento de fallos, la cobertura, la intersección, el
+    delta y el `n/a`— y **el que emite la portada**, que es la primera pantalla del
+    proyecto. Los **463 tests restantes** —`congelados_l4` (38), `extractor_contrato` (37), `canonical_texto_de_celda` (19),
+    `barreras` (14), `extractor_arnes` (14), `harvest` (14), `verificar_corpus` (14),
+    `aro_del_techo` (13), `extractor_conformidad` (13), `barreras_documentos` (12),
+    `boe` (12), `metricas_regimen` (12), `pdfplumber` (12), `documentos_que_sostienen` (11),
+    `boe_api` (10), `camelot` (10), `diario` (9), `entity_conformance` (9),
+    `entity_registry` (9), `guardianes_por_glob` (9), `pymupdf4llm` (9),
+    `capas_permitidas` (8), `cli` (8), `manifest` (8), `pairing` (8), `corpus_store` (7),
+    `corredor` (7), `docling` (7), `extract_registry` (7), `guardianes_l4` (7),
+    `policy` (7), `types_invariantes` (7), `boe_xml` (6), `censo_capa_texto` (6),
+    `conjunto` (6), `estimador_computo` (6), `types` (6), `ancla` (5),
+    `comparar_verdad` (5), `conjunto_conformidad` (5), `datos_fuera_de_git` (5),
+    `lecturas_repetidas` (5), `procedencia` (4), `sellar_xml` (4), `techo_fuente` (4),
+    `errors` (3), `reglas_parseables` (3), `sin_consumidor` (3), `formatos_spans` (2),
+    `limite_lineas` (2), `tope_area` (2)— **no tienen ningún
+    mutante escrito contra su código**, así que «los 29 mueren» no dice nada sobre si
     esos tests cazarían un bug. **Y la fracción sin cubrir crece:**
-    12,4% al cerrar L2, **68,1% hoy** — y 66 de los 437 entraron de golpe con
+    12,4% al cerrar L2, **68,0% hoy** — y 68 de los 463 entraron de golpe con
     `congelados_l4` (38), `guardianes_l4` (7), `guardianes_por_glob` (9),
-    `documentos_que_sostienen` (9) y `reglas_parseables` (3), que son candados de
+    `documentos_que_sostienen` (11) y `reglas_parseables` (3), que son candados de
     fichero, de proceso, de glob y de sintaxis, no código con mutante posible: sus
     controles negativos viven dentro —se manipula un fixture y se exige que la huella
     deje de cuadrar, se le da al guardián de la re-congelación una huella movida sin
@@ -523,7 +523,7 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     delate**—.
 
     **Pero ésta no es la cifra que importa, y publicarla sola era un error.** Mide
-    *el arnés*, no la protección: **650 de 653 tests protegidos por algo** —un
+    *el arnés*, no la protección: **678 de 681 tests protegidos por algo** —un
     mutante o un control negativo en su propio fichero— y **3 tests sin ningún
     control**. Las dos contabilidades, sus dos puntos y por qué van en direcciones
     distintas están en la deuda 7 de `ESTADO.md`; el criterio y lo que no verifica,
@@ -1480,11 +1480,17 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     —alcanzable— y de `scripts/termometro.py` —huérfano—. `mypy --strict src tests`
     cazó el primero y **no vio el segundo**.
 
-    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **78** scripts,
-    **29 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
-    nada—, y de los **51** que quedan, **huérfanos: 26 de 51**. Entre ellos `derivadas.py`
+    El reparto, con su comando: `uv run python scripts/huerfanos.py`. De **86** scripts,
+    **30 son mutantes** —carga útil que se rompe a propósito, tiparlos no querría decir
+    nada—, y de los **56** que quedan, **huérfanos: 24 de 56**. Entre ellos `derivadas.py`
     y `estado_readme.py`, o sea **los programas que comprueban los números derivados que
     se publican**. Y este mismo censo es uno de ellos: se cuenta a sí mismo.
+
+    **Bajó de 26 a 24 con TRES scripts más, y no por casualidad:** los cinco que entran con
+    la portada —`error_del_estimador.py`, `regla_reloj_l5.py` y `regla_portada.py`— los
+    importan `tests/unit/test_barreras_documentos.py` y `tests/unit/test_portada.py`, así
+    que nacen dentro de la puerta, y por el camino arrastran a `poblacion_l5.py`. Un
+    instrumento que emite un número publicado entra tipado o no entra.
 
     La cifra la vigila `scripts/derivadas.py`, porque la primera versión de este límite
     publicó **22 de 36** y estaba vieja **seis días después de escribirla** — el propio
@@ -2431,3 +2437,221 @@ picando, y cada uno lleva la fecha y el hito en que se descubrió.
     comprueba que las cifras publicadas salgan de `informe.json`; no puede saber si dos
     cifras de dos informes distintos se están comparando en una frase. Es una regla de
     método, como el límite 110, y vive en el guion de quien escribe la serie.
+
+114. **UN NÚMERO PUBLICADO CON DOS REDONDEOS DISTINTOS NO SE LEE COMO UN ERROR: SE LEE
+    COMO DOS MEDICIONES.** Y si las dos caen dentro de la incertidumbre declarada, no hay
+    nadie a quien le chirríe. Escrito el 28 ago 2026, al construir la portada.
+
+    **Lo medido.** El error del estimador de L5 estaba publicado **seis veces**: `+74,5%`
+    en [`RESULTS.md`](RESULTS.md) tres veces, en la tabla de estimadores de
+    [`ESTADO.md`](ESTADO.md) y en [`docs/metrics.md`](docs/metrics.md); `+74,6%` en la
+    fila de L5 de `ESTADO.md`, escrita en el commit de cierre. **Ninguna de las seis salía
+    de un fichero.**
+
+    **No eran dos mediciones: era la misma división con el dividendo redondeado y sin
+    redondear.** `scripts/poblacion_l5.py` emite **14.439,4 s**; publicarlo como «4,01 h»
+    —que es como lo imprime, con dos decimales— y volver a segundos da 14.436, y ese
+    redondeo, y sólo ése, baja el cociente de 74,558% a 74,516%. El divisor **ya iba sin
+    redondear**: 8.272 s y no 2,30 h. Redondearlo también lo mueve —con 2,30 h saldría
+    **+74,4%**, y con los dos redondeos **+74,3%**—, así que el número tenía cuatro
+    lecturas defendibles y se publicaron dos.
+
+    | operandos | cociente | publicado |
+    |---|---:|---|
+    | 14.439,4 s / 8.272 s | 74,558% | **+74,6%** — lo que emite el instrumento |
+    | 14.436 s / 8.272 s | 74,516% | +74,5%, cinco veces |
+    | 14.439,4 s / 8.280 s | 74,389% | +74,4%, nunca |
+    | 14.436 s / 8.280 s | 74,348% | +74,3%, nunca |
+
+    **Y lo que lo hace un límite y no una errata es la parte de la incertidumbre.**
+    `docs/metrics.md` ya declaraba la resolución del pre-registrado: dos decimales de
+    hora, ±18 s, **±0,2 puntos**. Las dos cifras publicadas distan 0,1 puntos, o sea que
+    **las dos caían dentro de lo declarado**. Una discrepancia que cabe dentro de la
+    barra de error no llama la atención de nadie: se lee como ruido, no como un fallo.
+    Declarar la resolución es necesario y **no** basta — lo que hace falta es que la
+    división se haga una sola vez, y no con la cifra publicada.
+
+    **La dirección del error también importa, y va dicha:** redondear el dividendo
+    empequeñece el fallo del estimador. La copia mala era la **optimista**, y era la que
+    estaba cinco veces.
+
+    **Lo hecho.** El número vive en [`runs/l5/reloj.json`](runs/l5/reloj.json), que emite
+    `uv run python scripts/error_del_estimador.py --escribir`, con los dos operandos —el
+    derivado y el medido, marcados como tales—, sus dos fórmulas y la cifra que **no** es
+    el reloj: la suma de los `coste_ms` del informe, 8.267,5 s, que es `perf_counter`
+    dentro de `extract` y daría **+74,7%**. La regla **R8** de `scripts/derivadas.py`
+    compara contra ese fichero las **seis copias vivas y los ocho sitios donde aparece
+    alguno de sus dos operandos**, con su control negativo en
+    `tests/unit/test_barreras_documentos.py`; y un cuarto test recorre el instrumento
+    entero y compara, para que el fichero tampoco pueda quedarse rancio.
+
+    **Es el límite 111 aplicado a un porcentaje** —una cifra en N sitios comprobada en
+    ninguno— y hereda su hueco declarado: R8 enumera las copias **por patrón**, así que
+    una copia escrita de otra forma sigue siendo invisible. Lo que R8 sí hace, y R6
+    también, es **decir «no aparece»** cuando un patrón deja de casar, en vez de callarse
+    en verde.
+
+    **Lo que queda sin cubrir.** El dato medido —8.272 s de `time`, n=1— **no se puede
+    recomputar**: la campaña cuesta 2,30 h y no se vuelve a correr para mirarlo (límite
+    109). Vive como constante declarada en `scripts/error_del_estimador.py`, con su
+    método y su resolución, y ningún guardián puede comprobar que sea cierto. Lo único
+    que se garantiza es que hay **una sola copia** y que todo lo demás se deriva de ella.
+
+115. **LA PORTADA ELIGE CUATRO LÍMITES DE 115 Y CUATRO PUERTAS DE TREINTA Y DOS, Y ESA
+    SELECCIÓN NO LA COMPRUEBA NADIE.** Escrito el 28 ago 2026, el día que entra la
+    portada, y en el mismo commit que la construye.
+
+    **Lo que sí está cubierto.** Ni una cifra de `docs/index.html` está tecleada: las 70
+    salen de [`runs/l5/informe.json`](runs/l5/informe.json) o del censo del repo, van
+    marcadas con `data-cifra` y las compara la regla R9 de `scripts/derivadas.py` **en
+    tres direcciones** —la que no cuadra, la que falta y la que sobra— con su control
+    negativo y su mutante. El **valor** de cada número está atado.
+
+    **Lo que no lo está: la SELECCIÓN.** Qué cuatro límites se enseñan y cuáles no, qué
+    cuatro puertas, qué bandas se destacan y qué frase se pone en el `caption` en vez de
+    debajo. Son decisiones editoriales, tienen efecto sobre cómo se leen los números de
+    arriba —ése es literalmente el criterio con el que se eligieron— y **ningún guardián
+    puede evaluarlas**: no hay contra qué comparar «esto es lo que había que enseñar».
+
+    **Y la dirección del sesgo es previsible, así que se dice.** Quien escribe una portada
+    elige, sin querer, los límites que sabe explicar y las puertas que sabe defender. Los
+    cuatro que están son el corpus, el error de la verdad, la tasa de tabla no presente y
+    las familias que faltan; los que **no** están incluyen los que hablan de la propia
+    portada —éste— y los 110 restantes. Un lector que se quede en la página se lleva
+    **cuatro** y creerá que son los que importan.
+
+    **Lo único que se hace, porque es lo único que se puede hacer:** decirlo en la propia
+    página —«los que más cambian cómo se leen los números de arriba», que declara el
+    criterio y por tanto que hubo uno— y poner `LIMITS.md` entero a un clic, con su
+    recuento derivado al lado. Es la misma forma que el límite 60: lo que no se puede
+    verificar es si el control es **el adecuado**, y entonces se publica el criterio en
+    vez del veredicto.
+
+    **Lo que NO es este límite:** una promesa de arreglarlo. No hay forma de derivar una
+    selección editorial de un fichero, y fingir que la hay —«los cuatro más citados»,
+    «los cuatro más recientes»— sería sustituir un criterio declarado por uno automático
+    y peor, con la apariencia de estar medido. Ver también el límite 77: una protección
+    que cubre una clase y no dice cuál se lee igual que una que las cubre todas.
+
+116. **EL TECHO DE LA PUERTA SE FIJÓ CON UN MARGEN MÁS PEQUEÑO QUE LO QUE CUESTA UNA
+    SOLA FUNCIONALIDAD, Y EL «INCREMENTO PROYECTADO» DE SU FÓRMULA NO ESTÁ MEDIDO.**
+    Escrito el 29 ago 2026, al romperlo la primera cosa que entró después de fijarlo.
+
+    **Lo medido.** Al cerrar L5 el techo bajó a **8200** con un p90 de **7845**: margen
+    **355 ms**. La primera funcionalidad que entra después —la portada, con su paquete de
+    siete módulos, tres scripts, dos reglas de `derivadas.py` y 18 tests— cuesta, medida
+    **en parejas alternas contra un `git worktree` de `188a59f`** y con n=5, **+253 ms de
+    `mypy` y +606 ms de `pytest`**. O sea que **el techo suena sin que nadie haya escrito
+    una línea lenta**, que es la forma más rápida de enseñar a ignorar el color — lo mismo
+    que el límite 105 dice del techo de CI, ahora en el local.
+
+    **Y no es que la máquina se haya vuelto lenta**, que fue la primera lectura y era
+    falsa: `372b82f` medido hoy da mediana **7656 ms** contra los **7722** que publicó
+    entonces. **El árbol viejo reproduce.** Lo que engañó fue comparar listas de ficheros
+    en vez de árboles, con n=4 y una máquina que da paradas de 27 s. La corrección está en
+    [`RESULTS.md`](RESULTS.md) con las dos series enteras.
+
+    **Dónde está el hueco, que es lo que lo hace un límite.** La fórmula de ADR-0022 es
+    `p90 medido + incremento proyectado + una desviación`. El primer término se **mide**
+    con 40 corridas y el tercero también. **El segundo es un juicio**, y nunca se ha
+    medido cuánto cuesta un hito: se estimó en unos 240 ms al cerrar L5 y la primera
+    entrada real vale **más del doble**. Un techo cuyo margen sale de un término no medido
+    no acota el crecimiento: acota lo que a alguien le pareció que iba a crecer.
+
+    **Lo que este límite NO dice:** que el techo sobre. Hizo exactamente lo que tenía que
+    hacer —sonar—, y su paso 1 pagó: `--durations` encontró un defecto real, `paginas()`
+    reparseando 520 KB **cinco veces**, y arreglarlo recuperó 418 ms de la mediana. Lo que
+    no acota es el **término del medio**.
+
+    **Lo que queda sin hacer, con su método y sin fecha.** Medir el incremento por hito en
+    vez de proyectarlo: la serie ya existe —L3, L4 y L5 tienen su p90 con n=40 y su sello—
+    y lo que falta es **atribuir** cada salto a lo que entró, que es lo que esta medición
+    hace por primera vez y para una sola funcionalidad. Con tres puntos el término deja de
+    ser un juicio. **Mientras tanto no se sube el techo**: ADR-0022 lo prohíbe después de
+    romperlo, y elegir entre sus tres concesiones es un paso de `/cerrar`, no la salida
+    cómoda del trabajo que acaba de romperlo.
+
+117. **LA MISMA FORMA DE DEFECTO VA POR LA TERCERA, Y LAS TRES SE ENCONTRARON DESPUÉS DEL
+    ROJO.** Cerrado con un aro el 29 ago 2026, después de tres apariciones y **dos
+    anotaciones**.
+
+    | Hito | Dónde | Veces | Cuánto valía |
+    |---|---|---:|---|
+    | L4 | `corregir_fixtures_l4.py`, `pdftotext` sobre los mismos bytes | **8** | 0,69 s → 0,36 s |
+    | L5 | `huerfanos.reparto()`, el AST de `tests/` una vez por documento | **9** | 0,79 s → 0,17 s |
+    | L7 | `censo_paginas.paginas()`, 520 KB de JSON por llamada | **5** | mediana de la puerta 8500 → 8082 |
+    | L7 | `censo_tablas.tablas()`, mil XML donde bastaba leer el censo | **1.000** | 0,27 s → 4,2 ms |
+
+    **La forma, que es la misma las cuatro veces:** una función pura que lee o parsea algo
+    caro, llamada una vez por elemento de un bucle, sin cachear. Y **el consumidor
+    midiendo donde bastaba leer**, que es la variante del cuarto.
+
+    **Lo que lo convierte en límite y no en anécdota es que estaba anotado y no exigido.**
+    `scripts/huerfanos.py` lleva escrito desde L5 *«cacheada, y por la misma razón que el
+    `lru_cache` de `pdftotext` en L4»*. La recurrencia estaba **escrita dos veces y
+    comprobada cero**. Es la frase de ADR-0022 sobre sí misma: *se hizo una vez, funcionó,
+    y no se convirtió en paso*.
+
+    **Y las cuatro las encontró `--durations` DESPUÉS de que el techo se pusiera rojo.**
+    Un diagnóstico post mortem cuatro de cuatro es el daño hecho cuatro veces: el rojo
+    llega cuando el trabajo ya está escrito y la atención está en otra parte.
+
+    **Lo hecho: `scripts/lecturas.py`**, un contador que envuelve `Path.read_text`,
+    `Path.read_bytes` y `subprocess.run` durante **una llamada** a un instrumento y anota
+    `(qué, argumento)`. Si el mismo argumento sale dos veces, es esto y sale por su
+    nombre. El alcance es **una llamada y no la suite**, que es la única definición que
+    significa algo: dos tests que leen el mismo fixture no comparten nada.
+
+    **Su control negativo no es un bucle de juguete: es el defecto real revivido.** El
+    test le quita la caché a `censo_paginas` —exactamente como estaba— y exige que el
+    contador vea las cinco lecturas del manifiesto dentro de una llamada a `reloj()`. Sin
+    eso, *«el aro habría cazado los tres»* sería una afirmación sobre el pasado que nadie
+    ha comprobado.
+
+    **Lo que NO cubre, y son tres cosas:** los instrumentos que no estén en su tabla —el
+    aro no descubre, mira—; los que necesitan datos fuera de git, entre ellos **el caso de
+    L4**, que no se puede correr en la puerta, así que su forma queda cubierta y su caso
+    no; y una lectura repetida **barata**, que sale igual. Esto último es a propósito: el
+    umbral es «dos veces», no «dos veces y caro», porque *caro* depende de la máquina y
+    *dos veces* no.
+
+118. **UN TEST QUE DEGRADA EN SILENCIO ES PEOR QUE UN TEST ROTO, Y VA POR LA CUARTA.**
+    Cerrado con una puerta el 29 ago 2026.
+
+    **Lo medido.** `censo_tablas.tablas()` recorría `runs/l3/docs` —362 MB que el repo no
+    versiona— y **devolvía `{}` cuando no estaban**. Sin corpus no fallaba: `poblacion_l5`
+    repartía los 1.000 documentos como si ninguno tuviera tabla y emitía **otra
+    predicción**. El test que la comprobaba habría pasado **en verde en un clon frío
+    afirmando un número falso**.
+
+    > El roto se ve. Éste afirma algo distinto de lo que dice afirmar, y lo afirma en
+    > verde, que es el color que nadie audita.
+
+    **Y es un patrón:** el barrido de referencias que medía la máquina de quien lo
+    escribió, el `mypy` que no veía los huérfanos, el límite 109 con la primera tabla de
+    L5 irreproducible en un clon, y éste.
+
+    **Lo hecho: `scripts/fuera_de_git.py`**, una puerta única con las cinco raíces
+    declaradas y su razón, que **lanza** con esa razón dentro en vez de devolver un vacío.
+    `referencias.ARTEFACTOS` sale de esa misma lista —eran dos listas de lo mismo con
+    redacciones distintas, el límite 111 en pequeño—. Y el consumidor que provocó todo
+    dejó de necesitar el corpus: lee el censo **publicado y versionado**.
+
+    **El criterio de quién debe pasar por la puerta se DERIVA, no se escribe a mano:** un
+    script al que llega algún test puede degradar en verde, y ésos pasan; un huérfano no
+    puede, porque nadie lo corre sin mirar su salida. Lo cruza `huerfanos.reparto()`, así
+    que el día que un test alcance a uno de los seis declarados huérfanos, la puerta se
+    pone roja. **Una tabla de excusas que nadie vuelve a cruzar con la realidad envejece
+    igual que el número que vino a vigilar.**
+
+    **La excepción, que enseña dónde está el límite:** `comparar_verdad.py` sí lo alcanza
+    un test y **no** pasa por la puerta, porque su huella está **congelada** en el
+    re-sello de L4 y tocarlo pone rojo `test_congelados_l4`. No le hace falta: su lectura
+    lanza sola. Lo que la puerta le añadiría es la razón, no el fallo.
+
+    **Lo que NO cubre.** El censo reconoce a un lector por **cómo nombra la raíz**, así
+    que uno que la componga de otra forma es invisible — es el hueco declarado del límite
+    111 aplicado aquí. Y quedan **nueve** ficheros fuera de la puerta: seis huérfanos y
+    los **tres de la CLI**, que reciben la ruta de quien llama y fallan con su código de
+    salida (§11). Los nueve van enumerados uno a uno, con su razón, en
+    `tests/unit/test_datos_fuera_de_git.py`.

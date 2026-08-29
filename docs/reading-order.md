@@ -10,6 +10,13 @@ se indica**; ✅, que existe hoy.
 | Dónde va el checkpoint | [`ESTADO.md`](../ESTADO.md), que se actualiza al cerrar cada hito. **Esta tabla se genera desde ahí** con `uv run python scripts/estado_readme.py --escribir` |
 <!-- ESTADO:fin -->
 
+## 10 minutos · la portada
+
+[**`docs/index.html`**](index.html) — el titular con su panel, el acuerdo por bandas, las
+cuatro notas con su cobertura, **la errata del hito** y cuatro de los límites. **Está
+generada** desde `runs/l5/informe.json` con `uv run docbench portada`: ni una cifra
+tecleada, y la puerta lo comprueba (ADR-0047). Si sólo vas a mirar una cosa, mira ésa.
+
 ## 5 minutos · ¿esto me sirve?
 
 1. [`README.md`](../README.md) — qué es, para quién y qué funciona hoy.

@@ -44,6 +44,11 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, str(RAIZ / "scripts"))
+
+from fuera_de_git import exige  # noqa: E402
+
 DOCS = RAIZ / "runs" / "l3" / "docs"
 FIXTURES = RAIZ / "runs" / "l4" / "fixtures"
 DESTINO = RAIZ / "runs" / "l4" / "correcciones.json"
@@ -147,7 +152,9 @@ def _pdf(ident: str, modo: str) -> str:
     invocar `pdftotext` ocho veces sobre los mismos bytes. Se notaba en la puerta —
     el test del guardián costaba 0,69 s, el más caro de la suite."""
     salida = subprocess.run(
-        ["pdftotext", modo, str(DOCS / f"{ident}.pdf"), "-"], capture_output=True, check=True
+        ["pdftotext", modo, str(exige(DOCS) / f"{ident}.pdf"), "-"],
+        capture_output=True,
+        check=True,
     )
     return re.sub(r"\s+", " ", salida.stdout.decode("utf-8", errors="replace"))
 

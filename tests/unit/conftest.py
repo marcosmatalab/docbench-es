@@ -149,6 +149,15 @@ CONTROLES_NEGATIVOS: dict[str, str] = {
     # La fuente única del techo: su control negativo es el detector del número
     # tecleado, que tiene que decir que SÍ cuando lo hay. Ver LIMITS 111.
     "test_techo_fuente.py": "test_el_detector_del_numero_tecleado_dice_que_si_cuando_lo_hay",
+    # El aro contra el defecto que va por la tercera —L4, L5 y L7—. Su control negativo
+    # no es un bucle de juguete: es EL DEFECTO REAL revivido, quitándole la caché a
+    # `censo_paginas` y exigiendo que el contador vea las cinco lecturas del manifiesto.
+    # Un aro que sólo caza un caso inventado no demuestra nada sobre el que costó 418 ms.
+    "test_lecturas_repetidas.py": "test_el_aro_habria_cazado_el_defecto_real_de_l7",
+    # La puerta de los datos fuera de git. Su control negativo tampoco es inventado:
+    # `censo_tablas.tablas()` devolvía `{}` sin corpus y la predicción salía DISTINTA en
+    # vez de fallar. Se le mueve el corpus y se exige rojo.
+    "test_datos_fuera_de_git.py": "test_el_censo_de_tablas_no_degrada_sin_corpus",
 }
 """Fichero de test -> el test suyo que **ejerce el sujeto contra algo
 deliberadamente malo y afirma que lo rechaza**.

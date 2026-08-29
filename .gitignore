@@ -82,6 +82,11 @@ runs/*/*
 !runs/*/humo_campana.json
 !runs/*/humo_campana.yaml
 !runs/*/emparejado.yaml
+# EL RELOJ DE LA CAMPAÑA CONTRA SU PREDICCIÓN. Dentro va el único dato medido del
+# hito que no se puede recomputar —`time` alrededor de `docbench run`, n=1— y sin él
+# el error del estimador vuelve a ser un número tecleado en seis documentos. Lo emite
+# `scripts/error_del_estimador.py` y lo comprueba la regla R8 de `derivadas.py`.
+!runs/*/reloj.json
 # LOS CENSOS Y SONDEOS, que estaban en `docs/`. Son 50.517 líneas de JSON GENERADO
 # contra 4.468 de prosa, así que `docs/` parecía 55.000 líneas de documentación
 # escrita a mano. Son artefactos de medición: viven con los demás artefactos.

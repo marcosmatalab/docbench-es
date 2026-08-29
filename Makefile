@@ -4,7 +4,7 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -o pipefail -c
 
-.PHONY: help quickstart fast frio full test bench report arch types lint fix cov clean
+.PHONY: help quickstart fast frio full test bench report portada arch types lint fix cov clean
 .DEFAULT_GOAL := help
 
 help:  ## esta ayuda
@@ -50,6 +50,13 @@ bench:  ## una campana de nivel 1 sobre un plan ya congelado:  make bench PLAN=r
 
 report:  ## el informe de una campana en md, html y json:  make report CAMPANA=runs/2026-Q4
 	uv run docbench report --campaign $(CAMPANA) --format md,html,json
+
+portada:  ## regenera la puerta de entrada: docs/index.html y el bloque PORTADA del README
+# SIN --escribir COMPRUEBA Y NO ESCRIBE, y eso es lo que corre en la puerta por
+# `tests/unit/test_barreras_documentos.py`. Este objetivo es el que SI escribe, y se
+# invoca a mano al cerrar un hito. Un comando que sobrescribe artefactos versionados
+# no puede ser el modo por defecto: convertiria un rojo en un `git diff` silencioso.
+	uv run docbench portada --escribir
 
 arch:  ## solo el contrato de capas
 	uv run lint-imports

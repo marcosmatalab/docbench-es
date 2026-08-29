@@ -917,16 +917,28 @@ presentado como si fuera de cualquiera.
 
 ### El reloj de la campaña contra su predicción
 
-**Pre-registrado:** 4,01 h = 14.436 s, de `scripts/poblacion_l5.py` sobre el coste/página
+**Pre-registrado:** 4,01 h = 14.439 s, de `scripts/poblacion_l5.py` sobre el coste/página
 de B5-bis. **Real:** 8.272 s = **2,30 h**.
 
-**Error, con su fórmula, porque hay dos y no dicen lo mismo:** contra lo medido
-—`(predicho − real) / real`, que es la convención con la que L3 publicó sus tres
-proyecciones— es **+74,5%**; la fracción de la predicción que sobraba
+**Los dos operandos y los dos errores viven en [`runs/l5/reloj.json`](../runs/l5/reloj.json)**,
+que emite `uv run python scripts/error_del_estimador.py --escribir`. Ninguna de las cifras
+de este bloque se teclea: la regla R8 de `scripts/derivadas.py` las compara contra ese
+fichero, y **por eso hay un fichero**: el mismo error se publicó con dos valores en seis
+sitios antes de que lo hubiera (LIMITS 114).
+
+**Error, con su fórmula, porque hay dos y no dicen lo mismo:** el del estimador es
+**+74,6%** contra lo medido —`(predicho − real) / real`, que es la convención con la que
+L3 publicó sus tres proyecciones—; la fracción de la predicción que sobraba
 —`(real − predicho) / predicho`— es **−42,7%**. Este segundo se publicó solo y con la
 etiqueta «sobreestimó un 43%», que es la lectura que no aguanta: sobreestimar se mide
-contra lo medido. **Resolución:** el pre-registrado va con dos decimales de hora, ±18 s,
-que mueve los dos porcentajes ±0,2 puntos.
+contra lo medido.
+
+**Qué precisión lleva cada operando, y cuál de las dos mueve el resultado.** El
+pre-registrado **se publica** con dos decimales de hora —±18 s, que mueven los dos
+porcentajes ±0,2 puntos— pero **no se divide con esa cifra**: se divide con los 14.439,4 s
+que emite el instrumento, sin redondear. Redondearlo antes de dividir es lo que produjo el
+`+74,5%` de las cinco copias viejas. El dato medido va **al segundo** —resolución del
+instrumento, `time`, n=1— y esa resolución mueve el error **±0,01 puntos**: no lo cambia.
 
 **Cómo se midió el real:** `time` alrededor de `docbench run`, n=1. No es una estimación
 —es el reloj de una corrida concreta— así que no lleva intervalo; lo que lleva es su

@@ -1197,6 +1197,13 @@ docbench-es/
 │   │   │                      que es la unica cuenta que compara sin sesgo
 │   │   ├── nivel1.py            de las extracciones y la verdad a StructureMetrics.
 │   │   │                      El emparejado esta pre-registrado, no se decide ahi
+│   │   ├── informe.py           el resultado de la campana como DATO, no como prosa
+│   │   ├── portada/             LA PUERTA DE ENTRADA, GENERADA (ADR-0047). Paquete,
+│   │   │                      no fichero, por el limite de 300 lineas. Dos salidas
+│   │   │                      —docs/index.html y el bloque PORTADA del README— y
+│   │   │                      NINGUNA cifra tecleada: cada numero sale de
+│   │   │                      runs/l5/informe.json o del censo del repo, va marcado
+│   │   │                      con data-cifra y lo compara la regla R9 de derivadas.py
 │   │   ├── tables.py · cards.py · curves.py
 │   │   └── sinks/               onepager_pdf.py · xlsx.py · csv.py · html.py
 │   │                                teams.py · azure_devops.py · github_summary.py
@@ -1208,7 +1215,7 @@ docbench-es/
 │   └── cli/
 │       ├── main.py
 │       ├── entity.py · corpus.py · truth.py · ask.py · run.py
-│       ├── report.py · route.py · drift.py · publish.py · toolwatch.py
+│       ├── report.py · portada.py · route.py · drift.py · publish.py · toolwatch.py
 │       ├── plugins.py · glossary.py · export_pipeline.py
 │       └── conform.py · doctor.py · init.py · replay.py
 │
@@ -1722,6 +1729,13 @@ docbench run --plan ... --resume
 # ── RESULTADOS ──────────────────────────────────────────────────────
 docbench report --campaign 2026-Q4 --format md,html,json
 docbench report --campaign 2026-Q4 --format onepager-pdf --language es
+# LA PORTADA · la puerta de entrada de diez minutos, GENERADA (ADR-0047). Dos salidas:
+# docs/index.html y el bloque PORTADA del README. Por defecto COMPRUEBA y no escribe:
+# lo que corre en la puerta es la comprobacion. No es `report --format html`, que es la
+# tabla de la campana; esta lleva ademas la errata, el metodo y los limites.
+docbench portada --informe runs/l5/informe.json --salida docs/index.html
+docbench portada                                  # comprueba: rc=1 si esta rancia
+docbench portada --escribir
 docbench route --campaign 2026-Q4 --budget-per-doc 0.005   # emite routing.yaml
 docbench route --validate runs/2026-Q4/routing.yaml         # rechaza reglas sin `measured`
 docbench glossary contribution --campaign 2026-Q4

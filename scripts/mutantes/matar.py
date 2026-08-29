@@ -91,6 +91,11 @@ PLAN = [
     ("cara_a_cara_la_union", "tests/unit/test_cara_a_cara.py tests/unit/test_tabla_nivel1.py"),
     ("delta_siempre_cero", "tests/unit/test_cara_a_cara.py tests/unit/test_tabla_nivel1.py"),
     ("no_aplicable_impreso_cero", "tests/unit/test_tabla_nivel1.py"),
+    # LA PORTADA · el mismo argumento un piso más arriba. Los seis de L5 cubren el
+    # instrumento que emite la tabla; éste cubre el que emite la PRIMERA PANTALLA, que
+    # es donde el número llega a quien no va a leer `RESULTS.md`. Rompe el sitio del
+    # panel, no su valor: es una comprobación de dónde, y ningún test del objeto la ve.
+    ("portada_sin_panel", "tests/unit/test_portada.py"),
 ]
 
 
