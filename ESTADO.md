@@ -729,6 +729,31 @@ necesita **506 MB** de pesos de HuggingFace contra unos 4 MB de fixtures. El `Ma
 nombra los cuatro extractores **y** `--offline` en su receta de `quickstart`, así que hoy
 esa línea afirma algo que no se puede cumplir.
 
+### Lo aplicado, y el fallo que encontró aplicarlo · 30 ago 2026
+
+El criterio de [`runs/l7/seleccion.yaml`](runs/l7/seleccion.yaml) se commiteó **antes** que
+el programa que lo aplica, se aplicó, y salieron 20 documentos —6,08 MB, páginas de 1 a 60,
+los cinco fenómenos cubiertos— con un acuerdo de **9 de 19 = 47,4%**, Wilson
+**[27,3%, 68,3%]**, contra el 30,5% del corpus. **Nada está congelado.**
+
+**Y aplicarlo destapó que su desempate llevaba una justificación falsa.** El criterio dice
+que el peso *«no correlaciona con el acuerdo»* apoyándose en que por cuartil de coste es
+plano; esa comprobación estaba **confundida por la banda**. Dentro de cada banda, los más
+ligeros acuerdan mucho más: en la de >50 páginas, **70,0% los diez más ligeros contra
+46,9% la banda**. El conjunto queda por encima del corpus en las tres bandas.
+
+> Es una afirmación del repo que los datos del repo desmienten, y da igual que la escribiera
+> el criterio en vez de la prosa. **Lo que NO se ha hecho es cambiar el desempate para bajar
+> el 47,4%**: el número sale publicado tal cual, y la regla nueva —si la hay— se elige sin
+> mirar qué acuerdo produce.
+
+**Y hay un segundo hallazgo, que sólo aparece al medir un conjunto equilibrado:** con los
+tres extractores sin modelos, los 20 elegidos cuestan **106,2 s** más 4,7 s de clon, o sea
+**margen 1,62×** sobre los 180 s — por debajo del 2,4× que ya se consideró insuficiente para
+una máquina desconocida. Con los cuatro, **210,3 s: no caben**. **Equilibrar por longitud y
+prometer 3 minutos tiran en direcciones opuestas**, y el coste lo domina `pymupdf4llm` con
+76,2 s de los 106,2 sobre los documentos largos.
+
 **Lo que queda por decidir, y es del usuario:** el criterio de selección —cobertura de
 fenómenos, no representatividad ni velocidad—, si el acuerdo del conjunto candidato se
 pre-registra antes de congelar, qué hace el quickstart con `docling`, y si su salida

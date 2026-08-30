@@ -1,19 +1,20 @@
 {
  "reloj": {
-  "que": "sonda de reloj del quickstart · conjunto PROVISIONAL, no congelado",
+  "que": "sonda de reloj del quickstart, secuencial y en frío",
+  "conjunto": "runs/l7/elegidos.json",
   "documentos": 20,
   "cargar_del_almacen_s": 0.01,
   "por_extractor_s": {
-   "pdfplumber": 1.5,
-   "camelot": 4.17,
-   "pymupdf4llm": 18.56,
-   "docling": 49.29
+   "pdfplumber": 10.33,
+   "camelot": 19.33,
+   "pymupdf4llm": 76.22,
+   "docling": 104.12
   },
-  "verdad_teds_cara_a_cara_s": 0.68,
-  "total_s": 74.21,
-  "sin_docling_s": 24.92,
+  "verdad_teds_cara_a_cara_s": 0.31,
+  "total_s": 210.32,
+  "sin_docling_s": 106.2,
   "presupuesto_s": 180,
-  "acuerdo_del_conjunto_provisional": "6 de 20",
+  "acuerdo_del_conjunto_provisional": "9 de 19",
   "puntuan_todos": 6
  },
  "sin_red": {

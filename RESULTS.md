@@ -3041,3 +3041,65 @@ no.
    es publicar los dos números uno al lado del otro.
 3. **Las latencias de la campaña no son las del quickstart.** Se midieron con 32
    trabajadores en paralelo; por eso hay una sonda de reloj y no sólo una suma.
+
+### El criterio de L7 se aplicó, y su DESEMPATE tenía una justificación falsa
+
+```bash
+uv run python scripts/seleccionar_quickstart.py   # aplica runs/l7/seleccion.yaml
+uv run python scripts/sonda_quickstart.py         # el reloj sobre el conjunto elegido
+```
+
+El criterio de [`runs/l7/seleccion.yaml`](runs/l7/seleccion.yaml) —commiteado **antes** que
+el programa que lo aplica— produce 20 documentos: **6,08 MB**, páginas
+`1,1,2×10,11×6,55,60`, los cinco fenómenos cubiertos. Y su acuerdo, calculado **después**
+de fijarlo, como manda la regla:
+
+| | n | acuerdan | tasa | Wilson 95% |
+|---|---:|---:|---:|---|
+| **el conjunto** | 19 | 9 | **47,4%** | [27,3%, 68,3%] |
+| el corpus | 338 | 103 | 30,5% | [25,8%, 35,6%] |
+
+Los intervalos **solapan**, así que el conjunto no es distinguible del corpus con n=19 —y
+41 puntos de ancho es justamente por qué el intervalo tiene que ir impreso—. Pero el punto
+está **17 puntos por encima**, y la causa no es el azar: es el **desempate**.
+
+**`seleccion.yaml` declara el desempate por peso y lo justifica así: *«no correlaciona con
+el acuerdo: por cuartil de coste el acuerdo es plano (34,5 / 34,1 / 26,2 / 27,1)»*. Esa
+comprobación estaba CONFUNDIDA por la banda**, y dentro de cada banda el efecto es grande:
+
+| Banda | los 10 más ligeros | los 20 más ligeros | la banda entera |
+|---|---:|---:|---:|
+| 2-10 | 50,0% | 25,0% | 30,6% |
+| 11-50 | 60,0% | 40,0% | 20,2% |
+| **>50** | **70,0%** | **70,0%** | **46,9%** |
+
+En la banda larga el efecto es inequívoco: los 16 más ligeros de 32 acuerdan **81,2%**
+contra el 46,9% de la banda. Y el conjunto elegido queda por encima del corpus **en las
+tres bandas**: 50,0 contra 30,6 · 33,3 contra 20,2 · 50,0 contra 46,9.
+
+> **Lo que esto es, dicho con su nombre: una afirmación del repo que los datos del repo
+> desmienten**, y da igual que la escribiera el criterio y no la prosa. El mecanismo
+> candidato —**declarado y sin comprobar**— es que dentro de una banda de páginas el peso
+> mide densidad de tabla, y menos tabla por página es un recuento más fácil.
+
+**Y lo que NO se ha hecho: cambiar el desempate para bajar el 47,4%.** El número sale
+publicado tal cual. Lo que hay sobre la mesa es que la **razón** del desempate es falsa, no
+que su resultado incomode; y la regla nueva, si la hay, se elige **sin mirar qué acuerdo
+produce**. Nada se ha congelado.
+
+### Y el conjunto equilibrado por longitud cuesta lo que el corto no costaba
+
+Medido sobre los 20 elegidos, secuencial:
+
+| | los 20 elegidos | los 20 más ligeros |
+|---|---:|---:|
+| `pdfplumber` + `camelot` + `pymupdf4llm` | **106,2 s** | 24,9 s |
+| los cuatro, con `docling` | **210,3 s** | 74,2 s |
+| clon a 10 Mb/s (4,12 MB comprimidos) | 4,7 s | 3,9 s |
+| **total sin `docling`, contra 180 s** | **110,9 s · margen 1,62×** | 28,8 s · margen 6,3× |
+
+**Equilibrar por longitud y prometer 3 minutos tiran en direcciones opuestas**, y eso no se
+veía hasta medir un conjunto equilibrado: los cuatro **no caben** (210,3 s) y los tres caben
+con un margen de **1,62×**, por debajo del 2,4× que ya se consideró insuficiente para una
+máquina desconocida. El coste lo domina `pymupdf4llm` —**76,2 s de los 106,2**— sobre los
+documentos largos.

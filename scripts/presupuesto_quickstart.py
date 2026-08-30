@@ -30,6 +30,7 @@ import argparse
 import json
 import statistics
 import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -49,6 +50,18 @@ PRESUPUESTO_MS = 180_000
 PRESUPUESTO_BYTES = 4_000_000
 """Los «unos 4 MB» de `HITOS.md`, que resultan ser la restricción que aprieta."""
 CUANTOS = 20
+
+
+@dataclass(frozen=True)
+class Analisis:
+    """Lo que se publica. Un `dict[str, object]` se lee igual y no lo comprueba nadie."""
+
+    poblacion: dict[str, float]
+    coste_de_los_cuatro_ms: dict[str, int]
+    peso_pdf_mas_xml_bytes: dict[str, int]
+    presupuestos: dict[str, int]
+    candidatos_por_precio: dict[str, dict[str, float]]
+    frontera_de_viabilidad: list[dict[str, float]]
 
 
 def regenerar() -> dict[str, dict[str, int | bool]]:
@@ -80,7 +93,7 @@ def regenerar() -> dict[str, dict[str, int | bool]]:
         if d.verdad.tables:
             verdades[ident] = d.verdad.tables
     paginas = {e.external_id: e.n_pages or 0 for e in almacen.entradas}
-    filas = {n: medir(x.extracciones, verdades, paginas) for n, x in leidos.items()}  # type: ignore[arg-type]
+    filas = {n: medir(x.extracciones, verdades, paginas) for n, x in leidos.items()}
     cc = cara_a_cara(filas, paginas)
     acuerdo, puntuan = set(cc.acuerdo_de_recuento), set(cc.documentos)
 
@@ -173,8 +186,13 @@ def frontera(d: dict[str, dict[str, int | bool]], cuantos: int = CUANTOS) -> lis
     return salida
 
 
-def analisis(d: dict[str, dict[str, int | bool]]) -> dict[str, object]:
-    """Todo lo que se publica, en un diccionario. **Ni una cifra tecleada en la prosa.**"""
+def analisis(d: dict[str, dict[str, int | bool]]) -> Analisis:
+    """Todo lo que se publica, en una estructura tipada.
+
+    **Ni una cifra tecleada en la prosa**, y `main` imprime de aquí en vez de indexar
+    un `dict[str, object]`: un diccionario suelto se lee igual pero `mypy --strict` no
+    puede comprobar ni una de las claves, que es medio guardián menos.
+    """
     ids = sorted(i for i in d if d[i]["tablas_verdad"])
     costes = sorted(_n(d, ids, "coste_ms"))
     pesos = sorted(_n(d, ids, "bytes"))
@@ -182,9 +200,9 @@ def analisis(d: dict[str, dict[str, int | bool]]) -> dict[str, object]:
     ligeros = sorted(ids, key=lambda i: int(d[i]["bytes"]))[:CUANTOS]
     cortos = sorted(ids, key=lambda i: int(d[i]["paginas"]))[:CUANTOS]
     una = [i for i in ids if d[i]["paginas"] == 1]
-    return {
-        "poblacion": conjunto(d, ids),
-        "coste_de_los_cuatro_ms": {
+    return Analisis(
+        poblacion=conjunto(d, ids),
+        coste_de_los_cuatro_ms={
             "mediana": int(statistics.median(costes)),
             "media": int(statistics.mean(costes)),
             "p90": costes[int(0.9 * len(costes))],
@@ -192,21 +210,21 @@ def analisis(d: dict[str, dict[str, int | bool]]) -> dict[str, object]:
             "por_20_con_la_mediana": int(statistics.median(costes)) * CUANTOS,
             "por_20_con_la_media": int(statistics.mean(costes)) * CUANTOS,
         },
-        "peso_pdf_mas_xml_bytes": {
+        peso_pdf_mas_xml_bytes={
             "mediana": pesos[len(pesos) // 2],
             "media": int(statistics.mean(pesos)),
             "los_20_mas_ligeros": sum(pesos[:CUANTOS]),
             "por_20_con_la_media": int(statistics.mean(pesos)) * CUANTOS,
         },
-        "presupuestos": {"ms": PRESUPUESTO_MS, "bytes": PRESUPUESTO_BYTES, "cuantos": CUANTOS},
-        "candidatos_por_precio": {
+        presupuestos={"ms": PRESUPUESTO_MS, "bytes": PRESUPUESTO_BYTES, "cuantos": CUANTOS},
+        candidatos_por_precio={
             "los_20_mas_baratos": conjunto(d, baratos),
             "los_20_mas_ligeros": conjunto(d, ligeros),
             "los_20_mas_cortos": conjunto(d, cortos),
             "los_de_una_pagina": conjunto(d, una),
         },
-        "frontera_de_viabilidad": frontera(d),
-    }
+        frontera_de_viabilidad=frontera(d),
+    )
 
 
 def main() -> int:
@@ -219,11 +237,11 @@ def main() -> int:
     datos = regenerar() if args.regenerar else por_documento()
     salida = analisis(datos)
     PRESUPUESTO.parent.mkdir(parents=True, exist_ok=True)
-    PRESUPUESTO.write_text(json.dumps(salida, indent=1, ensure_ascii=False), encoding="utf-8")
+    PRESUPUESTO.write_text(
+        json.dumps(asdict(salida), indent=1, ensure_ascii=False), encoding="utf-8"
+    )
 
-    p = salida["poblacion"]  # type: ignore[index]
-    c = salida["coste_de_los_cuatro_ms"]  # type: ignore[index]
-    w = salida["peso_pdf_mas_xml_bytes"]  # type: ignore[index]
+    p, c, w = salida.poblacion, salida.coste_de_los_cuatro_ms, salida.peso_pdf_mas_xml_bytes
     print(
         f"\n  población: {p['n']} documentos con tabla · acuerdo {p['acuerdan']}"
         f" = {100 * p['acuerdo']:.1f}%"
@@ -242,14 +260,14 @@ def main() -> int:
         f" {w['los_20_mas_ligeros'] / 1e6:.2f} MB · presupuesto {PRESUPUESTO_BYTES / 1e6:.0f} MB"
     )
     print("\n  ELEGIDOS POR PRECIO — y el acuerdo del corpus es %.1f%%:" % (100 * p["acuerdo"]))
-    for nombre, v in salida["candidatos_por_precio"].items():  # type: ignore[union-attr]
+    for nombre, v in salida.candidatos_por_precio.items():
         print(
             f"    {nombre:<22} n={v['n']:>2} · {v['coste_s']:6.1f} s · {v['mb']:5.2f} MB ·"
             f" acuerdo {v['acuerdan']}/{v['n']} = {100 * v['acuerdo']:5.1f}%"
             f" · páginas {v['paginas_min']}-{v['paginas_max']}"
         )
     print("\n  VIABILIDAD — 20 documentos con k de acuerdo, los más ligeros de cada lado:")
-    for v in salida["frontera_de_viabilidad"]:  # type: ignore[union-attr]
+    for v in salida.frontera_de_viabilidad:
         if v["acuerdan"] in (0, 4, 5, 6, 7, 8, 14, 20):
             print(
                 f"    {v['acuerdan']:>2}/20 = {100 * v['acuerdo']:5.1f}% ·"

@@ -55,20 +55,25 @@ def _extractores() -> dict[str, object]:
     }
 
 
-def _provisional() -> list[str]:
-    """20 documentos **provisionales** para medir el reloj. NO son los del fixture.
+ELEGIDOS = RAIZ / "runs" / "l7" / "elegidos.json"
 
-    Se toma el punto de la frontera cuyo acuerdo queda más cerca del del corpus, y se
-    dice que es provisional: sirve para cronometrar, no para publicar un número de
-    acuerdo. El conjunto de verdad se elige por cobertura de fenómenos, con el criterio
-    escrito antes.
+
+def _conjunto() -> tuple[list[str], str]:
+    """Los 20 que el criterio eligió, o un conjunto **provisional** si aún no existen.
+
+    El provisional sirve sólo para cronometrar; se dice cuál de los dos es, porque un
+    reloj medido sobre otro conjunto no es el reloj del quickstart.
     """
+    if ELEGIDOS.is_file():
+        datos = json.loads(ELEGIDOS.read_text(encoding="utf-8"))
+        return [str(e["id"]) for e in datos["documentos"]], "runs/l7/elegidos.json"
     d = por_documento()
-    objetivo = sum(bool(v["acuerdo"]) for v in d.values()) / len(d)
-    si = sorted((i for i in d if d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
-    no = sorted((i for i in d if not d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
+    con = {i: v for i, v in d.items() if v["tablas_verdad"]}
+    objetivo = sum(bool(v["acuerdo"]) for v in con.values()) / len(con)
+    si = sorted((i for i in con if con[i]["acuerdo"]), key=lambda i: int(con[i]["bytes"]))
+    no = sorted((i for i in con if not con[i]["acuerdo"]), key=lambda i: int(con[i]["bytes"]))
     k = min(range(CUANTOS + 1), key=lambda k: abs(k / CUANTOS - objetivo))
-    return si[:k] + no[: CUANTOS - k]
+    return si[:k] + no[: CUANTOS - k], "PROVISIONAL, no el fixture"
 
 
 def reloj() -> dict[str, object]:
@@ -81,7 +86,7 @@ def reloj() -> dict[str, object]:
 
     exige(DOCS)
     arranque = time.perf_counter()
-    ids = _provisional()
+    ids, procedencia = _conjunto()
     almacen = Almacen(MANIFIESTO, DOCS)
     docs = [almacen.cargar(i) for i in ids]
     carga = time.perf_counter() - arranque
@@ -106,7 +111,8 @@ def reloj() -> dict[str, object]:
     medida = round(time.perf_counter() - t, 2)
 
     return {
-        "que": "sonda de reloj del quickstart · conjunto PROVISIONAL, no congelado",
+        "que": "sonda de reloj del quickstart, secuencial y en frío",
+        "conjunto": procedencia,
         "documentos": len(ids),
         "cargar_del_almacen_s": round(carga, 2),
         "por_extractor_s": por_extractor,
