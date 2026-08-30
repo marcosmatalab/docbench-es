@@ -1,0 +1,259 @@
+{
+ "poblacion": {
+  "n": 338,
+  "coste_s": 5764.3,
+  "mb": 188.14,
+  "acuerdan": 103,
+  "acuerdo": 0.3047,
+  "paginas_min": 1,
+  "paginas_max": 182
+ },
+ "coste_de_los_cuatro_ms": {
+  "mediana": 8847,
+  "media": 17054,
+  "p90": 42242,
+  "maximo": 218306,
+  "por_20_con_la_mediana": 176940,
+  "por_20_con_la_media": 341080
+ },
+ "peso_pdf_mas_xml_bytes": {
+  "mediana": 328997,
+  "media": 556625,
+  "los_20_mas_ligeros": 4115893,
+  "por_20_con_la_media": 11132500
+ },
+ "presupuestos": {
+  "ms": 180000,
+  "bytes": 4000000,
+  "cuantos": 20
+ },
+ "candidatos_por_precio": {
+  "los_20_mas_baratos": {
+   "n": 20,
+   "coste_s": 51.0,
+   "mb": 4.22,
+   "acuerdan": 11,
+   "acuerdo": 0.55,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  "los_20_mas_ligeros": {
+   "n": 20,
+   "coste_s": 54.5,
+   "mb": 4.12,
+   "acuerdan": 14,
+   "acuerdo": 0.7,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  "los_20_mas_cortos": {
+   "n": 20,
+   "coste_s": 52.7,
+   "mb": 4.22,
+   "acuerdan": 15,
+   "acuerdo": 0.75,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  "los_de_una_pagina": {
+   "n": 9,
+   "coste_s": 19.8,
+   "mb": 1.78,
+   "acuerdan": 9,
+   "acuerdo": 1.0,
+   "paginas_min": 1,
+   "paginas_max": 1
+  }
+ },
+ "frontera_de_viabilidad": [
+  {
+   "n": 20,
+   "coste_s": 65.3,
+   "mb": 4.31,
+   "acuerdan": 0,
+   "acuerdo": 0.0,
+   "paginas_min": 2,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 64.0,
+   "mb": 4.29,
+   "acuerdan": 1,
+   "acuerdo": 0.05,
+   "paginas_min": 1,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 62.6,
+   "mb": 4.26,
+   "acuerdan": 2,
+   "acuerdo": 0.1,
+   "paginas_min": 1,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 62.2,
+   "mb": 4.24,
+   "acuerdan": 3,
+   "acuerdo": 0.15,
+   "paginas_min": 1,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 60.9,
+   "mb": 4.22,
+   "acuerdan": 4,
+   "acuerdo": 0.2,
+   "paginas_min": 1,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 60.0,
+   "mb": 4.2,
+   "acuerdan": 5,
+   "acuerdo": 0.25,
+   "paginas_min": 1,
+   "paginas_max": 3
+  },
+  {
+   "n": 20,
+   "coste_s": 58.7,
+   "mb": 4.18,
+   "acuerdan": 6,
+   "acuerdo": 0.3,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 57.4,
+   "mb": 4.16,
+   "acuerdan": 7,
+   "acuerdo": 0.35,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 56.3,
+   "mb": 4.15,
+   "acuerdan": 8,
+   "acuerdo": 0.4,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.9,
+   "mb": 4.14,
+   "acuerdan": 9,
+   "acuerdo": 0.45,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 55.2,
+   "mb": 4.13,
+   "acuerdan": 10,
+   "acuerdo": 0.5,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.8,
+   "mb": 4.13,
+   "acuerdan": 11,
+   "acuerdo": 0.55,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.9,
+   "mb": 4.12,
+   "acuerdan": 12,
+   "acuerdo": 0.6,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.6,
+   "mb": 4.12,
+   "acuerdan": 13,
+   "acuerdo": 0.65,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.5,
+   "mb": 4.12,
+   "acuerdan": 14,
+   "acuerdo": 0.7,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.3,
+   "mb": 4.12,
+   "acuerdan": 15,
+   "acuerdo": 0.75,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 55.1,
+   "mb": 4.12,
+   "acuerdan": 16,
+   "acuerdo": 0.8,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.5,
+   "mb": 4.13,
+   "acuerdan": 17,
+   "acuerdo": 0.85,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.5,
+   "mb": 4.14,
+   "acuerdan": 18,
+   "acuerdo": 0.9,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.6,
+   "mb": 4.16,
+   "acuerdan": 19,
+   "acuerdo": 0.95,
+   "paginas_min": 1,
+   "paginas_max": 2
+  },
+  {
+   "n": 20,
+   "coste_s": 54.7,
+   "mb": 4.18,
+   "acuerdan": 20,
+   "acuerdo": 1.0,
+   "paginas_min": 1,
+   "paginas_max": 2
+  }
+ ]
+}

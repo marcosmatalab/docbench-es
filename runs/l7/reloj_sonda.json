@@ -1,0 +1,26 @@
+{
+ "reloj": {
+  "que": "sonda de reloj del quickstart · conjunto PROVISIONAL, no congelado",
+  "documentos": 20,
+  "cargar_del_almacen_s": 0.01,
+  "por_extractor_s": {
+   "pdfplumber": 1.5,
+   "camelot": 4.17,
+   "pymupdf4llm": 18.56,
+   "docling": 49.29
+  },
+  "verdad_teds_cara_a_cara_s": 0.68,
+  "total_s": 74.21,
+  "sin_docling_s": 24.92,
+  "presupuesto_s": 180,
+  "acuerdo_del_conjunto_provisional": "6 de 20",
+  "puntuan_todos": 6
+ },
+ "sin_red": {
+  "documento": "BOE-A-2026-5482",
+  "pdfplumber": "OK · 2 tablas",
+  "camelot": "OK · 2 tablas",
+  "pymupdf4llm": "OK · 2 tablas",
+  "docling": "FALLA: provider_error"
+ }
+}

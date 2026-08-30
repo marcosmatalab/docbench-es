@@ -693,63 +693,48 @@ fallo que L3 lleva cazando desde que empezo.
 
 ## Siguiente paso
 
-**`/hito L5`: `extract.base` + conformidad + los ocho extractores locales + nivel 1.**
-Criterio del manual (§16): *primera tabla de estructura con coste y cobertura
-evaluable*. Ocho y no trece: los otros cinco entran después con `/extractor`, una
-tarde cada uno.
+**`/hito L7`: los 20 documentos del quickstart y `make quickstart`.** Criterio de
+`HITOS.md`: *de clone a una tabla de TEDS por extractor en menos de 3 minutos, SIN RED y
+sin gastar un euro*, con ~4 MB de documentos versionados en `tests/fixtures/quickstart/`.
 
-> **Y la regla de oro 1 manda aquí más que en ningún otro hito: `docbench-es` NUNCA
-> construye un extractor propio.** L5 es exactamente el hito donde eso parecería una
-> buena idea. Si lo fuera, el ranking valdría cero.
+> **ESTA LÍNEA DECÍA `/hito L5` CON L5 CERRADO**, y por eso L7 llevaba dos días sin
+> empezar: el hook `SessionStart` inyecta este fichero entero, así que la sesión siguiente
+> lee «`/hito L5`» antes que nada. Es la regla de oro 8 aplicada a `ESTADO.md` —gana la
+> fuente que el bucle lee primero— y ya había pasado con `/hito L1`. Va escrito abajo, y
+> ha vuelto a pasar.
 
-> **AVISO, y está escrito así para que dentro de dos semanas nadie lea «se arregló»
-> donde pone «se aplazó».** Los ~330 ms recuperados compran **un hito de margen, como
-> mucho**. La proyección de L5 sigue **intacta**: 14-18 h, ocho extractores con sus
-> suites, **~+3.000 ms**. Con el techo en 8.500 y ~300 ms de margen, **L5 lo rompe
-> igual**.
->
-> **La reestructuración queda APLAZADA, NO CANCELADA**, y sigue siendo **lo primero
-> de L5**: `pytest -n auto` con `pytest-xdist`, **medido antes de escribir una sola
-> línea de código del hito**. Medirlo después sería medirlo cuando ya no hay margen
-> para decidir.
+### Lo que hay que decidir ANTES de congelar los 20, con los números ya medidos
 
-**Y ANTES de comprometerse con ocho extractores, una PRUEBA DE HUMO con uno.** Las 30
-tablas de L4 ya tienen verdad derivada congelada y el TEDS de L2 ya está validado
-contra PubTabNet. Pasar **`pdfplumber`, el más simple**, sobre esos 30 y sacar el TEDS
-contra la verdad derivada son **~2 h** y dan tres cosas que hoy no existen:
+**Congelar es irreversible para cualquiera que haya publicado una salida de quickstart**,
+así que el criterio de selección se escribe **antes** de mirar cuál sale mejor. Los tres
+números están medidos y publicados en [`RESULTS.md`](RESULTS.md), con sus artefactos en
+`runs/l7/` y sus comandos:
 
-- la **primera prueba de extremo a extremo** de la cadena L1→L2→L3→L4 con un consumidor
-  real — que es exactamente el patrón que la sección «Construido y NO VALIDADO» de este
-  fichero declara: L1 cerró verde y **L2 descubrió que `from_html` marcaba mal el 100%
-  de las cabeceras de PubTabNet**;
-- el **orden de magnitud del coste por documento**, que es lo que decide si ocho
-  extractores caben en las 14-18 h presupuestadas;
-- y los **bugs de integración antes** de que ocho extractores los multipliquen.
+1. **Los 3 minutos caben, pero la cuenta con la mediana no lo demostraba.** El reloj es
+   una suma y la gobierna la **media** —17,1 s por documento contra 8,8 de mediana—: 20 al
+   azar cuestan **324 s**, y sólo el **2,6%** de las muestras cabe. Medido de verdad sobre
+   20 documentos ligeros y secuencial: **74,2 s de 180**, margen 2,4×.
+2. **Lo que aprieta son los 4 MB, no los 3 minutos.** 20 documentos al azar pesan **10,6
+   MB** y **ninguna** de 10 000 muestras cabe en 4 MB. El suelo absoluto —los 20 más
+   ligeros que existen— son **4,12 MB**.
+3. **Elegir por precio halaga 2,3 veces**, y **el sesgo entero vive en nueve documentos**:
+   los de una página, que acuerdan **9 de 9** y son los más ligeros. De dos páginas en
+   adelante el acuerdo cae al 27,4% y **por cuartil de coste es plano**. Por eso el
+   conflicto **no es forzoso**: un conjunto de 20 con el acuerdo del corpus cuesta **4,18
+   MB y 58,7 s**, contra 4,12 MB y 54,5 s del más halagador. **No halagar sale gratis.**
 
-> **NO SE PUBLICA COMO NÚMERO.** 30 documentos elegidos por riqueza de spans no son
-> muestra de nada, y publicar un TEDS de ahí sería justo lo que este repo prohíbe. Es
-> **prueba de humo con su límite escrito**, y se dice que lo es.
+**Y el que no se arregla eligiendo:** `docling` **no corre sin red**. Con la caché vacía y
+`HF_HUB_OFFLINE=1` falla con `provider_error` mientras los otros tres sacan sus tablas;
+necesita **506 MB** de pesos de HuggingFace contra unos 4 MB de fixtures. El `Makefile` ya
+nombra los cuatro extractores **y** `--offline` en su receta de `quickstart`, así que hoy
+esa línea afirma algo que no se puede cumplir.
 
-**Lo que L5 hereda de L4 y no puede ignorar:**
-
-- **LO PRIMERO, y antes de escribir código del hito: `pytest -n auto` medido.** Ver
-  el aviso de arriba. Margen actual: **494 ms** sobre un techo de 8.500, contra un
-  incremento proyectado de **~+3.000 ms**.
-
-- **Límite 76 · el barrido de mutantes no prueba nada sobre la normalización.**
-  40-60 min, con el riesgo de que la suite objetivo no mate al mutante nuevo. L5
-  vuelve a tocar ese camino con los ocho extractores.
-- **Límite 74 · el número de L4 no es reproducible en un clon frío.** Los cuatro
-  comandos necesitan `runs/l3/docs` (362 MB, fuera del repo) y `pdftotext`. L5
-  estrena `make quickstart`, que es donde esto se decide de verdad.
-- **Límite 29 · el modelo de §6.8 no sabe expresar «un intervalo por métrica» ni el
-  desglose por estrato.** 2-3 h más su ADR, y **L5 es quien lo estrena**: el primero
-  que rellena `StructureMetrics` de verdad.
-- **Límite 66 · la muestra de L4 no puede ver el bug del grupo de filas.** Si L5
-  toca el colocador, el instrumento de L4 **no lo va a delatar**: lo delata
-  `test_grupo_de_filas.py`, y sólo si se corre.
-- **Límite 75 · la comparación de L4 cubre el 53,1% de las celdas.** Un cambio en la
-  derivación puede pasar por el 46,9% que no se compara.
+**Lo que queda por decidir, y es del usuario:** el criterio de selección —cobertura de
+fenómenos, no representatividad ni velocidad—, si el acuerdo del conjunto candidato se
+pre-registra antes de congelar, qué hace el quickstart con `docling`, y si su salida
+imprime **los dos números** —el suyo sobre 20 y el del corpus sobre 338— con la línea que
+dice que el primero no es una estimación del segundo. Con n=20 un 6 de 20 lleva un
+intervalo de Wilson de **37 puntos**: la representatividad no está al alcance.
 
 **Esta línea decía `/hito L1` con L1 y L2 ya cerrados.** No es cosmético: el hook
 `SessionStart` inyecta `ESTADO.md` entero, así que la sesión siguiente lo lee antes

@@ -11,6 +11,30 @@ de cada número vive con su método, en `docs/metrics.md`.
 
 ## [No publicado]
 
+### L7 · los tres números que deciden el conjunto, antes de congelar nada · 2026-08-29
+
+#### Añadido
+
+- **`scripts/presupuesto_quickstart.py`** y **`scripts/sonda_quickstart.py`**, con sus
+  artefactos en `runs/l7/`: el coste, el peso y el acuerdo **por documento** de los 338 con
+  tabla, y el **reloj de verdad** de 20 documentos en secuencial. Los dos pasan por la
+  puerta de `fuera_de_git`.
+- **Medido y publicado, sin congelar nada:** los 3 minutos caben —74,2 s de 180— pero la
+  cuenta con la mediana no lo demostraba; **lo que aprieta son los 4 MB**, donde ninguna
+  muestra aleatoria de 20 entra; y elegir por precio **halaga 2,3 veces**, con el sesgo
+  entero en los **nueve** documentos de una página. La frontera dice que **no halagar sale
+  gratis**: 4,18 MB y 58,7 s contra 4,12 y 54,5.
+- **Y el hallazgo que no se arregla eligiendo:** `docling` necesita **506 MB** de pesos y
+  **falla sin red**, mientras los otros tres corren. La receta de `quickstart` del
+  `Makefile` nombra los cuatro **y** `--offline`.
+
+#### Corregido
+
+- **`ESTADO.md` decía «Siguiente paso: `/hito L5`» con L5 cerrado**, y el hook
+  `SessionStart` lo inyecta entero: por eso L7 llevaba dos días sin empezar. Es la regla de
+  oro 8 aplicada a este fichero, y ya había pasado con `/hito L1`.
+
+
 ### La resta que faltaba: el techo se decide con DOS series · 2026-08-29
 
 #### Añadido

@@ -2893,3 +2893,151 @@ ADR-0048 existe para no volver a decidir a ciegas.
    son **dos**: 65 ms (24 ago) y 28 ms (29 ago), medidas sobre árboles distintos. Son dos
    observaciones, no una estimación de la reproducibilidad del p90. La serie que sí lo
    sería se construye sola, dos p90 por cierre.
+
+---
+
+## L7 · LOS TRES NÚMEROS QUE DECIDEN EL CONJUNTO, MEDIDOS ANTES DE CONGELAR NADA
+
+```bash
+uv run python scripts/presupuesto_quickstart.py --regenerar   # el papel: coste, peso y acuerdo
+uv run python scripts/sonda_quickstart.py                     # el reloj de verdad, 20 documentos
+HF_HOME=$(mktemp -d) HF_HUB_OFFLINE=1 \
+  uv run python scripts/sonda_quickstart.py --sin-red         # quién corre en un clon frío
+```
+
+Artefactos: [`runs/l7/por_documento.json`](runs/l7/por_documento.json) —los 338 con tabla,
+uno a uno—, [`runs/l7/presupuesto.json`](runs/l7/presupuesto.json) y
+[`runs/l7/reloj_sonda.json`](runs/l7/reloj_sonda.json). **Nada está congelado**: el
+criterio de L7 pide 20 documentos, ~4 MB, cuatro extractores, menos de 3 minutos y sin
+red, y esas cinco cifras juntas **eligen los documentos**. Esto mide qué eligen.
+
+### 1. El presupuesto de 3 minutos: cabe, y la cuenta con la mediana no lo demostraba
+
+**El reloj es una SUMA, y una suma la gobierna la media, no la mediana.** El coste de los
+cuatro extractores sobre un documento con tabla tiene la cola a la derecha:
+
+| | mediana | media | p90 | máximo |
+|---|---:|---:|---:|---:|
+| coste de los cuatro, por documento | 8847 ms | **17 054 ms** | 42 242 ms | 218 306 ms |
+
+Multiplicar por 20 da **177 s con la mediana** —dentro de 180 por los pelos— y **341 s con
+la media**, o sea casi el doble del presupuesto. Y medido en vez de proyectado: de 10 000
+muestras aleatorias de 20 documentos con tabla, **el 2,6% cabe** en 174 s; la mediana de
+esas muestras son **324 s**.
+
+**Y el reloj de verdad, que es el único que cuenta**, sobre 20 documentos ligeros,
+secuencial, en esta máquina:
+
+| Paso | s |
+|---|---:|
+| cargar los 20 del almacén | 0,01 |
+| `pdfplumber` | 1,50 |
+| `camelot` | 4,17 |
+| `pymupdf4llm` | 18,56 |
+| `docling` | 49,29 |
+| verdad derivada + TEDS + cara a cara | 0,68 |
+| **total** | **74,21** |
+
+**74,2 s contra 180: un factor de 2,4.** Y la suma de las latencias de la campaña para
+esos mismos 20 daba 58,7 s, o sea que el reloj real es **un 26% mayor** que la predicción
+de la campaña — que se midió con 32 trabajadores en paralelo y los modelos ya cargados.
+
+### 2. Lo que aprieta no son los 3 minutos: son los 4 MB
+
+| | mediana | 20 al azar | los 20 más ligeros | presupuesto |
+|---|---:|---:|---:|---:|
+| peso pdf+xml | 329 KB | **10,6 MB** | **4,12 MB** | ~4 MB |
+
+**Ninguna de 10 000 muestras aleatorias de 20 cabe en 4 MB.** Y 4,12 MB no es una elección:
+es **el suelo absoluto**, el peso de los 20 documentos más ligeros que existen en el
+corpus. Quitar el XML no salva nada — es el **15%** del peso; el PDF es el resto.
+
+### 3. Y elegir por precio halaga 2,3 veces
+
+| Conjunto | n | acuerdan | acuerdo |
+|---|---:|---:|---:|
+| **el corpus** | 338 | 103 | **30,5%** |
+| los 20 más baratos | 20 | 11 | 55,0% |
+| los 20 más ligeros | 20 | 14 | 70,0% |
+| los 20 más cortos | 20 | 15 | 75,0% |
+| los de una página | 9 | 9 | 100,0% |
+
+**Pero la causa no es «barato», es «una página»**, y esto es lo que ADR-0042 avisó en
+abstracto y nadie había calculado. El acuerdo por cuartil de coste es **plano**:
+
+| Cuartil de coste | n | acuerdan | acuerdo |
+|---|---:|---:|---:|
+| Q1 (1,9-4,1 s) | 84 | 29 | 34,5% |
+| Q2 (4,2-8,8 s) | 85 | 29 | 34,1% |
+| Q3 (8,9-15,7 s) | 84 | 22 | 26,2% |
+| Q4 (16,0-218,3 s) | 85 | 23 | 27,1% |
+
+Lo que no es plano es la primera página, y el desglose por banda publicado lo escondía
+dentro del «2-10 → 30,6%»:
+
+| Páginas | n | acuerdan | acuerdo |
+|---|---:|---:|---:|
+| 1 pág. | 9 | 9 | 100,0% |
+| 2 págs. | 62 | 17 | 27,4% |
+| 3 págs. | 32 | 6 | 18,8% |
+| 12 págs. | 28 | 0 | 0,0% |
+
+**El sesgo entero vive en NUEVE documentos**, los de una página, que son además los más
+ligeros y los más baratos: cualquier selección voraz por precio se los lleva primero.
+
+### 4. El conflicto es real y NO es forzoso, que es la parte que faltaba
+
+Si el sesgo estuviera en «corto» habría que elegir entre caber y no halagar. Está en
+«una página», y de dos páginas para arriba **hay documentos ligeros de los dos tipos**. La
+frontera, tomando los más ligeros de cada lado:
+
+| Acuerdo del conjunto | s | MB |
+|---|---:|---:|
+| 0 de 20 | 65,3 | 4,31 |
+| 5 de 20 | 60,0 | 4,20 |
+| **6 de 20 — el del corpus** | **58,7** | **4,18** |
+| 8 de 20 | 56,3 | 4,15 |
+| 14 de 20 | 54,5 | 4,12 |
+
+**Un conjunto de 20 con el acuerdo del corpus cuesta 4,18 MB y 58,7 s; el más halagador
+cuesta 4,12 MB y 54,5 s.** La diferencia es de 60 KB y 4 segundos: **no halagar es
+gratis**.
+
+> **Y esto es una cuenta de VIABILIDAD, no una propuesta de conjunto.** Elegir los 20 para
+> que su acuerdo cuadre con el del corpus sería ajustar el resultado, que es exactamente lo
+> que este repo no admite. Lo que la frontera contesta es *«¿existe?»*. El conjunto se
+> elige por **cobertura de fenómenos**, con el criterio escrito **antes**, y se publica el
+> número que salga.
+
+### 5. Lo que sí es forzoso: `docling` NO corre sin red, y eso no lo arregla elegir mejor
+
+Con `HF_HOME` en un directorio vacío y `HF_HUB_OFFLINE=1`, que es lo que ve un clon frío:
+
+| Extractor | Con la caché vacía y sin red |
+|---|---|
+| `pdfplumber` | **OK** · 2 tablas |
+| `camelot` | **OK** · 2 tablas |
+| `pymupdf4llm` | **OK** · 2 tablas |
+| `docling` | **FALLA**, `provider_error` |
+
+`docling` carga **506 MB** de pesos de HuggingFace —`docling-models` 342 MB y
+`docling-layout-heron` 164 MB—, que este repo no versiona ni puede versionar contra unos
+4 MB de fixtures. Falla limpio, con su causa del enum cerrado, que es lo que la regla de
+oro 6 exige; pero un quickstart que publica *«docling: 20 fallos de 20»* en un clon frío no
+es un quickstart, es una trampa para el lector.
+
+**Y el `Makefile` ya lo afirma hoy**: su receta de `quickstart` nombra los cuatro
+extractores **y** `--offline`. Los tres números de arriba se pueden resolver eligiendo; éste
+no.
+
+### 6. Lo que estos números NO dicen
+
+1. **No dicen que quepa en la máquina de cualquiera.** 74,2 s son de un Ryzen 9 9950X3D.
+   Con margen 2,4×, una máquina **2,5 veces más lenta** se sale del presupuesto — y sin
+   `docling` el total baja a **24,9 s**, o sea margen 7,2×.
+2. **No convierten el acuerdo de 20 documentos en una estimación de nada.** Un 6 de 20 lleva
+   un intervalo de Wilson del **14,5% al 51,9%**: 37 puntos de ancho, contra los 5 puntos
+   del censo de 338. Con n=20 la representatividad **no está al alcance**; lo que sí está
+   es publicar los dos números uno al lado del otro.
+3. **Las latencias de la campaña no son las del quickstart.** Se midieron con 32
+   trabajadores en paralelo; por eso hay una sonda de reloj y no sólo una suma.
