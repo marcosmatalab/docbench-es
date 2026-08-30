@@ -85,22 +85,41 @@ def regenerar() -> dict[str, dict[str, int | bool]]:
     acuerdo, puntuan = set(cc.acuerdo_de_recuento), set(cc.documentos)
 
     coste: dict[str, int] = {}
+    cuantas: dict[str, dict[str, int]] = {}
     for nombre in EXTRACTORES:
         for linea in (CAMPANA / f"{nombre}.jsonl").read_text(encoding="utf-8").splitlines():
             e = json.loads(linea)
             i = e["doc_ref"]["external_id"]
             coste[i] = coste.get(i, 0) + int(e["latency_ms"])
+            cuantas.setdefault(i, {})[nombre] = len(e["tables"])
+
+    def _combinada(ident: str) -> bool:
+        """¿Trae la verdad alguna celda que ocupe más de una fila o columna?
+
+        Es el fenómeno que dispara la regla de oro 4 —y con ella el `NO_APLICABLE`—,
+        o sea el mecanismo que separa los 103 que aciertan el recuento de los 82 que
+        puntúan. Un quickstart sin ninguno no enseña ese mecanismo.
+        """
+        return any(
+            c.rowspan > 1 or c.colspan > 1 for tab in verdades.get(ident, ()) for c in tab.cells
+        )
 
     fuera = {
         i: {
             "paginas": paginas.get(i, 0),
-            "tablas_verdad": len(verdades[i]),
+            "tablas_verdad": len(verdades.get(i, ())),
             "coste_ms": coste[i],
             "bytes": (DOCS / f"{i}.pdf").stat().st_size + (DOCS / f"{i}.xml").stat().st_size,
             "acuerdo": i in acuerdo,
             "puntua": i in puntuan,
+            "celda_combinada": _combinada(i),
+            # Cuántos de los cuatro clavan el recuento, y cuántos sacan MÁS tablas de
+            # las que hay. El segundo es un fenómeno por sí mismo —una tabla que no
+            # está en la referencia— y no se ve en el acuerdo, que sólo dice sí o no.
+            "aciertan": sum(n == len(verdades.get(i, ())) for n in cuantas[i].values()),
+            "de_mas": sum(n > len(verdades.get(i, ())) for n in cuantas[i].values()),
         }
-        for i in sorted(verdades)
+        for i in sorted(coste)
     }
     POR_DOCUMENTO.parent.mkdir(parents=True, exist_ok=True)
     POR_DOCUMENTO.write_text(json.dumps(fuera, indent=1), encoding="utf-8")
@@ -143,8 +162,9 @@ def frontera(d: dict[str, dict[str, int | bool]], cuantos: int = CUANTOS) -> lis
     conjunto de 20 que quepa y cuyo acuerdo no esté inflado?»*, que es la pregunta que hay
     que responder antes de escribir el criterio, no después.
     """
-    si = sorted((i for i in d if d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
-    no = sorted((i for i in d if not d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
+    con = [i for i in d if d[i]["tablas_verdad"]]
+    si = sorted((i for i in con if d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
+    no = sorted((i for i in con if not d[i]["acuerdo"]), key=lambda i: int(d[i]["bytes"]))
     salida = []
     for k in range(cuantos + 1):
         if k > len(si) or cuantos - k > len(no):
@@ -155,7 +175,7 @@ def frontera(d: dict[str, dict[str, int | bool]], cuantos: int = CUANTOS) -> lis
 
 def analisis(d: dict[str, dict[str, int | bool]]) -> dict[str, object]:
     """Todo lo que se publica, en un diccionario. **Ni una cifra tecleada en la prosa.**"""
-    ids = sorted(d)
+    ids = sorted(i for i in d if d[i]["tablas_verdad"])
     costes = sorted(_n(d, ids, "coste_ms"))
     pesos = sorted(_n(d, ids, "bytes"))
     baratos = sorted(ids, key=lambda i: int(d[i]["coste_ms"]))[:CUANTOS]

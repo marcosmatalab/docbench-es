@@ -1,11 +1,223 @@
 {
+ "BOE-A-2026-5478": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7344,
+  "bytes": 261878,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5479": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 3108,
+  "bytes": 199713,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5481": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3534,
+  "bytes": 208365,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
  "BOE-A-2026-5482": {
   "paginas": 5,
   "tablas_verdad": 1,
   "coste_ms": 10536,
   "bytes": 267263,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5483": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5961,
+  "bytes": 239695,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5484": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 14484,
+  "bytes": 368671,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5485": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3927,
+  "bytes": 214001,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5486": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9279,
+  "bytes": 292311,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5487": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9536,
+  "bytes": 285899,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5488": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7147,
+  "bytes": 244671,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5489": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6584,
+  "bytes": 265327,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5493": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 8905,
+  "bytes": 294967,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5494": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2383,
+  "bytes": 189284,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5495": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12400,
+  "bytes": 325661,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5496": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12072,
+  "bytes": 331413,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5497": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12383,
+  "bytes": 331016,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5498": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12645,
+  "bytes": 326120,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5502": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5915,
+  "bytes": 240409,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5504": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5390,
+  "bytes": 239166,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5505": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5689,
+  "bytes": 237961,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5510": {
   "paginas": 10,
@@ -13,7 +225,10 @@
   "coste_ms": 9826,
   "bytes": 303777,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5511": {
   "paginas": 5,
@@ -21,7 +236,10 @@
   "coste_ms": 5875,
   "bytes": 254230,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5512": {
   "paginas": 90,
@@ -29,7 +247,10 @@
   "coste_ms": 76678,
   "bytes": 2315374,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5515": {
   "paginas": 85,
@@ -37,7 +258,21 @@
   "coste_ms": 67071,
   "bytes": 1096559,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5517": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 9050,
+  "bytes": 273236,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5518": {
   "paginas": 32,
@@ -45,7 +280,10 @@
   "coste_ms": 37222,
   "bytes": 1553257,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5519": {
   "paginas": 12,
@@ -53,7 +291,10 @@
   "coste_ms": 11807,
   "bytes": 365405,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-5520": {
   "paginas": 11,
@@ -61,7 +302,10 @@
   "coste_ms": 10797,
   "bytes": 330002,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5521": {
   "paginas": 11,
@@ -69,7 +313,10 @@
   "coste_ms": 10620,
   "bytes": 328997,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5522": {
   "paginas": 33,
@@ -77,7 +324,10 @@
   "coste_ms": 29321,
   "bytes": 971750,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5523": {
   "paginas": 11,
@@ -85,7 +335,10 @@
   "coste_ms": 11024,
   "bytes": 689808,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5525": {
   "paginas": 14,
@@ -93,7 +346,32 @@
   "coste_ms": 13830,
   "bytes": 351960,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5529": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12748,
+  "bytes": 371498,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5533": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2088,
+  "bytes": 188016,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5534": {
   "paginas": 2,
@@ -101,7 +379,10 @@
   "coste_ms": 2919,
   "bytes": 224518,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5535": {
   "paginas": 2,
@@ -109,7 +390,10 @@
   "coste_ms": 3138,
   "bytes": 217520,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5536": {
   "paginas": 2,
@@ -117,7 +401,10 @@
   "coste_ms": 2932,
   "bytes": 216412,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5537": {
   "paginas": 2,
@@ -125,7 +412,10 @@
   "coste_ms": 3012,
   "bytes": 227038,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5538": {
   "paginas": 2,
@@ -133,7 +423,10 @@
   "coste_ms": 3082,
   "bytes": 229188,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5539": {
   "paginas": 2,
@@ -141,7 +434,10 @@
   "coste_ms": 2845,
   "bytes": 227999,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5540": {
   "paginas": 4,
@@ -149,7 +445,10 @@
   "coste_ms": 4954,
   "bytes": 280416,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5541": {
   "paginas": 2,
@@ -157,7 +456,10 @@
   "coste_ms": 2852,
   "bytes": 227339,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5542": {
   "paginas": 2,
@@ -165,7 +467,10 @@
   "coste_ms": 3077,
   "bytes": 228121,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5543": {
   "paginas": 10,
@@ -173,7 +478,10 @@
   "coste_ms": 9569,
   "bytes": 390390,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5544": {
   "paginas": 7,
@@ -181,7 +489,10 @@
   "coste_ms": 8721,
   "bytes": 356027,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5545": {
   "paginas": 2,
@@ -189,7 +500,10 @@
   "coste_ms": 2872,
   "bytes": 213682,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5546": {
   "paginas": 3,
@@ -197,7 +511,10 @@
   "coste_ms": 4840,
   "bytes": 302101,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5547": {
   "paginas": 33,
@@ -205,7 +522,32 @@
   "coste_ms": 26907,
   "bytes": 527803,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5548": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6132,
+  "bytes": 244547,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5549": {
+  "paginas": 33,
+  "tablas_verdad": 0,
+  "coste_ms": 32219,
+  "bytes": 550554,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5593": {
   "paginas": 2,
@@ -213,7 +555,10 @@
   "coste_ms": 3142,
   "bytes": 211065,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5598": {
   "paginas": 12,
@@ -221,7 +566,10 @@
   "coste_ms": 10384,
   "bytes": 363281,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-5599": {
   "paginas": 7,
@@ -229,7 +577,10 @@
   "coste_ms": 7408,
   "bytes": 281814,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5601": {
   "paginas": 21,
@@ -237,7 +588,10 @@
   "coste_ms": 17298,
   "bytes": 421879,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
  },
  "BOE-A-2026-5602": {
   "paginas": 4,
@@ -245,7 +599,43 @@
   "coste_ms": 4905,
   "bytes": 260971,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5604": {
+  "paginas": 17,
+  "tablas_verdad": 0,
+  "coste_ms": 28628,
+  "bytes": 723452,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5605": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7445,
+  "bytes": 256976,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5606": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4890,
+  "bytes": 235158,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5608": {
   "paginas": 2,
@@ -253,7 +643,10 @@
   "coste_ms": 3033,
   "bytes": 217251,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5609": {
   "paginas": 5,
@@ -261,7 +654,21 @@
   "coste_ms": 5179,
   "bytes": 254162,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5610": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 8181,
+  "bytes": 301802,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5611": {
   "paginas": 58,
@@ -269,7 +676,43 @@
   "coste_ms": 49772,
   "bytes": 1285606,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5685": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6092,
+  "bytes": 243737,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5687": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1958,
+  "bytes": 188169,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5689": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6146,
+  "bytes": 245079,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5690": {
   "paginas": 3,
@@ -277,7 +720,10 @@
   "coste_ms": 4302,
   "bytes": 243525,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 1,
+  "de_mas": 3
  },
  "BOE-A-2026-5691": {
   "paginas": 85,
@@ -285,7 +731,10 @@
   "coste_ms": 64419,
   "bytes": 1245913,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5692": {
   "paginas": 42,
@@ -293,7 +742,10 @@
   "coste_ms": 34052,
   "bytes": 661775,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5693": {
   "paginas": 119,
@@ -301,7 +753,10 @@
   "coste_ms": 92405,
   "bytes": 2101191,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5694": {
   "paginas": 74,
@@ -309,7 +764,10 @@
   "coste_ms": 60738,
   "bytes": 1175564,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5695": {
   "paginas": 5,
@@ -317,7 +775,10 @@
   "coste_ms": 6183,
   "bytes": 344456,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5696": {
   "paginas": 2,
@@ -325,7 +786,10 @@
   "coste_ms": 3087,
   "bytes": 226572,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5697": {
   "paginas": 12,
@@ -333,7 +797,10 @@
   "coste_ms": 10900,
   "bytes": 366208,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-5698": {
   "paginas": 20,
@@ -341,7 +808,43 @@
   "coste_ms": 18895,
   "bytes": 935801,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5699": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7694,
+  "bytes": 264156,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5700": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 12002,
+  "bytes": 326846,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
+ },
+ "BOE-A-2026-5701": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 14184,
+  "bytes": 373518,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5703": {
   "paginas": 2,
@@ -349,7 +852,21 @@
   "coste_ms": 3278,
   "bytes": 217408,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5704": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 9551,
+  "bytes": 262466,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5706": {
   "paginas": 2,
@@ -357,7 +874,10 @@
   "coste_ms": 3693,
   "bytes": 248064,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5707": {
   "paginas": 2,
@@ -365,7 +885,10 @@
   "coste_ms": 2774,
   "bytes": 215436,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5708": {
   "paginas": 2,
@@ -373,7 +896,10 @@
   "coste_ms": 2956,
   "bytes": 225211,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5709": {
   "paginas": 3,
@@ -381,7 +907,10 @@
   "coste_ms": 4472,
   "bytes": 282235,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5710": {
   "paginas": 3,
@@ -389,7 +918,10 @@
   "coste_ms": 4389,
   "bytes": 290065,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5711": {
   "paginas": 3,
@@ -397,7 +929,10 @@
   "coste_ms": 4506,
   "bytes": 283847,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5712": {
   "paginas": 6,
@@ -405,7 +940,10 @@
   "coste_ms": 7620,
   "bytes": 382800,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5713": {
   "paginas": 23,
@@ -413,7 +951,10 @@
   "coste_ms": 21182,
   "bytes": 478268,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5714": {
   "paginas": 13,
@@ -421,7 +962,219 @@
   "coste_ms": 12495,
   "bytes": 352018,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5715": {
+  "paginas": 88,
+  "tablas_verdad": 0,
+  "coste_ms": 62065,
+  "bytes": 1140017,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5716": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12226,
+  "bytes": 345571,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5718": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3860,
+  "bytes": 214690,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5793": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 10902,
+  "bytes": 301548,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5794": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1728,
+  "bytes": 190320,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5796": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 5354,
+  "bytes": 223144,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5798": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 9859,
+  "bytes": 304558,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5801": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9309,
+  "bytes": 288730,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5802": {
+  "paginas": 15,
+  "tablas_verdad": 0,
+  "coste_ms": 12656,
+  "bytes": 335224,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5803": {
+  "paginas": 17,
+  "tablas_verdad": 0,
+  "coste_ms": 14762,
+  "bytes": 356186,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5806": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1837,
+  "bytes": 189584,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5807": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 10379,
+  "bytes": 296905,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5819": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 11241,
+  "bytes": 307410,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5824": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1985,
+  "bytes": 189863,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5827": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2062,
+  "bytes": 189294,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5828": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1838,
+  "bytes": 189977,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5831": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1981,
+  "bytes": 190990,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5835": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1729,
+  "bytes": 189999,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5836": {
+  "paginas": 10,
+  "tablas_verdad": 0,
+  "coste_ms": 8753,
+  "bytes": 276940,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5840": {
   "paginas": 13,
@@ -429,7 +1182,10 @@
   "coste_ms": 12236,
   "bytes": 460376,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5841": {
   "paginas": 9,
@@ -437,7 +1193,54 @@
   "coste_ms": 8082,
   "bytes": 324066,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5842": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 11431,
+  "bytes": 354508,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5843": {
+  "paginas": 38,
+  "tablas_verdad": 0,
+  "coste_ms": 32061,
+  "bytes": 587159,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5844": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2311,
+  "bytes": 199841,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5845": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2019,
+  "bytes": 187409,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5846": {
   "paginas": 85,
@@ -445,7 +1248,10 @@
   "coste_ms": 65149,
   "bytes": 1110091,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5847": {
   "paginas": 84,
@@ -453,7 +1259,10 @@
   "coste_ms": 65619,
   "bytes": 1094001,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5848": {
   "paginas": 5,
@@ -461,7 +1270,10 @@
   "coste_ms": 7691,
   "bytes": 434745,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5849": {
   "paginas": 43,
@@ -469,7 +1281,10 @@
   "coste_ms": 34649,
   "bytes": 681265,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5850": {
   "paginas": 50,
@@ -477,7 +1292,10 @@
   "coste_ms": 37442,
   "bytes": 898551,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5851": {
   "paginas": 13,
@@ -485,7 +1303,10 @@
   "coste_ms": 10930,
   "bytes": 381228,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5853": {
   "paginas": 3,
@@ -493,7 +1314,10 @@
   "coste_ms": 4796,
   "bytes": 288560,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5855": {
   "paginas": 11,
@@ -501,7 +1325,10 @@
   "coste_ms": 11220,
   "bytes": 357468,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5856": {
   "paginas": 11,
@@ -509,7 +1336,10 @@
   "coste_ms": 10320,
   "bytes": 358512,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5857": {
   "paginas": 11,
@@ -517,7 +1347,10 @@
   "coste_ms": 10339,
   "bytes": 356319,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5858": {
   "paginas": 14,
@@ -525,7 +1358,10 @@
   "coste_ms": 14158,
   "bytes": 650787,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5863": {
   "paginas": 2,
@@ -533,7 +1369,10 @@
   "coste_ms": 3236,
   "bytes": 217337,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5864": {
   "paginas": 1,
@@ -541,7 +1380,10 @@
   "coste_ms": 2376,
   "bytes": 198046,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5865": {
   "paginas": 3,
@@ -549,7 +1391,10 @@
   "coste_ms": 4170,
   "bytes": 271506,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5866": {
   "paginas": 3,
@@ -557,7 +1402,10 @@
   "coste_ms": 4689,
   "bytes": 287567,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5867": {
   "paginas": 3,
@@ -565,7 +1413,10 @@
   "coste_ms": 4252,
   "bytes": 285568,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5868": {
   "paginas": 2,
@@ -573,7 +1424,10 @@
   "coste_ms": 3096,
   "bytes": 213798,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5869": {
   "paginas": 30,
@@ -581,7 +1435,10 @@
   "coste_ms": 26048,
   "bytes": 628291,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5870": {
   "paginas": 24,
@@ -589,7 +1446,10 @@
   "coste_ms": 20787,
   "bytes": 506790,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5871": {
   "paginas": 24,
@@ -597,7 +1457,186 @@
   "coste_ms": 21803,
   "bytes": 481792,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5872": {
+  "paginas": 309,
+  "tablas_verdad": 0,
+  "coste_ms": 215769,
+  "bytes": 3348874,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5873": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 4309,
+  "bytes": 214491,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5875": {
+  "paginas": 43,
+  "tablas_verdad": 0,
+  "coste_ms": 35043,
+  "bytes": 1065036,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
+ },
+ "BOE-A-2026-5877": {
+  "paginas": 15,
+  "tablas_verdad": 0,
+  "coste_ms": 14971,
+  "bytes": 387189,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5880": {
+  "paginas": 70,
+  "tablas_verdad": 0,
+  "coste_ms": 60647,
+  "bytes": 899937,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5950": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9639,
+  "bytes": 292152,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5953": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8247,
+  "bytes": 265552,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5954": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 9409,
+  "bytes": 265808,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5955": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2001,
+  "bytes": 189876,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5956": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1742,
+  "bytes": 189950,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5957": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1988,
+  "bytes": 189860,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5958": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1910,
+  "bytes": 189852,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5960": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1735,
+  "bytes": 189493,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5962": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 10220,
+  "bytes": 300074,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5964": {
+  "paginas": 10,
+  "tablas_verdad": 0,
+  "coste_ms": 8997,
+  "bytes": 283332,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5970": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2162,
+  "bytes": 190085,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5975": {
   "paginas": 6,
@@ -605,7 +1644,10 @@
   "coste_ms": 8098,
   "bytes": 391234,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5976": {
   "paginas": 3,
@@ -613,7 +1655,21 @@
   "coste_ms": 3941,
   "bytes": 234148,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5978": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5948,
+  "bytes": 251781,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-5979": {
   "paginas": 92,
@@ -621,7 +1677,10 @@
   "coste_ms": 75676,
   "bytes": 1719866,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 1,
+  "de_mas": 3
  },
  "BOE-A-2026-5980": {
   "paginas": 6,
@@ -629,7 +1688,10 @@
   "coste_ms": 8418,
   "bytes": 342147,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5981": {
   "paginas": 2,
@@ -637,7 +1699,10 @@
   "coste_ms": 3392,
   "bytes": 236979,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5982": {
   "paginas": 5,
@@ -645,7 +1710,10 @@
   "coste_ms": 6786,
   "bytes": 300590,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5983": {
   "paginas": 2,
@@ -653,7 +1721,10 @@
   "coste_ms": 3118,
   "bytes": 222052,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5984": {
   "paginas": 8,
@@ -661,7 +1732,10 @@
   "coste_ms": 10289,
   "bytes": 400945,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-5986": {
   "paginas": 19,
@@ -669,7 +1743,54 @@
   "coste_ms": 23128,
   "bytes": 856833,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-5991": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7573,
+  "bytes": 264045,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5995": {
+  "paginas": 15,
+  "tablas_verdad": 0,
+  "coste_ms": 12543,
+  "bytes": 350813,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5996": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 9702,
+  "bytes": 306408,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-5999": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3962,
+  "bytes": 210023,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6000": {
   "paginas": 2,
@@ -677,7 +1798,21 @@
   "coste_ms": 3220,
   "bytes": 217458,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6002": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2733,
+  "bytes": 196213,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6004": {
   "paginas": 4,
@@ -685,7 +1820,10 @@
   "coste_ms": 5388,
   "bytes": 304055,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6006": {
   "paginas": 11,
@@ -693,7 +1831,142 @@
   "coste_ms": 12118,
   "bytes": 460827,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6055": {
+  "paginas": 17,
+  "tablas_verdad": 0,
+  "coste_ms": 14157,
+  "bytes": 355954,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6057": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2433,
+  "bytes": 200890,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6058": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2297,
+  "bytes": 201190,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6059": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2935,
+  "bytes": 200269,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6060": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2784,
+  "bytes": 199090,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6062": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2611,
+  "bytes": 201210,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6063": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 11860,
+  "bytes": 323729,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6065": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 12775,
+  "bytes": 339274,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6067": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1688,
+  "bytes": 189724,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6068": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 7909,
+  "bytes": 267716,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6069": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2038,
+  "bytes": 189642,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6070": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1910,
+  "bytes": 190664,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6077": {
   "paginas": 12,
@@ -701,7 +1974,10 @@
   "coste_ms": 10110,
   "bytes": 364497,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6078": {
   "paginas": 29,
@@ -709,7 +1985,10 @@
   "coste_ms": 26210,
   "bytes": 1138092,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6079": {
   "paginas": 10,
@@ -717,7 +1996,10 @@
   "coste_ms": 10328,
   "bytes": 392147,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6080": {
   "paginas": 19,
@@ -725,7 +2007,10 @@
   "coste_ms": 20883,
   "bytes": 736859,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6081": {
   "paginas": 10,
@@ -733,7 +2018,32 @@
   "coste_ms": 10952,
   "bytes": 460249,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6082": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7607,
+  "bytes": 260348,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6086": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9343,
+  "bytes": 303588,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6087": {
   "paginas": 5,
@@ -741,7 +2051,10 @@
   "coste_ms": 5955,
   "bytes": 269394,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6088": {
   "paginas": 2,
@@ -749,7 +2062,10 @@
   "coste_ms": 3322,
   "bytes": 217370,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6089": {
   "paginas": 10,
@@ -757,7 +2073,10 @@
   "coste_ms": 9935,
   "bytes": 447159,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6090": {
   "paginas": 2,
@@ -765,7 +2084,10 @@
   "coste_ms": 3050,
   "bytes": 220108,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6091": {
   "paginas": 3,
@@ -773,7 +2095,21 @@
   "coste_ms": 4238,
   "bytes": 269397,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6093": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3837,
+  "bytes": 214721,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6094": {
   "paginas": 3,
@@ -781,7 +2117,10 @@
   "coste_ms": 3562,
   "bytes": 227452,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6095": {
   "paginas": 21,
@@ -789,7 +2128,32 @@
   "coste_ms": 19360,
   "bytes": 768065,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6187": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2010,
+  "bytes": 189986,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6188": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6861,
+  "bytes": 242940,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6189": {
   "paginas": 7,
@@ -797,7 +2161,10 @@
   "coste_ms": 7756,
   "bytes": 279750,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6190": {
   "paginas": 8,
@@ -805,7 +2172,10 @@
   "coste_ms": 7354,
   "bytes": 273445,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6191": {
   "paginas": 4,
@@ -813,7 +2183,10 @@
   "coste_ms": 4157,
   "bytes": 239583,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6193": {
   "paginas": 85,
@@ -821,7 +2194,10 @@
   "coste_ms": 66632,
   "bytes": 1077696,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6194": {
   "paginas": 86,
@@ -829,7 +2205,10 @@
   "coste_ms": 67873,
   "bytes": 1078554,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6195": {
   "paginas": 86,
@@ -837,7 +2216,21 @@
   "coste_ms": 66720,
   "bytes": 1095731,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6196": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 11266,
+  "bytes": 316077,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6197": {
   "paginas": 47,
@@ -845,7 +2238,21 @@
   "coste_ms": 42242,
   "bytes": 829993,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6198": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8393,
+  "bytes": 277964,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6200": {
   "paginas": 7,
@@ -853,7 +2260,10 @@
   "coste_ms": 7162,
   "bytes": 272031,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6202": {
   "paginas": 12,
@@ -861,7 +2271,10 @@
   "coste_ms": 10221,
   "bytes": 364307,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6203": {
   "paginas": 12,
@@ -869,7 +2282,10 @@
   "coste_ms": 10498,
   "bytes": 365131,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6204": {
   "paginas": 12,
@@ -877,7 +2293,10 @@
   "coste_ms": 10617,
   "bytes": 366426,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6205": {
   "paginas": 12,
@@ -885,7 +2304,10 @@
   "coste_ms": 11489,
   "bytes": 362054,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6206": {
   "paginas": 12,
@@ -893,7 +2315,10 @@
   "coste_ms": 10592,
   "bytes": 366740,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6207": {
   "paginas": 8,
@@ -901,7 +2326,10 @@
   "coste_ms": 7902,
   "bytes": 272043,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6208": {
   "paginas": 8,
@@ -909,7 +2337,10 @@
   "coste_ms": 8007,
   "bytes": 273505,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6209": {
   "paginas": 13,
@@ -917,7 +2348,21 @@
   "coste_ms": 12729,
   "bytes": 677562,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6210": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6618,
+  "bytes": 250945,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6214": {
   "paginas": 3,
@@ -925,7 +2370,10 @@
   "coste_ms": 3709,
   "bytes": 229829,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6215": {
   "paginas": 7,
@@ -933,7 +2381,10 @@
   "coste_ms": 7000,
   "bytes": 329309,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6216": {
   "paginas": 1,
@@ -941,7 +2392,10 @@
   "coste_ms": 1887,
   "bytes": 193197,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6217": {
   "paginas": 5,
@@ -949,7 +2403,43 @@
   "coste_ms": 7980,
   "bytes": 260510,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6218": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 10816,
+  "bytes": 292535,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6221": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2119,
+  "bytes": 188692,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6222": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1684,
+  "bytes": 189883,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6224": {
   "paginas": 13,
@@ -957,7 +2447,10 @@
   "coste_ms": 14656,
   "bytes": 543372,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6225": {
   "paginas": 6,
@@ -965,7 +2458,10 @@
   "coste_ms": 8790,
   "bytes": 434920,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6226": {
   "paginas": 4,
@@ -973,7 +2469,54 @@
   "coste_ms": 4074,
   "bytes": 232093,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6291": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6688,
+  "bytes": 254160,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6293": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6502,
+  "bytes": 252624,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6294": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6723,
+  "bytes": 251802,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6295": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 10839,
+  "bytes": 371927,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 3,
+  "de_mas": 1
  },
  "BOE-A-2026-6297": {
   "paginas": 25,
@@ -981,7 +2524,21 @@
   "coste_ms": 31575,
   "bytes": 1186746,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6298": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3659,
+  "bytes": 214040,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6300": {
   "paginas": 6,
@@ -989,7 +2546,10 @@
   "coste_ms": 7203,
   "bytes": 339672,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6301": {
   "paginas": 3,
@@ -997,7 +2557,10 @@
   "coste_ms": 4451,
   "bytes": 272701,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6302": {
   "paginas": 11,
@@ -1005,7 +2568,21 @@
   "coste_ms": 11420,
   "bytes": 4000912,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6303": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 10400,
+  "bytes": 303754,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6305": {
   "paginas": 2,
@@ -1013,7 +2590,10 @@
   "coste_ms": 3447,
   "bytes": 217381,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6376": {
   "paginas": 9,
@@ -1021,7 +2601,10 @@
   "coste_ms": 7460,
   "bytes": 280458,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6379": {
   "paginas": 9,
@@ -1029,7 +2612,10 @@
   "coste_ms": 10268,
   "bytes": 414435,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6380": {
   "paginas": 10,
@@ -1037,7 +2623,10 @@
   "coste_ms": 9428,
   "bytes": 299264,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6382": {
   "paginas": 3,
@@ -1045,7 +2634,10 @@
   "coste_ms": 4367,
   "bytes": 250159,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6383": {
   "paginas": 17,
@@ -1053,7 +2645,10 @@
   "coste_ms": 19631,
   "bytes": 828587,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6384": {
   "paginas": 15,
@@ -1061,7 +2656,10 @@
   "coste_ms": 12084,
   "bytes": 355929,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 0
  },
  "BOE-A-2026-6386": {
   "paginas": 7,
@@ -1069,7 +2667,10 @@
   "coste_ms": 6287,
   "bytes": 263932,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6387": {
   "paginas": 3,
@@ -1077,7 +2678,10 @@
   "coste_ms": 3860,
   "bytes": 235568,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6388": {
   "paginas": 4,
@@ -1085,7 +2689,10 @@
   "coste_ms": 5189,
   "bytes": 293818,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6389": {
   "paginas": 62,
@@ -1093,7 +2700,10 @@
   "coste_ms": 47314,
   "bytes": 1057915,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6390": {
   "paginas": 96,
@@ -1101,7 +2711,10 @@
   "coste_ms": 72313,
   "bytes": 1332147,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6391": {
   "paginas": 182,
@@ -1109,7 +2722,32 @@
   "coste_ms": 218306,
   "bytes": 6903492,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6392": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 14508,
+  "bytes": 344196,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6393": {
+  "paginas": 24,
+  "tablas_verdad": 0,
+  "coste_ms": 20975,
+  "bytes": 432140,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6394": {
   "paginas": 42,
@@ -1117,7 +2755,10 @@
   "coste_ms": 34780,
   "bytes": 709567,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6395": {
   "paginas": 15,
@@ -1125,7 +2766,21 @@
   "coste_ms": 15997,
   "bytes": 967422,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6397": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 12463,
+  "bytes": 340058,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6399": {
   "paginas": 2,
@@ -1133,7 +2788,10 @@
   "coste_ms": 3323,
   "bytes": 217376,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6400": {
   "paginas": 4,
@@ -1141,7 +2799,10 @@
   "coste_ms": 4591,
   "bytes": 240519,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6401": {
   "paginas": 9,
@@ -1149,7 +2810,65 @@
   "coste_ms": 8012,
   "bytes": 302966,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6403": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 4169,
+  "bytes": 217153,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6405": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6810,
+  "bytes": 243914,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6406": {
+  "paginas": 90,
+  "tablas_verdad": 0,
+  "coste_ms": 73230,
+  "bytes": 1141747,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6449": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7731,
+  "bytes": 249205,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6450": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7775,
+  "bytes": 249122,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6452": {
   "paginas": 46,
@@ -1157,7 +2876,10 @@
   "coste_ms": 39768,
   "bytes": 733928,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 3
  },
  "BOE-A-2026-6454": {
   "paginas": 85,
@@ -1165,7 +2887,10 @@
   "coste_ms": 70266,
   "bytes": 1105061,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6455": {
   "paginas": 1,
@@ -1173,7 +2898,10 @@
   "coste_ms": 2641,
   "bytes": 193855,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6456": {
   "paginas": 2,
@@ -1181,7 +2909,10 @@
   "coste_ms": 3368,
   "bytes": 235944,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6457": {
   "paginas": 12,
@@ -1189,7 +2920,10 @@
   "coste_ms": 11134,
   "bytes": 362864,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6458": {
   "paginas": 12,
@@ -1197,7 +2931,10 @@
   "coste_ms": 10695,
   "bytes": 363315,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6461": {
   "paginas": 7,
@@ -1205,7 +2942,21 @@
   "coste_ms": 8516,
   "bytes": 342788,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6464": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2209,
+  "bytes": 190431,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6466": {
   "paginas": 4,
@@ -1213,7 +2964,21 @@
   "coste_ms": 5275,
   "bytes": 253107,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6468": {
+  "paginas": 17,
+  "tablas_verdad": 0,
+  "coste_ms": 17594,
+  "bytes": 510409,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6470": {
   "paginas": 2,
@@ -1221,7 +2986,10 @@
   "coste_ms": 3075,
   "bytes": 217581,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6471": {
   "paginas": 1,
@@ -1229,7 +2997,21 @@
   "coste_ms": 2024,
   "bytes": 190342,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6475": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2236,
+  "bytes": 187454,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6477": {
   "paginas": 2,
@@ -1237,7 +3019,54 @@
   "coste_ms": 3133,
   "bytes": 234309,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6523": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 13299,
+  "bytes": 348034,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6524": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1851,
+  "bytes": 190594,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6525": {
+  "paginas": 10,
+  "tablas_verdad": 0,
+  "coste_ms": 9654,
+  "bytes": 284136,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6526": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4670,
+  "bytes": 232244,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6529": {
   "paginas": 60,
@@ -1245,7 +3074,54 @@
   "coste_ms": 51389,
   "bytes": 898947,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6532": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4298,
+  "bytes": 223538,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6535": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8101,
+  "bytes": 278770,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6536": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2400,
+  "bytes": 186528,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6537": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8231,
+  "bytes": 272610,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6538": {
   "paginas": 2,
@@ -1253,7 +3129,21 @@
   "coste_ms": 3300,
   "bytes": 217598,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6539": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2179,
+  "bytes": 185243,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6543": {
   "paginas": 1,
@@ -1261,7 +3151,10 @@
   "coste_ms": 2153,
   "bytes": 195604,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6544": {
   "paginas": 143,
@@ -1269,7 +3162,10 @@
   "coste_ms": 121538,
   "bytes": 1860498,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6546": {
   "paginas": 10,
@@ -1277,7 +3173,76 @@
   "coste_ms": 10939,
   "bytes": 403987,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6613": {
+  "paginas": 10,
+  "tablas_verdad": 0,
+  "coste_ms": 9209,
+  "bytes": 289225,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6614": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8306,
+  "bytes": 270586,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6616": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 11488,
+  "bytes": 339539,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
+ },
+ "BOE-A-2026-6617": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7680,
+  "bytes": 252582,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6618": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 8562,
+  "bytes": 304451,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6619": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 8427,
+  "bytes": 297359,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6620": {
   "paginas": 85,
@@ -1285,7 +3250,21 @@
   "coste_ms": 74174,
   "bytes": 1085351,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6622": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3283,
+  "bytes": 211213,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6624": {
   "paginas": 10,
@@ -1293,7 +3272,10 @@
   "coste_ms": 15242,
   "bytes": 479016,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6625": {
   "paginas": 26,
@@ -1301,7 +3283,10 @@
   "coste_ms": 36740,
   "bytes": 1096537,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6626": {
   "paginas": 12,
@@ -1309,7 +3294,10 @@
   "coste_ms": 11847,
   "bytes": 364621,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6627": {
   "paginas": 12,
@@ -1317,7 +3305,32 @@
   "coste_ms": 12396,
   "bytes": 368402,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6628": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7749,
+  "bytes": 263554,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6629": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6400,
+  "bytes": 244605,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6630": {
   "paginas": 24,
@@ -1325,7 +3338,10 @@
   "coste_ms": 21759,
   "bytes": 529910,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6631": {
   "paginas": 11,
@@ -1333,7 +3349,10 @@
   "coste_ms": 11689,
   "bytes": 377778,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6632": {
   "paginas": 9,
@@ -1341,7 +3360,32 @@
   "coste_ms": 9744,
   "bytes": 291748,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 3,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6633": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4548,
+  "bytes": 223757,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6635": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2266,
+  "bytes": 188629,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6637": {
   "paginas": 2,
@@ -1349,7 +3393,43 @@
   "coste_ms": 3569,
   "bytes": 217366,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6638": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3113,
+  "bytes": 206033,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6640": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4786,
+  "bytes": 232203,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6641": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4833,
+  "bytes": 234211,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6642": {
   "paginas": 9,
@@ -1357,7 +3437,109 @@
   "coste_ms": 8415,
   "bytes": 312708,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6643": {
+  "paginas": 95,
+  "tablas_verdad": 0,
+  "coste_ms": 79117,
+  "bytes": 1208718,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6707": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 10509,
+  "bytes": 303540,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6708": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1969,
+  "bytes": 188389,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6709": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1879,
+  "bytes": 188288,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6713": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2245,
+  "bytes": 188458,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6714": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1901,
+  "bytes": 188351,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6717": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1995,
+  "bytes": 188537,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6718": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2345,
+  "bytes": 190006,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6719": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2065,
+  "bytes": 188279,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6724": {
   "paginas": 11,
@@ -1365,7 +3547,10 @@
   "coste_ms": 10687,
   "bytes": 296465,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 0
  },
  "BOE-A-2026-6728": {
   "paginas": 84,
@@ -1373,7 +3558,21 @@
   "coste_ms": 72444,
   "bytes": 1108321,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6729": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7040,
+  "bytes": 252716,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6730": {
   "paginas": 2,
@@ -1381,7 +3580,10 @@
   "coste_ms": 3612,
   "bytes": 217660,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6731": {
   "paginas": 4,
@@ -1389,7 +3591,10 @@
   "coste_ms": 5620,
   "bytes": 253670,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6732": {
   "paginas": 4,
@@ -1397,7 +3602,10 @@
   "coste_ms": 6374,
   "bytes": 333354,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6733": {
   "paginas": 3,
@@ -1405,7 +3613,10 @@
   "coste_ms": 4059,
   "bytes": 229676,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6735": {
   "paginas": 55,
@@ -1413,7 +3624,10 @@
   "coste_ms": 45047,
   "bytes": 781599,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6736": {
   "paginas": 3,
@@ -1421,7 +3635,10 @@
   "coste_ms": 4533,
   "bytes": 235805,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6737": {
   "paginas": 32,
@@ -1429,7 +3646,10 @@
   "coste_ms": 30962,
   "bytes": 535447,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6738": {
   "paginas": 16,
@@ -1437,7 +3657,10 @@
   "coste_ms": 16656,
   "bytes": 481034,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6739": {
   "paginas": 14,
@@ -1445,7 +3668,10 @@
   "coste_ms": 13472,
   "bytes": 433113,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 2,
+  "de_mas": 2
  },
  "BOE-A-2026-6740": {
   "paginas": 18,
@@ -1453,7 +3679,43 @@
   "coste_ms": 18633,
   "bytes": 548048,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6742": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 6475,
+  "bytes": 228772,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6743": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 7411,
+  "bytes": 222643,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6744": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2167,
+  "bytes": 190414,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6745": {
   "paginas": 31,
@@ -1461,7 +3723,10 @@
   "coste_ms": 28428,
   "bytes": 2231739,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6746": {
   "paginas": 10,
@@ -1469,7 +3734,21 @@
   "coste_ms": 11192,
   "bytes": 441516,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6750": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9928,
+  "bytes": 321366,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 2
  },
  "BOE-A-2026-6752": {
   "paginas": 7,
@@ -1477,7 +3756,87 @@
   "coste_ms": 7354,
   "bytes": 263529,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 2,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6754": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2210,
+  "bytes": 190711,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6756": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2721,
+  "bytes": 196525,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6757": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2588,
+  "bytes": 196340,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6758": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2841,
+  "bytes": 197850,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6760": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 3124,
+  "bytes": 195833,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6764": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2915,
+  "bytes": 197158,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6768": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2523,
+  "bytes": 196804,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6770": {
   "paginas": 10,
@@ -1485,7 +3844,10 @@
   "coste_ms": 10333,
   "bytes": 298848,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6771": {
   "paginas": 3,
@@ -1493,7 +3855,21 @@
   "coste_ms": 3772,
   "bytes": 225952,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6773": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 7681,
+  "bytes": 342617,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 2
  },
  "BOE-A-2026-6774": {
   "paginas": 4,
@@ -1501,7 +3877,10 @@
   "coste_ms": 4560,
   "bytes": 232055,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6775": {
   "paginas": 5,
@@ -1509,7 +3888,10 @@
   "coste_ms": 4691,
   "bytes": 244573,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6776": {
   "paginas": 12,
@@ -1517,7 +3899,32 @@
   "coste_ms": 12446,
   "bytes": 432161,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6778": {
+  "paginas": 22,
+  "tablas_verdad": 0,
+  "coste_ms": 18349,
+  "bytes": 425362,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6782": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2257,
+  "bytes": 189198,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6788": {
   "paginas": 2,
@@ -1525,7 +3932,21 @@
   "coste_ms": 3012,
   "bytes": 205355,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6789": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 11344,
+  "bytes": 336691,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6790": {
   "paginas": 2,
@@ -1533,7 +3954,175 @@
   "coste_ms": 3359,
   "bytes": 220874,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6834": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9734,
+  "bytes": 289840,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6835": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 12601,
+  "bytes": 357941,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6836": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 12749,
+  "bytes": 342183,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6837": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4225,
+  "bytes": 216120,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6839": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 7404,
+  "bytes": 272807,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6841": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 10814,
+  "bytes": 311906,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6842": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9362,
+  "bytes": 295423,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6845": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 10693,
+  "bytes": 314103,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6846": {
+  "paginas": 16,
+  "tablas_verdad": 0,
+  "coste_ms": 12571,
+  "bytes": 347778,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6847": {
+  "paginas": 17,
+  "tablas_verdad": 0,
+  "coste_ms": 13227,
+  "bytes": 349330,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6851": {
+  "paginas": 15,
+  "tablas_verdad": 0,
+  "coste_ms": 12015,
+  "bytes": 344434,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6852": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 5392,
+  "bytes": 223568,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6854": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4400,
+  "bytes": 219887,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6855": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 11061,
+  "bytes": 316569,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6856": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2144,
+  "bytes": 186560,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6858": {
   "paginas": 11,
@@ -1541,7 +4130,21 @@
   "coste_ms": 11570,
   "bytes": 316524,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6859": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 9405,
+  "bytes": 251416,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6862": {
   "paginas": 4,
@@ -1549,7 +4152,21 @@
   "coste_ms": 5020,
   "bytes": 249915,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6865": {
+  "paginas": 21,
+  "tablas_verdad": 0,
+  "coste_ms": 19254,
+  "bytes": 399922,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6866": {
   "paginas": 2,
@@ -1557,7 +4174,65 @@
   "coste_ms": 3148,
   "bytes": 217356,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6926": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 6019,
+  "bytes": 244688,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6929": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2708,
+  "bytes": 187363,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6930": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2238,
+  "bytes": 187586,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6937": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7931,
+  "bytes": 251034,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6938": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 7378,
+  "bytes": 245268,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6941": {
   "paginas": 12,
@@ -1565,7 +4240,10 @@
   "coste_ms": 12488,
   "bytes": 504020,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6942": {
   "paginas": 14,
@@ -1573,7 +4251,10 @@
   "coste_ms": 16438,
   "bytes": 564066,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6943": {
   "paginas": 4,
@@ -1581,7 +4262,10 @@
   "coste_ms": 5144,
   "bytes": 235574,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6945": {
   "paginas": 4,
@@ -1589,7 +4273,10 @@
   "coste_ms": 4547,
   "bytes": 231690,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6946": {
   "paginas": 4,
@@ -1597,7 +4284,10 @@
   "coste_ms": 4673,
   "bytes": 237196,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6947": {
   "paginas": 4,
@@ -1605,7 +4295,10 @@
   "coste_ms": 4366,
   "bytes": 238514,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6948": {
   "paginas": 5,
@@ -1613,7 +4306,21 @@
   "coste_ms": 5694,
   "bytes": 244819,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6949": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2910,
+  "bytes": 205101,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6953": {
   "paginas": 12,
@@ -1621,7 +4328,10 @@
   "coste_ms": 11992,
   "bytes": 364118,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6954": {
   "paginas": 12,
@@ -1629,7 +4339,10 @@
   "coste_ms": 10734,
   "bytes": 363820,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6955": {
   "paginas": 12,
@@ -1637,7 +4350,21 @@
   "coste_ms": 10887,
   "bytes": 363558,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6956": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4710,
+  "bytes": 235877,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6957": {
   "paginas": 21,
@@ -1645,7 +4372,10 @@
   "coste_ms": 20776,
   "bytes": 2820088,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6958": {
   "paginas": 13,
@@ -1653,7 +4383,32 @@
   "coste_ms": 13807,
   "bytes": 3067911,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6967": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 3316,
+  "bytes": 187899,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-6968": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7911,
+  "bytes": 262246,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6969": {
   "paginas": 2,
@@ -1661,7 +4416,10 @@
   "coste_ms": 3321,
   "bytes": 217132,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6970": {
   "paginas": 3,
@@ -1669,7 +4427,10 @@
   "coste_ms": 3956,
   "bytes": 262788,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-6971": {
   "paginas": 4,
@@ -1677,7 +4438,10 @@
   "coste_ms": 5450,
   "bytes": 289568,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-6972": {
   "paginas": 3,
@@ -1685,7 +4449,10 @@
   "coste_ms": 4130,
   "bytes": 243258,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6973": {
   "paginas": 2,
@@ -1693,7 +4460,10 @@
   "coste_ms": 3287,
   "bytes": 212277,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6974": {
   "paginas": 2,
@@ -1701,7 +4471,10 @@
   "coste_ms": 3278,
   "bytes": 221729,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6976": {
   "paginas": 8,
@@ -1709,7 +4482,10 @@
   "coste_ms": 7704,
   "bytes": 307529,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6977": {
   "paginas": 28,
@@ -1717,7 +4493,21 @@
   "coste_ms": 24332,
   "bytes": 625190,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-6978": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 4371,
+  "bytes": 217606,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-6979": {
   "paginas": 85,
@@ -1725,7 +4515,21 @@
   "coste_ms": 88287,
   "bytes": 2317395,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7008": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5705,
+  "bytes": 241299,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7011": {
   "paginas": 85,
@@ -1733,7 +4537,10 @@
   "coste_ms": 69579,
   "bytes": 1105441,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7014": {
   "paginas": 5,
@@ -1741,7 +4548,10 @@
   "coste_ms": 6018,
   "bytes": 286015,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7015": {
   "paginas": 7,
@@ -1749,7 +4559,10 @@
   "coste_ms": 8963,
   "bytes": 362747,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7017": {
   "paginas": 4,
@@ -1757,7 +4570,10 @@
   "coste_ms": 4644,
   "bytes": 234679,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7018": {
   "paginas": 5,
@@ -1765,7 +4581,43 @@
   "coste_ms": 5916,
   "bytes": 249333,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7020": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2523,
+  "bytes": 187280,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7025": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2124,
+  "bytes": 189572,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7030": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2151,
+  "bytes": 187852,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7031": {
   "paginas": 2,
@@ -1773,7 +4625,10 @@
   "coste_ms": 3438,
   "bytes": 217631,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7032": {
   "paginas": 3,
@@ -1781,7 +4636,10 @@
   "coste_ms": 4280,
   "bytes": 280920,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7033": {
   "paginas": 3,
@@ -1789,7 +4647,10 @@
   "coste_ms": 5162,
   "bytes": 264121,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7034": {
   "paginas": 2,
@@ -1797,7 +4658,10 @@
   "coste_ms": 3902,
   "bytes": 214296,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7035": {
   "paginas": 5,
@@ -1805,7 +4669,10 @@
   "coste_ms": 6559,
   "bytes": 289077,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7037": {
   "paginas": 3,
@@ -1813,7 +4680,21 @@
   "coste_ms": 3768,
   "bytes": 217415,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7038": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 11182,
+  "bytes": 319685,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7040": {
   "paginas": 42,
@@ -1821,7 +4702,21 @@
   "coste_ms": 33849,
   "bytes": 594430,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7041": {
+  "paginas": 87,
+  "tablas_verdad": 0,
+  "coste_ms": 100834,
+  "bytes": 3043444,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7043": {
   "paginas": 21,
@@ -1829,7 +4724,10 @@
   "coste_ms": 18551,
   "bytes": 436435,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7097": {
   "paginas": 10,
@@ -1837,7 +4735,21 @@
   "coste_ms": 9875,
   "bytes": 301061,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 1,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7098": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4620,
+  "bytes": 232714,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7099": {
   "paginas": 1,
@@ -1845,7 +4757,32 @@
   "coste_ms": 2458,
   "bytes": 198725,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7101": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 3089,
+  "bytes": 203392,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7102": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2603,
+  "bytes": 201607,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7110": {
   "paginas": 2,
@@ -1853,7 +4790,21 @@
   "coste_ms": 3264,
   "bytes": 217607,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7111": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4584,
+  "bytes": 227414,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7112": {
   "paginas": 5,
@@ -1861,7 +4812,10 @@
   "coste_ms": 8143,
   "bytes": 337790,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7113": {
   "paginas": 4,
@@ -1869,7 +4823,10 @@
   "coste_ms": 6937,
   "bytes": 335627,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7114": {
   "paginas": 2,
@@ -1877,7 +4834,10 @@
   "coste_ms": 3471,
   "bytes": 217544,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7126": {
   "paginas": 4,
@@ -1885,7 +4845,10 @@
   "coste_ms": 5180,
   "bytes": 285252,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7158": {
   "paginas": 15,
@@ -1893,7 +4856,10 @@
   "coste_ms": 14962,
   "bytes": 410304,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7159": {
   "paginas": 11,
@@ -1901,7 +4867,32 @@
   "coste_ms": 10741,
   "bytes": 323185,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7162": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8174,
+  "bytes": 283076,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7163": {
+  "paginas": 13,
+  "tablas_verdad": 0,
+  "coste_ms": 12007,
+  "bytes": 318326,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7165": {
   "paginas": 35,
@@ -1909,7 +4900,10 @@
   "coste_ms": 30300,
   "bytes": 754564,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7167": {
   "paginas": 2,
@@ -1917,7 +4911,21 @@
   "coste_ms": 2741,
   "bytes": 230299,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7169": {
+  "paginas": 18,
+  "tablas_verdad": 0,
+  "coste_ms": 16227,
+  "bytes": 384415,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7170": {
   "paginas": 12,
@@ -1925,7 +4933,10 @@
   "coste_ms": 13707,
   "bytes": 551984,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7171": {
   "paginas": 18,
@@ -1933,7 +4944,10 @@
   "coste_ms": 19209,
   "bytes": 418139,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7172": {
   "paginas": 31,
@@ -1941,7 +4955,10 @@
   "coste_ms": 33027,
   "bytes": 794674,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7173": {
   "paginas": 15,
@@ -1949,7 +4966,10 @@
   "coste_ms": 16935,
   "bytes": 409412,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7174": {
   "paginas": 18,
@@ -1957,7 +4977,10 @@
   "coste_ms": 18622,
   "bytes": 532780,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7175": {
   "paginas": 15,
@@ -1965,7 +4988,10 @@
   "coste_ms": 16657,
   "bytes": 532973,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7176": {
   "paginas": 15,
@@ -1973,7 +4999,10 @@
   "coste_ms": 16415,
   "bytes": 437529,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7178": {
   "paginas": 12,
@@ -1981,7 +5010,32 @@
   "coste_ms": 10640,
   "bytes": 369393,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7179": {
+  "paginas": 22,
+  "tablas_verdad": 0,
+  "coste_ms": 23445,
+  "bytes": 3377718,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7181": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2467,
+  "bytes": 196076,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7183": {
   "paginas": 1,
@@ -1989,7 +5043,21 @@
   "coste_ms": 2379,
   "bytes": 204856,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7184": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 10882,
+  "bytes": 333437,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
  },
  "BOE-A-2026-7187": {
   "paginas": 11,
@@ -1997,7 +5065,21 @@
   "coste_ms": 10808,
   "bytes": 331260,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7188": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6546,
+  "bytes": 261651,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7189": {
   "paginas": 2,
@@ -2005,7 +5087,10 @@
   "coste_ms": 3214,
   "bytes": 218846,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7191": {
   "paginas": 2,
@@ -2013,7 +5098,10 @@
   "coste_ms": 3093,
   "bytes": 224268,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7192": {
   "paginas": 11,
@@ -2021,7 +5109,10 @@
   "coste_ms": 10188,
   "bytes": 303948,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7193": {
   "paginas": 3,
@@ -2029,7 +5120,21 @@
   "coste_ms": 3781,
   "bytes": 247872,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 2,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7256": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7686,
+  "bytes": 271827,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7257": {
   "paginas": 2,
@@ -2037,7 +5142,10 @@
   "coste_ms": 2701,
   "bytes": 202562,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7259": {
   "paginas": 11,
@@ -2045,7 +5153,43 @@
   "coste_ms": 11009,
   "bytes": 436060,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7262": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6906,
+  "bytes": 254929,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7265": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2834,
+  "bytes": 207907,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7266": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4925,
+  "bytes": 241924,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7270": {
   "paginas": 6,
@@ -2053,7 +5197,10 @@
   "coste_ms": 9565,
   "bytes": 489641,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7271": {
   "paginas": 3,
@@ -2061,7 +5208,21 @@
   "coste_ms": 4292,
   "bytes": 291277,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7272": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2184,
+  "bytes": 194906,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7277": {
   "paginas": 85,
@@ -2069,7 +5230,10 @@
   "coste_ms": 73772,
   "bytes": 1093832,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7278": {
   "paginas": 84,
@@ -2077,7 +5241,10 @@
   "coste_ms": 66620,
   "bytes": 1110561,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
  },
  "BOE-A-2026-7279": {
   "paginas": 14,
@@ -2085,7 +5252,10 @@
   "coste_ms": 12851,
   "bytes": 379585,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7280": {
   "paginas": 6,
@@ -2093,7 +5263,10 @@
   "coste_ms": 7254,
   "bytes": 393648,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7284": {
   "paginas": 5,
@@ -2101,7 +5274,10 @@
   "coste_ms": 5613,
   "bytes": 248197,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7285": {
   "paginas": 16,
@@ -2109,7 +5285,32 @@
   "coste_ms": 18247,
   "bytes": 598827,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7286": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4467,
+  "bytes": 223998,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7288": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3044,
+  "bytes": 219437,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7292": {
   "paginas": 14,
@@ -2117,7 +5318,10 @@
   "coste_ms": 14588,
   "bytes": 1117247,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7293": {
   "paginas": 3,
@@ -2125,7 +5329,21 @@
   "coste_ms": 4344,
   "bytes": 233965,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 2,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7295": {
+  "paginas": 23,
+  "tablas_verdad": 0,
+  "coste_ms": 22321,
+  "bytes": 454026,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7296": {
   "paginas": 41,
@@ -2133,7 +5351,87 @@
   "coste_ms": 32975,
   "bytes": 770071,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7297": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2618,
+  "bytes": 219411,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7298": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 3104,
+  "bytes": 208142,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7323": {
+  "paginas": 14,
+  "tablas_verdad": 0,
+  "coste_ms": 12814,
+  "bytes": 336405,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7326": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9569,
+  "bytes": 325608,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
+ },
+ "BOE-A-2026-7327": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 4519,
+  "bytes": 226375,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7328": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 11692,
+  "bytes": 315294,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7329": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 11371,
+  "bytes": 315712,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7330": {
   "paginas": 85,
@@ -2141,7 +5439,10 @@
   "coste_ms": 68327,
   "bytes": 1112410,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7331": {
   "paginas": 17,
@@ -2149,7 +5450,10 @@
   "coste_ms": 15670,
   "bytes": 421055,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7332": {
   "paginas": 7,
@@ -2157,7 +5461,21 @@
   "coste_ms": 9163,
   "bytes": 352451,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7333": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 9145,
+  "bytes": 268448,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7334": {
   "paginas": 3,
@@ -2165,7 +5483,21 @@
   "coste_ms": 4607,
   "bytes": 240875,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7337": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 12155,
+  "bytes": 347127,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
  },
  "BOE-A-2026-7339": {
   "paginas": 167,
@@ -2173,7 +5505,21 @@
   "coste_ms": 182343,
   "bytes": 3040213,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7340": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1958,
+  "bytes": 197971,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7341": {
   "paginas": 25,
@@ -2181,7 +5527,10 @@
   "coste_ms": 28348,
   "bytes": 559535,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7342": {
   "paginas": 2,
@@ -2189,7 +5538,76 @@
   "coste_ms": 3346,
   "bytes": 224264,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7343": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 4144,
+  "bytes": 219539,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7344": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2560,
+  "bytes": 212221,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7408": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1900,
+  "bytes": 196353,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7414": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2141,
+  "bytes": 195285,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7415": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1930,
+  "bytes": 195340,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7420": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3969,
+  "bytes": 215784,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7424": {
   "paginas": 6,
@@ -2197,7 +5615,10 @@
   "coste_ms": 6700,
   "bytes": 277007,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 0
  },
  "BOE-A-2026-7425": {
   "paginas": 10,
@@ -2205,7 +5626,10 @@
   "coste_ms": 9153,
   "bytes": 297359,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7426": {
   "paginas": 50,
@@ -2213,7 +5637,10 @@
   "coste_ms": 45923,
   "bytes": 1590774,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7427": {
   "paginas": 6,
@@ -2221,7 +5648,21 @@
   "coste_ms": 6998,
   "bytes": 276569,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7429": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1906,
+  "bytes": 197720,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7431": {
   "paginas": 2,
@@ -2229,7 +5670,10 @@
   "coste_ms": 3488,
   "bytes": 224327,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7432": {
   "paginas": 2,
@@ -2237,7 +5681,10 @@
   "coste_ms": 3031,
   "bytes": 225216,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7433": {
   "paginas": 2,
@@ -2245,7 +5692,10 @@
   "coste_ms": 3081,
   "bytes": 226778,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7434": {
   "paginas": 2,
@@ -2253,7 +5703,10 @@
   "coste_ms": 3318,
   "bytes": 229849,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7435": {
   "paginas": 2,
@@ -2261,7 +5714,10 @@
   "coste_ms": 3004,
   "bytes": 219973,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7436": {
   "paginas": 2,
@@ -2269,7 +5725,10 @@
   "coste_ms": 2861,
   "bytes": 223117,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7437": {
   "paginas": 2,
@@ -2277,7 +5736,10 @@
   "coste_ms": 3373,
   "bytes": 242138,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7438": {
   "paginas": 7,
@@ -2285,7 +5747,10 @@
   "coste_ms": 7517,
   "bytes": 265987,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
  },
  "BOE-A-2026-7439": {
   "paginas": 9,
@@ -2293,7 +5758,65 @@
   "coste_ms": 10921,
   "bytes": 308743,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7440": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7220,
+  "bytes": 269419,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7441": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3880,
+  "bytes": 224150,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7442": {
+  "paginas": 19,
+  "tablas_verdad": 0,
+  "coste_ms": 16688,
+  "bytes": 400838,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7444": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3353,
+  "bytes": 229600,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7445": {
+  "paginas": 4,
+  "tablas_verdad": 0,
+  "coste_ms": 5597,
+  "bytes": 233789,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7446": {
   "paginas": 4,
@@ -2301,7 +5824,10 @@
   "coste_ms": 4691,
   "bytes": 248514,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7447": {
   "paginas": 37,
@@ -2309,7 +5835,10 @@
   "coste_ms": 34566,
   "bytes": 660280,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7448": {
   "paginas": 36,
@@ -2317,7 +5846,10 @@
   "coste_ms": 36043,
   "bytes": 620123,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 1
  },
  "BOE-A-2026-7522": {
   "paginas": 10,
@@ -2325,7 +5857,10 @@
   "coste_ms": 9810,
   "bytes": 309570,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7524": {
   "paginas": 84,
@@ -2333,7 +5868,10 @@
   "coste_ms": 69120,
   "bytes": 1087465,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7527": {
   "paginas": 4,
@@ -2341,7 +5879,10 @@
   "coste_ms": 4949,
   "bytes": 260096,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7528": {
   "paginas": 2,
@@ -2349,7 +5890,10 @@
   "coste_ms": 3779,
   "bytes": 250474,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7529": {
   "paginas": 45,
@@ -2357,7 +5901,32 @@
   "coste_ms": 38835,
   "bytes": 705921,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7531": {
+  "paginas": 3,
+  "tablas_verdad": 0,
+  "coste_ms": 3416,
+  "bytes": 220461,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7532": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2699,
+  "bytes": 207065,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7533": {
   "paginas": 12,
@@ -2365,7 +5934,10 @@
   "coste_ms": 10453,
   "bytes": 364561,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7534": {
   "paginas": 12,
@@ -2373,7 +5945,10 @@
   "coste_ms": 11965,
   "bytes": 369258,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7536": {
   "paginas": 12,
@@ -2381,7 +5956,10 @@
   "coste_ms": 10798,
   "bytes": 373293,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7537": {
   "paginas": 32,
@@ -2389,7 +5967,10 @@
   "coste_ms": 27465,
   "bytes": 2568985,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7538": {
   "paginas": 37,
@@ -2397,7 +5978,10 @@
   "coste_ms": 33346,
   "bytes": 2452474,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7539": {
   "paginas": 20,
@@ -2405,7 +5989,10 @@
   "coste_ms": 17755,
   "bytes": 4217927,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7540": {
   "paginas": 6,
@@ -2413,7 +6000,10 @@
   "coste_ms": 6324,
   "bytes": 260080,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7541": {
   "paginas": 9,
@@ -2421,7 +6011,10 @@
   "coste_ms": 8760,
   "bytes": 382960,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7542": {
   "paginas": 14,
@@ -2429,7 +6022,32 @@
   "coste_ms": 13136,
   "bytes": 360404,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7544": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 8248,
+  "bytes": 353579,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7546": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6721,
+  "bytes": 260837,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7548": {
   "paginas": 2,
@@ -2437,7 +6055,10 @@
   "coste_ms": 3465,
   "bytes": 224396,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
  },
  "BOE-A-2026-7549": {
   "paginas": 1,
@@ -2445,7 +6066,10 @@
   "coste_ms": 1938,
   "bytes": 207380,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7550": {
   "paginas": 2,
@@ -2453,7 +6077,10 @@
   "coste_ms": 2875,
   "bytes": 224789,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7551": {
   "paginas": 3,
@@ -2461,7 +6088,10 @@
   "coste_ms": 4548,
   "bytes": 274369,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7552": {
   "paginas": 2,
@@ -2469,7 +6099,10 @@
   "coste_ms": 2923,
   "bytes": 226656,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7553": {
   "paginas": 2,
@@ -2477,7 +6110,10 @@
   "coste_ms": 3334,
   "bytes": 229015,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7554": {
   "paginas": 2,
@@ -2485,7 +6121,10 @@
   "coste_ms": 2815,
   "bytes": 224488,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7558": {
   "paginas": 161,
@@ -2493,7 +6132,10 @@
   "coste_ms": 139055,
   "bytes": 2020255,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7559": {
   "paginas": 73,
@@ -2501,7 +6143,10 @@
   "coste_ms": 64042,
   "bytes": 1011726,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 2,
+  "de_mas": 2
  },
  "BOE-A-2026-7560": {
   "paginas": 175,
@@ -2509,7 +6154,10 @@
   "coste_ms": 154296,
   "bytes": 3832838,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7607": {
   "paginas": 3,
@@ -2517,7 +6165,43 @@
   "coste_ms": 3700,
   "bytes": 241672,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7609": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7010,
+  "bytes": 258565,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7613": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6835,
+  "bytes": 260996,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7615": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7749,
+  "bytes": 255869,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7618": {
   "paginas": 11,
@@ -2525,7 +6209,32 @@
   "coste_ms": 10006,
   "bytes": 308436,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7619": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7004,
+  "bytes": 260064,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7620": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6477,
+  "bytes": 261659,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7622": {
   "paginas": 34,
@@ -2533,7 +6242,10 @@
   "coste_ms": 31914,
   "bytes": 788857,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 3
  },
  "BOE-A-2026-7623": {
   "paginas": 12,
@@ -2541,7 +6253,10 @@
   "coste_ms": 11633,
   "bytes": 370559,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7624": {
   "paginas": 12,
@@ -2549,7 +6264,10 @@
   "coste_ms": 10919,
   "bytes": 370585,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7625": {
   "paginas": 12,
@@ -2557,7 +6275,10 @@
   "coste_ms": 11093,
   "bytes": 366857,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7626": {
   "paginas": 12,
@@ -2565,7 +6286,10 @@
   "coste_ms": 12130,
   "bytes": 372696,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7627": {
   "paginas": 4,
@@ -2573,7 +6297,10 @@
   "coste_ms": 5310,
   "bytes": 234679,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7628": {
   "paginas": 1,
@@ -2581,7 +6308,10 @@
   "coste_ms": 1966,
   "bytes": 201104,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7629": {
   "paginas": 22,
@@ -2589,7 +6319,10 @@
   "coste_ms": 21167,
   "bytes": 2029572,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7631": {
   "paginas": 2,
@@ -2597,7 +6330,10 @@
   "coste_ms": 3240,
   "bytes": 241368,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7632": {
   "paginas": 3,
@@ -2605,7 +6341,10 @@
   "coste_ms": 4074,
   "bytes": 248303,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7633": {
   "paginas": 2,
@@ -2613,7 +6352,10 @@
   "coste_ms": 3380,
   "bytes": 222648,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7635": {
   "paginas": 66,
@@ -2621,7 +6363,21 @@
   "coste_ms": 60758,
   "bytes": 1573658,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7636": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2526,
+  "bytes": 217485,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7637": {
   "paginas": 7,
@@ -2629,7 +6385,54 @@
   "coste_ms": 9974,
   "bytes": 4384362,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 1,
+  "de_mas": 3
+ },
+ "BOE-A-2026-7677": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5725,
+  "bytes": 246208,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7680": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5985,
+  "bytes": 246020,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7683": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7713,
+  "bytes": 259350,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7685": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7502,
+  "bytes": 261361,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7686": {
   "paginas": 10,
@@ -2637,7 +6440,32 @@
   "coste_ms": 9533,
   "bytes": 352802,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 2
+ },
+ "BOE-A-2026-7687": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2767,
+  "bytes": 207107,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7690": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 6788,
+  "bytes": 258656,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7692": {
   "paginas": 12,
@@ -2645,7 +6473,10 @@
   "coste_ms": 11079,
   "bytes": 368335,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 3,
+  "de_mas": 0
  },
  "BOE-A-2026-7693": {
   "paginas": 11,
@@ -2653,7 +6484,32 @@
   "coste_ms": 8905,
   "bytes": 321542,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7695": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5709,
+  "bytes": 250179,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7696": {
+  "paginas": 6,
+  "tablas_verdad": 0,
+  "coste_ms": 5821,
+  "bytes": 260817,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7697": {
   "paginas": 5,
@@ -2661,7 +6517,10 @@
   "coste_ms": 6502,
   "bytes": 236173,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 0
  },
  "BOE-A-2026-7763": {
   "paginas": 14,
@@ -2669,7 +6528,21 @@
   "coste_ms": 13835,
   "bytes": 355420,
   "acuerdo": true,
-  "puntua": true
+  "puntua": true,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7764": {
+  "paginas": 5,
+  "tablas_verdad": 0,
+  "coste_ms": 4607,
+  "bytes": 238909,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7766": {
   "paginas": 4,
@@ -2677,7 +6550,164 @@
   "coste_ms": 4906,
   "bytes": 232944,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7770": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 3071,
+  "bytes": 207466,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7773": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2806,
+  "bytes": 206674,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7776": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2287,
+  "bytes": 195777,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7777": {
+  "paginas": 8,
+  "tablas_verdad": 0,
+  "coste_ms": 7741,
+  "bytes": 280444,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7779": {
+  "paginas": 10,
+  "tablas_verdad": 0,
+  "coste_ms": 9667,
+  "bytes": 298078,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7781": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2418,
+  "bytes": 195247,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7782": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1990,
+  "bytes": 196913,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7783": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2043,
+  "bytes": 196337,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7785": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 11184,
+  "bytes": 312336,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7788": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 2220,
+  "bytes": 192478,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7789": {
+  "paginas": 1,
+  "tablas_verdad": 0,
+  "coste_ms": 1962,
+  "bytes": 193725,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7793": {
+  "paginas": 12,
+  "tablas_verdad": 0,
+  "coste_ms": 11361,
+  "bytes": 344857,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 2,
+  "de_mas": 2
+ },
+ "BOE-A-2026-7795": {
+  "paginas": 2,
+  "tablas_verdad": 0,
+  "coste_ms": 2615,
+  "bytes": 206622,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7797": {
+  "paginas": 7,
+  "tablas_verdad": 0,
+  "coste_ms": 7057,
+  "bytes": 259162,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7798": {
   "paginas": 3,
@@ -2685,7 +6715,10 @@
   "coste_ms": 4181,
   "bytes": 256761,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
  },
  "BOE-A-2026-7799": {
   "paginas": 28,
@@ -2693,7 +6726,43 @@
   "coste_ms": 26194,
   "bytes": 771972,
   "acuerdo": false,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 0,
+  "de_mas": 4
+ },
+ "BOE-A-2026-7800": {
+  "paginas": 11,
+  "tablas_verdad": 0,
+  "coste_ms": 9482,
+  "bytes": 307114,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7803": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8504,
+  "bytes": 275278,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
+ },
+ "BOE-A-2026-7804": {
+  "paginas": 9,
+  "tablas_verdad": 0,
+  "coste_ms": 8504,
+  "bytes": 274640,
+  "acuerdo": false,
+  "puntua": false,
+  "celda_combinada": false,
+  "aciertan": 4,
+  "de_mas": 0
  },
  "BOE-A-2026-7806": {
   "paginas": 2,
@@ -2701,6 +6770,9 @@
   "coste_ms": 3616,
   "bytes": 210769,
   "acuerdo": true,
-  "puntua": false
+  "puntua": false,
+  "celda_combinada": true,
+  "aciertan": 4,
+  "de_mas": 0
  }
 }

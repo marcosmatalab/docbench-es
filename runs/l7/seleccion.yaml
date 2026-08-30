@@ -1,0 +1,110 @@
+# LOS 20 DEL QUICKSTART · LA REGLA DE SELECCION, ESCRITA ANTES DE SELECCIONAR
+#
+# Se commitea ANTES de correr el selector. Si se cambia despues de ver el resultado,
+# el commit lo dice y la razon va escrita: esa es toda la garantia que hay, y es la
+# misma que la de `computo.yaml` de L5.
+
+hito: L7
+decide: que 20 documentos entran en tests/fixtures/quickstart/
+
+# ------------------------------------------------------------------- LA REGLA
+# Lo unico de este fichero que seria tentador violar, asi que va lo primero.
+regla: >
+  LA TASA DE ACUERDO ES SALIDA, NUNCA OBJETIVO. El conjunto se congela por fenomenos
+  y por reparto de paginas; el acuerdo se calcula DESPUES y se publica el que salga.
+
+por_que_esta_escrito_aqui: >
+  Porque se sabe de antemano que un conjunto elegido por precio halaga 2,3 veces —los
+  20 mas ligeros acuerdan 14 de 20 contra 103 de 338 del corpus— y se sabe que existe
+  un conjunto que cabe y no halaga: la frontera medida dice 4,18 MB y 58,7 s contra
+  4,12 y 54,5. Sabiendo las dos cosas, elegir los 20 para que el acuerdo cuadre con el
+  del corpus seria ajustar el resultado, que es lo que este repo no admite. El acuerdo
+  que salga sale, aunque salga alto.
+
+# ------------------------------------------------- POR QUE NO HAY TOPE DE PESO
+peso: >
+  NO hay tope de peso. Los «~4 MB» de HITOS.md y del arbol de MANUAL.md nunca fueron
+  una restriccion medida: el repo pesa 9,0 MB en un clon superficial —1,76 MB de
+  transferencia— y GitHub avisa a 1 GB. Lo que si es real es que el peso ENTRA en el
+  criterio de los 3 minutos por el clon, que §16 mete dentro del presupuesto. Va como
+  suma medida y no como tope inventado: ver ADR-0049.
+
+presupuesto_de_los_tres_minutos:
+  formula: "descarga(peso_comprimido / ancho_de_banda) + extraccion + verdad y metrica <= 180 s"
+  ancho_de_banda_declarado_mbps: 10
+  por_que_10: >
+    Es el numero que hay que declarar para que la cuenta se pueda rehacer con otro. No
+    es una medicion de la red de nadie: es el parametro de la formula, y la salida del
+    quickstart imprime el suyo de verdad.
+
+# ------------------------------------------------------------- LOS FENOMENOS
+# Cada uno con la razon por la que el conjunto seria peor sin el. En este orden, que
+# es el orden en que el selector los coloca.
+fenomenos:
+  - id: celda_combinada
+    exige: al menos 1
+    razon: >
+      Ejercita la regla de oro 4 y el NO_APLICABLE, que es el mecanismo detras del 82
+      contra 103. Un quickstart sin ninguna celda combinada no enseña la unica
+      distincion que le costo a este proyecto publicar un titular falso.
+  - id: aciertan_los_cuatro
+    exige: al menos 1
+    razon: el caso facil existe y esconderlo seria el sesgo contrario
+  - id: discrepan_los_cuatro
+    exige: al menos 1
+    razon: >
+      Es el caso mayoritario del corpus —189 de 338— y el que explica por que el
+      titular es 30,5% y no 90%.
+  - id: sin_tablas
+    exige: al menos 1
+    razon: >
+      Los documentos sin tabla son 278 de los 616 de la campaña. Un quickstart que solo
+      enseña documentos con tabla oculta la mitad del trabajo real de un extractor.
+  - id: tabla_de_mas
+    exige: al menos 1
+    razon: >
+      Una tabla que el extractor saca y la referencia no tiene. No se ve en el acuerdo
+      —que solo dice si o no— y es la forma de fallo que un usuario confunde con acierto.
+
+# ----------------------------------------------------------------- LOS TOPES
+topes:
+  una_pagina: 1
+  razon: >
+    Son 9 de 338, el 2,7% del corpus, y son el 100% del halago: 1 pag 100%, 2 pags
+    27,4%, 3 pags 18,8%, 12 pags 0 de 28. Con dos o mas de una pagina el conjunto
+    miente por construccion. Con uno, se enseña el fenomeno sin que domine.
+
+# --------------------------------------------------------------- EL REPARTO
+# Proporcional a la poblacion de cada banda entre los 338 con tabla, por el metodo
+# del resto mayor, sobre las plazas que quedan tras la de «sin tablas» y el tope de
+# una pagina. No es representatividad —con n=20 no esta al alcance— es no
+# sobre-representar ninguna longitud.
+reparto:
+  metodo: resto mayor sobre la poblacion por banda
+  plazas: 20
+  reservadas:
+    sin_tablas: 1
+    una_pagina: 1
+  bandas: ["2-10", "11-50", ">50"]
+
+# ------------------------------------------------------------- EL DESEMPATE
+desempate: >
+  Dentro de una banda, y una vez cubiertos los fenomenos que le tocan, se toma el mas
+  LIGERO todavia sin elegir; a igualdad de peso, el external_id menor. El peso es el
+  unico criterio de desempate porque es el unico que entra en el presupuesto de los 3
+  minutos, y porque no correlaciona con el acuerdo: por cuartil de coste el acuerdo es
+  plano (34,5 / 34,1 / 26,2 / 27,1).
+
+orden_de_bandas: >
+  De la mas apretada a la mas holgada —>50, 11-50, 2-10— para que los fenomenos caigan
+  donde hay sitio en vez de agotar las plazas escasas al final.
+
+orden_de_llenado: >
+  1) la plaza reservada de «sin tablas»; 2) las bandas en el orden de arriba; 3) la
+  plaza reservada de «una pagina». Dentro de cada plaza: primero los fenomenos que
+  sigan sin cubrir, en el orden de la lista de fenomenos, y las plazas que sobren por
+  desempate. La plaza de una pagina va la ultima porque su tope es 1 y no puede
+  gastarse cubriendo un fenomeno que otra banda tambien cubre.
+
+fuente: runs/l7/por_documento.json
+comando: uv run python scripts/seleccionar_quickstart.py
